@@ -1,0 +1,432 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../app/generated/prisma"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth & Users ────────────────────────────────────────────────────────────
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  TEACHER
+  ACCOUNTANT
+  LIBRARIAN
+  STUDENT
+  PARENT
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student       Student?
+  staff         Staff?
+  parent        Parent?
+  notifications Notification[]
+}
+
+// ─── Academic Structure ───────────────────────────────────────────────────────
+
+model AcademicSession {
+  id        String   @id @default(cuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  classes        Class[]
+  examGroups     ExamGroup[]
+  feeGroups      FeeGroup[]
+  attendanceDays AttendanceDay[]
+}
+
+model Class {
+  id        String          @id @default(cuid())
+  name      String
+  sessionId String
+  session   AcademicSession @relation(fields: [sessionId], references: [id])
+  createdAt DateTime        @default(now())
+
+  sections Section[]
+  subjects Subject[]
+}
+
+model Section {
+  id           String  @id @default(cuid())
+  name         String
+  classId      String
+  class        Class   @relation(fields: [classId], references: [id])
+  teacherId    String?
+  classTeacher Staff?  @relation(fields: [teacherId], references: [id])
+
+  students       StudentEnrollment[]
+  timetable      TimetableSlot[]
+  attendanceDays AttendanceDay[]
+  homework       Homework[]
+}
+
+model Subject {
+  id      String @id @default(cuid())
+  name    String
+  code    String
+  classId String
+  class   Class  @relation(fields: [classId], references: [id])
+
+  teacherAssignments TeacherSubject[]
+  examSchedules      ExamSchedule[]
+  markEntries        MarkEntry[]
+  homework           Homework[]
+  timetableSlots     TimetableSlot[]
+}
+
+// ─── Staff ───────────────────────────────────────────────────────────────────
+
+model Staff {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  firstName    String
+  lastName     String
+  employeeCode String   @unique
+  department   String?
+  designation  String?
+  joinDate     DateTime
+
+  classSections      Section[]
+  subjectAssignments TeacherSubject[]
+  attendanceRecords  StaffAttendance[]
+  homeworkAssigned   Homework[]
+  timetableSlots     TimetableSlot[]
+}
+
+model TeacherSubject {
+  staffId   String
+  subjectId String
+  staff     Staff   @relation(fields: [staffId], references: [id])
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  @@id([staffId, subjectId])
+}
+
+// ─── Students ────────────────────────────────────────────────────────────────
+
+model Student {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  firstName       String
+  lastName        String
+  admissionNumber String   @unique
+  dateOfBirth     DateTime
+  gender          String
+  parentId        String?
+  parent          Parent?  @relation(fields: [parentId], references: [id])
+  createdAt       DateTime @default(now())
+
+  enrollments              StudentEnrollment[]
+  feeInvoices              FeeInvoice[]
+  markEntries              MarkEntry[]
+  attendances              StudentAttendance[]
+  homeworkAcknowledgements HomeworkAcknowledgement[]
+}
+
+model Parent {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id])
+  firstName String
+  lastName  String
+  phone     String?
+  email     String?
+
+  children Student[]
+}
+
+model StudentEnrollment {
+  id         String   @id @default(cuid())
+  studentId  String
+  sectionId  String
+  student    Student  @relation(fields: [studentId], references: [id])
+  section    Section  @relation(fields: [sectionId], references: [id])
+  enrolledAt DateTime @default(now())
+
+  @@unique([studentId, sectionId])
+}
+
+// ─── Attendance ───────────────────────────────────────────────────────────────
+
+model AttendanceDay {
+  id        String          @id @default(cuid())
+  date      DateTime        @db.Date
+  sessionId String
+  sectionId String
+  session   AcademicSession @relation(fields: [sessionId], references: [id])
+  section   Section         @relation(fields: [sectionId], references: [id])
+  markedAt  DateTime        @default(now())
+
+  studentAttendances StudentAttendance[]
+
+  @@unique([date, sectionId])
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  HALF_DAY
+  HOLIDAY
+}
+
+model StudentAttendance {
+  id              String           @id @default(cuid())
+  attendanceDayId String
+  studentId       String
+  status          AttendanceStatus
+  note            String?
+  attendanceDay   AttendanceDay    @relation(fields: [attendanceDayId], references: [id])
+  student         Student          @relation(fields: [studentId], references: [id])
+
+  @@unique([attendanceDayId, studentId])
+}
+
+model StaffAttendance {
+  id      String           @id @default(cuid())
+  staffId String
+  date    DateTime         @db.Date
+  status  AttendanceStatus
+  staff   Staff            @relation(fields: [staffId], references: [id])
+
+  @@unique([staffId, date])
+}
+
+// ─── Exams & Marks ────────────────────────────────────────────────────────────
+
+model ExamGroup {
+  id        String          @id @default(cuid())
+  name      String
+  sessionId String
+  session   AcademicSession @relation(fields: [sessionId], references: [id])
+  startDate DateTime
+  endDate   DateTime
+  published Boolean         @default(false)
+
+  schedules ExamSchedule[]
+}
+
+model ExamSchedule {
+  id           String    @id @default(cuid())
+  examGroupId  String
+  subjectId    String
+  date         DateTime
+  startTime    DateTime
+  endTime      DateTime
+  room         String?
+  maxMarks     Int
+  passingMarks Int
+  examGroup    ExamGroup @relation(fields: [examGroupId], references: [id])
+  subject      Subject   @relation(fields: [subjectId], references: [id])
+
+  markEntries MarkEntry[]
+}
+
+model MarkEntry {
+  id             String       @id @default(cuid())
+  examScheduleId String
+  studentId      String
+  subjectId      String
+  theoryMarks    Decimal?
+  practicalMarks Decimal?
+  totalMarks     Decimal?
+  grade          String?
+  isPassed       Boolean?
+  examSchedule   ExamSchedule @relation(fields: [examScheduleId], references: [id])
+  student        Student      @relation(fields: [studentId], references: [id])
+  subject        Subject      @relation(fields: [subjectId], references: [id])
+
+  @@unique([examScheduleId, studentId])
+}
+
+model GradingScale {
+  id        String       @id @default(cuid())
+  name      String
+  isDefault Boolean      @default(false)
+  grades    GradeRange[]
+}
+
+model GradeRange {
+  id            String       @id @default(cuid())
+  scalingId     String
+  gradeLetter   String
+  minPercentage Decimal
+  maxPercentage Decimal
+  gradePoint    Decimal
+  scale         GradingScale @relation(fields: [scalingId], references: [id])
+}
+
+// ─── Fees ─────────────────────────────────────────────────────────────────────
+
+enum FeeCategory {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+  ONE_TIME
+}
+
+model FeeType {
+  id       String      @id @default(cuid())
+  name     String
+  category FeeCategory
+  amount   Decimal
+
+  feeGroupItems FeeGroupItem[]
+}
+
+model FeeGroup {
+  id        String          @id @default(cuid())
+  name      String
+  sessionId String
+  session   AcademicSession @relation(fields: [sessionId], references: [id])
+
+  items    FeeGroupItem[]
+  invoices FeeInvoice[]
+}
+
+model FeeGroupItem {
+  id         String   @id @default(cuid())
+  feeGroupId String
+  feeTypeId  String
+  feeGroup   FeeGroup @relation(fields: [feeGroupId], references: [id])
+  feeType    FeeType  @relation(fields: [feeTypeId], references: [id])
+
+  @@unique([feeGroupId, feeTypeId])
+}
+
+model FeeInvoice {
+  id          String     @id @default(cuid())
+  studentId   String
+  feeGroupId  String
+  dueDate     DateTime
+  totalAmount Decimal
+  paidAmount  Decimal    @default(0)
+  status      String     @default("UNPAID")
+  student     Student    @relation(fields: [studentId], references: [id])
+  feeGroup    FeeGroup   @relation(fields: [feeGroupId], references: [id])
+  createdAt   DateTime   @default(now())
+
+  payments  FeePayment[]
+  discounts FeeDiscount[]
+}
+
+model FeePayment {
+  id        String     @id @default(cuid())
+  invoiceId String
+  amount    Decimal
+  method    String
+  paidAt    DateTime   @default(now())
+  reference String?
+  invoice   FeeInvoice @relation(fields: [invoiceId], references: [id])
+}
+
+model DiscountType {
+  id        String        @id @default(cuid())
+  name      String
+  discounts FeeDiscount[]
+}
+
+model FeeDiscount {
+  id             String       @id @default(cuid())
+  invoiceId      String
+  discountTypeId String
+  amount         Decimal
+  invoice        FeeInvoice   @relation(fields: [invoiceId], references: [id])
+  discountType   DiscountType @relation(fields: [discountTypeId], references: [id])
+}
+
+// ─── Timetable ────────────────────────────────────────────────────────────────
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model TimetableSlot {
+  id        String    @id @default(cuid())
+  sectionId String
+  day       DayOfWeek
+  period    Int
+  startTime String
+  endTime   String
+  subjectId String?
+  staffId   String?
+  section   Section   @relation(fields: [sectionId], references: [id])
+  subject   Subject?  @relation(fields: [subjectId], references: [id])
+  staff     Staff?    @relation(fields: [staffId], references: [id])
+
+  @@unique([sectionId, day, period])
+}
+
+// ─── Homework ─────────────────────────────────────────────────────────────────
+
+model Homework {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  subjectId    String
+  sectionId    String
+  assignedById String
+  dueDate      DateTime
+  createdAt    DateTime @default(now())
+
+  subject      Subject  @relation(fields: [subjectId], references: [id])
+  section      Section  @relation(fields: [sectionId], references: [id])
+  assignedBy   Staff    @relation(fields: [assignedById], references: [id])
+
+  acknowledgements HomeworkAcknowledgement[]
+}
+
+model HomeworkAcknowledgement {
+  homeworkId     String
+  studentId      String
+  acknowledgedAt DateTime
+  homework       Homework @relation(fields: [homeworkId], references: [id])
+  student        Student  @relation(fields: [studentId], references: [id])
+
+  @@id([homeworkId, studentId])
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+
+enum NotificationType {
+  FEE_DUE
+  RESULT_PUBLISHED
+  HOMEWORK_ASSIGNED
+  EXAM_SCHEDULED
+  ABSENCE_MARKED
+  GENERAL
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
