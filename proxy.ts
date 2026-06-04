@@ -8,9 +8,16 @@ export async function proxy(request: NextRequest) {
 
   if (isPublicRoute(pathname)) return NextResponse.next();
 
+  // NextAuth v5 uses "authjs.session-token" (dev) or "__Secure-authjs.session-token" (prod/HTTPS)
+  const isSecure = request.url.startsWith("https://");
+  const cookieName = isSecure
+    ? "__Secure-authjs.session-token"
+    : "authjs.session-token";
+
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
+    cookieName,
   });
 
   if (!token) {
