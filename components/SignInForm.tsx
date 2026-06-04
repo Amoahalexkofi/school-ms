@@ -49,11 +49,20 @@ export function SignInForm({ onSubmit }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      {error && <div role="alert">{error}</div>}
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      {error && (
+        <div
+          role="alert"
+          className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3"
+        >
+          {error}
+        </div>
+      )}
 
-      <div>
-        <label htmlFor="email">Email</label>
+      <div className="space-y-1">
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
         <input
           id="email"
           type="email"
@@ -63,11 +72,15 @@ export function SignInForm({ onSubmit }: Props) {
             setError(null);
           }}
           autoComplete="email"
+          placeholder="you@school.edu"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
-      <div>
-        <label htmlFor="password">Password</label>
+      <div className="space-y-1">
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          Password
+        </label>
         <input
           id="password"
           type="password"
@@ -77,10 +90,16 @@ export function SignInForm({ onSubmit }: Props) {
             setError(null);
           }}
           autoComplete="current-password"
+          placeholder="••••••••"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
-      <button type="submit" disabled={submitting}>
+      <button
+        type="submit"
+        disabled={submitting}
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
+      >
         {submitting ? "Signing in…" : "Sign In"}
       </button>
     </form>
