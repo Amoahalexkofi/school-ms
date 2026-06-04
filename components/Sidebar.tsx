@@ -24,6 +24,9 @@ import {
   Building,
   Package,
   ConciergeBell,
+  Monitor,
+  UserPlus,
+  ShieldCheck,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -45,6 +48,9 @@ const navItems = [
   { href: "/hostel", label: "Hostel", icon: Building },
   { href: "/inventory", label: "Inventory", icon: Package },
   { href: "/front-office", label: "Front Office", icon: ConciergeBell },
+  { href: "/online-exams", label: "Online Exams", icon: Monitor },
+  { href: "/admissions", label: "Admissions", icon: UserPlus },
+  { href: "/audit-log", label: "Audit Log", icon: ShieldCheck },
   { href: "/reports", label: "Reports", icon: BarChart2 },
   { href: "/notifications", label: "Notifications", icon: Bell },
 ];

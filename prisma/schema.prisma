@@ -57,8 +57,9 @@ model Class {
   session   AcademicSession @relation(fields: [sessionId], references: [id])
   createdAt DateTime        @default(now())
 
-  sections Section[]
-  subjects Subject[]
+  sections    Section[]
+  subjects    Subject[]
+  onlineExams OnlineExam[]
 }
 
 model Section {
@@ -143,6 +144,7 @@ model Student {
   bookIssues               BookIssue[]
   transportRoute           StudentRoute?
   hostelAllocation         HostelAllocation?
+  examAttempts             ExamAttempt[]
 }
 
 model Parent {
@@ -730,4 +732,100 @@ model Enquiry {
   followUpNote String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+}
+
+// ─── Online Exams ─────────────────────────────────────────────────────────────
+
+model OnlineExam {
+  id           String       @id @default(cuid())
+  title        String
+  instructions String?
+  duration     Int
+  startTime    DateTime
+  endTime      DateTime
+  isPublished  Boolean      @default(false)
+  classId      String?
+  class        Class?       @relation(fields: [classId], references: [id])
+  createdAt    DateTime     @default(now())
+  questions    Question[]
+  attempts     ExamAttempt[]
+}
+
+model Question {
+  id           String     @id @default(cuid())
+  onlineExamId String
+  onlineExam   OnlineExam @relation(fields: [onlineExamId], references: [id], onDelete: Cascade)
+  text         String
+  options      Json
+  correctIndex Int
+  marks        Int        @default(1)
+  order        Int        @default(0)
+  answers      ExamAnswer[]
+}
+
+model ExamAttempt {
+  id           String       @id @default(cuid())
+  onlineExamId String
+  onlineExam   OnlineExam   @relation(fields: [onlineExamId], references: [id])
+  studentId    String
+  student      Student      @relation(fields: [studentId], references: [id])
+  startedAt    DateTime     @default(now())
+  submittedAt  DateTime?
+  score        Int?
+  total        Int?
+  answers      ExamAnswer[]
+
+  @@unique([onlineExamId, studentId])
+}
+
+model ExamAnswer {
+  id            String      @id @default(cuid())
+  attemptId     String
+  attempt       ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId    String
+  question      Question    @relation(fields: [questionId], references: [id])
+  selectedIndex Int
+  isCorrect     Boolean
+
+  @@unique([attemptId, questionId])
+}
+
+// ─── Online Admission ─────────────────────────────────────────────────────────
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWED
+  APPROVED
+  REJECTED
+}
+
+model AdmissionApplication {
+  id              String            @id @default(cuid())
+  firstName       String
+  lastName        String
+  dateOfBirth     DateTime
+  gender          String
+  classAppliedFor String
+  parentName      String
+  parentPhone     String
+  parentEmail     String?
+  address         String?
+  notes           String?
+  status          ApplicationStatus @default(PENDING)
+  reviewNote      String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+// ─── Audit Log ────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  userEmail String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
 }
