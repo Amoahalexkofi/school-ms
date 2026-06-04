@@ -99,28 +99,23 @@ Before implementing any feature, read the corresponding PHP model in:
 
 ---
 
-### 🔄 Phase 3 — Staff Module (IN PROGRESS — needs rebuild)
+### ✅ Phase 3 — Staff Module (COMPLETE)
 **Smart School reference:** `Staff_model.php`, `Staffroles_model.php`
 
-Current state: Basic staff list/add exists but uses old schema.
-
-- [ ] Staff list with department/designation filters
-- [ ] Add staff form — all 40+ fields:
-  - Basic: employeeId (auto), firstName, lastName, fatherName, motherName, dob, gender, maritalStatus, religion, qualification, workExperience
-  - Employment: departmentId (FK), designationId (FK), dateOfJoining, dateOfLeaving, contractType, shift, location, payscale
-  - Contact: contactNo, emergencyContact, localAddress, permanentAddress, city, state, country
-  - Financial: basicSalary, bankAccountNo, bankName, ifscCode, bankBranch, epfNo
-  - Documents: image, resume, joiningLetter, resignationLetter, otherDocumentName, otherDocumentFile
-  - Social: facebook, twitter, linkedin, instagram
-  - Note: note
-- [ ] Edit staff
-- [ ] Disable staff
-- [ ] Staff profile page
-- [ ] Teacher subject assignment — link staff to subject(s)
-- [ ] Department management page (CRUD)
-- [ ] Designation management page (CRUD)
+- [x] Staff list page — search + department filter (StaffClient.tsx)
+- [x] Add staff form — 40+ fields across 5 tabs (Personal, Employment, Contact, Financial, Social)
+- [x] Auto-generated employeeId (EMP0001, EMP0002…) if not provided
+- [x] Staff profile page — all fields: personal, employment/finance, contact, subjects taught, class teacher of, social links, payslips
+- [x] Edit staff dialog — full field edit + role change (PATCH /api/staff/[id])
+- [x] Disable / Re-enable staff (sets isActive + disabledAt)
+- [x] Department management page — CRUD with staff count (`/departments`)
+- [x] Designation management page — CRUD with staff count (`/designations`)
+- [x] API: GET/POST `/api/staff`, GET/PATCH/DELETE `/api/staff/[id]`
+- [x] API: POST/PATCH/DELETE `/api/departments`, `/api/departments/[id]`
+- [x] API: POST/PATCH/DELETE `/api/designations`, `/api/designations/[id]`
+- [x] Routes added to middleware-utils.ts
+- [ ] Teacher subject assignment UI (currently stored in schema, no management page yet)
 - [ ] Staff ID card view (printable)
-- [ ] API routes updated for new schema
 
 ---
 

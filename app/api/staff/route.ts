@@ -1,52 +1,117 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hashPassword } from "@/lib/auth/password";
+import bcrypt from "bcryptjs";
 
-export async function GET() {
+function generateEmployeeId(count: number) {
+  return `EMP${String(count + 1).padStart(4, "0")}`;
+}
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const departmentId  = searchParams.get("departmentId");
+  const designationId = searchParams.get("designationId");
+  const search        = searchParams.get("search");
+  const isActive      = searchParams.get("isActive");
+
+  const where: any = {};
+  if (isActive !== null) where.isActive = isActive === "true";
+  if (departmentId)  where.departmentId  = departmentId;
+  if (designationId) where.designationId = designationId;
+  if (search) {
+    where.OR = [
+      { firstName: { contains: search, mode: "insensitive" } },
+      { lastName:  { contains: search, mode: "insensitive" } },
+      { employeeId: { contains: search, mode: "insensitive" } },
+      { contactNo:  { contains: search, mode: "insensitive" } },
+    ];
+  }
+
   const staff = await (prisma as any).staff.findMany({
-    include: { user: { select: { email: true, role: true } } },
-    orderBy: { joinDate: "desc" },
+    where,
+    include: {
+      user:        { select: { email: true, role: true } },
+      department:  { select: { name: true } },
+      designation: { select: { name: true } },
+      teacherSubjects: { include: { subject: { select: { name: true } } } },
+    },
+    orderBy: { firstName: "asc" },
   });
+
   return NextResponse.json(staff);
 }
 
-export async function POST(request: Request) {
-  let body: Record<string, unknown>;
-  try { body = await request.json(); }
-  catch { return NextResponse.json({ error: "invalid JSON" }, { status: 400 }); }
-
-  const required = ["firstName", "lastName", "email", "role", "employeeCode", "joinDate"];
-  for (const f of required) {
-    if (!body[f]) return NextResponse.json({ error: `${f} is required` }, { status: 400 });
-  }
-
+export async function POST(req: NextRequest) {
   try {
-    const existing = await (prisma as any).user.findUnique({ where: { email: body.email as string } });
-    if (existing) return NextResponse.json({ error: "email already registered" }, { status: 409 });
+    const body = await req.json();
+    const required = ["firstName", "lastName", "gender"];
+    for (const f of required) {
+      if (!body[f]) return NextResponse.json({ error: `${f} is required` }, { status: 422 });
+    }
 
-    const password = await hashPassword("Staff@1234");
+    const count = await (prisma as any).staff.count();
+    const employeeId = body.employeeId || generateEmployeeId(count);
 
-    const result = await (prisma as any).$transaction(async (tx: any) => {
-      const user = await tx.user.create({
-        data: { email: body.email as string, password, role: body.role as string },
-      });
-      const staff = await tx.staff.create({
+    const existingEmp = await (prisma as any).staff.findUnique({ where: { employeeId } });
+    if (existingEmp) return NextResponse.json({ error: "Employee ID already exists" }, { status: 409 });
+
+    const email    = body.email || `${employeeId.toLowerCase()}@school.local`;
+    const username = `staff_${employeeId.toLowerCase()}`;
+
+    const existingUser = await (prisma as any).user.findUnique({ where: { email } });
+    if (existingUser) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
+
+    const password = await bcrypt.hash("Staff@1234", 12);
+    const role     = body.role || "TEACHER";
+
+    const staff = await (prisma as any).$transaction(async (tx: any) => {
+      const user = await tx.user.create({ data: { email, username, password, role } });
+
+      return tx.staff.create({
         data: {
-          userId: user.id,
-          firstName: (body.firstName as string).trim(),
-          lastName: (body.lastName as string).trim(),
-          employeeCode: body.employeeCode as string,
-          department: (body.department as string) || null,
-          designation: (body.designation as string) || null,
-          joinDate: new Date(body.joinDate as string),
+          userId:           user.id,
+          employeeId,
+          departmentId:     body.departmentId     || null,
+          designationId:    body.designationId     || null,
+          firstName:        body.firstName?.trim(),
+          lastName:         body.lastName?.trim(),
+          fatherName:       body.fatherName        || null,
+          motherName:       body.motherName        || null,
+          dob:              body.dob               ? new Date(body.dob)              : null,
+          gender:           body.gender,
+          maritalStatus:    body.maritalStatus     || null,
+          religion:         body.religion          || null,
+          qualification:    body.qualification     || null,
+          workExperience:   body.workExperience     || null,
+          dateOfJoining:    body.dateOfJoining     ? new Date(body.dateOfJoining)    : null,
+          contractType:     body.contractType      || null,
+          contactNo:        body.contactNo         || null,
+          emergencyContact: body.emergencyContact  || null,
+          localAddress:     body.localAddress      || null,
+          permanentAddress: body.permanentAddress  || null,
+          city:             body.city              || null,
+          state:            body.state             || null,
+          country:          body.country           || null,
+          basicSalary:      body.basicSalary       ? parseFloat(body.basicSalary)    : null,
+          bankAccountNo:    body.bankAccountNo     || null,
+          bankName:         body.bankName          || null,
+          ifscCode:         body.ifscCode          || null,
+          bankBranch:       body.bankBranch        || null,
+          epfNo:            body.epfNo             || null,
+          payscale:         body.payscale          || null,
+          shift:            body.shift             || null,
+          location:         body.location          || null,
+          facebook:         body.facebook          || null,
+          twitter:          body.twitter           || null,
+          linkedin:         body.linkedin          || null,
+          instagram:        body.instagram         || null,
+          note:             body.note              || null,
         },
       });
-      return staff;
     });
 
-    return NextResponse.json(result, { status: 201 });
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "unknown error";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json(staff, { status: 201 });
+  } catch (err: any) {
+    console.error(err);
+    return NextResponse.json({ error: err.message || "Failed to create staff" }, { status: 500 });
   }
 }
