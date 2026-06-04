@@ -1,39 +1,66 @@
 import { NextRequest, NextResponse } from "next/server";
-import { markAttendance, getStudentAttendanceSummary } from "@/lib/services/attendance";
+import { prisma } from "@/lib/prisma";
+import { markAttendance } from "@/lib/services/attendance";
 
-export async function POST(request: NextRequest) {
+// GET — returns enrolled students + existing attendance for a given day
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const classSectionId = searchParams.get("classSectionId");
+  const sessionId      = searchParams.get("sessionId");
+  const date           = searchParams.get("date");
+
+  if (!classSectionId || !sessionId || !date) {
+    return NextResponse.json({ error: "classSectionId, sessionId and date are required" }, { status: 400 });
+  }
+
+  // Students enrolled in this classSection for this session
+  const enrollments = await (prisma as any).studentSession.findMany({
+    where: { classSectionId, sessionId, isActive: true },
+    include: {
+      student: { select: { id: true, firstName: true, middleName: true, lastName: true, admissionNo: true, gender: true } },
+    },
+    orderBy: [{ rollNo: "asc" }, { student: { firstName: "asc" } }],
+  });
+
+  // Existing attendance for this day (if already marked)
+  const attendanceDay = await (prisma as any).attendanceDay.findUnique({
+    where: { date_classSectionId: { date: new Date(date), classSectionId } },
+    include: {
+      studentAttendances: {
+        include: { attendanceType: true },
+      },
+    },
+  });
+
+  // Map studentSessionId → existing record
+  const existing: Record<string, any> = {};
+  if (attendanceDay) {
+    for (const a of attendanceDay.studentAttendances) {
+      existing[a.studentSessionId] = a;
+    }
+  }
+
+  return NextResponse.json({ enrollments, existing, attendanceDayId: attendanceDay?.id ?? null });
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await req.json();
     if (!body.classSectionId) return NextResponse.json({ error: "classSectionId is required" }, { status: 400 });
-    if (!body.sessionId) return NextResponse.json({ error: "sessionId is required" }, { status: 400 });
-    if (!body.date) return NextResponse.json({ error: "date is required" }, { status: 400 });
+    if (!body.sessionId)      return NextResponse.json({ error: "sessionId is required" },      { status: 400 });
+    if (!body.date)           return NextResponse.json({ error: "date is required" },           { status: 400 });
     if (!Array.isArray(body.records) || body.records.length === 0)
       return NextResponse.json({ error: "records must be a non-empty array" }, { status: 400 });
 
     await markAttendance({
       classSectionId: body.classSectionId,
-      sessionId: body.sessionId,
-      date: new Date(body.date),
-      records: body.records,
+      sessionId:      body.sessionId,
+      date:           new Date(body.date),
+      records:        body.records,
     });
-    return NextResponse.json({ message: "Attendance marked successfully" });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "unknown error";
-    if (message.includes("future date") || message.includes("cannot be empty") || message.includes("required"))
-      return NextResponse.json({ error: message }, { status: 422 });
-    return NextResponse.json({ error: "internal server error" }, { status: 500 });
-  }
-}
 
-export async function GET(request: NextRequest) {
-  const studentId = request.nextUrl.searchParams.get("studentId");
-  const sessionId = request.nextUrl.searchParams.get("sessionId");
-  if (!studentId || !sessionId)
-    return NextResponse.json({ error: "studentId and sessionId are required" }, { status: 400 });
-  try {
-    const summary = await getStudentAttendanceSummary(studentId, sessionId);
-    return NextResponse.json(summary);
-  } catch {
-    return NextResponse.json({ error: "internal server error" }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message || "Failed" }, { status: 500 });
   }
 }
