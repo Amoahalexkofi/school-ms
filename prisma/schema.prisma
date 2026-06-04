@@ -107,6 +107,8 @@ model Staff {
   attendanceRecords  StaffAttendance[]
   homeworkAssigned   Homework[]
   timetableSlots     TimetableSlot[]
+  payrollEntries     PayrollEntry[]
+  bookIssues         BookIssue[]
 }
 
 model TeacherSubject {
@@ -138,6 +140,9 @@ model Student {
   markEntries              MarkEntry[]
   attendances              StudentAttendance[]
   homeworkAcknowledgements HomeworkAcknowledgement[]
+  bookIssues               BookIssue[]
+  transportRoute           StudentRoute?
+  hostelAllocation         HostelAllocation?
 }
 
 model Parent {
@@ -429,4 +434,182 @@ model Notification {
   message   String
   isRead    Boolean          @default(false)
   createdAt DateTime         @default(now())
+}
+
+// ─── Finance & Accounting ─────────────────────────────────────────────────────
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+model IncomeHead {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  description  String?
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+}
+
+model ExpenseHead {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  description  String?
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+}
+
+model Transaction {
+  id            String          @id @default(cuid())
+  type          TransactionType
+  amount        Decimal         @db.Decimal(12, 2)
+  date          DateTime        @db.Date
+  note          String?
+  incomeHeadId  String?
+  incomeHead    IncomeHead?     @relation(fields: [incomeHeadId], references: [id])
+  expenseHeadId String?
+  expenseHead   ExpenseHead?    @relation(fields: [expenseHeadId], references: [id])
+  createdAt     DateTime        @default(now())
+}
+
+enum PayrollStatus {
+  PENDING
+  PAID
+}
+
+model Payroll {
+  id        String        @id @default(cuid())
+  month     Int
+  year      Int
+  status    PayrollStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  entries   PayrollEntry[]
+
+  @@unique([month, year])
+}
+
+model PayrollEntry {
+  id         String   @id @default(cuid())
+  payrollId  String
+  payroll    Payroll  @relation(fields: [payrollId], references: [id], onDelete: Cascade)
+  staffId    String
+  staff      Staff    @relation(fields: [staffId], references: [id])
+  basicSalary Decimal @db.Decimal(12, 2)
+  allowances  Decimal @db.Decimal(12, 2) @default(0)
+  deductions  Decimal @db.Decimal(12, 2) @default(0)
+  netSalary   Decimal @db.Decimal(12, 2)
+  createdAt  DateTime @default(now())
+
+  @@unique([payrollId, staffId])
+}
+
+// ─── Library ──────────────────────────────────────────────────────────────────
+
+enum BookIssueStatus {
+  ISSUED
+  RETURNED
+  OVERDUE
+}
+
+model Book {
+  id          String      @id @default(cuid())
+  title       String
+  author      String
+  isbn        String?     @unique
+  category    String?
+  quantity    Int         @default(1)
+  available   Int         @default(1)
+  createdAt   DateTime    @default(now())
+  issues      BookIssue[]
+}
+
+model BookIssue {
+  id         String          @id @default(cuid())
+  bookId     String
+  book       Book            @relation(fields: [bookId], references: [id])
+  studentId  String?
+  student    Student?        @relation(fields: [studentId], references: [id])
+  staffId    String?
+  staff      Staff?          @relation(fields: [staffId], references: [id])
+  issuedAt   DateTime        @default(now())
+  dueDate    DateTime
+  returnedAt DateTime?
+  status     BookIssueStatus @default(ISSUED)
+  fine       Decimal?        @db.Decimal(10, 2)
+}
+
+// ─── Transport ────────────────────────────────────────────────────────────────
+
+model Vehicle {
+  id           String   @id @default(cuid())
+  number       String   @unique
+  type         String
+  capacity     Int
+  driverName   String?
+  driverPhone  String?
+  createdAt    DateTime @default(now())
+  routes       Route[]
+}
+
+model Route {
+  id          String          @id @default(cuid())
+  name        String          @unique
+  vehicleId   String?
+  vehicle     Vehicle?        @relation(fields: [vehicleId], references: [id])
+  createdAt   DateTime        @default(now())
+  pickupPoints PickupPoint[]
+  students    StudentRoute[]
+}
+
+model PickupPoint {
+  id       String @id @default(cuid())
+  routeId  String
+  route    Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  name     String
+  timing   String?
+  order    Int    @default(0)
+}
+
+model StudentRoute {
+  id             String   @id @default(cuid())
+  studentId      String
+  student        Student  @relation(fields: [studentId], references: [id])
+  routeId        String
+  route          Route    @relation(fields: [routeId], references: [id])
+  pickupPointId  String?
+  assignedAt     DateTime @default(now())
+
+  @@unique([studentId])
+}
+
+// ─── Hostel ───────────────────────────────────────────────────────────────────
+
+model Hostel {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  type      String?
+  createdAt DateTime @default(now())
+  rooms     HostelRoom[]
+}
+
+model HostelRoom {
+  id         String          @id @default(cuid())
+  hostelId   String
+  hostel     Hostel          @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  roomNumber String
+  capacity   Int             @default(1)
+  type       String?
+  createdAt  DateTime        @default(now())
+  allocations HostelAllocation[]
+
+  @@unique([hostelId, roomNumber])
+}
+
+model HostelAllocation {
+  id         String     @id @default(cuid())
+  studentId  String     @unique
+  student    Student    @relation(fields: [studentId], references: [id])
+  roomId     String
+  room       HostelRoom @relation(fields: [roomId], references: [id])
+  allocatedAt DateTime  @default(now())
 }
