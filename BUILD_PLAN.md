@@ -81,27 +81,21 @@ Before implementing any feature, read the corresponding PHP model in:
 
 ---
 
-### 🔄 Phase 2 — Students Module (IN PROGRESS — needs rebuild)
+### 🔄 Phase 2 — Students Module (IN PROGRESS)
 **Smart School reference:** `Student_model.php`, `Studentsession_model.php`
 
-Current state: Student list page exists but uses old schema fields.
-
-- [ ] Student list page — shows students with their current class/section/session
-- [ ] Add student form — all 50+ fields:
-  - Basic: admissionNo (auto), firstName, middleName, lastName, admissionDate, dob, gender, bloodGroup, religion, caste, category, rte, image
-  - Contact: mobileNo, email, currentAddress, permanentAddress, city, state, country, pincode
-  - Guardian: guardianIs, fatherName, fatherPhone, fatherOccupation, motherName, motherPhone, motherOccupation, guardianName, guardianRelation, guardianPhone, guardianEmail, guardianAddress
-  - Academic: previousSchool, schoolHouseId, rollNo
-  - Physical: height, weight, measurementDate
-  - Bank: bankAccountNo, bankName, ifscCode, aadharNo
-  - App: note, about
-- [ ] Student enrollment form — assign to session + classSection + rollNo
-- [ ] Student profile page — all fields + current enrollment
-- [ ] Edit student
-- [ ] Disable student (with reason) — `isActive=false, disableReason, disabledAt`
+- [x] Student list page — shows students with their current class/section/session
+- [x] Add student form — all 50+ fields (Basic, Guardian, Address, Academic, Other tabs)
+- [x] Student enrollment form — session + classSection + rollNo (within Add form)
+- [x] Student profile page — rebuilt for new schema (admissionNo, sessions, feesMasters, attendanceType.keyValue, isPassing)
+- [x] Edit student — dialog in profile page, PATCH `/api/students/[id]`
+- [x] Disable student (with reason) — dialog in profile page, sets `isActive=false, disableReason, disabledAt`
+- [x] Re-enable student — one-click in profile page
+- [x] Enrollment history table — shown when student has multiple sessions
+- [x] Guardian info section — shown when father/mother/guardian data exists
+- [x] API: GET/POST/PATCH/DELETE `/api/students`, `/api/students/[id]`
 - [ ] Promote students — move to next class for new session
 - [ ] Student ID card view (printable)
-- [ ] API: GET/POST/PATCH/DELETE `/api/students`, `/api/students/[id]`
 
 ---
 

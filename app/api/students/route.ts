@@ -1,56 +1,144 @@
-import { NextResponse } from "next/server";
-import { createStudent } from "@/lib/services/students";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { generateAdmissionNumber } from "@/lib/domain/students";
+import bcrypt from "bcryptjs";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const sessionId      = searchParams.get("sessionId");
+  const classSectionId = searchParams.get("classSectionId");
+  const search         = searchParams.get("search");
+  const isActive       = searchParams.get("isActive");
+
+  const where: any = {};
+  if (isActive !== null) where.isActive = isActive === "true";
+  if (search) {
+    where.OR = [
+      { firstName:   { contains: search, mode: "insensitive" } },
+      { lastName:    { contains: search, mode: "insensitive" } },
+      { admissionNo: { contains: search, mode: "insensitive" } },
+      { mobileNo:    { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  const sessionFilter: any = {};
+  if (sessionId)      sessionFilter.sessionId      = sessionId;
+  if (classSectionId) sessionFilter.classSectionId = classSectionId;
+
   const students = await (prisma as any).student.findMany({
-    include: { user: { select: { email: true } } },
-    orderBy: { createdAt: "desc" },
+    where: {
+      ...where,
+      ...(Object.keys(sessionFilter).length > 0
+        ? { sessions: { some: sessionFilter } }
+        : {}),
+    },
+    include: {
+      sessions: {
+        where: Object.keys(sessionFilter).length > 0 ? sessionFilter : undefined,
+        include: {
+          session: true,
+          classSection: { include: { class: true, section: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
+      schoolHouse: true,
+    },
+    orderBy: { firstName: "asc" },
   });
+
   return NextResponse.json(students);
 }
 
-const REQUIRED_FIELDS = ["firstName", "lastName", "email", "dateOfBirth", "gender", "sessionYear"] as const;
-
-export async function POST(request: Request) {
-  let body: Record<string, unknown>;
-
+export async function POST(req: NextRequest) {
   try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "invalid JSON" }, { status: 400 });
-  }
-
-  for (const field of REQUIRED_FIELDS) {
-    if (body[field] === undefined || body[field] === null || body[field] === "") {
-      return NextResponse.json({ error: `${field} is required` }, { status: 400 });
+    const body = await req.json();
+    const required = ["firstName", "lastName", "dateOfBirth", "gender"];
+    for (const f of required) {
+      if (!body[f]) return NextResponse.json({ error: `${f} is required` }, { status: 422 });
     }
-  }
 
-  try {
-    const student = await createStudent({
-      firstName: body.firstName as string,
-      lastName: body.lastName as string,
-      email: body.email as string,
-      dateOfBirth: new Date(body.dateOfBirth as string),
-      gender: body.gender as string,
-      sessionYear: Number(body.sessionYear),
+    if (body.email) {
+      const exists = await (prisma as any).user.findUnique({ where: { email: body.email } });
+      if (exists) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
+    }
+
+    const count  = await (prisma as any).student.count();
+    const year   = new Date().getFullYear();
+    const admissionNo = generateAdmissionNumber({ sessionYear: year, sequenceNumber: count + 1 });
+    const email    = body.email || `${admissionNo.toLowerCase().replace(/\//g, ".")}@school.local`;
+    const username = `stu_${admissionNo.toLowerCase().replace(/\//g, "_")}`;
+    const password = await bcrypt.hash("Student@1234", 12);
+
+    const student = await (prisma as any).$transaction(async (tx: any) => {
+      const user = await tx.user.create({ data: { email, username, password, role: "STUDENT" } });
+
+      const s = await tx.student.create({
+        data: {
+          userId:             user.id,
+          admissionNo,
+          firstName:          body.firstName?.trim(),
+          middleName:         body.middleName?.trim()     || null,
+          lastName:           body.lastName?.trim(),
+          admissionDate:      body.admissionDate          ? new Date(body.admissionDate)  : new Date(),
+          dateOfBirth:        body.dateOfBirth            ? new Date(body.dateOfBirth)     : null,
+          gender:             body.gender,
+          bloodGroup:         body.bloodGroup             || null,
+          religion:           body.religion               || null,
+          caste:              body.caste                  || null,
+          category:           body.category               || null,
+          nationality:        body.nationality            || null,
+          rte:                body.rte === true || body.rte === "true",
+          mobileNo:           body.mobileNo               || null,
+          currentAddress:     body.currentAddress         || null,
+          permanentAddress:   body.permanentAddress       || null,
+          city:               body.city                   || null,
+          state:              body.state                  || null,
+          country:            body.country                || null,
+          pincode:            body.pincode                || null,
+          guardianIs:         body.guardianIs             || null,
+          fatherName:         body.fatherName             || null,
+          fatherPhone:        body.fatherPhone            || null,
+          fatherOccupation:   body.fatherOccupation       || null,
+          motherName:         body.motherName             || null,
+          motherPhone:        body.motherPhone            || null,
+          motherOccupation:   body.motherOccupation       || null,
+          guardianName:       body.guardianName           || null,
+          guardianRelation:   body.guardianRelation       || null,
+          guardianPhone:      body.guardianPhone          || null,
+          guardianEmail:      body.guardianEmail          || null,
+          guardianOccupation: body.guardianOccupation     || null,
+          guardianAddress:    body.guardianAddress        || null,
+          previousSchool:     body.previousSchool         || null,
+          schoolHouseId:      body.schoolHouseId          || null,
+          height:             body.height                 || null,
+          weight:             body.weight                 || null,
+          bankAccountNo:      body.bankAccountNo          || null,
+          bankName:           body.bankName               || null,
+          ifscCode:           body.ifscCode               || null,
+          aadharNo:           body.aadharNo               || null,
+          note:               body.note                   || null,
+          about:              body.about                  || null,
+        },
+      });
+
+      if (body.sessionId && body.classSectionId) {
+        await tx.studentSession.create({
+          data: {
+            studentId:      s.id,
+            sessionId:      body.sessionId,
+            classSectionId: body.classSectionId,
+            rollNo:         body.rollNo || null,
+            defaultLogin:   true,
+          },
+        });
+      }
+      return s;
     });
 
     return NextResponse.json(student, { status: 201 });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "unknown error";
-
-    if (message === "email already registered") {
-      return NextResponse.json({ error: message }, { status: 409 });
-    }
-    if (
-      message.includes("years old") ||
-      message.includes("older than") ||
-      message.includes("future")
-    ) {
-      return NextResponse.json({ error: message }, { status: 422 });
-    }
-    return NextResponse.json({ error: "internal server error" }, { status: 500 });
+  } catch (err: any) {
+    console.error(err);
+    return NextResponse.json({ error: err.message || "Failed to create student" }, { status: 500 });
   }
 }
