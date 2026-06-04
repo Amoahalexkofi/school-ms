@@ -1,89 +1,64 @@
 import { prisma } from "@/lib/prisma";
-import {
-  getAttendanceSummary,
-  type AttendanceRecord,
-  type AttendanceStatusValue,
-} from "@/lib/domain/attendance";
 
-export interface AttendanceRecordInput {
-  studentId: string;
-  status: AttendanceStatusValue;
-  note?: string;
-}
-
-export interface MarkAttendanceInput {
-  sectionId: string;
+export async function markAttendance(input: {
+  classSectionId: string;
   sessionId: string;
   date: Date;
-  records: AttendanceRecordInput[];
-}
-
-export async function markAttendance(input: MarkAttendanceInput): Promise<void> {
-  if (!input.sectionId) throw new Error("sectionId is required");
-  if (input.records.length === 0)
-    throw new Error("attendance records cannot be empty");
+  records: { studentId: string; studentSessionId: string; attendanceTypeId: string; inTime?: string; outTime?: string; remark?: string }[];
+}): Promise<void> {
+  if (!input.classSectionId) throw new Error("classSectionId is required");
+  if (input.records.length === 0) throw new Error("attendance records cannot be empty");
 
   const now = new Date();
   now.setHours(23, 59, 59, 999);
-  if (input.date > now) {
-    throw new Error("cannot mark attendance for a future date");
-  }
+  if (input.date > now) throw new Error("Cannot mark attendance for a future date");
 
-  const attendanceDay = await prisma.attendanceDay.upsert({
-    where: {
-      date_sectionId: {
-        date: input.date,
-        sectionId: input.sectionId,
-      },
-    },
-    create: {
-      date: input.date,
-      sectionId: input.sectionId,
-      sessionId: input.sessionId,
-    },
+  const attendanceDay = await (prisma as any).attendanceDay.upsert({
+    where: { date_classSectionId: { date: input.date, classSectionId: input.classSectionId } },
+    create: { date: input.date, classSectionId: input.classSectionId, sessionId: input.sessionId },
     update: {},
   });
 
   await Promise.all(
-    input.records.map((record) =>
-      prisma.studentAttendance.upsert({
-        where: {
-          attendanceDayId_studentId: {
-            attendanceDayId: attendanceDay.id,
-            studentId: record.studentId,
-          },
-        },
+    input.records.map((r) =>
+      (prisma as any).studentAttendance.upsert({
+        where: { studentSessionId_attendanceDayId: { studentSessionId: r.studentSessionId, attendanceDayId: attendanceDay.id } },
         create: {
+          studentId: r.studentId,
+          studentSessionId: r.studentSessionId,
           attendanceDayId: attendanceDay.id,
-          studentId: record.studentId,
-          status: record.status,
-          note: record.note,
+          attendanceTypeId: r.attendanceTypeId,
+          inTime: r.inTime,
+          outTime: r.outTime,
+          remark: r.remark,
         },
         update: {
-          status: record.status,
-          note: record.note,
+          attendanceTypeId: r.attendanceTypeId,
+          inTime: r.inTime,
+          outTime: r.outTime,
+          remark: r.remark,
         },
       })
     )
   );
 }
 
-export async function getStudentAttendanceSummary(
-  studentId: string,
-  sessionId: string
-) {
-  const rows = await prisma.studentAttendance.findMany({
-    where: {
-      studentId,
-      attendanceDay: { sessionId },
-    },
-    include: { attendanceDay: true },
+export async function getStudentAttendanceSummary(studentId: string, sessionId: string) {
+  const rows = await (prisma as any).studentAttendance.findMany({
+    where: { studentId, attendanceDay: { sessionId } },
+    include: { attendanceDay: true, attendanceType: true },
   });
 
-  const records: AttendanceRecord[] = rows.map((r) => ({
-    date: r.attendanceDay.date,
-    status: r.status as AttendanceStatusValue,
-  }));
+  const total = rows.length;
+  const present = rows.filter((r: any) => r.attendanceType?.keyValue === "P").length;
+  const late = rows.filter((r: any) => r.attendanceType?.keyValue === "L").length;
+  const absent = rows.filter((r: any) => r.attendanceType?.keyValue === "A").length;
+  const halfDay = rows.filter((r: any) => r.attendanceType?.keyValue === "F").length;
+  const holiday = rows.filter((r: any) => r.attendanceType?.keyValue === "H").length;
 
-  return getAttendanceSummary(records);
+  const schoolDays = total - holiday;
+  const effectivePresent = present + late + halfDay * 0.5;
+  const percentage = schoolDays > 0 ? Math.round((effectivePresent / schoolDays) * 100) : 0;
+
+  return { total, present, late, absent, halfDay, holiday, schoolDays, percentage };
 }
