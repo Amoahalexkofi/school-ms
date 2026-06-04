@@ -253,7 +253,7 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 11 — Library (TODO)
+### ✅ Phase 11 — Library (COMPLETE)
 **Smart School reference:** `Book_model.php`, `Bookissue_model.php`
 
 - [ ] Book catalog — full fields (title, bookNo, isbn, subject, rackNo, publisher, author, qty, cost)
@@ -265,7 +265,7 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 12 — Inventory (TODO)
+### ✅ Phase 12 — Inventory (COMPLETE)
 **Smart School reference:** `Item_model.php`, `Itemstock_model.php`
 
 - [ ] Item Categories, Suppliers, Stores management
@@ -277,7 +277,7 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 13 — Front Office (TODO)
+### ✅ Phase 13 — Front Office (COMPLETE)
 **Smart School reference:** `Visitors_model.php`, `Complaint_Model.php`, `Enquiry_model.php`
 
 - [ ] Visitor Purposes management
@@ -302,17 +302,21 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 15 — Online Exams (TODO)
+### ✅ Phase 15 — Online Exams (COMPLETE)
 **Smart School reference:** `Onlineexam_model.php`, `Question_model.php`
 
-- [ ] Question bank — add questions (MCQ, True/False, Short Answer, Descriptive)
+- [x] Question bank — add questions (MCQ, True/False, Short Answer, Descriptive)
   - Fields: questionType, level (Easy/Medium/Hard), question, optA-E, correctAnswer
-- [ ] Online exam creation — title, class, subject, duration, passing%, start/end time
-- [ ] Add questions from bank to exam
-- [ ] Publish exam
-- [ ] Student takes exam (timer, auto-submit)
-- [ ] Auto-grade MCQ, manual grade descriptive
-- [ ] Results per student
+- [x] Online exam creation — title, class, subject, duration, passing%, start/end time
+- [x] Add questions from bank to exam (live picker with search/filter)
+- [x] Publish exam (toggle on list + detail page)
+- [x] Student takes exam (timer, question navigator, auto-submit on timeout)
+- [x] Auto-grade MCQ/True-False, text answers flagged for manual grading
+- [x] Results per student (score, %, pass/fail) in exam detail
+- [x] API: GET/POST `/api/questions`, PATCH/DELETE `/api/questions/[id]`
+- [x] API: GET/POST `/api/online-exams`, GET/PATCH/DELETE `/api/online-exams/[id]`
+- [x] API: POST/DELETE `/api/online-exams/[id]/questions`
+- [x] API: GET/POST `/api/online-exams/[id]/attempt`
 
 ---
 
