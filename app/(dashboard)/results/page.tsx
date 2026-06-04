@@ -13,7 +13,7 @@ async function getResults(userId: string) {
   const markEntries = await (prisma as any).markEntry.findMany({
     where: {
       studentId: student.id,
-      examSchedule: { examGroup: { published: true } },
+      examSchedule: { examGroup: { isPublished: true } },
     },
     include: {
       subject: { select: { name: true, code: true } },

@@ -177,7 +177,7 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 6 — Exams & Marks (TODO)
+### ✅ Phase 6 — Exams & Marks (COMPLETE)
 **Smart School reference:** `Examgroup_model.php`, `Examschedule_model.php`, `Mark_model.php`
 
 - [ ] Exam Groups page — CRUD (Term 1, Midterm, Finals, etc.)
