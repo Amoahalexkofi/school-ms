@@ -1,5 +1,17 @@
 import { NextResponse } from "next/server";
 import { generateInvoice } from "@/lib/services/fee-invoices";
+import { prisma } from "@/lib/prisma";
+
+export async function GET() {
+  const invoices = await (prisma as any).feeInvoice.findMany({
+    include: {
+      student: { select: { firstName: true, lastName: true, admissionNumber: true } },
+      feeGroup: { select: { name: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  return NextResponse.json(invoices);
+}
 
 export async function POST(request: Request) {
   let body: Record<string, unknown>;

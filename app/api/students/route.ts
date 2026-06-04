@@ -1,5 +1,14 @@
 import { NextResponse } from "next/server";
 import { createStudent } from "@/lib/services/students";
+import { prisma } from "@/lib/prisma";
+
+export async function GET() {
+  const students = await (prisma as any).student.findMany({
+    include: { user: { select: { email: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+  return NextResponse.json(students);
+}
 
 const REQUIRED_FIELDS = ["firstName", "lastName", "email", "dateOfBirth", "gender", "sessionYear"] as const;
 
