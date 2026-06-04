@@ -221,6 +221,8 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // Online exams APIs
   { prefix: "/api/questions", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   { prefix: "/api/online-exams", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT"] },
+  // Reports APIs
+  { prefix: "/api/reports", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT"] },
   // Fees sub-routes
   { prefix: "/api/fees/types",  roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { prefix: "/api/fees/groups", roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },

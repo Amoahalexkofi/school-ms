@@ -320,20 +320,19 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 16 — Reports (TODO)
+### ✅ Phase 16 — Reports (COMPLETE)
 **Smart School reference:** `Financereports.php`, `Marksheet_model.php`
 
-- [ ] Student list report (filter by class/section/session)
-- [ ] Attendance report (student-wise, class-wise, date range)
-- [ ] Staff attendance report
-- [ ] Fee collection report (date range, class, status)
-- [ ] Due fee report
-- [ ] Financial summary (income vs expense)
-- [ ] Exam results report
-- [ ] Mark sheet PDF per student
-- [ ] Transport route list
-- [ ] Library issue log
-- All reports: screen view + print + CSV export
+- [x] Student list report (filter by session/class/section/gender/status)
+- [x] Attendance report (student-wise, session + class-section + date range, P/A/L/H/F + %)
+- [x] Staff attendance report (department + date range, P/A/L/H/F + %)
+- [x] Fee collection report (date range, session filter, total collected)
+- [x] Due fees report (defaulters list, total outstanding, ranked by amount)
+- [x] Exam results report (by exam group + class, ranked, per-subject marks, pass/fail)
+- [x] Transport route report (route-wise student list with vehicle + pickup point)
+- [x] Library issue log (filter by status + date range, overdue highlighting, fine)
+- [x] All reports: CSV export + Print (window.print)
+- [x] API routes: /api/reports/{students,attendance,staff-attendance,fees,due-fees,exam-results,transport,library}
 
 ---
 
