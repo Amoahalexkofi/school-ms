@@ -28,10 +28,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  student       Student?
-  staff         Staff?
-  parent        Parent?
-  notifications Notification[]
+  student          Student?
+  staff            Staff?
+  parent           Parent?
+  notifications    Notification[]
+  chatParticipants ChatParticipant[]
+  chatMessages     ChatMessage[]
 }
 
 // ─── Academic Structure ───────────────────────────────────────────────────────
@@ -104,6 +106,9 @@ model Staff {
   department   String?
   designation  String?
   joinDate     DateTime
+  basicSalary  Decimal? @db.Decimal(12, 2)
+  allowances   Decimal? @db.Decimal(12, 2) @default(0)
+  deductions   Decimal? @db.Decimal(12, 2) @default(0)
 
   classSections      Section[]
   subjectAssignments TeacherSubject[]
@@ -898,4 +903,53 @@ model MessageLog {
   sentById       String?
   sentBy         Staff?         @relation(fields: [sentById], references: [id])
   createdAt      DateTime       @default(now())
+}
+
+// ─── Internal Chat ────────────────────────────────────────────────────────────
+
+enum ChatRoomType {
+  DIRECT
+  GROUP
+}
+
+model ChatRoom {
+  id           String            @id @default(cuid())
+  name         String?
+  type         ChatRoomType      @default(DIRECT)
+  createdAt    DateTime          @default(now())
+  participants ChatParticipant[]
+  messages     ChatMessage[]
+}
+
+model ChatParticipant {
+  id       String   @id @default(cuid())
+  roomId   String
+  room     ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+  joinedAt DateTime @default(now())
+
+  @@unique([roomId, userId])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+}
+
+// ─── School Profile ───────────────────────────────────────────────────────────
+
+model SchoolProfile {
+  id      String  @id @default(cuid())
+  name    String
+  address String?
+  phone   String?
+  email   String?
+  motto   String?
+  website String?
 }

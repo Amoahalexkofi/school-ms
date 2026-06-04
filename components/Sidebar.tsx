@@ -31,6 +31,7 @@ import {
   ScrollText,
   Megaphone,
   Send,
+  MessageCircle,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -58,6 +59,7 @@ const navItems = [
   { href: "/lesson-plans", label: "Lesson Plans", icon: ScrollText },
   { href: "/notice-board", label: "Notice Board", icon: Megaphone },
   { href: "/messaging", label: "Messaging", icon: Send },
+  { href: "/chat", label: "Chat", icon: MessageCircle },
   { href: "/settings", label: "Settings", icon: Settings },
   { href: "/reports", label: "Reports", icon: BarChart2 },
   { href: "/notifications", label: "Notifications", icon: Bell },

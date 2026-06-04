@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
+import { getSchoolProfile } from "@/lib/services/school-profile";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarDays, GraduationCap, BookOpen, Layers } from "lucide-react";
+import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users } from "lucide-react";
 
 async function getSettingsData() {
-  const [sessions, classes, subjects] = await Promise.all([
+  const [sessions, classes, subjects, profile, staff] = await Promise.all([
     (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
     (prisma as any).class.findMany({
       include: { session: true, sections: true, _count: { select: { subjects: true } } },
@@ -14,12 +15,14 @@ async function getSettingsData() {
       include: { class: { include: { session: true } } },
       orderBy: { name: "asc" },
     }),
+    getSchoolProfile(),
+    (prisma as any).staff.findMany({ orderBy: { firstName: "asc" } }),
   ]);
-  return { sessions, classes, subjects };
+  return { sessions, classes, subjects, profile, staff };
 }
 
 export default async function SettingsPage() {
-  const { sessions, classes, subjects } = await getSettingsData();
+  const { sessions, classes, subjects, profile, staff } = await getSettingsData();
 
   const activeSession = sessions.find((s: any) => s.isActive);
 
@@ -141,6 +144,75 @@ export default async function SettingsPage() {
                         <td className="px-3 py-2.5 text-gray-400 text-xs">{sub.class.session.name}</td>
                       </tr>
                     ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        {/* School Profile */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <School className="h-4 w-4 text-orange-600" /> School Profile
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!profile ? (
+              <p className="text-sm text-gray-500 text-center py-6">No school profile configured yet. Use the API to set it up.</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div><p className="text-xs text-gray-500">Name</p><p className="font-medium">{(profile as any).name}</p></div>
+                {(profile as any).address && <div><p className="text-xs text-gray-500">Address</p><p>{(profile as any).address}</p></div>}
+                {(profile as any).phone && <div><p className="text-xs text-gray-500">Phone</p><p>{(profile as any).phone}</p></div>}
+                {(profile as any).email && <div><p className="text-xs text-gray-500">Email</p><p>{(profile as any).email}</p></div>}
+                {(profile as any).motto && <div className="col-span-2"><p className="text-xs text-gray-500">Motto</p><p className="italic">{(profile as any).motto}</p></div>}
+                {(profile as any).website && <div><p className="text-xs text-gray-500">Website</p><p>{(profile as any).website}</p></div>}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Staff Salary Structure */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Users className="h-4 w-4 text-purple-600" /> Staff Salary Structure
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {staff.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-6">No staff added yet.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Staff</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Designation</th>
+                      <th className="text-right px-3 py-2 font-medium text-gray-600">Basic</th>
+                      <th className="text-right px-3 py-2 font-medium text-gray-600">Allowances</th>
+                      <th className="text-right px-3 py-2 font-medium text-gray-600">Deductions</th>
+                      <th className="text-right px-3 py-2 font-medium text-gray-600">Net</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {staff.map((s: any) => {
+                      const basic = Number(s.basicSalary ?? 0);
+                      const allow = Number(s.allowances ?? 0);
+                      const deduct = Number(s.deductions ?? 0);
+                      const net = basic + allow - deduct;
+                      return (
+                        <tr key={s.id} className="hover:bg-gray-50">
+                          <td className="px-3 py-2.5 font-medium">{s.firstName} {s.lastName}</td>
+                          <td className="px-3 py-2.5 text-gray-500">{s.designation ?? "—"}</td>
+                          <td className="px-3 py-2.5 text-right">{basic > 0 ? `₵${basic.toLocaleString()}` : "—"}</td>
+                          <td className="px-3 py-2.5 text-right text-green-600">{allow > 0 ? `+₵${allow.toLocaleString()}` : "—"}</td>
+                          <td className="px-3 py-2.5 text-right text-red-600">{deduct > 0 ? `-₵${deduct.toLocaleString()}` : "—"}</td>
+                          <td className="px-3 py-2.5 text-right font-semibold">{net > 0 ? `₵${net.toLocaleString()}` : "—"}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
