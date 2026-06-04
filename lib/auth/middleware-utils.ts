@@ -87,6 +87,70 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/dashboard",
     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT"],
   },
+  // Exam & academic
+  {
+    prefix: "/exam-groups",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
+  },
+  {
+    prefix: "/online-exams",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT"],
+  },
+  // Finance
+  {
+    prefix: "/finance",
+    roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],
+  },
+  // Library
+  {
+    prefix: "/library",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "LIBRARIAN", "STUDENT"],
+  },
+  // Transport
+  {
+    prefix: "/transport",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
+  // Hostel
+  {
+    prefix: "/hostel",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
+  // Inventory
+  {
+    prefix: "/inventory",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
+  // Front office
+  {
+    prefix: "/front-office",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
+  // Admissions
+  {
+    prefix: "/admissions",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
+  // Reports
+  {
+    prefix: "/reports",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT"],
+  },
+  // Notifications
+  {
+    prefix: "/notifications",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT"],
+  },
+  // Audit log
+  {
+    prefix: "/audit-log",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
+  // API routes for new modules
+  {
+    prefix: "/api/admissions",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
 ];
 
 export function canAccessRoute(pathname: string, role: UserRole): boolean {

@@ -19,7 +19,7 @@ import {
   FileText,
   BarChart2,
   Banknote,
-  BookOpen,
+  Library,
   Bus,
   Building,
   Package,
@@ -43,7 +43,7 @@ const navItems = [
   { href: "/timetable", label: "Timetable", icon: Calendar },
   { href: "/homework", label: "Homework", icon: FileText },
   { href: "/finance", label: "Finance", icon: Banknote },
-  { href: "/library", label: "Library", icon: BookOpen },
+  { href: "/library", label: "Library", icon: Library },
   { href: "/transport", label: "Transport", icon: Bus },
   { href: "/hostel", label: "Hostel", icon: Building },
   { href: "/inventory", label: "Inventory", icon: Package },
@@ -98,12 +98,12 @@ export function Sidebar() {
       {/* Mobile drawer */}
       {open && (
         <div className="lg:hidden fixed inset-0 z-40 bg-black/40" onClick={() => setOpen(false)}>
-          <div className="w-64 h-full bg-white" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2 px-5 py-4 border-b">
+          <div className="w-64 h-full bg-white flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-2 px-5 py-4 border-b shrink-0">
               <GraduationCap className="h-6 w-6 text-blue-600" />
               <span className="font-bold text-gray-900">School MS</span>
             </div>
-            {nav}
+            <div className="flex-1 overflow-y-auto">{nav}</div>
           </div>
         </div>
       )}
