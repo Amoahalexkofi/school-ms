@@ -1,0 +1,23 @@
+import { NextRequest, NextResponse } from "next/server";
+import { sendBulkMessage, listMessageLogs } from "@/lib/services/messaging";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+
+export async function GET() {
+  return NextResponse.json(await listMessageLogs());
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const session = await auth();
+    const body = await req.json();
+    const staff = session?.user?.id
+      ? await (prisma as any).staff.findUnique({ where: { userId: session.user.id } })
+      : null;
+    const log = await sendBulkMessage({ ...body, sentById: staff?.id });
+    return NextResponse.json(log, { status: 201 });
+  } catch (err: any) {
+    if (err.code === "VALIDATION") return NextResponse.json({ error: err.message }, { status: 422 });
+    return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
+  }
+}

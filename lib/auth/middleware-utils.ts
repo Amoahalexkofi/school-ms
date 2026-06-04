@@ -185,6 +185,23 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/api/school-profile",
     roles: ["SUPER_ADMIN", "ADMIN"],
   },
+  // Settings APIs
+  { prefix: "/api/sessions",  roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/classes",   roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/sections",  roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/subjects",  roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
+  // Finance APIs
+  { prefix: "/api/finance",   roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  // Library APIs
+  { prefix: "/api/library",   roles: ["SUPER_ADMIN", "ADMIN", "LIBRARIAN", "TEACHER"] },
+  // Inventory APIs
+  { prefix: "/api/inventory", roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Front office APIs
+  { prefix: "/api/front-office", roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Notices API
+  { prefix: "/api/notices",   roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
+  // Messaging API
+  { prefix: "/api/messaging", roles: ["SUPER_ADMIN", "ADMIN"] },
 ];
 
 export function canAccessRoute(pathname: string, role: UserRole): boolean {
