@@ -151,6 +151,26 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/api/admissions",
     roles: ["SUPER_ADMIN", "ADMIN"],
   },
+  // Settings
+  {
+    prefix: "/settings",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
+  // Lesson plans
+  {
+    prefix: "/lesson-plans",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
+  },
+  // Notice board
+  {
+    prefix: "/notice-board",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT"],
+  },
+  // Messaging
+  {
+    prefix: "/messaging",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
 ];
 
 export function canAccessRoute(pathname: string, role: UserRole): boolean {

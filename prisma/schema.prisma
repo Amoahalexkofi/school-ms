@@ -74,6 +74,7 @@ model Section {
   timetable      TimetableSlot[]
   attendanceDays AttendanceDay[]
   homework       Homework[]
+  lessonPlans    LessonPlan[]
 }
 
 model Subject {
@@ -88,6 +89,7 @@ model Subject {
   markEntries        MarkEntry[]
   homework           Homework[]
   timetableSlots     TimetableSlot[]
+  lessonPlans        LessonPlan[]
 }
 
 // ─── Staff ───────────────────────────────────────────────────────────────────
@@ -110,6 +112,9 @@ model Staff {
   timetableSlots     TimetableSlot[]
   payrollEntries     PayrollEntry[]
   bookIssues         BookIssue[]
+  lessonPlans        LessonPlan[]
+  notices            Notice[]
+  messageLogs        MessageLog[]
 }
 
 model TeacherSubject {
@@ -828,4 +833,69 @@ model AuditLog {
   entityId  String?
   metadata  Json?
   createdAt DateTime @default(now())
+}
+
+// ─── Lesson Plans ─────────────────────────────────────────────────────────────
+
+enum LessonPlanStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+}
+
+model LessonPlan {
+  id          String           @id @default(cuid())
+  staffId     String
+  staff       Staff            @relation(fields: [staffId], references: [id])
+  subjectId   String
+  subject     Subject          @relation(fields: [subjectId], references: [id])
+  sectionId   String
+  section     Section          @relation(fields: [sectionId], references: [id])
+  date        DateTime         @db.Date
+  topic       String
+  description String?
+  status      LessonPlanStatus @default(DRAFT)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+// ─── Notice Board ─────────────────────────────────────────────────────────────
+
+enum NoticeAudience {
+  ALL
+  STAFF
+  STUDENTS
+  PARENTS
+}
+
+model Notice {
+  id          String         @id @default(cuid())
+  title       String
+  content     String
+  audience    NoticeAudience @default(ALL)
+  isPublished Boolean        @default(true)
+  postedById  String
+  postedBy    Staff          @relation(fields: [postedById], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+// ─── Bulk Messaging ───────────────────────────────────────────────────────────
+
+enum MessageChannel {
+  SMS
+  EMAIL
+  IN_APP
+}
+
+model MessageLog {
+  id             String         @id @default(cuid())
+  subject        String
+  message        String
+  channel        MessageChannel
+  recipientType  String
+  recipientCount Int            @default(0)
+  sentById       String?
+  sentBy         Staff?         @relation(fields: [sentById], references: [id])
+  createdAt      DateTime       @default(now())
 }

@@ -1,0 +1,48 @@
+import { prisma } from "@/lib/prisma";
+
+export async function listSessions() {
+  return (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } });
+}
+
+export async function createSession(input: { name: string; startDate: Date; endDate: Date }) {
+  if (!input.name.trim()) throw Object.assign(new Error("Name is required"), { code: "VALIDATION" });
+  if (input.endDate <= input.startDate) throw Object.assign(new Error("End date must be after start date"), { code: "VALIDATION" });
+  return (prisma as any).academicSession.create({ data: { name: input.name.trim(), startDate: input.startDate, endDate: input.endDate } });
+}
+
+export async function setActiveSession(sessionId: string) {
+  await (prisma as any).academicSession.updateMany({ data: { isActive: false } });
+  return (prisma as any).academicSession.update({ where: { id: sessionId }, data: { isActive: true } });
+}
+
+export async function listClasses(sessionId?: string) {
+  return (prisma as any).class.findMany({
+    where: sessionId ? { sessionId } : {},
+    include: { session: true, sections: true, subjects: true },
+    orderBy: { name: "asc" },
+  });
+}
+
+export async function createClass(input: { name: string; sessionId: string }) {
+  if (!input.name.trim()) throw Object.assign(new Error("Class name is required"), { code: "VALIDATION" });
+  return (prisma as any).class.create({ data: { name: input.name.trim(), sessionId: input.sessionId } });
+}
+
+export async function createSection(input: { name: string; classId: string }) {
+  if (!input.name.trim()) throw Object.assign(new Error("Section name is required"), { code: "VALIDATION" });
+  return (prisma as any).section.create({ data: { name: input.name.trim(), classId: input.classId } });
+}
+
+export async function listSubjects(classId?: string) {
+  return (prisma as any).subject.findMany({
+    where: classId ? { classId } : {},
+    include: { class: true },
+    orderBy: { name: "asc" },
+  });
+}
+
+export async function createSubject(input: { name: string; code: string; classId: string }) {
+  if (!input.name.trim()) throw Object.assign(new Error("Subject name is required"), { code: "VALIDATION" });
+  if (!input.code.trim()) throw Object.assign(new Error("Subject code is required"), { code: "VALIDATION" });
+  return (prisma as any).subject.create({ data: { name: input.name.trim(), code: input.code.trim().toUpperCase(), classId: input.classId } });
+}

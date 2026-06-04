@@ -27,6 +27,10 @@ import {
   Monitor,
   UserPlus,
   ShieldCheck,
+  Settings,
+  ScrollText,
+  Megaphone,
+  Send,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -51,6 +55,10 @@ const navItems = [
   { href: "/online-exams", label: "Online Exams", icon: Monitor },
   { href: "/admissions", label: "Admissions", icon: UserPlus },
   { href: "/audit-log", label: "Audit Log", icon: ShieldCheck },
+  { href: "/lesson-plans", label: "Lesson Plans", icon: ScrollText },
+  { href: "/notice-board", label: "Notice Board", icon: Megaphone },
+  { href: "/messaging", label: "Messaging", icon: Send },
+  { href: "/settings", label: "Settings", icon: Settings },
   { href: "/reports", label: "Reports", icon: BarChart2 },
   { href: "/notifications", label: "Notifications", icon: Bell },
 ];
