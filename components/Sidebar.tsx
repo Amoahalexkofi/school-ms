@@ -22,6 +22,8 @@ import {
   BookOpen,
   Bus,
   Building,
+  Package,
+  ConciergeBell,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -41,6 +43,8 @@ const navItems = [
   { href: "/library", label: "Library", icon: BookOpen },
   { href: "/transport", label: "Transport", icon: Bus },
   { href: "/hostel", label: "Hostel", icon: Building },
+  { href: "/inventory", label: "Inventory", icon: Package },
+  { href: "/front-office", label: "Front Office", icon: ConciergeBell },
   { href: "/reports", label: "Reports", icon: BarChart2 },
   { href: "/notifications", label: "Notifications", icon: Bell },
 ];
