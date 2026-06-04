@@ -1,21 +1,11 @@
-import { redirect } from "next/navigation";
-import { auth, signIn } from "@/lib/auth";
-import { SignInForm } from "@/components/SignInForm";
+import { SignInPage } from "@/components/SignInPage";
 
-export default async function SignInPage() {
-  const session = await auth();
-  if (session) redirect("/dashboard");
-
-  async function handleSignIn(payload: { email: string; password: string }) {
-    "use server";
-    await signIn("credentials", { ...payload, redirectTo: "/dashboard" });
-  }
-
+export default function SignInRoute() {
   return (
     <main>
       <h1>School Management System</h1>
       <h2>Sign In</h2>
-      <SignInForm onSubmit={handleSignIn} />
+      <SignInPage />
     </main>
   );
 }
