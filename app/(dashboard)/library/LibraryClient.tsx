@@ -2,182 +2,189 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BookOpen, AlertCircle, Plus } from "lucide-react";
+import { Plus, RotateCcw } from "lucide-react";
 
-async function post(url: string, body: object) {
-  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  if (!res.ok) { const d = await res.json(); throw new Error(d.error ?? "Failed"); }
-  return res.json();
-}
+type Props = { books: any[]; issues: any[]; students: any[]; staff: any[] };
+type Tab = "catalog" | "issues";
 
-export function LibraryClient({ books, issues, students, staff }: any) {
+const STATUS_STYLE: Record<string, string> = {
+  ISSUED: "bg-blue-100 text-blue-700", RETURNED: "bg-green-100 text-green-700", OVERDUE: "bg-red-100 text-red-700",
+};
+
+export function LibraryClient({ books, issues, students, staff }: Props) {
   const router = useRouter();
-  const [open, setOpen] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [selectedBookId, setSelectedBookId] = useState("");
-  const [bookForm, setBookForm] = useState({ title: "", author: "", isbn: "", category: "", quantity: "1" });
-  const [issueForm, setIssueForm] = useState({ bookId: "", dueDate: "", studentId: "", staffId: "" });
+  const [tab, setTab] = useState<Tab>("catalog");
+  const [search, setSearch] = useState("");
+  const [bookOpen, setBookOpen] = useState(false);
+  const [bookForm, setBookForm] = useState({ title: "", author: "", bookNo: "", isbn: "", subject: "", rackNo: "", publisher: "", quantity: "1", perUnitCost: "" });
+  const [bookErr, setBookErr] = useState(""); const [bookLoad, setBookLoad] = useState(false);
+  const [issueOpen, setIssueOpen] = useState(false);
+  const [issueForm, setIssueForm] = useState({ bookId: "", studentId: "", staffId: "", issueTo: "student", dueDate: "" });
+  const [issueErr, setIssueErr] = useState(""); const [issueLoad, setIssueLoad] = useState(false);
+  const [returning, setReturning] = useState<string | null>(null);
 
-  const totalBooks = books.reduce((s: number, b: any) => s + b.quantity, 0);
-  const totalAvailable = books.reduce((s: number, b: any) => s + b.available, 0);
-  const overdueCount = issues.filter((i: any) => new Date(i.dueDate) < new Date()).length;
-
-  async function submit(url: string, body: object) {
-    setLoading(true); setError("");
-    try { await post(url, body); setOpen(null); router.refresh(); }
-    catch (e: any) { setError(e.message); }
-    finally { setLoading(false); }
+  async function post(url: string, body: object) {
+    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const d = await res.json(); if (!res.ok) throw new Error(d.error); return d;
   }
 
-  async function returnBook(issueId: string) {
-    setLoading(true);
-    try { await post(`/api/library/issues/${issueId}/return`, {}); router.refresh(); }
-    catch (e: any) { alert((e as Error).message); }
-    finally { setLoading(false); }
+  async function saveBook() {
+    if (!bookForm.title.trim() || !bookForm.author.trim()) { setBookErr("Title and author required"); return; }
+    setBookLoad(true); setBookErr("");
+    try { await post("/api/library/books", bookForm); setBookOpen(false); router.refresh(); }
+    catch (e: any) { setBookErr(e.message); } finally { setBookLoad(false); }
   }
+
+  async function issueBook() {
+    const studentId = issueForm.issueTo === "student" ? issueForm.studentId : undefined;
+    const staffId   = issueForm.issueTo === "staff"   ? issueForm.staffId   : undefined;
+    if (!issueForm.bookId || !issueForm.dueDate || (!studentId && !staffId)) { setIssueErr("All fields required"); return; }
+    setIssueLoad(true); setIssueErr("");
+    try { await post("/api/library/issues", { bookId: issueForm.bookId, studentId, staffId, dueDate: issueForm.dueDate }); setIssueOpen(false); router.refresh(); }
+    catch (e: any) { setIssueErr(e.message); } finally { setIssueLoad(false); }
+  }
+
+  async function returnBook(id: string) {
+    setReturning(id);
+    const res = await fetch(`/api/library/issues/${id}`, { method: "PATCH" });
+    if (!res.ok) alert((await res.json()).error); else router.refresh();
+    setReturning(null);
+  }
+
+  const filtered = books.filter(b => !search || [b.title, b.author, b.bookNo].some(v => v?.toLowerCase().includes(search.toLowerCase())));
+  const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <main className="flex-1 p-6 space-y-8">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Total Titles</p><p className="text-3xl font-bold">{books.length}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Total Copies</p><p className="text-3xl font-bold">{totalBooks}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Available</p><p className="text-3xl font-bold text-green-600">{totalAvailable}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Overdue</p><p className={`text-3xl font-bold ${overdueCount > 0 ? "text-red-600" : "text-gray-800"}`}>{overdueCount}</p></CardContent></Card>
+    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+      <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
+        {[{ key: "catalog" as Tab, label: "Book Catalog" }, { key: "issues" as Tab, label: `Issue Log (${issues.filter(i => i.status === "ISSUED").length} active)` }].map(t => (
+          <button key={t.key} onClick={() => setTab(t.key)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base flex items-center gap-2"><BookOpen className="h-4 w-4 text-blue-600" /> Book Catalog</CardTitle>
-          <Button size="sm" onClick={() => { setError(""); setOpen("book"); }}><Plus className="h-4 w-4 mr-1" /> Add Book</Button>
-        </CardHeader>
-        <CardContent>
-          {books.length === 0 ? <p className="text-sm text-gray-500 text-center py-8">No books yet.</p> : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50"><tr>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Title</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Author</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Category</th>
-                  <th className="text-right px-3 py-2 font-medium text-gray-600">Qty</th>
-                  <th className="text-right px-3 py-2 font-medium text-gray-600">Available</th>
-                  <th className="px-3 py-2"></th>
-                </tr></thead>
-                <tbody className="divide-y">
-                  {books.map((b: any) => (
-                    <tr key={b.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-2.5 font-medium">{b.title}</td>
-                      <td className="px-3 py-2.5 text-gray-600">{b.author}</td>
-                      <td className="px-3 py-2.5 text-gray-500">{b.category ?? "—"}</td>
-                      <td className="px-3 py-2.5 text-right">{b.quantity}</td>
-                      <td className="px-3 py-2.5 text-right"><span className={`font-semibold ${b.available === 0 ? "text-red-600" : "text-green-600"}`}>{b.available}</span></td>
-                      <td className="px-3 py-2.5">
-                        {b.available > 0 && (
-                          <Button size="sm" variant="outline" onClick={() => { setError(""); setIssueForm(f => ({ ...f, bookId: b.id })); setOpen("issue"); }}>Issue</Button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2"><AlertCircle className="h-4 w-4 text-orange-500" /> Active Issues</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {issues.length === 0 ? <p className="text-sm text-gray-500 text-center py-6">No active issues.</p> : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50"><tr>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Book</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Issued To</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Due</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
-                  <th className="px-3 py-2"></th>
-                </tr></thead>
-                <tbody className="divide-y">
-                  {issues.map((i: any) => {
-                    const isOverdue = new Date(i.dueDate) < new Date();
-                    const name = i.student ? `${i.student.firstName} ${i.student.lastName}` : i.staff ? `${i.staff.firstName} ${i.staff.lastName}` : "—";
-                    return (
-                      <tr key={i.id} className={`hover:bg-gray-50 ${isOverdue ? "bg-red-50" : ""}`}>
-                        <td className="px-3 py-2.5 font-medium">{i.book.title}</td>
-                        <td className="px-3 py-2.5">{name}</td>
-                        <td className={`px-3 py-2.5 text-xs ${isOverdue ? "text-red-600 font-semibold" : "text-gray-500"}`}>{new Date(i.dueDate).toLocaleDateString()}</td>
-                        <td className="px-3 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isOverdue ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}>{isOverdue ? "OVERDUE" : "ISSUED"}</span></td>
-                        <td className="px-3 py-2.5"><Button size="sm" variant="outline" disabled={loading} onClick={() => returnBook(i.id)}>Return</Button></td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Add Book Dialog */}
-      <Dialog open={open === "book"} onOpenChange={o => !o && setOpen(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Add Book</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div><Label>Title *</Label><Input className="mt-1" value={bookForm.title} onChange={e => setBookForm(f => ({ ...f, title: e.target.value }))} /></div>
-            <div><Label>Author *</Label><Input className="mt-1" value={bookForm.author} onChange={e => setBookForm(f => ({ ...f, author: e.target.value }))} /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>ISBN</Label><Input className="mt-1" value={bookForm.isbn} onChange={e => setBookForm(f => ({ ...f, isbn: e.target.value }))} /></div>
-              <div><Label>Category</Label><Input className="mt-1" value={bookForm.category} onChange={e => setBookForm(f => ({ ...f, category: e.target.value }))} /></div>
-            </div>
-            <div><Label>Quantity</Label><Input className="mt-1" type="number" min="1" value={bookForm.quantity} onChange={e => setBookForm(f => ({ ...f, quantity: e.target.value }))} /></div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Button className="w-full" disabled={loading} onClick={() => submit("/api/library/books", { ...bookForm, quantity: Number(bookForm.quantity) })}>
-              {loading ? "Adding…" : "Add Book"}
+      {tab === "catalog" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <Input className="w-64" placeholder="Search books…" value={search} onChange={e => setSearch(e.target.value)} />
+            <Button onClick={() => { setBookForm({ title: "", author: "", bookNo: "", isbn: "", subject: "", rackNo: "", publisher: "", quantity: "1", perUnitCost: "" }); setBookErr(""); setBookOpen(true); }}>
+              <Plus className="h-4 w-4 mr-1.5" />Add Book
             </Button>
           </div>
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Title","Author","Book No.","Subject","Rack","Total","Available",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+              </thead>
+              <tbody className="divide-y">
+                {filtered.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-400">No books found.</td></tr>
+                : filtered.map((b: any) => (
+                  <tr key={b.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium max-w-[180px] truncate">{b.title}</td>
+                    <td className="px-4 py-3 text-gray-600">{b.author}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{b.bookNo ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500">{b.subject ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500">{b.rackNo ?? "—"}</td>
+                    <td className="px-4 py-3 text-center">{b.quantity}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${b.available > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{b.available}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Button size="sm" variant="outline" disabled={b.available === 0}
+                        onClick={() => { setIssueForm({ bookId: b.id, studentId: "", staffId: "", issueTo: "student", dueDate: "" }); setIssueErr(""); setIssueOpen(true); }}>
+                        Issue
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {tab === "issues" && (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b">
+              <tr>{["Book","Issued To","Issued","Due","Status","Fine",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+            </thead>
+            <tbody className="divide-y">
+              {issues.length === 0 ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-400">No issues yet.</td></tr>
+              : issues.map((i: any) => {
+                const overdue = i.status === "ISSUED" && new Date(i.dueDate) < new Date();
+                return (
+                  <tr key={i.id} className={`hover:bg-gray-50 ${overdue ? "bg-red-50/30" : ""}`}>
+                    <td className="px-4 py-3"><div className="font-medium truncate max-w-[160px]">{i.book.title}</div><div className="text-xs text-gray-400">{i.book.bookNo}</div></td>
+                    <td className="px-4 py-3 text-gray-700">{i.student ? `${i.student.firstName} ${i.student.lastName}` : i.staff ? `${i.staff.firstName} ${i.staff.lastName}` : "—"}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500">{new Date(i.issuedAt).toLocaleDateString()}</td>
+                    <td className={`px-4 py-3 text-xs ${overdue ? "text-red-600 font-medium" : "text-gray-500"}`}>{new Date(i.dueDate).toLocaleDateString()}</td>
+                    <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${overdue ? "bg-red-100 text-red-700" : STATUS_STYLE[i.status]}`}>{overdue ? "OVERDUE" : i.status}</span></td>
+                    <td className="px-4 py-3 text-gray-600">{i.fine ? `₵${Number(i.fine).toFixed(2)}` : "—"}</td>
+                    <td className="px-4 py-3">{i.status === "ISSUED" && <Button size="sm" variant="outline" disabled={returning === i.id} onClick={() => returnBook(i.id)}><RotateCcw className="h-3.5 w-3.5 mr-1" />{returning === i.id ? "…" : "Return"}</Button>}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Add Book Dialog */}
+      <Dialog open={bookOpen} onOpenChange={o => !o && setBookOpen(false)}>
+        <DialogContent className="max-w-lg"><DialogHeader><DialogTitle>Add Book</DialogTitle></DialogHeader>
+        <div className="grid grid-cols-2 gap-3">
+          {[["Title *","title"],["Author *","author"],["Book No.","bookNo"],["ISBN","isbn"],["Subject","subject"],["Rack No.","rackNo"],["Publisher","publisher"],["Quantity","quantity"],["Cost per Unit (₵)","perUnitCost"]].map(([l, k]) => (
+            <div key={k}><label className="block text-sm font-medium text-gray-700 mb-1">{l}</label>
+              <Input type={k === "quantity" || k === "perUnitCost" ? "number" : "text"} value={(bookForm as any)[k]} onChange={e => setBookForm(f => ({ ...f, [k]: e.target.value }))} /></div>
+          ))}
+        </div>
+        {bookErr && <p className="text-sm text-red-600 mt-1">{bookErr}</p>}
+        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setBookOpen(false)}>Cancel</Button><Button disabled={bookLoad} onClick={saveBook}>{bookLoad ? "Saving…" : "Add Book"}</Button></div>
         </DialogContent>
       </Dialog>
 
-      {/* Issue Book Dialog */}
-      <Dialog open={open === "issue"} onOpenChange={o => !o && setOpen(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Issue Book</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Book *</Label>
-              <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={issueForm.bookId} onChange={e => setIssueForm(f => ({ ...f, bookId: e.target.value }))}>
-                <option value="">Select book</option>
-                {books.filter((b: any) => b.available > 0).map((b: any) => <option key={b.id} value={b.id}>{b.title} ({b.available} available)</option>)}
-              </select>
-            </div>
-            <div>
-              <Label>Issue To — Student</Label>
-              <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={issueForm.studentId} onChange={e => setIssueForm(f => ({ ...f, studentId: e.target.value, staffId: "" }))}>
-                <option value="">— Select student —</option>
-                {students.map((s: any) => <option key={s.id} value={s.id}>{s.firstName} {s.lastName} ({s.admissionNumber})</option>)}
-              </select>
-            </div>
-            <div>
-              <Label>Or Staff</Label>
-              <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={issueForm.staffId} onChange={e => setIssueForm(f => ({ ...f, staffId: e.target.value, studentId: "" }))}>
-                <option value="">— Select staff —</option>
-                {staff.map((s: any) => <option key={s.id} value={s.id}>{s.firstName} {s.lastName}</option>)}
-              </select>
-            </div>
-            <div><Label>Due Date *</Label><Input className="mt-1" type="date" value={issueForm.dueDate} onChange={e => setIssueForm(f => ({ ...f, dueDate: e.target.value }))} /></div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Button className="w-full" disabled={loading} onClick={() => submit("/api/library/issues", { ...issueForm, studentId: issueForm.studentId || undefined, staffId: issueForm.staffId || undefined })}>
-              {loading ? "Issuing…" : "Issue Book"}
-            </Button>
+      {/* Issue Dialog */}
+      <Dialog open={issueOpen} onOpenChange={o => !o && setIssueOpen(false)}>
+        <DialogContent className="max-w-sm"><DialogHeader><DialogTitle>Issue Book</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">Book *</label>
+            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={issueForm.bookId} onChange={e => setIssueForm(f => ({ ...f, bookId: e.target.value }))}>
+              <option value="">— Select —</option>
+              {books.filter(b => b.available > 0).map((b: any) => <option key={b.id} value={b.id}>{b.title} (avail: {b.available})</option>)}
+            </select>
           </div>
+          <div className="flex gap-2">
+            {["student","staff"].map(t => <button key={t} onClick={() => setIssueForm(f => ({ ...f, issueTo: t }))}
+              className={`px-3 py-1.5 rounded-lg text-sm border font-medium ${issueForm.issueTo === t ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200"}`}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
+          </div>
+          {issueForm.issueTo === "student" ? (
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">Student *</label>
+              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={issueForm.studentId} onChange={e => setIssueForm(f => ({ ...f, studentId: e.target.value }))}>
+                <option value="">— Select —</option>
+                {students.map((s: any) => <option key={s.id} value={s.id}>{s.firstName} {s.lastName} ({s.admissionNo})</option>)}
+              </select>
+            </div>
+          ) : (
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">Staff *</label>
+              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={issueForm.staffId} onChange={e => setIssueForm(f => ({ ...f, staffId: e.target.value }))}>
+                <option value="">— Select —</option>
+                {staff.map((s: any) => <option key={s.id} value={s.id}>{s.firstName} {s.lastName} ({s.employeeId})</option>)}
+              </select>
+            </div>
+          )}
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">Due Date *</label><Input type="date" min={today} value={issueForm.dueDate} onChange={e => setIssueForm(f => ({ ...f, dueDate: e.target.value }))} /></div>
+        </div>
+        {issueErr && <p className="text-sm text-red-600">{issueErr}</p>}
+        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setIssueOpen(false)}>Cancel</Button><Button disabled={issueLoad} onClick={issueBook}>{issueLoad ? "Issuing…" : "Issue Book"}</Button></div>
         </DialogContent>
       </Dialog>
     </main>

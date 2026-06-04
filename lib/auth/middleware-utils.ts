@@ -113,6 +113,10 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/finance",
     roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],
   },
+  {
+    prefix: "/leave",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
+  },
   // Library
   {
     prefix: "/library",

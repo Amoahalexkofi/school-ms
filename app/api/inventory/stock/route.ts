@@ -1,17 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stockIn, stockOut } from "@/lib/services/inventory";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
-    const { itemId, quantity, note, direction } = await req.json();
-    const result = direction === "OUT"
-      ? await stockOut(itemId, Number(quantity), note)
-      : await stockIn(itemId, Number(quantity), note);
-    return NextResponse.json(result);
-  } catch (err: any) {
-    if (err.code === "VALIDATION") return NextResponse.json({ error: err.message }, { status: 422 });
-    if (err.code === "NOT_FOUND") return NextResponse.json({ error: err.message }, { status: 404 });
-    if (err.code === "CONFLICT") return NextResponse.json({ error: err.message }, { status: 409 });
-    return NextResponse.json({ error: "Failed to update stock" }, { status: 500 });
-  }
+    const { itemId, type, quantity, note, issuedTo } = await req.json();
+    if (!itemId || !type || !quantity) return NextResponse.json({ error: "itemId, type, quantity required" }, { status: 422 });
+    const qty = parseInt(quantity);
+
+    const item = await (prisma as any).item.findUnique({ where: { id: itemId }, select: { quantity: true } });
+    if (!item) return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    if (type === "OUT" && item.quantity < qty) return NextResponse.json({ error: "Insufficient stock" }, { status: 409 });
+
+    await (prisma as any).$transaction(async (tx: any) => {
+      await tx.stockMovement.create({ data: { itemId, type, quantity: qty, note: note || null } });
+      await tx.item.update({ where: { id: itemId }, data: { quantity: type === "IN" ? { increment: qty } : { decrement: qty } } });
+      if (type === "OUT" && issuedTo) {
+        await tx.itemIssue.create({ data: { itemId, issuedTo, quantity: qty, note: note || null } });
+      }
+    });
+
+    return NextResponse.json({ ok: true });
+  } catch (err: any) { return NextResponse.json({ error: err.message }, { status: 500 }); }
 }

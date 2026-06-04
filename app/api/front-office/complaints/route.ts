@@ -1,21 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createComplaint, listComplaints, updateComplaintStatus } from "@/lib/services/front-office";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
-  return NextResponse.json(await listComplaints());
+  return NextResponse.json(await (prisma as any).complaint.findMany({
+    include: { complaintType: { select: { name: true } } },
+    orderBy: { createdAt: "desc" },
+  }));
 }
-
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    if (body.action === "updateStatus") {
-      const updated = await updateComplaintStatus(body.id, body.status, body.resolution);
-      return NextResponse.json(updated);
-    }
-    const complaint = await createComplaint(body);
-    return NextResponse.json(complaint, { status: 201 });
-  } catch (err: any) {
-    if (err.code === "VALIDATION") return NextResponse.json({ error: err.message }, { status: 422 });
-    return NextResponse.json({ error: "Failed" }, { status: 500 });
-  }
+    const { title, raisedBy, phone, complaintTypeId, description } = await req.json();
+    if (!title?.trim() || !raisedBy?.trim() || !description?.trim())
+      return NextResponse.json({ error: "Title, raised by, and description required" }, { status: 422 });
+    const c = await (prisma as any).complaint.create({ data: { title: title.trim(), raisedBy: raisedBy.trim(), phone: phone || null, complaintTypeId: complaintTypeId || null, description: description.trim() } });
+    return NextResponse.json(c, { status: 201 });
+  } catch (err: any) { return NextResponse.json({ error: err.message }, { status: 500 }); }
 }

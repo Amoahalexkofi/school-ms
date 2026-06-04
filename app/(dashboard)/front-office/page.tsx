@@ -2,24 +2,30 @@ import { prisma } from "@/lib/prisma";
 import { Topbar } from "@/components/Topbar";
 import { FrontOfficeClient } from "./FrontOfficeClient";
 
-async function getData() {
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-  const [visitorsToday, allVisitors, complaints, enquiries] = await Promise.all([
-    (prisma as any).visitor.count({ where: { inTime: { gte: today, lt: tomorrow } } }),
-    (prisma as any).visitor.findMany({ orderBy: { inTime: "desc" }, take: 20 }),
-    (prisma as any).complaint.findMany({ orderBy: { createdAt: "desc" } }),
-    (prisma as any).enquiry.findMany({ orderBy: { createdAt: "desc" } }),
-  ]);
-  return { visitorsToday, allVisitors, complaints, enquiries };
-}
-
 export default async function FrontOfficePage() {
-  const data = await getData();
+  const [purposes, visitors, complaintTypes, complaints, enquiries] = await Promise.all([
+    (prisma as any).visitorPurpose.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    (prisma as any).visitor.findMany({
+      include: { purpose: { select: { name: true } } },
+      orderBy: { inTime: "desc" },
+      take: 100,
+    }),
+    (prisma as any).complaintType.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    (prisma as any).complaint.findMany({
+      include: { complaintType: { select: { name: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+    (prisma as any).enquiry.findMany({ orderBy: { createdAt: "desc" }, take: 100 }),
+  ]);
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Front Office" />
-      <FrontOfficeClient {...data} />
+      <FrontOfficeClient
+        purposes={purposes} visitors={visitors}
+        complaintTypes={complaintTypes} complaints={complaints}
+        enquiries={enquiries}
+      />
     </div>
   );
 }

@@ -214,7 +214,7 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 8 — Leave Management (TODO)
+### ✅ Phase 8 — Leave Management (COMPLETE)
 **Smart School reference:** `Leaverequest_model.php`, `Leavetypes_model.php`
 
 - [ ] Leave Types page — CRUD (Casual, Sick, Earned, etc. with days allowed)
@@ -229,7 +229,7 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 9 — Transport (TODO)
+### ✅ Phase 9 — Transport (COMPLETE)
 **Smart School reference:** `Vehicle_model.php`, `Route_model.php`, `Routepickuppoint_model.php`
 
 - [ ] Vehicles page — add/edit vehicle (vehicleNo, model, year, driver details)
@@ -242,7 +242,7 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 10 — Hostel (TODO)
+### ✅ Phase 10 — Hostel (COMPLETE)
 **Smart School reference:** `Hostel_model.php`, `Hostelroom_model.php`
 
 - [ ] Room Types page — CRUD (Single, Double, 4-Bed, Dormitory)

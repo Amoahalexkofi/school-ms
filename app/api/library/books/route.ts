@@ -1,19 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addBook, listBooks } from "@/lib/services/library";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
-  const search = req.nextUrl.searchParams.get("search") ?? undefined;
-  return NextResponse.json(await listBooks(search));
+  const search = req.nextUrl.searchParams.get("search");
+  const where: any = { isActive: true };
+  if (search) where.OR = [
+    { title:  { contains: search, mode: "insensitive" } },
+    { author: { contains: search, mode: "insensitive" } },
+    { bookNo: { contains: search, mode: "insensitive" } },
+    { isbn:   { contains: search, mode: "insensitive" } },
+  ];
+  const books = await (prisma as any).book.findMany({ where, include: { _count: { select: { issues: true } } }, orderBy: { title: "asc" } });
+  return NextResponse.json(books);
 }
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const book = await addBook({ ...body, quantity: Number(body.quantity ?? 1) });
-    return NextResponse.json(book, { status: 201 });
+    if (!body.title?.trim() || !body.author?.trim()) return NextResponse.json({ error: "Title and author required" }, { status: 422 });
+    const qty = parseInt(body.quantity) || 1;
+    const b = await (prisma as any).book.create({ data: { title: body.title.trim(), author: body.author.trim(), bookNo: body.bookNo || null, isbn: body.isbn || null, subject: body.subject || null, rackNo: body.rackNo || null, publisher: body.publisher || null, quantity: qty, available: qty, perUnitCost: body.perUnitCost ? parseFloat(body.perUnitCost) : null, description: body.description || null } });
+    return NextResponse.json(b, { status: 201 });
   } catch (err: any) {
-    if (err.code === "VALIDATION") return NextResponse.json({ error: err.message }, { status: 422 });
-    if (err.code === "P2002") return NextResponse.json({ error: "ISBN already exists" }, { status: 409 });
-    return NextResponse.json({ error: "Failed to add book" }, { status: 500 });
+    if (err.code === "P2002") return NextResponse.json({ error: "Book number or ISBN already exists" }, { status: 409 });
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
