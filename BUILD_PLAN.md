@@ -196,7 +196,7 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 7 — Payroll (TODO)
+### ✅ Phase 7 — Payroll (COMPLETE)
 **Smart School reference:** `Payroll_model.php`
 
 - [ ] Payroll list page — shows payslips by month/year
