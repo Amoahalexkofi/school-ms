@@ -17,6 +17,7 @@ import {
   UserCog,
   Calendar,
   FileText,
+  BarChart2,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -32,6 +33,7 @@ const navItems = [
   { href: "/staff", label: "Staff", icon: UserCog },
   { href: "/timetable", label: "Timetable", icon: Calendar },
   { href: "/homework", label: "Homework", icon: FileText },
+  { href: "/reports", label: "Reports", icon: BarChart2 },
   { href: "/notifications", label: "Notifications", icon: Bell },
 ];
 
