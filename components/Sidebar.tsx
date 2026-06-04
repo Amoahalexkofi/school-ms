@@ -13,6 +13,10 @@ import {
   LogOut,
   Menu,
   X,
+  TrendingUp,
+  UserCog,
+  Calendar,
+  FileText,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -23,7 +27,11 @@ const navItems = [
   { href: "/students", label: "Students", icon: Users },
   { href: "/attendance", label: "Attendance", icon: ClipboardList },
   { href: "/exam-groups", label: "Exams & Marks", icon: BookOpen },
+  { href: "/results", label: "Results", icon: TrendingUp },
   { href: "/fees", label: "Fees", icon: DollarSign },
+  { href: "/staff", label: "Staff", icon: UserCog },
+  { href: "/timetable", label: "Timetable", icon: Calendar },
+  { href: "/homework", label: "Homework", icon: FileText },
   { href: "/notifications", label: "Notifications", icon: Bell },
 ];
 
