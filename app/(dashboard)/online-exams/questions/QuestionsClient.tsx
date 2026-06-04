@@ -4,12 +4,9 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { Plus, Search, Pencil, Trash2, BookOpen } from "lucide-react";
-import { toast } from "sonner";
 
 type Question = {
   id: string;
@@ -41,6 +38,8 @@ const TYPE_LABELS: Record<string, string> = {
   SHORT_ANSWER: "Short Answer",
   DESCRIPTIVE: "Descriptive",
 };
+
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 const empty = {
   questionType: "MCQ",
@@ -114,7 +113,7 @@ export function QuestionsClient({
   }
 
   async function save() {
-    if (!form.question.trim()) return toast.error("Question text is required");
+    if (!form.question.trim()) return alert("Question text is required");
     setSaving(true);
     try {
       const payload: any = {
@@ -143,7 +142,6 @@ export function QuestionsClient({
         if (!res.ok) throw new Error();
         const updated = await res.json();
         setQuestions((qs) => qs.map((q) => (q.id === editing.id ? { ...q, ...updated } : q)));
-        toast.success("Question updated");
       } else {
         const res = await fetch("/api/questions", {
           method: "POST",
@@ -153,11 +151,10 @@ export function QuestionsClient({
         if (!res.ok) throw new Error();
         const created = await res.json();
         setQuestions((qs) => [created, ...qs]);
-        toast.success("Question added");
       }
       setOpen(false);
     } catch {
-      toast.error("Failed to save question");
+      alert("Failed to save question");
     } finally {
       setSaving(false);
     }
@@ -168,9 +165,8 @@ export function QuestionsClient({
     try {
       await fetch(`/api/questions/${id}`, { method: "DELETE" });
       setQuestions((qs) => qs.filter((q) => q.id !== id));
-      toast.success("Question deleted");
     } catch {
-      toast.error("Failed");
+      alert("Failed to delete");
     }
   }
 
@@ -192,31 +188,20 @@ export function QuestionsClient({
               className="pl-8 w-56"
             />
           </div>
-          <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              {TYPES.map((t) => <SelectItem key={t} value={t}>{TYPE_LABELS[t]}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={filterLevel} onValueChange={setFilterLevel}>
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Level" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Levels</SelectItem>
-              {LEVELS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
-            </SelectContent>
-          </Select>
+          <select className={SEL + " w-36"} value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+            <option value="all">All Types</option>
+            {TYPES.map((t) => <option key={t} value={t}>{TYPE_LABELS[t]}</option>)}
+          </select>
+          <select className={SEL + " w-32"} value={filterLevel} onChange={(e) => setFilterLevel(e.target.value)}>
+            <option value="all">All Levels</option>
+            {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
+          </select>
         </div>
         <Button onClick={openAdd} className="shrink-0">
           <Plus className="h-4 w-4 mr-1" /> Add Question
         </Button>
       </div>
 
-      {/* Stats */}
       <p className="text-sm text-gray-500">
         {filtered.length} question{filtered.length !== 1 ? "s" : ""} (total: {questions.length})
       </p>
@@ -246,7 +231,7 @@ export function QuestionsClient({
                       .filter(([, v]) => v)
                       .map(([label, val]) => (
                         <p
-                          key={label}
+                          key={label as string}
                           className={`text-xs ${q.correctAnswer?.toUpperCase() === label ? "text-green-700 font-semibold" : "text-gray-500"}`}
                         >
                           {label}. {val}
@@ -285,97 +270,77 @@ export function QuestionsClient({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Question Type</Label>
-              <Select value={form.questionType} onValueChange={(v) => set("questionType", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {TYPES.map((t) => <SelectItem key={t} value={t}>{TYPE_LABELS[t]}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <select className={SEL} value={form.questionType} onChange={(e) => set("questionType", e.target.value)}>
+                {TYPES.map((t) => <option key={t} value={t}>{TYPE_LABELS[t]}</option>)}
+              </select>
             </div>
             <div>
               <Label>Difficulty Level</Label>
-              <Select value={form.level} onValueChange={(v) => set("level", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {LEVELS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <select className={SEL} value={form.level} onChange={(e) => set("level", e.target.value)}>
+                {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
+              </select>
             </div>
             <div>
               <Label>Class (optional)</Label>
-              <Select value={form.classId || "none"} onValueChange={(v) => set("classId", v === "none" ? "" : v)}>
-                <SelectTrigger><SelectValue placeholder="Any class" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Any class</SelectItem>
-                  {classes.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <select className={SEL} value={form.classId} onChange={(e) => set("classId", e.target.value)}>
+                <option value="">Any class</option>
+                {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
             </div>
             <div>
               <Label>Subject (optional)</Label>
-              <Select value={form.subjectId || "none"} onValueChange={(v) => set("subjectId", v === "none" ? "" : v)}>
-                <SelectTrigger><SelectValue placeholder="Any subject" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Any subject</SelectItem>
-                  {subjects.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <select className={SEL} value={form.subjectId} onChange={(e) => set("subjectId", e.target.value)}>
+                <option value="">Any subject</option>
+                {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
             </div>
           </div>
 
           <div>
             <Label>Question Text *</Label>
-            <Textarea
+            <textarea
               value={form.question}
               onChange={(e) => set("question", e.target.value)}
               rows={3}
               placeholder="Enter the question…"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
 
-          {hasOptions && (
+          {hasOptions && !isTF && (
             <div className="space-y-2">
               <Label>Options</Label>
-              {isTF ? (
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-xs">A. True</Label>
-                    <Input value="True" disabled />
+              <div className="grid grid-cols-2 gap-2">
+                {["A", "B", "C", "D", "E"].map((opt) => (
+                  <div key={opt}>
+                    <Label className="text-xs">Option {opt}</Label>
+                    <Input
+                      value={form[`option${opt}`]}
+                      onChange={(e) => set(`option${opt}`, e.target.value)}
+                      placeholder={`Option ${opt}`}
+                    />
                   </div>
-                  <div>
-                    <Label className="text-xs">B. False</Label>
-                    <Input value="False" disabled />
-                  </div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-2">
-                  {["A", "B", "C", "D", "E"].map((opt) => (
-                    <div key={opt}>
-                      <Label className="text-xs">Option {opt}</Label>
-                      <Input
-                        value={form[`option${opt}`]}
-                        onChange={(e) => set(`option${opt}`, e.target.value)}
-                        placeholder={`Option ${opt}`}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
+                ))}
+              </div>
+            </div>
+          )}
+
+          {isTF && (
+            <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
+              <p className="border rounded p-2">A. True</p>
+              <p className="border rounded p-2">B. False</p>
             </div>
           )}
 
           {hasOptions && (
             <div>
               <Label>Correct Answer</Label>
-              <Select value={form.correctAnswer} onValueChange={(v) => set("correctAnswer", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {isTF
-                    ? [["A", "True"], ["B", "False"]].map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)
-                    : ["A", "B", "C", "D", "E"].map((v) => <SelectItem key={v} value={v}>Option {v}</SelectItem>)
-                  }
-                </SelectContent>
-              </Select>
+              <select className={SEL} value={form.correctAnswer} onChange={(e) => set("correctAnswer", e.target.value)}>
+                {isTF
+                  ? [["A", "True"], ["B", "False"]].map(([v, l]) => <option key={v} value={v}>{l}</option>)
+                  : ["A", "B", "C", "D", "E"].map((v) => <option key={v} value={v}>Option {v}</option>)
+                }
+              </select>
             </div>
           )}
 

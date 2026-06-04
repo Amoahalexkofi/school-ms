@@ -4,15 +4,11 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
-  ArrowLeft, Search, Plus, Trash2, Send, CheckCircle, Clock, Users,
-  BookOpen, ChevronRight
+  ArrowLeft, Search, Plus, Trash2, Send, CheckCircle, Clock, Users, BookOpen,
 } from "lucide-react";
-import { toast } from "sonner";
 
 type Question = {
   id: string;
@@ -62,6 +58,8 @@ type Exam = {
   attempts: Attempt[];
 };
 
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+
 const LEVEL_COLORS: Record<string, string> = {
   EASY: "bg-green-100 text-green-700",
   MEDIUM: "bg-yellow-100 text-yellow-700",
@@ -91,24 +89,26 @@ export function ExamDetailClient({
 
   const bankFiltered = useMemo(() => {
     return allQuestions.filter((q) => {
-      const matchSearch = q.question.toLowerCase().includes(search.toLowerCase()) ||
+      const matchSearch =
+        q.question.toLowerCase().includes(search.toLowerCase()) ||
         (q.subject?.name.toLowerCase().includes(search.toLowerCase()) ?? false);
       const matchType = filterType === "all" || q.questionType === filterType;
       return matchSearch && matchType;
     });
   }, [allQuestions, search, filterType]);
 
-  async function addQuestion(questionId: string, marks = 1) {
+  async function addQuestion(questionId: string) {
     setAddingId(questionId);
     try {
       const res = await fetch(`/api/online-exams/${exam.id}/questions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questionId, marks }),
+        body: JSON.stringify({ questionId, marks: 1 }),
       });
       if (!res.ok) {
         const err = await res.json();
-        return toast.error(err.error ?? "Failed to add question");
+        alert(err.error ?? "Failed to add question");
+        return;
       }
       const eq = await res.json();
       const q = allQuestions.find((q) => q.id === questionId)!;
@@ -117,9 +117,8 @@ export function ExamDetailClient({
         totalQuestions: e.totalQuestions + 1,
         questions: [...e.questions, { ...eq, question: q }],
       }));
-      toast.success("Question added");
     } catch {
-      toast.error("Failed");
+      alert("Failed");
     } finally {
       setAddingId(null);
     }
@@ -138,9 +137,8 @@ export function ExamDetailClient({
         totalQuestions: e.totalQuestions - 1,
         questions: e.questions.filter((eq) => eq.questionId !== questionId),
       }));
-      toast.success("Question removed");
     } catch {
-      toast.error("Failed");
+      alert("Failed");
     } finally {
       setRemovingId(null);
     }
@@ -155,16 +153,18 @@ export function ExamDetailClient({
       });
       if (!res.ok) throw new Error();
       setExam((e) => ({ ...e, isPublished: !e.isPublished }));
-      toast.success(exam.isPublished ? "Exam unpublished" : "Exam published");
     } catch {
-      toast.error("Failed");
+      alert("Failed");
     }
   }
 
   const now = new Date();
-  const status = !exam.isPublished ? "Draft"
-    : now < new Date(exam.startTime) ? "Upcoming"
-    : now > new Date(exam.endTime) ? "Ended"
+  const status = !exam.isPublished
+    ? "Draft"
+    : now < new Date(exam.startTime)
+    ? "Upcoming"
+    : now > new Date(exam.endTime)
+    ? "Ended"
     : "Live";
 
   const statusColor = {
@@ -179,7 +179,9 @@ export function ExamDetailClient({
       {/* Header */}
       <div className="flex items-start gap-4 flex-wrap">
         <Link href="/online-exams">
-          <Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Button>
+          <Button variant="ghost" size="sm">
+            <ArrowLeft className="h-4 w-4 mr-1" /> Back
+          </Button>
         </Link>
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
@@ -200,11 +202,7 @@ export function ExamDetailClient({
             <span>End: {new Date(exam.endTime).toLocaleString()}</span>
           </div>
         </div>
-        <Button
-          onClick={togglePublish}
-          variant={exam.isPublished ? "outline" : "default"}
-          size="sm"
-        >
+        <Button onClick={togglePublish} variant={exam.isPublished ? "outline" : "default"} size="sm">
           <Send className="h-4 w-4 mr-1" />
           {exam.isPublished ? "Unpublish" : "Publish"}
         </Button>
@@ -217,10 +215,14 @@ export function ExamDetailClient({
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2 text-sm font-medium capitalize border-b-2 transition-colors ${
-              tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"
+              tab === t
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >
-            {t === "questions" ? `Questions (${exam.questions.length})` : `Results (${exam.attempts.filter((a) => a.submittedAt).length})`}
+            {t === "questions"
+              ? `Questions (${exam.questions.length})`
+              : `Results (${exam.attempts.filter((a) => a.submittedAt).length})`}
           </button>
         ))}
       </div>
@@ -280,30 +282,37 @@ export function ExamDetailClient({
                   className="pl-8"
                 />
               </div>
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  {["MCQ", "TRUE_FALSE", "SHORT_ANSWER", "DESCRIPTIVE"].map((t) => (
-                    <SelectItem key={t} value={t}>{TYPE_LABELS[t]}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <select
+                className={SEL + " w-32"}
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+              >
+                <option value="all">All</option>
+                {["MCQ", "TRUE_FALSE", "SHORT_ANSWER", "DESCRIPTIVE"].map((t) => (
+                  <option key={t} value={t}>{TYPE_LABELS[t]}</option>
+                ))}
+              </select>
             </div>
 
             {bankFiltered.length === 0 ? (
               <div className="text-center py-8 text-sm text-gray-400">
                 <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-40" />
-                <p>No questions match. <Link href="/online-exams/questions" className="text-blue-500 hover:underline">Add to bank</Link></p>
+                <p>
+                  No questions match.{" "}
+                  <Link href="/online-exams/questions" className="text-blue-500 hover:underline">
+                    Add to bank
+                  </Link>
+                </p>
               </div>
             ) : (
               <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
                 {bankFiltered.map((q) => {
                   const added = addedIds.has(q.id);
                   return (
-                    <div key={q.id} className={`bg-white border rounded-lg p-3 flex gap-3 items-start ${added ? "opacity-50" : ""}`}>
+                    <div
+                      key={q.id}
+                      className={`bg-white border rounded-lg p-3 flex gap-3 items-start ${added ? "opacity-50" : ""}`}
+                    >
                       <div className="flex-1 min-w-0">
                         <p className="text-sm leading-snug">{q.question}</p>
                         <div className="flex gap-2 mt-1">
@@ -334,9 +343,7 @@ export function ExamDetailClient({
         <div className="space-y-4">
           {exam.attempts.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-sm text-gray-400">
-                No attempts yet.
-              </CardContent>
+              <CardContent className="py-12 text-center text-sm text-gray-400">No attempts yet.</CardContent>
             </Card>
           ) : (
             <>
@@ -346,7 +353,6 @@ export function ExamDetailClient({
                     <tr>
                       <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
                       <th className="text-left px-4 py-3 font-medium text-gray-600">Admission No</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Started</th>
                       <th className="text-left px-4 py-3 font-medium text-gray-600">Submitted</th>
                       <th className="text-right px-4 py-3 font-medium text-gray-600">Score</th>
                       <th className="text-right px-4 py-3 font-medium text-gray-600">%</th>
@@ -365,10 +371,11 @@ export function ExamDetailClient({
                           </td>
                           <td className="px-4 py-3 text-gray-500">{a.student.admissionNo}</td>
                           <td className="px-4 py-3 text-gray-500 text-xs">
-                            {new Date(a.startedAt).toLocaleString()}
-                          </td>
-                          <td className="px-4 py-3 text-gray-500 text-xs">
-                            {a.submittedAt ? new Date(a.submittedAt).toLocaleString() : <span className="text-yellow-600">In progress</span>}
+                            {a.submittedAt ? (
+                              new Date(a.submittedAt).toLocaleString()
+                            ) : (
+                              <span className="text-yellow-600">In progress</span>
+                            )}
                           </td>
                           <td className="px-4 py-3 text-right">
                             {a.submittedAt ? `${a.score ?? 0}/${a.total ?? 0}` : "—"}
@@ -378,7 +385,11 @@ export function ExamDetailClient({
                           </td>
                           <td className="px-4 py-3 text-right">
                             {a.submittedAt && pct != null ? (
-                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                              <span
+                                className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                                  passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                }`}
+                              >
                                 {passed ? "Pass" : "Fail"}
                               </span>
                             ) : "—"}
@@ -390,10 +401,12 @@ export function ExamDetailClient({
                 </table>
               </div>
 
-              {/* Pending descriptive grading notice */}
-              {exam.questions.some((eq) => ["DESCRIPTIVE", "SHORT_ANSWER"].includes(eq.question.questionType)) && (
+              {exam.questions.some((eq) =>
+                ["DESCRIPTIVE", "SHORT_ANSWER"].includes(eq.question.questionType)
+              ) && (
                 <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
-                  This exam contains short answer / descriptive questions that require manual grading. Scores shown are for auto-graded questions only.
+                  This exam contains short answer / descriptive questions that require manual grading.
+                  Scores shown are for auto-graded questions only.
                 </p>
               )}
             </>

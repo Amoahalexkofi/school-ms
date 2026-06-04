@@ -5,11 +5,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Monitor, Clock, CheckCircle, Users, Plus, Pencil, Trash2, BookOpen, Eye, Send } from "lucide-react";
-import { toast } from "sonner";
 
 type Exam = {
   id: string;
@@ -26,6 +24,8 @@ type Exam = {
   _count: { questions: number; attempts: number };
   attempts: { score: number; total: number }[];
 };
+
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 function statusLabel(exam: Exam) {
   const now = new Date();
@@ -92,8 +92,8 @@ export function OnlineExamsClient({
   }
 
   async function save() {
-    if (!form.title.trim()) return toast.error("Title required");
-    if (!form.startTime || !form.endTime) return toast.error("Start and end time required");
+    if (!form.title.trim()) return alert("Title required");
+    if (!form.startTime || !form.endTime) return alert("Start and end time required");
     setSaving(true);
     try {
       const payload = {
@@ -116,7 +116,6 @@ export function OnlineExamsClient({
         if (!res.ok) throw new Error();
         const updated = await res.json();
         setExams((es) => es.map((e) => (e.id === editing.id ? { ...e, ...updated } : e)));
-        toast.success("Exam updated");
       } else {
         const res = await fetch("/api/online-exams", {
           method: "POST",
@@ -125,12 +124,19 @@ export function OnlineExamsClient({
         });
         if (!res.ok) throw new Error();
         const created = await res.json();
-        setExams((es) => [{ ...created, class: classes.find((c) => c.id === created.classId), _count: { questions: 0, attempts: 0 }, attempts: [] }, ...es]);
-        toast.success("Exam created");
+        setExams((es) => [
+          {
+            ...created,
+            class: classes.find((c) => c.id === created.classId),
+            _count: { questions: 0, attempts: 0 },
+            attempts: [],
+          },
+          ...es,
+        ]);
       }
       setOpen(false);
     } catch {
-      toast.error("Failed to save exam");
+      alert("Failed to save exam");
     } finally {
       setSaving(false);
     }
@@ -139,11 +145,11 @@ export function OnlineExamsClient({
   async function del(id: string) {
     if (!confirm("Delete this exam and all its data?")) return;
     try {
-      await fetch(`/api/online-exams/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/online-exams/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
       setExams((es) => es.filter((e) => e.id !== id));
-      toast.success("Exam deleted");
     } catch {
-      toast.error("Failed");
+      alert("Failed to delete");
     }
   }
 
@@ -156,9 +162,8 @@ export function OnlineExamsClient({
       });
       if (!res.ok) throw new Error();
       setExams((es) => es.map((e) => (e.id === exam.id ? { ...e, isPublished: !e.isPublished } : e)));
-      toast.success(exam.isPublished ? "Exam unpublished" : "Exam published");
     } catch {
-      toast.error("Failed");
+      alert("Failed");
     }
   }
 
@@ -167,15 +172,15 @@ export function OnlineExamsClient({
       {/* Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Total Exams", value: exams.length, color: "" },
-          { label: "Live Now", value: live, color: live > 0 ? "text-green-600" : "" },
-          { label: "Published", value: exams.filter((e) => e.isPublished).length, color: "" },
-          { label: "Total Attempts", value: exams.reduce((s, e) => s + e._count.attempts, 0), color: "" },
+          { label: "Total Exams", value: exams.length, extra: "" },
+          { label: "Live Now", value: live, extra: live > 0 ? "text-green-600" : "" },
+          { label: "Published", value: exams.filter((e) => e.isPublished).length, extra: "" },
+          { label: "Total Attempts", value: exams.reduce((s, e) => s + e._count.attempts, 0), extra: "" },
         ].map((stat) => (
           <Card key={stat.label}>
             <CardContent className="pt-4">
               <p className="text-xs text-gray-500 mb-1">{stat.label}</p>
-              <p className={`text-3xl font-bold ${stat.color}`}>{stat.value}</p>
+              <p className={`text-3xl font-bold ${stat.extra}`}>{stat.value}</p>
             </CardContent>
           </Card>
         ))}
@@ -205,9 +210,12 @@ export function OnlineExamsClient({
           {exams.map((exam) => {
             const { label, color } = statusLabel(exam);
             const submitted = exam.attempts.filter((a) => a.total != null).length;
-            const avgScore = submitted > 0
-              ? Math.round(exam.attempts.reduce((s, a) => s + ((a.score ?? 0) / (a.total || 1)) * 100, 0) / submitted)
-              : null;
+            const avgScore =
+              submitted > 0
+                ? Math.round(
+                    exam.attempts.reduce((s, a) => s + ((a.score ?? 0) / (a.total || 1)) * 100, 0) / submitted
+                  )
+                : null;
 
             return (
               <Card key={exam.id}>
@@ -224,9 +232,15 @@ export function OnlineExamsClient({
                         <p className="text-sm text-gray-500 mb-2 line-clamp-1">{exam.instructions}</p>
                       )}
                       <div className="flex flex-wrap gap-4 text-xs text-gray-500">
-                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {exam.duration} min</span>
-                        <span className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> {exam._count.questions} questions</span>
-                        <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {exam._count.attempts} attempts</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" /> {exam.duration} min
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <CheckCircle className="h-3 w-3" /> {exam._count.questions} questions
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="h-3 w-3" /> {exam._count.attempts} attempts
+                        </span>
                         <span>Start: {new Date(exam.startTime).toLocaleString()}</span>
                         <span>End: {new Date(exam.endTime).toLocaleString()}</span>
                       </div>
@@ -256,7 +270,12 @@ export function OnlineExamsClient({
                     <Button size="sm" variant="ghost" onClick={() => openEdit(exam)}>
                       <Pencil className="h-3 w-3 mr-1" /> Edit
                     </Button>
-                    <Button size="sm" variant="ghost" onClick={() => del(exam.id)} className="text-red-500 hover:text-red-700">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => del(exam.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
                       <Trash2 className="h-3 w-3 mr-1" /> Delete
                     </Button>
                   </div>
@@ -277,62 +296,89 @@ export function OnlineExamsClient({
           <div className="space-y-4">
             <div>
               <Label>Exam Title *</Label>
-              <Input value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="e.g. Mid-term Math Quiz" />
+              <Input
+                value={form.title}
+                onChange={(e) => set("title", e.target.value)}
+                placeholder="e.g. Mid-term Math Quiz"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Class (optional)</Label>
-                <Select value={form.classId || "none"} onValueChange={(v) => set("classId", v === "none" ? "" : v)}>
-                  <SelectTrigger><SelectValue placeholder="Any class" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Any class</SelectItem>
-                    {classes.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <select className={SEL} value={form.classId} onChange={(e) => set("classId", e.target.value)}>
+                  <option value="">Any class</option>
+                  {classes.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <Label>Subject (optional)</Label>
-                <Select value={form.subjectId || "none"} onValueChange={(v) => set("subjectId", v === "none" ? "" : v)}>
-                  <SelectTrigger><SelectValue placeholder="Any subject" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Any subject</SelectItem>
-                    {subjects.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <select className={SEL} value={form.subjectId} onChange={(e) => set("subjectId", e.target.value)}>
+                  <option value="">Any subject</option>
+                  {subjects.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Duration (minutes) *</Label>
-                <Input type="number" value={form.duration} onChange={(e) => set("duration", e.target.value)} min={1} />
+                <Input
+                  type="number"
+                  value={form.duration}
+                  onChange={(e) => set("duration", e.target.value)}
+                  min={1}
+                />
               </div>
               <div>
                 <Label>Passing % (optional)</Label>
-                <Input type="number" value={form.passingPercentage} onChange={(e) => set("passingPercentage", e.target.value)} min={0} max={100} />
+                <Input
+                  type="number"
+                  value={form.passingPercentage}
+                  onChange={(e) => set("passingPercentage", e.target.value)}
+                  min={0}
+                  max={100}
+                />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Start Time *</Label>
-                <Input type="datetime-local" value={form.startTime} onChange={(e) => set("startTime", e.target.value)} />
+                <Input
+                  type="datetime-local"
+                  value={form.startTime}
+                  onChange={(e) => set("startTime", e.target.value)}
+                />
               </div>
               <div>
                 <Label>End Time *</Label>
-                <Input type="datetime-local" value={form.endTime} onChange={(e) => set("endTime", e.target.value)} />
+                <Input
+                  type="datetime-local"
+                  value={form.endTime}
+                  onChange={(e) => set("endTime", e.target.value)}
+                />
               </div>
             </div>
 
             <div>
               <Label>Instructions (optional)</Label>
-              <Input value={form.instructions} onChange={(e) => set("instructions", e.target.value)} placeholder="Instructions for students…" />
+              <Input
+                value={form.instructions}
+                onChange={(e) => set("instructions", e.target.value)}
+                placeholder="Instructions for students…"
+              />
             </div>
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button onClick={save} disabled={saving}>{saving ? "Saving…" : editing ? "Update" : "Create"}</Button>
+              <Button onClick={save} disabled={saving}>
+                {saving ? "Saving…" : editing ? "Update" : "Create"}
+              </Button>
             </div>
           </div>
         </DialogContent>
