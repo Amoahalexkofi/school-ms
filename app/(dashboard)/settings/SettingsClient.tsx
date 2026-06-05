@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink, Home, Bell, Mail, MessageSquare, Clock, Landmark } from "lucide-react";
+import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink, Home, Bell, Mail, MessageSquare, Clock, Landmark, Building2 } from "lucide-react";
 import Link from "next/link";
 
 const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
@@ -371,6 +371,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                 { href: "/settings/notifications",   icon: Bell,          bg: "bg-amber-100",  ic: "text-amber-600",  label: "Notifications",         desc: "Email / SMS / push toggles" },
                 { href: "/settings/roles",           icon: ShieldCheck,   bg: "bg-purple-100", ic: "text-purple-600", label: "Roles & Permissions",   desc: "Access matrix per role" },
                 { href: "/audit-log",                icon: ShieldCheck,   bg: "bg-green-100",  ic: "text-green-600",  label: "Audit Log",             desc: "Searchable activity history" },
+                { href: "/novalss-admin",            icon: Building2,     bg: "bg-slate-100",  ic: "text-slate-600",  label: "Novalss Admin",         desc: "Company dashboard — manage all schools" },
               ].map(({ href, icon: Icon, bg, ic, label, desc }) => (
                 <Link key={href} href={href} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                   <div className={`w-9 h-9 ${bg} rounded-lg flex items-center justify-center shrink-0`}>

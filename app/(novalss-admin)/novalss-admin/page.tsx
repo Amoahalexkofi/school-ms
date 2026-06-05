@@ -4,10 +4,15 @@ import { registry } from "@/lib/registry";
 import { NovalssAdminClient } from "./NovalssAdminClient";
 
 async function getData() {
-  const schools = await (registry as any).schoolTenant.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-  return { schools };
+  try {
+    const schools = await (registry as any).schoolTenant.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return { schools };
+  } catch (e) {
+    console.error("[novalss-admin] registry query failed:", e);
+    return { schools: [] };
+  }
 }
 
 export default async function NovalssAdminPage() {
