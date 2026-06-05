@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X } from "lucide-react";
+import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
@@ -327,23 +328,84 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
 
         {/* School Profile */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base flex items-center gap-2">
               <School className="h-4 w-4 text-orange-600" /> School Profile
             </CardTitle>
+            <Link href="/settings/school-profile">
+              <Button size="sm" variant="outline" className="gap-1">
+                <ExternalLink className="h-3.5 w-3.5" /> Edit Profile
+              </Button>
+            </Link>
           </CardHeader>
           <CardContent>
             {!profile ? (
-              <p className="text-sm text-gray-500 text-center py-6">No profile set. Use <code className="bg-gray-100 px-1 rounded">POST /api/school-profile</code> to configure.</p>
+              <div className="text-center py-6">
+                <p className="text-sm text-gray-500 mb-3">No school profile configured yet.</p>
+                <Link href="/settings/school-profile">
+                  <Button size="sm">Set Up School Profile</Button>
+                </Link>
+              </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                 <div><p className="text-xs text-gray-500">Name</p><p className="font-medium">{(profile as any).name}</p></div>
-                {(profile as any).address && <div><p className="text-xs text-gray-500">Address</p><p>{(profile as any).address}</p></div>}
+                {(profile as any).code && <div><p className="text-xs text-gray-500">Code</p><p>{(profile as any).code}</p></div>}
                 {(profile as any).phone && <div><p className="text-xs text-gray-500">Phone</p><p>{(profile as any).phone}</p></div>}
                 {(profile as any).email && <div><p className="text-xs text-gray-500">Email</p><p>{(profile as any).email}</p></div>}
-                {(profile as any).motto && <div className="col-span-2"><p className="text-xs text-gray-500">Motto</p><p className="italic">{(profile as any).motto}</p></div>}
+                {(profile as any).currency && <div><p className="text-xs text-gray-500">Currency</p><p>{(profile as any).currency}</p></div>}
+                {(profile as any).country && <div><p className="text-xs text-gray-500">Country</p><p>{(profile as any).country}</p></div>}
+                {(profile as any).motto && <div className="col-span-2 md:col-span-3"><p className="text-xs text-gray-500">Motto</p><p className="italic">{(profile as any).motto}</p></div>}
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* System Administration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Settings2 className="h-4 w-4 text-gray-600" /> System Administration
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Link href="/settings/school-profile" className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center shrink-0">
+                  <School className="h-4 w-4 text-orange-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">School Profile</p>
+                  <p className="text-xs text-gray-500">Name, logo, currency, date format</p>
+                </div>
+              </Link>
+              <Link href="/settings/custom-fields" className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                  <FormInput className="h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Custom Fields</p>
+                  <p className="text-xs text-gray-500">Extra fields for student & staff profiles</p>
+                </div>
+              </Link>
+              <Link href="/settings/roles" className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
+                  <ShieldCheck className="h-4 w-4 text-purple-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Roles & Permissions</p>
+                  <p className="text-xs text-gray-500">View access matrix per role</p>
+                </div>
+              </Link>
+              <Link href="/audit-log" className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+                  <ShieldCheck className="h-4 w-4 text-green-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Audit Log</p>
+                  <p className="text-xs text-gray-500">Searchable activity history</p>
+                </div>
+              </Link>
+            </div>
           </CardContent>
         </Card>
 

@@ -336,14 +336,15 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 17 — System Administration (TODO)
+### ✅ Phase 17 — System Administration (COMPLETE)
 **Smart School reference:** `Role_model.php`, `Customfield_model.php`, `Setting_model.php`
 
-- [ ] Custom Fields — admin adds extra fields to student/staff profiles
-- [ ] School Profile settings (name, logo, currency, dateFormat, feeDueDays)
-- [ ] Audit Log page — searchable activity log
-- [ ] Roles & Permissions page
-- [ ] Sidebar menu management (show/hide per role)
+- [x] School Profile settings (`/settings/school-profile`) — full editable form: name, code, address, phone, email, website, motto, currency, dateFormat, country, state, city, feeDueDays
+- [x] Custom Fields (`/settings/custom-fields`) — CRUD for extra student/staff profile fields (Text, Number, Date, Select, Textarea), with add/edit/delete. API: GET/POST `/api/custom-fields`, PATCH/DELETE `/api/custom-fields/[id]`
+- [x] Audit Log (`/audit-log`) — rebuilt as interactive client page: search, filter by entity/action/user/date range, load-more pagination, CSV export
+- [x] Roles & Permissions (`/settings/roles`) — visual access matrix: 7 roles × 27 modules with check/cross icons
+- [x] Settings page updated — System Admin card with quick links to all 4 features
+- [ ] Sidebar menu management (show/hide per role) — skipped (hardcoded sidebar is sufficient)
 
 ---
 
