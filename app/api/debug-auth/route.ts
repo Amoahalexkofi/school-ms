@@ -4,13 +4,14 @@ import { neon } from "@neondatabase/serverless";
 
 export async function GET(req: NextRequest) {
   const h = await headers();
+  const novalssHost = req.headers.get("x-novalss-host");
   const forwardedHost = req.headers.get("x-forwarded-host");
   const host = req.headers.get("host");
   const tenantSchema = h.get("x-tenant-schema");
 
   // Try schema lookup
   let schemaFromDb: string | null = null;
-  const rawHost = (forwardedHost ?? host ?? "").split(":")[0];
+  const rawHost = (novalssHost ?? forwardedHost ?? host ?? "").split(":")[0];
   const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN ?? "novalss.com";
   if (rawHost.endsWith(`.${appDomain}`)) {
     const subdomain = rawHost.slice(0, -(appDomain.length + 1));
@@ -24,9 +25,10 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({
-    "req.headers.x-forwarded-host": forwardedHost,
-    "req.headers.host": host,
-    "next/headers x-tenant-schema": tenantSchema,
+    "x-novalss-host": novalssHost,
+    "x-forwarded-host": forwardedHost,
+    "host": host,
+    "x-tenant-schema (next/headers)": tenantSchema,
     rawHost,
     schemaFromDb,
   });

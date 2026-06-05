@@ -8,9 +8,10 @@ const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN ?? "novalss.com";
 
 async function resolveSchema(request: Request | undefined): Promise<string> {
   try {
+    const novalssHost = request?.headers?.get("x-novalss-host");
     const forwardedHost = request?.headers?.get("x-forwarded-host");
     const host = request?.headers?.get("host");
-    const rawHost = (forwardedHost ?? host ?? "").split(":")[0];
+    const rawHost = (novalssHost ?? forwardedHost ?? host ?? "").split(":")[0];
 
     if (rawHost.endsWith(`.${APP_DOMAIN}`)) {
       const subdomain = rawHost.slice(0, -(APP_DOMAIN.length + 1));

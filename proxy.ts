@@ -45,8 +45,9 @@ function extractSubdomain(host: string): string | null {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  // x-forwarded-host is set by the Cloudflare Worker proxy for *.novalss.com
-  const host = request.headers.get("x-forwarded-host")
+  // x-novalss-host is set by the Cloudflare Worker (Vercel overwrites x-forwarded-host)
+  const host = request.headers.get("x-novalss-host")
+    ?? request.headers.get("x-forwarded-host")
     ?? request.headers.get("host")
     ?? "";
   const subdomain = extractSubdomain(host);
