@@ -132,7 +132,6 @@ export function Topbar({ title }: { title: string }) {
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-blue-600 text-white text-xs">{initials}</AvatarFallback>
           </Avatar>
-          <span className="text-sm text-gray-600 hidden md:block">{email}</span>
         </div>
       </div>
     </header>
