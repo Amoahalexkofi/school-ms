@@ -51,13 +51,7 @@ export default function ChatPage() {
   useEffect(() => {
     fetch("/api/chat")
       .then((r) => r.json())
-      .then((data) => {
-        setRooms(data);
-        // Try to get myId from first participant
-        if (data.length > 0) {
-          // Can't reliably get myId from rooms alone — will get it from messages
-        }
-      })
+      .then((data) => { if (Array.isArray(data)) setRooms(data); })
       .catch(() => {});
   }, []);
 

@@ -3,10 +3,14 @@ import { getUserRooms, createGroupRoom } from "@/lib/services/chat";
 import { auth } from "@/lib/auth";
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const rooms = await getUserRooms(session.user.id);
-  return NextResponse.json(rooms);
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json([]);
+    const rooms = await getUserRooms(session.user.id);
+    return NextResponse.json(Array.isArray(rooms) ? rooms : []);
+  } catch {
+    return NextResponse.json([]);
+  }
 }
 
 export async function POST(req: NextRequest) {
