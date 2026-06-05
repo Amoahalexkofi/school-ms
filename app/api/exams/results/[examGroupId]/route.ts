@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ examGroupId: string }> }) {
   const { examGroupId } = await params;
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
   const scheduleWhere: any = { examGroupId, isActive: true };
   if (classSectionId) scheduleWhere.classSectionId = classSectionId;
 
-  const schedules = await (prisma as any).examSchedule.findMany({
+  const schedules = await ((await getDb()) as any).examSchedule.findMany({
     where: scheduleWhere,
     include: {
       subject: { select: { name: true, code: true } },

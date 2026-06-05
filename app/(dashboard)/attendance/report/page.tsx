@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { AttendanceReportClient } from "./AttendanceReportClient";
 
 export default async function AttendanceReportPage() {
   const [sessions, classSections] = await Promise.all([
-    (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
-    (prisma as any).classSection.findMany({
+    ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
+    ((await getDb()) as any).classSection.findMany({
       include: { class: true, section: true },
       orderBy: { class: { name: "asc" } },
     }),

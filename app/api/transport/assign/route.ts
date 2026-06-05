@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
     const { studentId, routeId, pickupPointId } = await req.json();
     if (!studentId || !routeId) return NextResponse.json({ error: "studentId and routeId required" }, { status: 422 });
-    const r = await (prisma as any).studentRoute.upsert({
+    const r = await ((await getDb()) as any).studentRoute.upsert({
       where:  { studentId },
       create: { studentId, routeId, pickupPointId: pickupPointId || null },
       update: { routeId, pickupPointId: pickupPointId || null },

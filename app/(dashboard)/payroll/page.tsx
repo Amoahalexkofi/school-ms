@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { PayrollClient } from "./PayrollClient";
 
 export default async function PayrollPage() {
-  const departments = await (prisma as any).department.findMany({
+  const departments = await ((await getDb()) as any).department.findMany({
     where: { isActive: true },
     orderBy: { name: "asc" },
   });

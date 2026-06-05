@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET() {
-  const groups = await (prisma as any).examGroup.findMany({
+  const groups = await ((await getDb()) as any).examGroup.findMany({
     include: { _count: { select: { schedules: true } } },
     orderBy: { createdAt: "desc" },
   });
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   try {
     const { name, examType, description } = await req.json();
     if (!name?.trim()) return NextResponse.json({ error: "Name is required" }, { status: 422 });
-    const group = await (prisma as any).examGroup.create({
+    const group = await ((await getDb()) as any).examGroup.create({
       data: { name: name.trim(), examType: examType || null, description: description || null },
     });
     return NextResponse.json(group, { status: 201 });

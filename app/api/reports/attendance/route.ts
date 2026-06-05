@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   };
   if (classSectionId) dayWhere.classSectionId = classSectionId;
 
-  const days = await (prisma as any).attendanceDay.findMany({
+  const days = await ((await getDb()) as any).attendanceDay.findMany({
     where: dayWhere,
     include: {
       studentAttendances: {

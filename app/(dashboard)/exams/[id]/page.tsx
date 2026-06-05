@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { ExamGroupDetailClient } from "./ExamGroupDetailClient";
 
@@ -7,7 +7,7 @@ export default async function ExamGroupPage({ params }: { params: Promise<{ id: 
   const { id } = await params;
 
   const [group, sessions, classSections, subjects] = await Promise.all([
-    (prisma as any).examGroup.findUnique({
+    ((await getDb()) as any).examGroup.findUnique({
       where: { id },
       include: {
         schedules: {
@@ -21,12 +21,12 @@ export default async function ExamGroupPage({ params }: { params: Promise<{ id: 
         },
       },
     }),
-    (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
-    (prisma as any).classSection.findMany({
+    ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
+    ((await getDb()) as any).classSection.findMany({
       include: { class: true, section: true },
       orderBy: { class: { name: "asc" } },
     }),
-    (prisma as any).subject.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    ((await getDb()) as any).subject.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
   ]);
 
   if (!group) notFound();

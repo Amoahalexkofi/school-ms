@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
 function generateEmployeeId(count: number) {
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     ];
   }
 
-  const staff = await (prisma as any).staff.findMany({
+  const staff = await ((await getDb()) as any).staff.findMany({
     where,
     include: {
       user:        { select: { email: true, role: true } },
@@ -48,22 +48,22 @@ export async function POST(req: NextRequest) {
       if (!body[f]) return NextResponse.json({ error: `${f} is required` }, { status: 422 });
     }
 
-    const count = await (prisma as any).staff.count();
+    const count = await ((await getDb()) as any).staff.count();
     const employeeId = body.employeeId || generateEmployeeId(count);
 
-    const existingEmp = await (prisma as any).staff.findUnique({ where: { employeeId } });
+    const existingEmp = await ((await getDb()) as any).staff.findUnique({ where: { employeeId } });
     if (existingEmp) return NextResponse.json({ error: "Employee ID already exists" }, { status: 409 });
 
     const email    = body.email || `${employeeId.toLowerCase()}@school.local`;
     const username = `staff_${employeeId.toLowerCase()}`;
 
-    const existingUser = await (prisma as any).user.findUnique({ where: { email } });
+    const existingUser = await ((await getDb()) as any).user.findUnique({ where: { email } });
     if (existingUser) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
 
     const password = await bcrypt.hash("Staff@1234", 12);
     const role     = body.role || "TEACHER";
 
-    const staff = await (prisma as any).$transaction(async (tx: any) => {
+    const staff = await ((await getDb()) as any).$transaction(async (tx: any) => {
       const user = await tx.user.create({ data: { email, username, password, role } });
 
       return tx.staff.create({

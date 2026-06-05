@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const classSectionId = searchParams.get("classSectionId");
   if (!classSectionId) return NextResponse.json({ error: "classSectionId required" }, { status: 400 });
   try {
-    const slots = await (prisma as any).timetableSlot.findMany({
+    const slots = await ((await getDb()) as any).timetableSlot.findMany({
       where: { classSectionId },
       include: {
         subject: { select: { id: true, name: true, code: true } },
@@ -28,11 +28,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "classSectionId, subjectId, day, timeFrom, timeTo required" }, { status: 422 });
 
     // Upsert: same class-section + subject + day → update existing
-    const existing = await (prisma as any).timetableSlot.findFirst({ where: { classSectionId, subjectId, day } });
+    const existing = await ((await getDb()) as any).timetableSlot.findFirst({ where: { classSectionId, subjectId, day } });
     const data = { classSectionId, subjectId, staffId: staffId || null, day, timeFrom, timeTo, roomNo: roomNo || null, sessionId: sessionId || null };
     const slot = existing
-      ? await (prisma as any).timetableSlot.update({ where: { id: existing.id }, data })
-      : await (prisma as any).timetableSlot.create({ data });
+      ? await ((await getDb()) as any).timetableSlot.update({ where: { id: existing.id }, data })
+      : await ((await getDb()) as any).timetableSlot.create({ data });
 
     return NextResponse.json(slot, { status: 201 });
   } catch (e: any) {

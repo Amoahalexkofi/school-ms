@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserPlus, CheckCircle, XCircle, Clock } from "lucide-react";
 
 async function getApplications() {
-  return (prisma as any).admissionApplication.findMany({
+  return ((await getDb()) as any).admissionApplication.findMany({
     orderBy: { createdAt: "desc" },
   });
 }

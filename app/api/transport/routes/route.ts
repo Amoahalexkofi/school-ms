@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET() {
-  const routes = await (prisma as any).route.findMany({
+  const routes = await ((await getDb()) as any).route.findMany({
     include: { vehicle: { select: { vehicleNo: true, driverName: true } }, routePickupPoints: { include: { pickupPoint: true }, orderBy: { order: "asc" } }, _count: { select: { studentRoutes: true } } },
     orderBy: { title: "asc" },
   });
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   try {
     const { title, vehicleId } = await req.json();
     if (!title?.trim()) return NextResponse.json({ error: "Title required" }, { status: 422 });
-    const r = await (prisma as any).route.create({ data: { title: title.trim(), vehicleId: vehicleId || null } });
+    const r = await ((await getDb()) as any).route.create({ data: { title: title.trim(), vehicleId: vehicleId || null } });
     return NextResponse.json(r, { status: 201 });
   } catch (err: any) {
     if (err.code === "P2002") return NextResponse.json({ error: "Route already exists" }, { status: 409 });

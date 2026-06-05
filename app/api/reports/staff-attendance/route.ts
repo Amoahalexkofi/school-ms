@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     where.staff = { departmentId };
   }
 
-  const records = await (prisma as any).staffAttendance.findMany({
+  const records = await ((await getDb()) as any).staffAttendance.findMany({
     where,
     include: {
       staff: {

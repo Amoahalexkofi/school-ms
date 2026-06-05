@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   if (fsgId) where.feeSessionGroupId = fsgId;
   if (classSectionId) where.studentSession = { ...where.studentSession, classSectionId };
 
-  const masters = await (prisma as any).studentFeesMaster.findMany({
+  const masters = await ((await getDb()) as any).studentFeesMaster.findMany({
     where,
     include: {
       student: { select: { id: true, firstName: true, lastName: true, admissionNo: true } },

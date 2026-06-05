@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { DepartmentsClient } from "./DepartmentsClient";
 
 export default async function DepartmentsPage() {
-  const departments = await (prisma as any).department.findMany({
+  const departments = await ((await getDb()) as any).department.findMany({
     orderBy: { name: "asc" },
     include: { _count: { select: { staff: true } } },
   });

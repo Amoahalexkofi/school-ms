@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "sessionId and classSectionId required" }, { status: 400 });
 
   // All enrolled students for this session+class
-  const enrollments = await (prisma as any).studentSession.findMany({
+  const enrollments = await ((await getDb()) as any).studentSession.findMany({
     where: { classSectionId, sessionId, isActive: true },
     include: {
       student: { select: { id: true, firstName: true, lastName: true, admissionNo: true } },
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   if (to)   dateFilter.lte = new Date(to);
 
   // Attendance records for the period
-  const attendances = await (prisma as any).studentAttendance.findMany({
+  const attendances = await ((await getDb()) as any).studentAttendance.findMany({
     where: {
       studentSessionId: { in: enrollments.map((e: any) => e.id) },
       ...(Object.keys(dateFilter).length > 0 ? { attendanceDay: { date: dateFilter } } : {}),

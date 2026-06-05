@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { TakeExamClient } from "./TakeExamClient";
 import { auth } from "@/lib/auth";
@@ -8,7 +8,7 @@ async function getData(examId: string) {
   const userId = session?.user?.id;
 
   const [exam, student] = await Promise.all([
-    (prisma as any).onlineExam.findUnique({
+    ((await getDb()) as any).onlineExam.findUnique({
       where: { id: examId },
       include: {
         class: { select: { name: true } },
@@ -35,7 +35,7 @@ async function getData(examId: string) {
       },
     }),
     userId
-      ? (prisma as any).student.findFirst({ where: { userId } })
+      ? ((await getDb()) as any).student.findFirst({ where: { userId } })
       : null,
   ]);
 
@@ -43,7 +43,7 @@ async function getData(examId: string) {
 
   // Check existing attempt (to pre-fill answers or show result)
   const attempt = student
-    ? await (prisma as any).examAttempt.findUnique({
+    ? await ((await getDb()) as any).examAttempt.findUnique({
         where: { onlineExamId_studentId: { onlineExamId: examId, studentId: student.id } },
         include: { answers: true },
       })

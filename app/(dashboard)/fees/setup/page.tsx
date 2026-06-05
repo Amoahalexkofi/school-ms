@@ -1,19 +1,19 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { FeeSetupClient } from "./FeeSetupClient";
 
 export default async function FeeSetupPage() {
   const [categories, types, groups, sessions] = await Promise.all([
-    (prisma as any).feeCategory.findMany({
+    ((await getDb()) as any).feeCategory.findMany({
       orderBy: { name: "asc" },
       include: { _count: { select: { feeTypes: true } } },
     }),
-    (prisma as any).feeType.findMany({
+    ((await getDb()) as any).feeType.findMany({
       where: { isActive: true, isSystem: false },
       include: { feeCategory: { select: { name: true } } },
       orderBy: { name: "asc" },
     }),
-    (prisma as any).feeGroup.findMany({
+    ((await getDb()) as any).feeGroup.findMany({
       where: { isSystem: false },
       include: {
         sessionGroups: {
@@ -25,7 +25,7 @@ export default async function FeeSetupPage() {
       },
       orderBy: { name: "asc" },
     }),
-    (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
+    ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
   ]);
 
   return (

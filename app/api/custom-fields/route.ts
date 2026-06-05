@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const where: any = { isActive: true };
   if (tableName) where.tableName = tableName;
 
-  const fields = await (prisma as any).customField.findMany({
+  const fields = await ((await getDb()) as any).customField.findMany({
     where,
     orderBy: [{ tableName: "asc" }, { order: "asc" }],
   });
@@ -22,13 +22,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Set order to last position for that table
-    const last = await (prisma as any).customField.findFirst({
+    const last = await ((await getDb()) as any).customField.findFirst({
       where: { tableName: body.tableName, isActive: true },
       orderBy: { order: "desc" },
     });
     const order = last ? last.order + 1 : 0;
 
-    const field = await (prisma as any).customField.create({
+    const field = await ((await getDb()) as any).customField.create({
       data: { ...body, order },
     });
     return NextResponse.json(field, { status: 201 });

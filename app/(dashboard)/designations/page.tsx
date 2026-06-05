@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { DesignationsClient } from "./DesignationsClient";
 
 export default async function DesignationsPage() {
-  const designations = await (prisma as any).designation.findMany({
+  const designations = await ((await getDb()) as any).designation.findMany({
     orderBy: { name: "asc" },
     include: { _count: { select: { staff: true } } },
   });

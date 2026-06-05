@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { markAttendance } from "@/lib/services/attendance";
 
 // GET — returns enrolled students + existing attendance for a given day
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Students enrolled in this classSection for this session
-  const enrollments = await (prisma as any).studentSession.findMany({
+  const enrollments = await ((await getDb()) as any).studentSession.findMany({
     where: { classSectionId, sessionId, isActive: true },
     include: {
       student: { select: { id: true, firstName: true, middleName: true, lastName: true, admissionNo: true, gender: true } },
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   });
 
   // Existing attendance for this day (if already marked)
-  const attendanceDay = await (prisma as any).attendanceDay.findUnique({
+  const attendanceDay = await ((await getDb()) as any).attendanceDay.findUnique({
     where: { date_classSectionId: { date: new Date(date), classSectionId } },
     include: {
       studentAttendances: {

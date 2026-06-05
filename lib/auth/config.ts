@@ -1,6 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { verifyPassword } from "@/lib/auth/password";
 
 export const authConfig: NextAuthConfig = {
@@ -16,7 +16,8 @@ export const authConfig: NextAuthConfig = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await (prisma as any).user.findUnique({
+        const db = await getDb();
+        const user = await (db as any).user.findUnique({
           where: { email: credentials.email as string },
         });
         if (!user) return null;

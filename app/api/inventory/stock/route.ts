@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -7,11 +7,11 @@ export async function POST(req: NextRequest) {
     if (!itemId || !type || !quantity) return NextResponse.json({ error: "itemId, type, quantity required" }, { status: 422 });
     const qty = parseInt(quantity);
 
-    const item = await (prisma as any).item.findUnique({ where: { id: itemId }, select: { quantity: true } });
+    const item = await ((await getDb()) as any).item.findUnique({ where: { id: itemId }, select: { quantity: true } });
     if (!item) return NextResponse.json({ error: "Item not found" }, { status: 404 });
     if (type === "OUT" && item.quantity < qty) return NextResponse.json({ error: "Insufficient stock" }, { status: 409 });
 
-    await (prisma as any).$transaction(async (tx: any) => {
+    await ((await getDb()) as any).$transaction(async (tx: any) => {
       await tx.stockMovement.create({ data: { itemId, type, quantity: qty, note: note || null } });
       await tx.item.update({ where: { id: itemId }, data: { quantity: type === "IN" ? { increment: qty } : { decrement: qty } } });
       if (type === "OUT" && issuedTo) {

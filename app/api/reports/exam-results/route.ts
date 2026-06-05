@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   if (sessionId) scheduleWhere.sessionId = sessionId;
   if (classSectionId) scheduleWhere.classSectionId = classSectionId;
 
-  const schedules = await (prisma as any).examSchedule.findMany({
+  const schedules = await ((await getDb()) as any).examSchedule.findMany({
     where: scheduleWhere,
     include: {
       subject: { select: { name: true } },

@@ -1,15 +1,15 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { AttendanceClient } from "./AttendanceClient";
 
 async function getData() {
   const [sessions, classSections, attendanceTypes] = await Promise.all([
-    (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
-    (prisma as any).classSection.findMany({
+    ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
+    ((await getDb()) as any).classSection.findMany({
       include: { class: true, section: true },
       orderBy: { class: { name: "asc" } },
     }),
-    (prisma as any).attendanceType.findMany({ where: { isActive: true }, orderBy: { keyValue: "asc" } }),
+    ((await getDb()) as any).attendanceType.findMany({ where: { isActive: true }, orderBy: { keyValue: "asc" } }),
   ]);
   return { sessions, classSections, attendanceTypes };
 }

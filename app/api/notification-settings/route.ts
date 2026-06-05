@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET() {
-  const settings = await (prisma as any).notificationSetting.findMany({ orderBy: { id: "asc" } });
+  const settings = await ((await getDb()) as any).notificationSetting.findMany({ orderBy: { id: "asc" } });
   return NextResponse.json(settings);
 }
 
@@ -11,10 +11,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json(); // array of { type, label, emailEnabled, smsEnabled, pushEnabled }
     const results = [];
     for (const item of body) {
-      const existing = await (prisma as any).notificationSetting.findUnique({ where: { type: item.type } });
+      const existing = await ((await getDb()) as any).notificationSetting.findUnique({ where: { type: item.type } });
       const r = existing
-        ? await (prisma as any).notificationSetting.update({ where: { type: item.type }, data: item })
-        : await (prisma as any).notificationSetting.create({ data: item });
+        ? await ((await getDb()) as any).notificationSetting.update({ where: { type: item.type }, data: item })
+        : await ((await getDb()) as any).notificationSetting.create({ data: item });
       results.push(r);
     }
     return NextResponse.json(results);

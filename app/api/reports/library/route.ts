@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     where.issuedAt = { gte: fromDate, lte: toDate };
   }
 
-  const issues = await (prisma as any).bookIssue.findMany({
+  const issues = await ((await getDb()) as any).bookIssue.findMany({
     where,
     include: {
       book: { select: { title: true, bookNo: true, author: true } },

@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { NoticeBoardClient } from "./NoticeBoardClient";
 
 async function getData() {
-  const notices = await (prisma as any).notice.findMany({
+  const notices = await ((await getDb()) as any).notice.findMany({
     where: { isPublished: true },
     include: { postedBy: true },
     orderBy: { createdAt: "desc" },

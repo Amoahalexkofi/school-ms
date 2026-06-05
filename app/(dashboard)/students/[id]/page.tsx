@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ClipboardList, DollarSign, BookOpen, Calendar, User, GraduationCap } from "lucide-react";
 import { StudentProfileActions } from "./StudentProfileActions";
 
 async function getStudent(id: string) {
-  return (prisma as any).student.findUnique({
+  return ((await getDb()) as any).student.findUnique({
     where: { id },
     include: {
       user: { select: { email: true, role: true } },

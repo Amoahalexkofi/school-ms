@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const alumni = await (prisma as any).alumni.findUnique({
+  const alumni = await ((await getDb()) as any).alumni.findUnique({
     where: { id },
     include: {
       student: {
@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   try {
     const body = await req.json();
-    const alumni = await (prisma as any).alumni.update({ where: { id }, data: body });
+    const alumni = await ((await getDb()) as any).alumni.update({ where: { id }, data: body });
     return NextResponse.json(alumni);
   } catch { return NextResponse.json({ error: "Failed" }, { status: 500 }); }
 }
@@ -35,10 +35,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    const a = await (prisma as any).alumni.findUnique({ where: { id } });
+    const a = await ((await getDb()) as any).alumni.findUnique({ where: { id } });
     if (a) {
-      await (prisma as any).student.update({ where: { id: a.studentId }, data: { isAlumni: false } });
-      await (prisma as any).alumni.delete({ where: { id } });
+      await ((await getDb()) as any).student.update({ where: { id: a.studentId }, data: { isAlumni: false } });
+      await ((await getDb()) as any).alumni.delete({ where: { id } });
     }
     return NextResponse.json({ ok: true });
   } catch { return NextResponse.json({ error: "Failed" }, { status: 500 }); }

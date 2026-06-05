@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { SchoolHousesClient } from "./SchoolHousesClient";
 
 export default async function SchoolHousesPage() {
-  const houses = await (prisma as any).schoolHouse.findMany({
+  const houses = await ((await getDb()) as any).schoolHouse.findMany({
     where: { isActive: true },
     include: { _count: { select: { students: true } } },
     orderBy: { name: "asc" },

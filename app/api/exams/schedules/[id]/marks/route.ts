@@ -1,28 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 // GET — students enrolled in this exam's classSection + existing marks
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: scheduleId } = await params;
 
-  const schedule = await (prisma as any).examSchedule.findUnique({
+  const schedule = await ((await getDb()) as any).examSchedule.findUnique({
     where: { id: scheduleId },
     include: { subject: true, classSection: { include: { class: true, section: true } } },
   });
   if (!schedule) return NextResponse.json({ error: "Schedule not found" }, { status: 404 });
 
   const [enrollments, existingMarks, gradingScales] = await Promise.all([
-    (prisma as any).studentSession.findMany({
+    ((await getDb()) as any).studentSession.findMany({
       where: { classSectionId: schedule.classSectionId, sessionId: schedule.sessionId, isActive: true },
       include: {
         student: { select: { id: true, firstName: true, middleName: true, lastName: true, admissionNo: true } },
       },
       orderBy: [{ rollNo: "asc" }, { student: { firstName: "asc" } }],
     }),
-    (prisma as any).markEntry.findMany({
+    ((await getDb()) as any).markEntry.findMany({
       where: { examScheduleId: scheduleId },
     }),
-    (prisma as any).gradingScale.findFirst({
+    ((await getDb()) as any).gradingScale.findFirst({
       include: { ranges: { where: { isActive: true }, orderBy: { markFrom: "desc" } } },
     }),
   ]);
@@ -40,14 +40,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { records } = await req.json();
     if (!Array.isArray(records)) return NextResponse.json({ error: "records required" }, { status: 422 });
 
-    const schedule = await (prisma as any).examSchedule.findUnique({
+    const db = await getDb();
+    const schedule = await (db as any).examSchedule.findUnique({
       where: { id: scheduleId },
       select: { fullMarks: true, passingMarks: true, subjectId: true },
     });
     if (!schedule) return NextResponse.json({ error: "Schedule not found" }, { status: 404 });
 
     // Fetch grading scale for grade computation
-    const gradingScale = await (prisma as any).gradingScale.findFirst({
+    const gradingScale = await (db as any).gradingScale.findFirst({
       include: { ranges: { where: { isActive: true }, orderBy: { markFrom: "desc" } } },
     });
 
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         const isPassing = marks !== null && marks >= schedule.passingMarks;
         const grade   = computeGrade(marks);
 
-        return (prisma as any).markEntry.upsert({
+        return (db as any).markEntry.upsert({
           where: { examScheduleId_studentId: { examScheduleId: scheduleId, studentId: r.studentId } },
           create: {
             examScheduleId: scheduleId,

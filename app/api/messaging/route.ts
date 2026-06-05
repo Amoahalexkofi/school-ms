@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendBulkMessage, listMessageLogs } from "@/lib/services/messaging";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
 export async function GET() {
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     const body = await req.json();
     const staff = session?.user?.id
-      ? await (prisma as any).staff.findUnique({ where: { userId: session.user.id } })
+      ? await ((await getDb()) as any).staff.findUnique({ where: { userId: session.user.id } })
       : null;
     const log = await sendBulkMessage({ ...body, sentById: staff?.id });
     return NextResponse.json(log, { status: 201 });

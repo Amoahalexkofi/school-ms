@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET() {
-  const routes = await (prisma as any).route.findMany({
+  const routes = await ((await getDb()) as any).route.findMany({
     where: { isActive: true },
     include: {
       vehicle: { select: { vehicleNo: true, vehicleModel: true, driverName: true } },

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 // POST — assign a feeSessionGroup to all students in a classSection for a session
 // OR assign to a single student
@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     if (!feeSessionGroupId) return NextResponse.json({ error: "feeSessionGroupId required" }, { status: 422 });
 
     // Compute the total amount for this session group
-    const items = await (prisma as any).feeGroupItem.findMany({ where: { feeSessionGroupId } });
+    const items = await ((await getDb()) as any).feeGroupItem.findMany({ where: { feeSessionGroupId } });
     const totalAmount = items.reduce((sum: number, i: any) => sum + Number(i.amount), 0);
 
     let targets: string[] = [];
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     if (studentSessionId) {
       targets = [studentSessionId];
     } else if (classSectionId && sessionId) {
-      const enrollments = await (prisma as any).studentSession.findMany({
+      const enrollments = await ((await getDb()) as any).studentSession.findMany({
         where: { classSectionId, sessionId, isActive: true },
         select: { id: true },
       });
@@ -29,10 +29,10 @@ export async function POST(req: NextRequest) {
     let created = 0;
     let skipped = 0;
     for (const ssId of targets) {
-      const ss = await (prisma as any).studentSession.findUnique({ where: { id: ssId }, select: { studentId: true } });
+      const ss = await ((await getDb()) as any).studentSession.findUnique({ where: { id: ssId }, select: { studentId: true } });
       if (!ss) continue;
       try {
-        await (prisma as any).studentFeesMaster.create({
+        await ((await getDb()) as any).studentFeesMaster.create({
           data: { studentId: ss.studentId, studentSessionId: ssId, feeSessionGroupId, amount: totalAmount },
         });
         created++;

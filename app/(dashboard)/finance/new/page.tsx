@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { AddTransactionForm } from "./AddTransactionForm";
 
 export default async function NewTransactionPage() {
   const [incomeHeads, expenseHeads] = await Promise.all([
-    (prisma as any).incomeHead.findMany({ orderBy: { name: "asc" } }),
-    (prisma as any).expenseHead.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).incomeHead.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).expenseHead.findMany({ orderBy: { name: "asc" } }),
   ]);
 
   return (

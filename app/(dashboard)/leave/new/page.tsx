@@ -1,16 +1,16 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { AddLeaveForm } from "./AddLeaveForm";
 
 export default async function NewLeavePage() {
   const [leaveTypes, staff, students] = await Promise.all([
-    (prisma as any).leaveType.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
-    (prisma as any).staff.findMany({
+    ((await getDb()) as any).leaveType.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    ((await getDb()) as any).staff.findMany({
       where: { isActive: true },
       select: { id: true, firstName: true, lastName: true, employeeId: true },
       orderBy: { firstName: "asc" },
     }),
-    (prisma as any).student.findMany({
+    ((await getDb()) as any).student.findMany({
       where: { isActive: true },
       select: { id: true, firstName: true, lastName: true, admissionNo: true },
       orderBy: { firstName: "asc" },

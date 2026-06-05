@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { generateInvoice } from "@/lib/services/fee-invoices";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET() {
-  const invoices = await (prisma as any).feeInvoice.findMany({
+  const invoices = await ((await getDb()) as any).feeInvoice.findMany({
     include: {
       student: { select: { firstName: true, lastName: true, admissionNumber: true } },
       feeGroup: { select: { name: true } },

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { FeeSessionGroupClient } from "./FeeSessionGroupClient";
 
@@ -7,7 +7,7 @@ export default async function FeeSessionGroupPage({ params }: { params: Promise<
   const { id } = await params;
 
   const [sg, feeTypes] = await Promise.all([
-    (prisma as any).feeSessionGroup.findUnique({
+    ((await getDb()) as any).feeSessionGroup.findUnique({
       where: { id },
       include: {
         feeGroup: true,
@@ -19,7 +19,7 @@ export default async function FeeSessionGroupPage({ params }: { params: Promise<
         _count: { select: { studentFeesMasters: true } },
       },
     }),
-    (prisma as any).feeType.findMany({
+    ((await getDb()) as any).feeType.findMany({
       where: { isActive: true, isSystem: false },
       orderBy: { name: "asc" },
     }),

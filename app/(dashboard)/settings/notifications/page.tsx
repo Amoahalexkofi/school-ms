@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { NotificationsClient } from "./NotificationsClient";
 
@@ -17,7 +17,7 @@ const DEFAULT_NOTIFICATIONS = [
 ];
 
 async function getData() {
-  const saved = await (prisma as any).notificationSetting.findMany({ orderBy: { id: "asc" } });
+  const saved = await ((await getDb()) as any).notificationSetting.findMany({ orderBy: { id: "asc" } });
   const savedMap = Object.fromEntries(saved.map((s: any) => [s.type, s]));
   const settings = DEFAULT_NOTIFICATIONS.map((n) => ({
     ...n,

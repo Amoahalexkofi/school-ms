@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET() {
-  const groups = await (prisma as any).feeGroup.findMany({
+  const groups = await ((await getDb()) as any).feeGroup.findMany({
     where: { isSystem: false },
     include: {
       sessionGroups: {
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   try {
     const { name, description } = await req.json();
     if (!name?.trim()) return NextResponse.json({ error: "Name is required" }, { status: 422 });
-    const group = await (prisma as any).feeGroup.create({ data: { name: name.trim(), description: description || null } });
+    const group = await ((await getDb()) as any).feeGroup.create({ data: { name: name.trim(), description: description || null } });
     return NextResponse.json(group, { status: 201 });
   } catch (err: any) {
     if (err.code === "P2002") return NextResponse.json({ error: "Group already exists" }, { status: 409 });

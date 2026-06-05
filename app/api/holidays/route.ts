@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const where: any = { isActive: true };
   if (sessionId) where.sessionId = sessionId;
   if (holidayTypeId) where.holidayTypeId = holidayTypeId;
-  const holidays = await (prisma as any).holiday.findMany({
+  const holidays = await ((await getDb()) as any).holiday.findMany({
     where,
     include: { holidayType: true, session: { select: { id: true, session: true } } },
     orderBy: { fromDate: "desc" },
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const holiday = await (prisma as any).holiday.create({ data: body });
+    const holiday = await ((await getDb()) as any).holiday.create({ data: body });
     return NextResponse.json(holiday, { status: 201 });
   } catch (err: any) {
     console.error(err);

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 // GET all permissions for a role
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: roleId } = await params;
-  const perms = await (prisma as any).rolePermission.findMany({
+  const perms = await ((await getDb()) as any).rolePermission.findMany({
     where: { roleId },
     include: { permCat: { include: { permGroup: true } } },
   });
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }> = await req.json();
 
     // Delete all existing permissions for this role
-    await (prisma as any).rolePermission.deleteMany({ where: { roleId } });
+    await ((await getDb()) as any).rolePermission.deleteMany({ where: { roleId } });
 
     // Insert new ones (only where at least one action is enabled)
     const toInsert = permissions.filter(
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     );
 
     if (toInsert.length > 0) {
-      await (prisma as any).rolePermission.createMany({
+      await ((await getDb()) as any).rolePermission.createMany({
         data: toInsert.map((p) => ({ roleId, ...p })),
       });
     }

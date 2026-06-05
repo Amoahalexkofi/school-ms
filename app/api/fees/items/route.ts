@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     if (!feeSessionGroupId || !feeTypeId) return NextResponse.json({ error: "feeSessionGroupId and feeTypeId required" }, { status: 422 });
     if (!amount || Number(amount) <= 0) return NextResponse.json({ error: "Amount must be positive" }, { status: 422 });
 
-    const item = await (prisma as any).feeGroupItem.create({
+    const item = await ((await getDb()) as any).feeGroupItem.create({
       data: {
         feeSessionGroupId,
         feeTypeId,

@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { AdmitCardClient } from "./AdmitCardClient";
 
 async function getData() {
   const [examGroups, classes, school] = await Promise.all([
-    (prisma as any).examGroup.findMany({
+    ((await getDb()) as any).examGroup.findMany({
       orderBy: { createdAt: "desc" },
       include: {
         schedules: {
@@ -13,7 +13,7 @@ async function getData() {
         },
       },
     }),
-    (prisma as any).class.findMany({
+    ((await getDb()) as any).class.findMany({
       orderBy: { name: "asc" },
       include: {
         classSections: {
@@ -22,7 +22,7 @@ async function getData() {
         },
       },
     }),
-    (prisma as any).schoolProfile.findFirst(),
+    ((await getDb()) as any).schoolProfile.findFirst(),
   ]);
   return { examGroups, classes, school };
 }

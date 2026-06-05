@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { HolidaysClient } from "./HolidaysClient";
 
 async function getData() {
   const [holidays, holidayTypes, sessions] = await Promise.all([
-    (prisma as any).holiday.findMany({
+    ((await getDb()) as any).holiday.findMany({
       where: { isActive: true },
       include: {
         holidayType: true,
@@ -12,12 +12,12 @@ async function getData() {
       },
       orderBy: { fromDate: "desc" },
     }),
-    (prisma as any).holidayType.findMany({
+    ((await getDb()) as any).holidayType.findMany({
       where: { isActive: true },
       include: { _count: { select: { holidays: true } } },
       orderBy: { name: "asc" },
     }),
-    (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
+    ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
   ]);
   return { holidays, holidayTypes, sessions };
 }

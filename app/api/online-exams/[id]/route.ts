@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const exam = await (prisma as any).onlineExam.findUnique({
+  const exam = await ((await getDb()) as any).onlineExam.findUnique({
     where: { id },
     include: {
       class: { select: { id: true, name: true } },
@@ -32,7 +32,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   try {
     const body = await req.json();
-    const exam = await (prisma as any).onlineExam.update({ where: { id }, data: body });
+    const exam = await ((await getDb()) as any).onlineExam.update({ where: { id }, data: body });
     return NextResponse.json(exam);
   } catch {
     return NextResponse.json({ error: "Failed" }, { status: 500 });
@@ -42,7 +42,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    await (prisma as any).onlineExam.delete({ where: { id } });
+    await ((await getDb()) as any).onlineExam.delete({ where: { id } });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Failed" }, { status: 500 });

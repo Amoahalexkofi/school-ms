@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const classSectionId = searchParams.get("classSectionId");
   if (!classSectionId) return NextResponse.json({ error: "classSectionId required" }, { status: 400 });
   try {
-    const homework = await (prisma as any).homework.findMany({
+    const homework = await ((await getDb()) as any).homework.findMany({
       where: { classSectionId, isActive: true },
       include: {
         subject: { select: { id: true, name: true, code: true } },
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     if (!title || !subjectId || !classSectionId || !sessionId || !dueDate)
       return NextResponse.json({ error: "title, subjectId, classSectionId, sessionId, dueDate required" }, { status: 422 });
 
-    const hw = await (prisma as any).homework.create({
+    const hw = await ((await getDb()) as any).homework.create({
       data: {
         title: title.trim(),
         description: description?.trim() || null,

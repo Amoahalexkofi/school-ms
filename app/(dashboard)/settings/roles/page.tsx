@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { RolesClient } from "./RolesClient";
 
 export default async function RolesPage() {
-  const roles = await (prisma as any).appRole.findMany({
+  const roles = await ((await getDb()) as any).appRole.findMany({
     include: {
       _count: { select: { permissions: true, staffRoles: true } },
     },

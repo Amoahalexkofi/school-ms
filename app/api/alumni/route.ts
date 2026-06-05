@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     studentWhere.sessions = { some: ssWhere };
   }
 
-  const alumni = await (prisma as any).alumni.findMany({
+  const alumni = await ((await getDb()) as any).alumni.findMany({
     include: {
       student: {
         select: {
@@ -61,16 +61,16 @@ export async function POST(req: NextRequest) {
     const { studentId, ...data } = body;
 
     // Mark student as alumni
-    await (prisma as any).student.update({
+    await ((await getDb()) as any).student.update({
       where: { id: studentId },
       data: { isAlumni: true },
     });
 
     // Create or update alumni record
-    const existing = await (prisma as any).alumni.findUnique({ where: { studentId } });
+    const existing = await ((await getDb()) as any).alumni.findUnique({ where: { studentId } });
     const alumni = existing
-      ? await (prisma as any).alumni.update({ where: { studentId }, data })
-      : await (prisma as any).alumni.create({ data: { studentId, ...data } });
+      ? await ((await getDb()) as any).alumni.update({ where: { studentId }, data })
+      : await ((await getDb()) as any).alumni.create({ data: { studentId, ...data } });
 
     return NextResponse.json(alumni, { status: 201 });
   } catch (err: any) {

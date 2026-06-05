@@ -1,16 +1,16 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { FeeCollectClient } from "./FeeCollectClient";
 
 async function getData(studentId: string) {
-  const student = await (prisma as any).student.findUnique({
+  const student = await ((await getDb()) as any).student.findUnique({
     where: { id: studentId },
     select: { id: true, firstName: true, middleName: true, lastName: true, admissionNo: true },
   });
   if (!student) return null;
 
-  const masters = await (prisma as any).studentFeesMaster.findMany({
+  const masters = await ((await getDb()) as any).studentFeesMaster.findMany({
     where: { studentId, isActive: true },
     include: {
       feeSessionGroup: {

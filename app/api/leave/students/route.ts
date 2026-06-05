@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const status = req.nextUrl.searchParams.get("status");
   const where: any = {};
   if (status) where.status = status;
-  const requests = await (prisma as any).studentLeaveRequest.findMany({
+  const requests = await ((await getDb()) as any).studentLeaveRequest.findMany({
     where,
     include: { student: { select: { firstName: true, lastName: true, admissionNo: true } } },
     orderBy: { createdAt: "desc" },
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const { studentId, fromDate, toDate, reason } = await req.json();
     if (!studentId || !fromDate || !toDate)
       return NextResponse.json({ error: "studentId, fromDate, toDate required" }, { status: 422 });
-    const r = await (prisma as any).studentLeaveRequest.create({
+    const r = await ((await getDb()) as any).studentLeaveRequest.create({
       data: { studentId, fromDate: new Date(fromDate), toDate: new Date(toDate), reason: reason || null },
     });
     return NextResponse.json(r, { status: 201 });

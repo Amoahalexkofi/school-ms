@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -20,11 +20,11 @@ export async function GET(req: NextRequest) {
     const csWhere: any = {};
     if (classId) csWhere.classId = classId;
     if (sectionId) csWhere.sectionId = sectionId;
-    const csList = await (prisma as any).classSection.findMany({ where: csWhere, select: { id: true } });
+    const csList = await ((await getDb()) as any).classSection.findMany({ where: csWhere, select: { id: true } });
     sessionFilter.classSectionId = { in: csList.map((cs: any) => cs.id) };
   }
 
-  const students = await (prisma as any).student.findMany({
+  const students = await ((await getDb()) as any).student.findMany({
     where: {
       ...where,
       ...(Object.keys(sessionFilter).length > 0

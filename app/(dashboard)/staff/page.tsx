@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { StaffClient } from "./StaffClient";
 
 async function getData() {
   const [staff, departments, designations] = await Promise.all([
-    (prisma as any).staff.findMany({
+    ((await getDb()) as any).staff.findMany({
       include: {
         user:        { select: { email: true, role: true } },
         department:  { select: { name: true } },
@@ -12,8 +12,8 @@ async function getData() {
       },
       orderBy: { firstName: "asc" },
     }),
-    (prisma as any).department.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
-    (prisma as any).designation.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    ((await getDb()) as any).department.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    ((await getDb()) as any).designation.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
   ]);
   return { staff, departments, designations };
 }

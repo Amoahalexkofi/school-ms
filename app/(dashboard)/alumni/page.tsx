@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { AlumniClient } from "./AlumniClient";
 
 async function getData() {
   const [alumni, sessions, classes, students] = await Promise.all([
-    (prisma as any).alumni.findMany({
+    ((await getDb()) as any).alumni.findMany({
       include: {
         student: {
           select: {
@@ -28,10 +28,10 @@ async function getData() {
       },
       orderBy: { createdAt: "desc" },
     }),
-    (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
-    (prisma as any).class.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
+    ((await getDb()) as any).class.findMany({ orderBy: { name: "asc" } }),
     // Students eligible to be marked as alumni (inactive + no Alumni record yet)
-    (prisma as any).student.findMany({
+    ((await getDb()) as any).student.findMany({
       where: { isActive: false, alumni: { is: null } },
       select: {
         id: true, firstName: true, lastName: true, admissionNo: true,

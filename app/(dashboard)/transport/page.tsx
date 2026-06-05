@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { TransportClient } from "./TransportClient";
 
 export default async function TransportPage() {
   const [vehicles, routes, pickupPoints, students] = await Promise.all([
-    (prisma as any).vehicle.findMany({ orderBy: { vehicleNo: "asc" } }),
-    (prisma as any).route.findMany({
+    ((await getDb()) as any).vehicle.findMany({ orderBy: { vehicleNo: "asc" } }),
+    ((await getDb()) as any).route.findMany({
       include: {
         vehicle: { select: { vehicleNo: true } },
         routePickupPoints: { include: { pickupPoint: true }, orderBy: { order: "asc" } },
@@ -13,8 +13,8 @@ export default async function TransportPage() {
       },
       orderBy: { title: "asc" },
     }),
-    (prisma as any).pickupPoint.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
-    (prisma as any).student.findMany({
+    ((await getDb()) as any).pickupPoint.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    ((await getDb()) as any).student.findMany({
       where: { isActive: true },
       select: {
         id: true, firstName: true, lastName: true, admissionNo: true,

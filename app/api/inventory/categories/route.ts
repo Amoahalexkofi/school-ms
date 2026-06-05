@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET() {
-  return NextResponse.json(await (prisma as any).itemCategory.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { items: true } } } }));
+  return NextResponse.json(await ((await getDb()) as any).itemCategory.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { items: true } } } }));
 }
 export async function POST(req: NextRequest) {
   try {
     const { name } = await req.json();
     if (!name?.trim()) return NextResponse.json({ error: "Name required" }, { status: 422 });
-    return NextResponse.json(await (prisma as any).itemCategory.create({ data: { name: name.trim() } }), { status: 201 });
+    return NextResponse.json(await ((await getDb()) as any).itemCategory.create({ data: { name: name.trim() } }), { status: 201 });
   } catch (err: any) {
     if (err.code === "P2002") return NextResponse.json({ error: "Already exists" }, { status: 409 });
     return NextResponse.json({ error: err.message }, { status: 500 });

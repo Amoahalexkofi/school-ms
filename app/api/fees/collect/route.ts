@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 // POST — record a payment against a StudentFeesMaster
 export async function POST(req: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    const deposit = await (prisma as any).feeDeposit.create({
+    const deposit = await ((await getDb()) as any).feeDeposit.create({
       data: {
         studentFeesMasterId,
         feeGroupItemId: feeGroupItemId || null,

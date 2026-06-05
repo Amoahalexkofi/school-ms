@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   if (subjectId) where.subjectId = subjectId;
   if (questionType) where.questionType = questionType;
 
-  const questions = await (prisma as any).question.findMany({
+  const questions = await ((await getDb()) as any).question.findMany({
     where,
     include: {
       subject: { select: { id: true, name: true } },
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const question = await (prisma as any).question.create({ data: body });
+    const question = await ((await getDb()) as any).question.create({ data: body });
     return NextResponse.json(question, { status: 201 });
   } catch (err: any) {
     console.error(err);

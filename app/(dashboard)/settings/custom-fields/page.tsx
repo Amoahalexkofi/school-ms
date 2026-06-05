@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { CustomFieldsClient } from "./CustomFieldsClient";
 
 async function getData() {
-  const fields = await (prisma as any).customField.findMany({
+  const fields = await ((await getDb()) as any).customField.findMany({
     where: { isActive: true },
     orderBy: [{ tableName: "asc" }, { order: "asc" }],
   });

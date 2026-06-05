@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { OnlineExamsClient } from "./OnlineExamsClient";
 
 async function getData() {
   const [exams, classes, subjects] = await Promise.all([
-    (prisma as any).onlineExam.findMany({
+    ((await getDb()) as any).onlineExam.findMany({
       include: {
         class: { select: { id: true, name: true } },
         _count: { select: { questions: true, attempts: true } },
@@ -15,8 +15,8 @@ async function getData() {
       },
       orderBy: { startTime: "desc" },
     }),
-    (prisma as any).class.findMany({ orderBy: { name: "asc" } }),
-    (prisma as any).subject.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).class.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).subject.findMany({ orderBy: { name: "asc" } }),
   ]);
   return { exams, classes, subjects };
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createNotice, listNotices, deleteNotice } from "@/lib/services/notices";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
 export async function GET() {
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     // Resolve staff id from session user
     const staff = session?.user?.id
-      ? await (prisma as any).staff.findUnique({ where: { userId: session.user.id } })
+      ? await ((await getDb()) as any).staff.findUnique({ where: { userId: session.user.id } })
       : null;
     if (!staff) return NextResponse.json({ error: "Only staff can post notices" }, { status: 403 });
     const notice = await createNotice({ ...body, postedById: staff.id });

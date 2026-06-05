@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { SourcesClient } from "../sources/SourcesClient";
 
 export default async function ReferencesPage() {
-  const items = await (prisma as any).reference.findMany({ where: { isActive: true }, orderBy: { name: "asc" } });
+  const items = await ((await getDb()) as any).reference.findMany({ where: { isActive: true }, orderBy: { name: "asc" } });
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="References" />

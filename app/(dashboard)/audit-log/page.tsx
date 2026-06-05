@@ -1,14 +1,14 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { AuditLogClient } from "./AuditLogClient";
 
 async function getData() {
   const [logs, users] = await Promise.all([
-    (prisma as any).auditLog.findMany({
+    ((await getDb()) as any).auditLog.findMany({
       orderBy: { createdAt: "desc" },
       take: 500,
     }),
-    (prisma as any).user.findMany({
+    ((await getDb()) as any).user.findMany({
       select: { id: true, email: true },
       orderBy: { email: "asc" },
     }),

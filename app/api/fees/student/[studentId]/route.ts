@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ studentId: string }> }) {
   const { studentId } = await params;
 
-  const masters = await (prisma as any).studentFeesMaster.findMany({
+  const masters = await ((await getDb()) as any).studentFeesMaster.findMany({
     where: { studentId, isActive: true },
     include: {
       feeSessionGroup: {

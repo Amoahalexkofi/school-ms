@@ -2,13 +2,77 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { isPublicRoute, canAccessRoute, type UserRole } from "@/lib/auth/middleware-utils";
+import { neon } from "@neondatabase/serverless";
+
+// ── Tenant detection ──────────────────────────────────────────────────────────
+
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN ?? "novalss.com";
+
+// Cache subdomain → schemaName lookups for 60 s to avoid a DB hit per request
+const tenantCache = new Map<string, { schema: string; expiresAt: number }>();
+
+async function getSchemaForSubdomain(subdomain: string): Promise<string | null> {
+  const now = Date.now();
+  const cached = tenantCache.get(subdomain);
+  if (cached && cached.expiresAt > now) return cached.schema;
+
+  try {
+    const sql = neon(process.env.DATABASE_URL!);
+    const rows = await sql`
+      SELECT "schemaName" FROM "SchoolTenant"
+      WHERE subdomain = ${subdomain} AND status != 'suspended'
+      LIMIT 1
+    `;
+    if (!rows.length) return null;
+    const schema = rows[0].schemaName as string;
+    tenantCache.set(subdomain, { schema, expiresAt: now + 60_000 });
+    return schema;
+  } catch {
+    return null;
+  }
+}
+
+function extractSubdomain(host: string): string | null {
+  const withoutPort = host.split(":")[0];
+  if (withoutPort.endsWith(`.${APP_DOMAIN}`)) {
+    const sub = withoutPort.slice(0, -(APP_DOMAIN.length + 1));
+    if (sub && sub !== "www") return sub;
+  }
+  return null;
+}
+
+// ── Main proxy ────────────────────────────────────────────────────────────────
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const host = request.headers.get("host") ?? "";
+  const subdomain = extractSubdomain(host);
 
-  if (isPublicRoute(pathname)) return NextResponse.next();
+  // Build forwarded request headers
+  const requestHeaders = new Headers(request.headers);
 
-  // NextAuth v5 uses "authjs.session-token" (dev) or "__Secure-authjs.session-token" (prod/HTTPS)
+  // Resolve tenant schema from subdomain
+  if (subdomain) {
+    const schema = await getSchemaForSubdomain(subdomain);
+    if (!schema) {
+      return new NextResponse(
+        `<html><body style="font-family:sans-serif;text-align:center;padding:80px;color:#374151">
+          <h2 style="font-size:1.5rem;font-weight:700">School not found</h2>
+          <p>No school is registered at <strong>${host}</strong>.</p>
+          <p style="margin-top:1rem"><a href="https://${APP_DOMAIN}/register" style="color:#2563eb">Register your school →</a></p>
+        </body></html>`,
+        { status: 404, headers: { "content-type": "text/html" } }
+      );
+    }
+    requestHeaders.set("x-tenant-schema", schema);
+  }
+
+  // Public routes bypass auth (schema header still forwarded)
+  if (isPublicRoute(pathname)) {
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+
+  // Auth check
   const isSecure = request.url.startsWith("https://");
   const cookieName = isSecure
     ? "__Secure-authjs.session-token"
@@ -26,15 +90,17 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(signIn);
   }
 
-  // API routes: any authenticated user can reach them; handlers own fine-grained auth
-  if (pathname.startsWith("/api/")) return NextResponse.next();
+  // API routes: any authenticated user can reach them
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
 
   const role = token.role as UserRole | undefined;
   if (!role || !canAccessRoute(pathname, role)) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  return NextResponse.next();
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { NewQuestionForm } from "./NewQuestionForm";
 
 async function getData() {
   const [classes, subjects] = await Promise.all([
-    (prisma as any).class.findMany({ orderBy: { name: "asc" } }),
-    (prisma as any).subject.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).class.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).subject.findMany({ orderBy: { name: "asc" } }),
   ]);
   return { classes, subjects };
 }

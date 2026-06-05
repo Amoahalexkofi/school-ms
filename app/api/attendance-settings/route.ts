@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type"); // "student" | "staff"
 
   if (type === "staff") {
-    const schedules = await (prisma as any).staffAttendanceSchedule.findMany({
+    const schedules = await ((await getDb()) as any).staffAttendanceSchedule.findMany({
       where: { isActive: true },
       include: { staffAttendanceType: true },
       orderBy: { role: "asc" },
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Student attendance schedules
-  const schedules = await (prisma as any).studentAttendanceSchedule.findMany({
+  const schedules = await ((await getDb()) as any).studentAttendanceSchedule.findMany({
     where: { isActive: true },
     include: {
       classSection: {
@@ -40,12 +40,12 @@ export async function POST(req: NextRequest) {
       // Upsert staff schedules
       const results = [];
       for (const s of schedules) {
-        const existing = await (prisma as any).staffAttendanceSchedule.findFirst({
+        const existing = await ((await getDb()) as any).staffAttendanceSchedule.findFirst({
           where: { role: s.role, staffAttendanceTypeId: s.staffAttendanceTypeId },
         });
         const r = existing
-          ? await (prisma as any).staffAttendanceSchedule.update({ where: { id: existing.id }, data: s })
-          : await (prisma as any).staffAttendanceSchedule.create({ data: s });
+          ? await ((await getDb()) as any).staffAttendanceSchedule.update({ where: { id: existing.id }, data: s })
+          : await ((await getDb()) as any).staffAttendanceSchedule.create({ data: s });
         results.push(r);
       }
       return NextResponse.json(results);
@@ -54,12 +54,12 @@ export async function POST(req: NextRequest) {
     // Student schedules
     const results = [];
     for (const s of schedules) {
-      const existing = await (prisma as any).studentAttendanceSchedule.findFirst({
+      const existing = await ((await getDb()) as any).studentAttendanceSchedule.findFirst({
         where: { classSectionId: s.classSectionId, attendanceTypeId: s.attendanceTypeId },
       });
       const r = existing
-        ? await (prisma as any).studentAttendanceSchedule.update({ where: { id: existing.id }, data: s })
-        : await (prisma as any).studentAttendanceSchedule.create({ data: s });
+        ? await ((await getDb()) as any).studentAttendanceSchedule.update({ where: { id: existing.id }, data: s })
+        : await ((await getDb()) as any).studentAttendanceSchedule.create({ data: s });
       results.push(r);
     }
     return NextResponse.json(results);

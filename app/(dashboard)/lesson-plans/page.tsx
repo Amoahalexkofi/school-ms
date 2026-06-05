@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, CheckCircle, Clock, AlertCircle } from "lucide-react";
 
 async function getLessonPlans() {
-  return (prisma as any).lessonPlan.findMany({
+  return ((await getDb()) as any).lessonPlan.findMany({
     include: {
       staff: true,
       subject: true,

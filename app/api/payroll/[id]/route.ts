@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const payslip = await (prisma as any).staffPayslip.findUnique({
+  const payslip = await ((await getDb()) as any).staffPayslip.findUnique({
     where: { id },
     include: {
       staff: {
@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     // Recompute net from current allowances if not explicitly set
     if (body.recompute) {
       delete body.recompute;
-      const current = await (prisma as any).staffPayslip.findUnique({
+      const current = await ((await getDb()) as any).staffPayslip.findUnique({
         where: { id },
         include: { allowances: true },
       });
@@ -48,7 +48,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       }
     }
 
-    const payslip = await (prisma as any).staffPayslip.update({ where: { id }, data: body });
+    const payslip = await ((await getDb()) as any).staffPayslip.update({ where: { id }, data: body });
     return NextResponse.json(payslip);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -57,9 +57,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const payslip = await (prisma as any).staffPayslip.findUnique({ where: { id }, select: { status: true } });
+  const payslip = await ((await getDb()) as any).staffPayslip.findUnique({ where: { id }, select: { status: true } });
   if (!payslip) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (payslip.status === "PAID") return NextResponse.json({ error: "Cannot delete a paid payslip" }, { status: 409 });
-  await (prisma as any).staffPayslip.delete({ where: { id } });
+  await ((await getDb()) as any).staffPayslip.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

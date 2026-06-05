@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 // GET — staff list + existing attendance for a date
 export async function GET(req: NextRequest) {
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   if (departmentId) where.departmentId = departmentId;
 
   const [staff, existing] = await Promise.all([
-    (prisma as any).staff.findMany({
+    ((await getDb()) as any).staff.findMany({
       where,
       include: {
         department:  { select: { name: true } },
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
       },
       orderBy: { firstName: "asc" },
     }),
-    (prisma as any).staffAttendance.findMany({
+    ((await getDb()) as any).staffAttendance.findMany({
       where: { date: new Date(date) },
       include: { staffAttendanceType: true },
     }),
@@ -42,10 +42,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "records required" }, { status: 400 });
 
     const date = new Date(body.date);
+    const db = await getDb();
 
     await Promise.all(
       body.records.map((r: any) =>
-        (prisma as any).staffAttendance.upsert({
+        (db as any).staffAttendance.upsert({
           where: { staffId_date: { staffId: r.staffId, date } },
           create: {
             staffId:              r.staffId,

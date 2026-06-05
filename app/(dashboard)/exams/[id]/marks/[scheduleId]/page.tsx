@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { MarkEntryClient } from "./MarkEntryClient";
 
@@ -10,7 +10,7 @@ export default async function MarkEntryPage({
 }) {
   const { id: examGroupId, scheduleId } = await params;
 
-  const schedule = await (prisma as any).examSchedule.findUnique({
+  const schedule = await ((await getDb()) as any).examSchedule.findUnique({
     where: { id: scheduleId },
     include: {
       subject:      true,
@@ -22,15 +22,15 @@ export default async function MarkEntryPage({
   if (!schedule) notFound();
 
   const [enrollments, existingMarks, gradingScale] = await Promise.all([
-    (prisma as any).studentSession.findMany({
+    ((await getDb()) as any).studentSession.findMany({
       where: { classSectionId: schedule.classSectionId, sessionId: schedule.sessionId, isActive: true },
       include: {
         student: { select: { id: true, firstName: true, middleName: true, lastName: true, admissionNo: true } },
       },
       orderBy: [{ rollNo: "asc" }, { student: { firstName: "asc" } }],
     }),
-    (prisma as any).markEntry.findMany({ where: { examScheduleId: scheduleId } }),
-    (prisma as any).gradingScale.findFirst({
+    ((await getDb()) as any).markEntry.findMany({ where: { examScheduleId: scheduleId } }),
+    ((await getDb()) as any).gradingScale.findFirst({
       include: { ranges: { where: { isActive: true }, orderBy: { markFrom: "desc" } } },
     }),
   ]);

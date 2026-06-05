@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 // Add question to exam
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -8,19 +8,19 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { questionId, marks = 1 } = await req.json();
 
     // Get current max order
-    const last = await (prisma as any).onlineExamQuestion.findFirst({
+    const last = await ((await getDb()) as any).onlineExamQuestion.findFirst({
       where: { onlineExamId },
       orderBy: { order: "desc" },
     });
     const order = last ? last.order + 1 : 0;
 
-    const eq = await (prisma as any).onlineExamQuestion.create({
+    const eq = await ((await getDb()) as any).onlineExamQuestion.create({
       data: { onlineExamId, questionId, marks, order },
     });
 
     // Update totalQuestions count
-    const count = await (prisma as any).onlineExamQuestion.count({ where: { onlineExamId } });
-    await (prisma as any).onlineExam.update({
+    const count = await ((await getDb()) as any).onlineExamQuestion.count({ where: { onlineExamId } });
+    await ((await getDb()) as any).onlineExam.update({
       where: { id: onlineExamId },
       data: { totalQuestions: count },
     });
@@ -38,12 +38,12 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const { id: onlineExamId } = await params;
   try {
     const { questionId } = await req.json();
-    await (prisma as any).onlineExamQuestion.deleteMany({
+    await ((await getDb()) as any).onlineExamQuestion.deleteMany({
       where: { onlineExamId, questionId },
     });
 
-    const count = await (prisma as any).onlineExamQuestion.count({ where: { onlineExamId } });
-    await (prisma as any).onlineExam.update({
+    const count = await ((await getDb()) as any).onlineExamQuestion.count({ where: { onlineExamId } });
+    await ((await getDb()) as any).onlineExam.update({
       where: { id: onlineExamId },
       data: { totalQuestions: count },
     });

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const status = req.nextUrl.searchParams.get("status");
   const where: any = {};
   if (status) where.status = status;
-  const issues = await (prisma as any).bookIssue.findMany({
+  const issues = await ((await getDb()) as any).bookIssue.findMany({
     where,
     include: {
       book:    { select: { title: true, bookNo: true } },
@@ -23,10 +23,10 @@ export async function POST(req: NextRequest) {
     if (!bookId || !dueDate) return NextResponse.json({ error: "bookId and dueDate required" }, { status: 422 });
     if (!studentId && !staffId) return NextResponse.json({ error: "Either studentId or staffId required" }, { status: 422 });
 
-    const book = await (prisma as any).book.findUnique({ where: { id: bookId }, select: { available: true } });
+    const book = await ((await getDb()) as any).book.findUnique({ where: { id: bookId }, select: { available: true } });
     if (!book || book.available < 1) return NextResponse.json({ error: "No copies available" }, { status: 409 });
 
-    const issue = await (prisma as any).$transaction(async (tx: any) => {
+    const issue = await ((await getDb()) as any).$transaction(async (tx: any) => {
       const i = await tx.bookIssue.create({
         data: { bookId, studentId: studentId || null, staffId: staffId || null, dueDate: new Date(dueDate) },
       });

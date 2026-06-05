@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const staff = await (prisma as any).staff.findUnique({
+  const staff = await ((await getDb()) as any).staff.findUnique({
     where: { id },
     include: {
       user:        { select: { email: true, role: true, isActive: true } },
@@ -38,7 +38,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const { role, ...staffData } = body;
 
-    const staff = await (prisma as any).$transaction(async (tx: any) => {
+    const staff = await ((await getDb()) as any).$transaction(async (tx: any) => {
       if (role) {
         const s = await tx.staff.findUnique({ where: { id }, select: { userId: true } });
         if (s) await tx.user.update({ where: { id: s.userId }, data: { role } });
@@ -55,7 +55,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    await (prisma as any).staff.delete({ where: { id } });
+    await ((await getDb()) as any).staff.delete({ where: { id } });
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

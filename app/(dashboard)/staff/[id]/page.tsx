@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, User, Briefcase, DollarSign, BookOpen, Share2 } from "lucide-react";
@@ -8,7 +8,7 @@ import { StaffProfileActions } from "./StaffProfileActions";
 
 async function getData(id: string) {
   const [staff, departments, designations] = await Promise.all([
-    (prisma as any).staff.findUnique({
+    ((await getDb()) as any).staff.findUnique({
       where: { id },
       include: {
         user:        { select: { email: true, role: true } },
@@ -20,8 +20,8 @@ async function getData(id: string) {
         leaveRequests: { orderBy: { createdAt: "desc" }, take: 5 },
       },
     }),
-    (prisma as any).department.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
-    (prisma as any).designation.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    ((await getDb()) as any).department.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    ((await getDb()) as any).designation.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
   ]);
   return { staff, departments, designations };
 }

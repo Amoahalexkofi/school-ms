@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { generateAdmissionNumber } from "@/lib/domain/students";
 import bcrypt from "bcryptjs";
 
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   if (sessionId)      sessionFilter.sessionId      = sessionId;
   if (classSectionId) sessionFilter.classSectionId = classSectionId;
 
-  const students = await (prisma as any).student.findMany({
+  const students = await ((await getDb()) as any).student.findMany({
     where: {
       ...where,
       ...(Object.keys(sessionFilter).length > 0
@@ -59,18 +59,18 @@ export async function POST(req: NextRequest) {
     }
 
     if (body.email) {
-      const exists = await (prisma as any).user.findUnique({ where: { email: body.email } });
+      const exists = await ((await getDb()) as any).user.findUnique({ where: { email: body.email } });
       if (exists) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
     }
 
-    const count  = await (prisma as any).student.count();
+    const count  = await ((await getDb()) as any).student.count();
     const year   = new Date().getFullYear();
     const admissionNo = generateAdmissionNumber({ sessionYear: year, sequenceNumber: count + 1 });
     const email    = body.email || `${admissionNo.toLowerCase().replace(/\//g, ".")}@school.local`;
     const username = `stu_${admissionNo.toLowerCase().replace(/\//g, "_")}`;
     const password = await bcrypt.hash("Student@1234", 12);
 
-    const student = await (prisma as any).$transaction(async (tx: any) => {
+    const student = await ((await getDb()) as any).$transaction(async (tx: any) => {
       const user = await tx.user.create({ data: { email, username, password, role: "STUDENT" } });
 
       const s = await tx.student.create({

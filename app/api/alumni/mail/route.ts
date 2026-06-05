@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       alumniWhere.student = { sessions: { some: sessionFilter } };
     }
 
-    const alumni = await (prisma as any).alumni.findMany({
+    const alumni = await ((await getDb()) as any).alumni.findMany({
       where: alumniWhere,
       include: {
         student: {
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
         .filter(Boolean);
 
       if (userIds.length > 0) {
-        await (prisma as any).notification.createMany({
+        await ((await getDb()) as any).notification.createMany({
           data: userIds.map((uid: string) => ({
             userId: uid,
             type: "GENERAL",
@@ -56,21 +56,21 @@ export async function POST(req: NextRequest) {
     if (sessionId || classId) {
       const parts: string[] = [];
       if (sessionId) {
-        const s = await (prisma as any).academicSession.findUnique({ where: { id: sessionId } });
+        const s = await ((await getDb()) as any).academicSession.findUnique({ where: { id: sessionId } });
         if (s) parts.push(s.session);
       }
       if (classId) {
-        const c = await (prisma as any).class.findUnique({ where: { id: classId } });
+        const c = await ((await getDb()) as any).class.findUnique({ where: { id: classId } });
         if (c) parts.push(`Class ${c.name}`);
       }
       recipientLabel = `Alumni — ${parts.join(", ")}`;
     }
 
     const staff = session?.user?.id
-      ? await (prisma as any).staff.findUnique({ where: { userId: session.user.id } })
+      ? await ((await getDb()) as any).staff.findUnique({ where: { userId: session.user.id } })
       : null;
 
-    const log = await (prisma as any).messageLog.create({
+    const log = await ((await getDb()) as any).messageLog.create({
       data: {
         subject: subject.trim(),
         message: message.trim(),

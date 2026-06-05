@@ -1,13 +1,13 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { FeesHubClient } from "./FeesHubClient";
 
 async function getStats() {
   const [totalStudents, totalMasters, deposits, students] = await Promise.all([
-    (prisma as any).student.count({ where: { isActive: true } }),
-    (prisma as any).studentFeesMaster.count({ where: { isActive: true } }),
-    (prisma as any).feeDeposit.findMany({ where: { isActive: true }, select: { amountDetail: true } }),
-    (prisma as any).student.findMany({
+    ((await getDb()) as any).student.count({ where: { isActive: true } }),
+    ((await getDb()) as any).studentFeesMaster.count({ where: { isActive: true } }),
+    ((await getDb()) as any).feeDeposit.findMany({ where: { isActive: true }, select: { amountDetail: true } }),
+    ((await getDb()) as any).student.findMany({
       where: { isActive: true },
       select: { id: true, firstName: true, middleName: true, lastName: true, admissionNo: true },
       orderBy: { firstName: "asc" },

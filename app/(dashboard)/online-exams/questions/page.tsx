@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { QuestionsClient } from "./QuestionsClient";
 
 async function getData() {
   const [questions, classes, subjects] = await Promise.all([
-    (prisma as any).question.findMany({
+    ((await getDb()) as any).question.findMany({
       where: { isActive: true },
       include: {
         subject: { select: { id: true, name: true } },
@@ -12,8 +12,8 @@ async function getData() {
       },
       orderBy: { createdAt: "desc" },
     }),
-    (prisma as any).class.findMany({ orderBy: { name: "asc" } }),
-    (prisma as any).subject.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).class.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).subject.findMany({ orderBy: { name: "asc" } }),
   ]);
   return { questions, classes, subjects };
 }

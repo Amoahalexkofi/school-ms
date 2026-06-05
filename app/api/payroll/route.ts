@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 // GET — all staff with their payslip status for a given month/year
 export async function GET(req: NextRequest) {
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   if (departmentId) where.departmentId = departmentId;
 
   const [staff, payslips] = await Promise.all([
-    (prisma as any).staff.findMany({
+    ((await getDb()) as any).staff.findMany({
       where,
       include: {
         department:  { select: { name: true } },
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
       },
       orderBy: { firstName: "asc" },
     }),
-    (prisma as any).staffPayslip.findMany({
+    ((await getDb()) as any).staffPayslip.findMany({
       where: { month, year },
       include: { allowances: true },
     }),
@@ -45,12 +45,12 @@ export async function POST(req: NextRequest) {
     const { staffId, month, year } = await req.json();
     if (!staffId || !month || !year) return NextResponse.json({ error: "staffId, month and year required" }, { status: 422 });
 
-    const staff = await (prisma as any).staff.findUnique({ where: { id: staffId }, select: { basicSalary: true } });
+    const staff = await ((await getDb()) as any).staff.findUnique({ where: { id: staffId }, select: { basicSalary: true } });
     if (!staff) return NextResponse.json({ error: "Staff not found" }, { status: 404 });
 
     const basicSalary = Number(staff.basicSalary ?? 0);
 
-    const payslip = await (prisma as any).staffPayslip.create({
+    const payslip = await ((await getDb()) as any).staffPayslip.create({
       data: {
         staffId,
         month,

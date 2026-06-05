@@ -1,13 +1,13 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { InventoryClient } from "./InventoryClient";
 
 export default async function InventoryPage() {
   const [categories, suppliers, stores, items] = await Promise.all([
-    (prisma as any).itemCategory.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { items: true } } } }),
-    (prisma as any).supplier.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
-    (prisma as any).store.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
-    (prisma as any).item.findMany({
+    ((await getDb()) as any).itemCategory.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { items: true } } } }),
+    ((await getDb()) as any).supplier.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    ((await getDb()) as any).store.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    ((await getDb()) as any).item.findMany({
       where: { isActive: true },
       include: { category: { select: { name: true } }, supplier: { select: { name: true } }, store: { select: { name: true } } },
       orderBy: { name: "asc" },

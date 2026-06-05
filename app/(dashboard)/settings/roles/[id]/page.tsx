@@ -1,17 +1,17 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { PermissionsMatrix } from "./PermissionsMatrix";
 import { notFound } from "next/navigation";
 
 async function getData(roleId: string) {
   const [role, groups] = await Promise.all([
-    (prisma as any).appRole.findUnique({
+    ((await getDb()) as any).appRole.findUnique({
       where: { id: roleId },
       include: {
         permissions: { select: { permCatId: true, canView: true, canAdd: true, canEdit: true, canDelete: true } },
       },
     }),
-    (prisma as any).permissionGroup.findMany({
+    ((await getDb()) as any).permissionGroup.findMany({
       where: { isActive: true },
       include: {
         categories: {

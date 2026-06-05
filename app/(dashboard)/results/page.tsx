@@ -1,16 +1,16 @@
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, TrendingUp } from "lucide-react";
 
 async function getResults(userId: string) {
-  const student = await (prisma as any).student.findFirst({
+  const student = await ((await getDb()) as any).student.findFirst({
     where: { userId },
   });
   if (!student) return { student: null, groups: [] };
 
-  const markEntries = await (prisma as any).markEntry.findMany({
+  const markEntries = await ((await getDb()) as any).markEntry.findMany({
     where: {
       studentId: student.id,
       examSchedule: { examGroup: { isPublished: true } },
@@ -54,7 +54,7 @@ export default async function ResultsPage() {
       : "";
   } else {
     // For admin/teacher: show all published results grouped by exam group
-    const allGroups = await (prisma as any).examGroup.findMany({
+    const allGroups = await ((await getDb()) as any).examGroup.findMany({
       where: { isPublished: true },
       include: {
         schedules: {

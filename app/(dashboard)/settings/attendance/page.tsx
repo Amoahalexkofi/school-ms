@@ -1,23 +1,23 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { AttendanceSettingsClient } from "./AttendanceSettingsClient";
 
 async function getData() {
   const [classSections, attendanceTypes, staffAttendanceTypes, studentSchedules, staffSchedules] = await Promise.all([
-    (prisma as any).classSection.findMany({
+    ((await getDb()) as any).classSection.findMany({
       include: {
         class: { select: { id: true, name: true } },
         section: { select: { id: true, name: true } },
       },
       orderBy: { createdAt: "asc" },
     }),
-    (prisma as any).attendanceType.findMany({ where: { isActive: true }, orderBy: { keyValue: "asc" } }),
-    (prisma as any).staffAttendanceType.findMany({ where: { isActive: true }, orderBy: { keyValue: "asc" } }),
-    (prisma as any).studentAttendanceSchedule.findMany({
+    ((await getDb()) as any).attendanceType.findMany({ where: { isActive: true }, orderBy: { keyValue: "asc" } }),
+    ((await getDb()) as any).staffAttendanceType.findMany({ where: { isActive: true }, orderBy: { keyValue: "asc" } }),
+    ((await getDb()) as any).studentAttendanceSchedule.findMany({
       where: { isActive: true },
       include: { classSection: true, attendanceType: true },
     }),
-    (prisma as any).staffAttendanceSchedule.findMany({
+    ((await getDb()) as any).staffAttendanceSchedule.findMany({
       where: { isActive: true },
       include: { staffAttendanceType: true },
     }),

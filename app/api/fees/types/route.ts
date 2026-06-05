@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function GET() {
-  const types = await (prisma as any).feeType.findMany({
+  const types = await ((await getDb()) as any).feeType.findMany({
     where: { isActive: true },
     include: { feeCategory: { select: { name: true } } },
     orderBy: { name: "asc" },
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const { name, code, feeCategoryId, description } = await req.json();
     if (!name?.trim()) return NextResponse.json({ error: "Name is required" }, { status: 422 });
     if (!code?.trim()) return NextResponse.json({ error: "Code is required" }, { status: 422 });
-    const type = await (prisma as any).feeType.create({
+    const type = await ((await getDb()) as any).feeType.create({
       data: {
         name: name.trim(),
         code: code.trim().toUpperCase(),

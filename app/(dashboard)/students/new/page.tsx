@@ -1,15 +1,15 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { AddStudentForm } from "./AddStudentForm";
 
 async function getData() {
   const [sessions, classSections, schoolHouses] = await Promise.all([
-    (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
-    (prisma as any).classSection.findMany({
+    ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
+    ((await getDb()) as any).classSection.findMany({
       include: { class: true, section: true },
       orderBy: { class: { name: "asc" } },
     }),
-    (prisma as any).schoolHouse.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).schoolHouse.findMany({ orderBy: { name: "asc" } }),
   ]);
   return { sessions, classSections, schoolHouses };
 }

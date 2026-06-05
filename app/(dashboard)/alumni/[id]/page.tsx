@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -10,7 +10,7 @@ import { ArrowLeft, Mail, Phone, Briefcase, MapPin, GraduationCap, User } from "
 export default async function AlumniProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const alumni = await (prisma as any).alumni.findUnique({
+  const alumni = await ((await getDb()) as any).alumni.findUnique({
     where: { id },
     include: {
       student: {

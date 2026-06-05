@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: examGroupId } = await params;
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (!passingMarks || Number(passingMarks) <= 0)
       return NextResponse.json({ error: "Passing marks must be positive" }, { status: 422 });
 
-    const schedule = await (prisma as any).examSchedule.create({
+    const schedule = await ((await getDb()) as any).examSchedule.create({
       data: {
         examGroupId,
         sessionId,

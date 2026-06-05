@@ -1,20 +1,20 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { IssueBookForm } from "./IssueBookForm";
 
 export default async function IssueBookPage() {
   const [books, students, staff] = await Promise.all([
-    (prisma as any).book.findMany({
+    ((await getDb()) as any).book.findMany({
       where: { isActive: true },
       include: { _count: { select: { issues: true } } },
       orderBy: { title: "asc" },
     }),
-    (prisma as any).student.findMany({
+    ((await getDb()) as any).student.findMany({
       where: { isActive: true },
       select: { id: true, firstName: true, lastName: true, admissionNo: true },
       orderBy: { firstName: "asc" },
     }),
-    (prisma as any).staff.findMany({
+    ((await getDb()) as any).staff.findMany({
       where: { isActive: true },
       select: { id: true, firstName: true, lastName: true, employeeId: true },
       orderBy: { firstName: "asc" },
