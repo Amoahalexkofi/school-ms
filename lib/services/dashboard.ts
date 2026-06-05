@@ -19,28 +19,35 @@ export interface DashboardStats {
   currentSessionId: string | null;
 }
 
+async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+  try { return await fn(); } catch (e) { console.error("[dashboard]", e); return fallback; }
+}
+
 export async function getDashboardStats(): Promise<DashboardStats> {
   const now = new Date();
-  const today = new Date(now); today.setHours(0, 0, 0, 0);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // midnight local
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-  // Active session — fallback to most recent if none marked active
-  const currentSession = await (prisma as any).academicSession.findFirst({
-    orderBy: [{ isActive: "desc" }, { startDate: "desc" }],
-  });
+  // Active session — most recently started active session, fallback to any most recent
+  const currentSession = await safe(() =>
+    (prisma as any).academicSession.findFirst({
+      orderBy: [{ isActive: "desc" }, { startDate: "desc" }],
+    }), null);
 
-  const sessionFilter = currentSession ? { sessionId: currentSession.id } : {};
+  const sid = currentSession?.id ?? null;
 
   // Attendance type IDs
   const [presentType, absentType, lateType, halfDayType] = await Promise.all([
-    (prisma as any).attendanceType.findUnique({ where: { keyValue: "P" } }),
-    (prisma as any).attendanceType.findUnique({ where: { keyValue: "A" } }),
-    (prisma as any).attendanceType.findUnique({ where: { keyValue: "L" } }),
-    (prisma as any).attendanceType.findUnique({ where: { keyValue: "F" } }),
+    safe(() => (prisma as any).attendanceType.findUnique({ where: { keyValue: "P" } }), null),
+    safe(() => (prisma as any).attendanceType.findUnique({ where: { keyValue: "A" } }), null),
+    safe(() => (prisma as any).attendanceType.findUnique({ where: { keyValue: "L" } }), null),
+    safe(() => (prisma as any).attendanceType.findUnique({ where: { keyValue: "F" } }), null),
   ]);
-  const staffPresType = await (prisma as any).staffAttendanceType.findFirst({ where: { keyValue: "P" } });
-  const staffAbsType  = await (prisma as any).staffAttendanceType.findFirst({ where: { keyValue: "A" } });
+  const [staffPresType, staffAbsType] = await Promise.all([
+    safe(() => (prisma as any).staffAttendanceType.findFirst({ where: { keyValue: "P" } }), null),
+    safe(() => (prisma as any).staffAttendanceType.findFirst({ where: { keyValue: "A" } }), null),
+  ]);
 
   const [
     totalStudents, allStaff,
@@ -51,60 +58,73 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     enquiryTotal, enquiryContacted, enquiryConverted,
     studentLeaveMth, studentLeaveApproved,
     staffLeaveMth, staffLeaveApproved,
-    todayDeposits,
-    expenseThisMonth,
+    todayDeposits, expenseThisMonth,
   ] = await Promise.all([
-    currentSession
-      ? (prisma as any).studentSession.count({ where: { sessionId: currentSession.id, isActive: true } })
-      : (prisma as any).student.count({ where: { isActive: true } }),
+    safe(() => sid
+      ? (prisma as any).studentSession.count({ where: { sessionId: sid, isActive: true } })
+      : (prisma as any).student.count({ where: { isActive: true } }), 0),
 
-    (prisma as any).staff.findMany({ where: { isActive: true }, select: { user: { select: { role: true } } } }),
+    safe(() => (prisma as any).staff.findMany({
+      where: { isActive: true }, select: { user: { select: { role: true } } },
+    }), []),
 
-    currentSession
+    safe(() => sid
       ? (prisma as any).studentFeesMaster.findMany({
-          where: { studentSession: sessionFilter, isActive: true },
+          where: { studentSession: { sessionId: sid }, isActive: true },
           select: { deposits: { select: { id: true } } },
         })
-      : [],
+      : [], []),
 
-    (prisma as any).feeDeposit.count({
+    safe(() => (prisma as any).feeDeposit.count({
       where: { createdAt: { gte: monthStart, lte: monthEnd }, isActive: true },
-    }),
+    }), 0),
 
-    presentType ? (prisma as any).studentAttendance.count({ where: { attendanceTypeId: presentType.id, attendanceDay: { date: today } } }) : 0,
-    absentType  ? (prisma as any).studentAttendance.count({ where: { attendanceTypeId: absentType.id,  attendanceDay: { date: today } } }) : 0,
-    lateType    ? (prisma as any).studentAttendance.count({ where: { attendanceTypeId: lateType.id,    attendanceDay: { date: today } } }) : 0,
-    halfDayType ? (prisma as any).studentAttendance.count({ where: { attendanceTypeId: halfDayType.id, attendanceDay: { date: today } } }) : 0,
+    safe(() => presentType
+      ? (prisma as any).studentAttendance.count({ where: { attendanceTypeId: presentType.id, attendanceDay: { date: today } } })
+      : 0, 0),
+    safe(() => absentType
+      ? (prisma as any).studentAttendance.count({ where: { attendanceTypeId: absentType.id, attendanceDay: { date: today } } })
+      : 0, 0),
+    safe(() => lateType
+      ? (prisma as any).studentAttendance.count({ where: { attendanceTypeId: lateType.id, attendanceDay: { date: today } } })
+      : 0, 0),
+    safe(() => halfDayType
+      ? (prisma as any).studentAttendance.count({ where: { attendanceTypeId: halfDayType.id, attendanceDay: { date: today } } })
+      : 0, 0),
 
-    staffPresType ? (prisma as any).staffAttendance.count({ where: { staffAttendanceTypeId: staffPresType.id, date: today } }) : 0,
-    staffAbsType  ? (prisma as any).staffAttendance.count({ where: { staffAttendanceTypeId: staffAbsType.id,  date: today } }) : 0,
-    (prisma as any).staff.count({ where: { isActive: true } }),
+    safe(() => staffPresType
+      ? (prisma as any).staffAttendance.count({ where: { staffAttendanceTypeId: staffPresType.id, date: today } })
+      : 0, 0),
+    safe(() => staffAbsType
+      ? (prisma as any).staffAttendance.count({ where: { staffAttendanceTypeId: staffAbsType.id, date: today } })
+      : 0, 0),
+    safe(() => (prisma as any).staff.count({ where: { isActive: true } }), 0),
 
-    (prisma as any).book.aggregate({ _sum: { qty: true } }),
-    (prisma as any).bookIssue.count({ where: { returnedAt: null } }),
-    (prisma as any).bookIssue.count({ where: { returnedAt: null, dueDate: { lt: today } } }),
+    safe(() => (prisma as any).book.aggregate({ _sum: { qty: true } }), { _sum: { qty: 0 } }),
+    safe(() => (prisma as any).bookIssue.count({ where: { returnedAt: null } }), 0),
+    safe(() => (prisma as any).bookIssue.count({ where: { returnedAt: null, dueDate: { lt: today } } }), 0),
 
-    (prisma as any).enquiry.count({ where: { createdAt: { gte: monthStart, lte: monthEnd } } }),
-    (prisma as any).enquiry.count({ where: { createdAt: { gte: monthStart, lte: monthEnd }, status: "CONTACTED" } }),
-    (prisma as any).enquiry.count({ where: { createdAt: { gte: monthStart, lte: monthEnd }, status: "CONVERTED" } }),
+    safe(() => (prisma as any).enquiry.count({ where: { createdAt: { gte: monthStart, lte: monthEnd } } }), 0),
+    safe(() => (prisma as any).enquiry.count({ where: { createdAt: { gte: monthStart, lte: monthEnd }, status: "CONTACTED" } }), 0),
+    safe(() => (prisma as any).enquiry.count({ where: { createdAt: { gte: monthStart, lte: monthEnd }, status: "CONVERTED" } }), 0),
 
-    (prisma as any).studentLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd } } }),
-    (prisma as any).studentLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd }, status: "APPROVED" } }),
+    safe(() => (prisma as any).studentLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd } } }), 0),
+    safe(() => (prisma as any).studentLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd }, status: "APPROVED" } }), 0),
 
-    (prisma as any).staffLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd } } }),
-    (prisma as any).staffLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd }, status: "APPROVED" } }),
+    safe(() => (prisma as any).staffLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd } } }), 0),
+    safe(() => (prisma as any).staffLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd }, status: "APPROVED" } }), 0),
 
-    (prisma as any).feeDeposit.findMany({
+    safe(() => (prisma as any).feeDeposit.findMany({
       where: { createdAt: { gte: today }, isActive: true },
       include: { studentFeesMaster: { include: { student: { select: { firstName: true, lastName: true } } } } },
       orderBy: { createdAt: "desc" },
       take: 10,
-    }),
+    }), []),
 
-    (prisma as any).transaction.aggregate({
+    safe(() => (prisma as any).transaction.aggregate({
       where: { type: "EXPENSE", date: { gte: monthStart, lte: monthEnd } },
       _sum: { amount: true },
-    }),
+    }), { _sum: { amount: 0 } }),
   ]);
 
   const staffByRole: Record<string, number> = {};
@@ -137,6 +157,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       createdAt: d.createdAt,
     })),
     currentSession: currentSession?.session ?? "No active session",
-    currentSessionId: currentSession?.id ?? null,
+    currentSessionId: sid,
   };
 }

@@ -37,7 +37,7 @@ function StatCard({ label, value, icon: Icon, color, href }: {
 export default async function DashboardPage() {
   const session = await auth();
   const role = (session?.user as any)?.role;
-  const stats = await getDashboardStats().catch(() => null);
+  const stats = await getDashboardStats();
 
   const teacherCount  = stats?.staffByRole?.["TEACHER"]    ?? 0;
   const accountCount  = stats?.staffByRole?.["ACCOUNTANT"] ?? 0;
