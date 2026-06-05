@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const sessionId = searchParams.get("sessionId");
   const classId = searchParams.get("classId");
 
-  const studentWhere: any = { isAlumni: true };
+  const studentWhere: any = {};
   if (search) {
     studentWhere.OR = [
       { admissionNo: { contains: search, mode: "insensitive" } },

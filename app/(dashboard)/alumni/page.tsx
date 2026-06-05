@@ -30,9 +30,9 @@ async function getData() {
     }),
     (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
     (prisma as any).class.findMany({ orderBy: { name: "asc" } }),
-    // Students eligible to be marked as alumni (not yet alumni)
+    // Students eligible to be marked as alumni (inactive + no Alumni record yet)
     (prisma as any).student.findMany({
-      where: { isAlumni: false, isActive: false }, // disabled students can be promoted to alumni
+      where: { isActive: false, alumni: { is: null } },
       select: {
         id: true, firstName: true, lastName: true, admissionNo: true,
         sessions: {

@@ -10,9 +10,14 @@ export async function POST(req: NextRequest) {
     if (!subject?.trim()) return NextResponse.json({ error: "Subject is required" }, { status: 422 });
     if (!message?.trim()) return NextResponse.json({ error: "Message is required" }, { status: 422 });
 
-    // Build filter matching Smart School's alumniMail() — student_session join
-    const ssWhere: any = { session: { some: { ...(sessionId ? { sessionId } : {}), ...(classId ? { classSection: { classId } } : {}) } } };
-    const alumniWhere: any = { student: { isAlumni: true, ...ssWhere } };
+    // Build filter matching Smart School's alumniMail() — join via StudentSession
+    const alumniWhere: any = {};
+    if (sessionId || classId) {
+      const sessionFilter: any = {};
+      if (sessionId) sessionFilter.sessionId = sessionId;
+      if (classId) sessionFilter.classSection = { classId };
+      alumniWhere.student = { sessions: { some: sessionFilter } };
+    }
 
     const alumni = await (prisma as any).alumni.findMany({
       where: alumniWhere,
