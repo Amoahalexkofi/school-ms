@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Pencil, Trash2, GraduationCap, Calendar, X, User } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, GraduationCap, Calendar, X, User, Send, Mail } from "lucide-react";
 
 const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
@@ -28,6 +27,7 @@ type AlumniRecord = {
 };
 
 const emptyForm = { studentId: "", currentEmail: "", currentPhone: "", occupation: "", address: "", note: "" };
+const emptyMail = { subject: "", message: "", channel: "IN_APP" };
 
 export function AlumniClient({ alumni: initial, sessions, classes, students }: {
   alumni: AlumniRecord[];
@@ -41,9 +41,12 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
   const [filterSession, setFilterSession] = useState("");
   const [filterClass, setFilterClass] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [showMail, setShowMail] = useState(false);
   const [editing, setEditing] = useState<AlumniRecord | null>(null);
   const [form, setForm] = useState<any>(emptyForm);
+  const [mail, setMail] = useState<any>(emptyMail);
   const [saving, setSaving] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const filtered = useMemo(() => {
     return alumni.filter((a) => {
@@ -60,15 +63,24 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
     setEditing(null);
     setForm(emptyForm);
     setShowForm(true);
+    setShowMail(false);
   }
 
   function openEdit(a: AlumniRecord) {
     setEditing(a);
     setForm({ studentId: a.studentId, currentEmail: a.currentEmail ?? "", currentPhone: a.currentPhone ?? "", occupation: a.occupation ?? "", address: a.address ?? "", note: "" });
     setShowForm(true);
+    setShowMail(false);
+  }
+
+  function openMail() {
+    setShowMail(true);
+    setShowForm(false);
+    setMail(emptyMail);
   }
 
   function set(k: string, v: string) { setForm((f: any) => ({ ...f, [k]: v })); }
+  function setM(k: string, v: string) { setMail((m: any) => ({ ...m, [k]: v })); }
 
   async function save() {
     if (!form.studentId) return alert("Select a student");
@@ -94,11 +106,38 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
     finally { setSaving(false); }
   }
 
+  async function sendMail() {
+    if (!mail.subject.trim()) return alert("Subject is required");
+    if (!mail.message.trim()) return alert("Message is required");
+    setSending(true);
+    try {
+      const res = await fetch("/api/alumni/mail", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject: mail.subject,
+          message: mail.message,
+          channel: mail.channel,
+          sessionId: filterSession || null,
+          classId: filterClass || null,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      alert(`Message sent to ${data.recipientCount} alumni.`);
+      setShowMail(false);
+    } catch { alert("Failed to send message"); }
+    finally { setSending(false); }
+  }
+
   async function del(id: string) {
     if (!confirm("Remove this alumni record? The student will no longer be marked as alumni.")) return;
     await fetch(`/api/alumni/${id}`, { method: "DELETE" });
     setAlumni((as) => as.filter((a) => a.id !== id));
   }
+
+  const mailLabel = filterSession || filterClass
+    ? `${classes.find(c => c.id === filterClass)?.name ?? ""}${filterClass && filterSession ? " · " : ""}${sessions.find(s => s.id === filterSession)?.session ?? ""}`.trim().replace(/^·\s*|·\s*$/, "").trim()
+    : "All Alumni";
 
   return (
     <main className="flex-1 p-6 space-y-6">
@@ -133,12 +172,63 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
           </div>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={openMail}>
+            <Mail className="h-4 w-4 mr-1" /> Mail Alumni
+            {(filterSession || filterClass) && <span className="ml-1.5 text-xs bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">{mailLabel}</span>}
+          </Button>
           <Link href="/alumni/events">
             <Button variant="outline"><Calendar className="h-4 w-4 mr-1" /> Events</Button>
           </Link>
           <Button onClick={openAdd}><Plus className="h-4 w-4 mr-1" /> Add Alumni</Button>
         </div>
       </div>
+
+      {/* Mail Alumni compose panel */}
+      {showMail && (
+        <Card className="border-indigo-200 bg-indigo-50/30">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm text-indigo-800 flex items-center gap-2">
+                <Send className="h-4 w-4" />
+                Mail Alumni
+                <span className="font-normal text-indigo-500">— {mailLabel} ({filtered.length} recipients)</span>
+              </CardTitle>
+              <button onClick={() => setShowMail(false)}><X className="h-4 w-4 text-gray-400" /></button>
+            </div>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <Label>Subject *</Label>
+              <Input value={mail.subject} onChange={e => setM("subject", e.target.value)} placeholder="e.g. Annual Alumni Meet Invitation" />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Message *</Label>
+              <textarea
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                rows={4}
+                value={mail.message}
+                onChange={e => setM("message", e.target.value)}
+                placeholder="Write your message to the alumni…"
+              />
+            </div>
+            <div>
+              <Label>Channel</Label>
+              <select className={SEL} value={mail.channel} onChange={e => setM("channel", e.target.value)}>
+                <option value="IN_APP">In-App Notification</option>
+                <option value="EMAIL">Email</option>
+                <option value="SMS">SMS</option>
+              </select>
+            </div>
+            <div className="flex items-end gap-2">
+              <Button onClick={sendMail} disabled={sending} size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+                <Send className="h-3.5 w-3.5 mr-1" />
+                {sending ? "Sending…" : `Send to ${filtered.length} Alumni`}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setShowMail(false)}>Cancel</Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Add / Edit form */}
       {showForm && (
