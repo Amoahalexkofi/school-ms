@@ -365,13 +365,14 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 19 — Polish & Deploy (TODO)
-- [ ] Mobile responsiveness audit
-- [ ] Loading states on all forms
-- [ ] Error boundaries
-- [ ] Print stylesheets for ID cards, mark sheets, receipts
-- [ ] Connect domain (novalss.com → Vercel)
-- [ ] Performance optimisation
+### ✅ Phase 19 — Polish & Deploy (COMPLETE)
+- [x] Mobile responsiveness — 10 pages fixed: grid-cols-2/3 → sm:grid-cols-2/3 across stats cards, filter toolbars, form layouts
+- [x] Loading skeleton — animated `loading.tsx` for all dashboard pages
+- [x] Error boundaries — `error.tsx` (dashboard) + `global-error.tsx` (root) with retry + digest ID
+- [x] Print stylesheet — globals.css: hides sidebar/nav/buttons, formats tables for paper, page-break utilities
+- [x] Topbar: truncating title + responsive padding on mobile
+- [ ] Connect domain (novalss.com → Vercel) — manual step via Vercel dashboard
+- [ ] Performance optimisation — deferred
 
 ---
 
