@@ -1,6 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { getDbForSchema } from "@/lib/db";
 import { verifyPassword } from "@/lib/auth/password";
 import { neon } from "@neondatabase/serverless";
 
@@ -59,23 +58,32 @@ export const authConfig: NextAuthConfig = {
       async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const schema = await resolveSchema(
-          credentials.tenant as string | undefined,
-          request as Request | undefined
-        );
-        const db = getDbForSchema(schema);
-        const user = await (db as any).user.findUnique({
-          where: { email: credentials.email as string },
-        });
-        if (!user) return null;
+        try {
+          const schema = await resolveSchema(
+            credentials.tenant as string | undefined,
+            request as Request | undefined
+          );
 
-        const valid = await verifyPassword(
-          credentials.password as string,
-          user.password
-        );
-        if (!valid) return null;
+          const sql = neon(process.env.DATABASE_URL!);
+          const rows = await sql(
+            `SELECT id, email, password, role FROM "${schema}"."User" WHERE email = $1 LIMIT 1`,
+            [credentials.email as string]
+          );
 
-        return { id: user.id, email: user.email, role: user.role };
+          if (!rows.length) return null;
+          const user = rows[0];
+
+          const valid = await verifyPassword(
+            credentials.password as string,
+            user.password as string
+          );
+          if (!valid) return null;
+
+          return { id: user.id as string, email: user.email as string, role: user.role as string };
+        } catch (e) {
+          console.error("[authorize] error:", e);
+          return null;
+        }
       },
     }),
   ],
