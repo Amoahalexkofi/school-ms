@@ -8,7 +8,10 @@ export type UserRole =
   | "PARENT";
 
 // Routes accessible without authentication
-const PUBLIC_PREFIXES = ["/api/auth", "/sign-in", "/apply", "/_next", "/favicon"];
+const PUBLIC_PREFIXES = [
+  "/api/auth", "/sign-in", "/apply", "/_next", "/favicon",
+  "/novalss-admin", "/register", "/api/admin",
+];
 
 export function isPublicRoute(pathname: string): boolean {
   return PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));

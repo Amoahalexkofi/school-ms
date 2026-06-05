@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Novalss Admin — School Management Platform",
+  description: "Novalss company operations dashboard",
+};
+
 export default function NovalssAdminLayout({ children }: { children: React.ReactNode }) {
-  // No sidebar, no dashboard chrome — clean standalone layout
-  return <div className="min-h-screen">{children}</div>;
+  return (
+    <div className="min-h-screen" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+      {children}
+    </div>
+  );
 }
