@@ -348,12 +348,20 @@ This is the most complex module. Build in this exact order:
 
 ---
 
-### ⬜ Phase 18 — Alumni (TODO)
+### ✅ Phase 18 — Alumni (COMPLETE)
 **Smart School reference:** `Alumni_model.php`
 
-- [ ] When student's `isAlumni=true` (from promotion), create Alumni record
-- [ ] Alumni list page
-- [ ] Alumni profile (current contact, occupation)
+- [x] Alumni list page — search by name/admissionNo, filter by session/class, stats (total, this year, M/F)
+- [x] Add alumni inline form — select inactive student, set current email/phone/occupation/address
+- [x] Edit alumni record inline
+- [x] Delete alumni record (also clears `student.isAlumni`)
+- [x] Alumni profile page — contact info + full academic session history
+- [x] Alumni Events page — list + add/edit/delete inline form
+  - Fields: title, eventFor (all/class), session, class, from/to date, note, showOnWebsite, notification message
+- [x] API: GET/POST `/api/alumni`, GET/PATCH/DELETE `/api/alumni/[id]`
+- [x] API: GET/POST `/api/alumni/events`, PATCH/DELETE `/api/alumni/events/[id]`
+- [x] Sidebar: Alumni link added
+- [x] Middleware: `/alumni` and `/api/alumni` routes registered
 
 ---
 
