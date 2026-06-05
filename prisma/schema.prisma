@@ -1898,3 +1898,24 @@ model StaffAttendanceSchedule {
 
   @@unique([role, staffAttendanceTypeId])
 }
+
+// ─── SaaS Registry (lives in public schema — shared across all tenants) ───────
+
+model SchoolTenant {
+  id           String    @id @default(cuid())
+  name         String
+  subdomain    String    @unique  // e.g. "sunshine" → sunshine.novalss.com
+  customDomain String?   @unique  // e.g. "portal.sunshineacademy.edu.gh"
+  schemaName   String    @unique  // postgres schema: "public" | "school_abc123"
+  plan         String    @default("trial")   // "trial" | "basic" | "pro"
+  status       String    @default("active")  // "active" | "trial" | "suspended"
+  adminEmail   String
+  adminName    String?
+  phone        String?
+  address      String?
+  country      String    @default("Ghana")
+  trialEndsAt  DateTime?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
