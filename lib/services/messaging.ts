@@ -20,7 +20,7 @@ export async function sendBulkMessage(input: {
   // Count recipients
   let recipientCount = 0;
   if (input.recipientType === "ALL_PARENTS") {
-    recipientCount = await (prisma as any).parent.count();
+    recipientCount = await (prisma as any).user.count({ where: { role: "PARENT" } });
   } else if (input.recipientType === "ALL_STAFF") {
     recipientCount = await (prisma as any).staff.count();
   } else if (input.recipientType === "ALL_STUDENTS") {

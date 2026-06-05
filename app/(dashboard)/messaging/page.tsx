@@ -5,7 +5,7 @@ import { MessagingClient } from "./MessagingClient";
 async function getData() {
   const [logs, parentCount, staffCount, studentCount] = await Promise.all([
     (prisma as any).messageLog.findMany({ include: { sentBy: true }, orderBy: { createdAt: "desc" }, take: 50 }),
-    (prisma as any).parent.count(),
+    (prisma as any).user.count({ where: { role: "PARENT" } }),
     (prisma as any).staff.count(),
     (prisma as any).student.count(),
   ]);
