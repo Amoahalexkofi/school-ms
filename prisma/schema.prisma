@@ -273,6 +273,7 @@ model Staff {
   messageLogs           MessageLog[]
   payrollEntries        PayrollEntry[]
   questions             Question[]
+  appRole               StaffAppRole?
 }
 
 model TeacherSubject {
@@ -1712,6 +1713,70 @@ model AuditLog {
   entityId  String?
   metadata  Json?
   createdAt DateTime @default(now())
+}
+
+// ─── RBAC (Roles & Permissions) ───────────────────────────────────────────────
+
+model PermissionGroup {
+  id        Int                  @id @default(autoincrement())
+  name      String               @unique
+  shortCode String               @unique
+  isActive  Boolean              @default(true)
+  isSystem  Boolean              @default(false)
+  createdAt DateTime             @default(now())
+
+  categories PermissionCategory[]
+}
+
+model PermissionCategory {
+  id            Int             @id @default(autoincrement())
+  permGroupId   Int
+  permGroup     PermissionGroup @relation(fields: [permGroupId], references: [id])
+  name          String
+  shortCode     String          @unique
+  enableView    Boolean         @default(true)
+  enableAdd     Boolean         @default(true)
+  enableEdit    Boolean         @default(true)
+  enableDelete  Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+
+  rolePermissions RolePermission[]
+}
+
+model AppRole {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  slug         String?
+  isActive     Boolean  @default(true)
+  isSystem     Boolean  @default(false)
+  isSuperAdmin Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  permissions RolePermission[]
+  staffRoles  StaffAppRole[]
+}
+
+model RolePermission {
+  id        String             @id @default(cuid())
+  roleId    String
+  role      AppRole            @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permCatId Int
+  permCat   PermissionCategory @relation(fields: [permCatId], references: [id], onDelete: Cascade)
+  canView   Boolean            @default(false)
+  canAdd    Boolean            @default(false)
+  canEdit   Boolean            @default(false)
+  canDelete Boolean            @default(false)
+
+  @@unique([roleId, permCatId])
+}
+
+// Links a Staff member to an AppRole (separate from UserRole enum used for auth)
+model StaffAppRole {
+  id      String  @id @default(cuid())
+  staffId String  @unique
+  staff   Staff   @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  roleId  String
+  role    AppRole @relation(fields: [roleId], references: [id])
 }
 
 // ─── Holidays ─────────────────────────────────────────────────────────────────
