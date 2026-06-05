@@ -1,6 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { getDb } from "@/lib/db";
+import { getDbForSchema } from "@/lib/db";
 import { verifyPassword } from "@/lib/auth/password";
 
 export const authConfig: NextAuthConfig = {
@@ -13,10 +13,17 @@ export const authConfig: NextAuthConfig = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const db = await getDb();
+        // Read tenant schema from the request header directly — more reliable
+        // than headers() from next/headers in the NextAuth callback context
+        const schema =
+          (request as any)?.headers?.get?.("x-tenant-schema") ??
+          process.env.DATABASE_SCHEMA ??
+          "public";
+
+        const db = getDbForSchema(schema);
         const user = await (db as any).user.findUnique({
           where: { email: credentials.email as string },
         });

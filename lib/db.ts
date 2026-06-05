@@ -35,3 +35,11 @@ export async function getDb(): Promise<PrismaClient> {
   }
   return clientCache.get(schema)!;
 }
+
+// Synchronous version for contexts where headers() is unavailable (e.g. NextAuth authorize)
+export function getDbForSchema(schema: string): PrismaClient {
+  if (!clientCache.has(schema)) {
+    clientCache.set(schema, createClient(schema));
+  }
+  return clientCache.get(schema)!;
+}
