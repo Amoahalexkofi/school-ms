@@ -57,6 +57,7 @@ model AcademicSession {
   examSchedules    ExamSchedule[]
   subjects         Subject[]
   holidays         Holiday[]
+  alumniEvents     AlumniEvent[]
 }
 
 // ─── Classes & Sections (independent masters, reused across sessions) ─────────
@@ -72,6 +73,7 @@ model Class {
   onlineExams   OnlineExam[]
   subjects      Subject[]
   questions     Question[]
+  alumniEvents  AlumniEvent[]
 }
 
 model Section {
@@ -379,6 +381,7 @@ model Student {
   leaveRequests            StudentLeaveRequest[]
   feesMasters              StudentFeesMaster[]
   appliedDiscounts         StudentAppliedDiscount[]
+  alumni                   Alumni?
 }
 
 model StudentSession {
@@ -1554,6 +1557,7 @@ model ChatMessage {
 model Alumni {
   id           String   @id @default(cuid())
   studentId    String   @unique
+  student      Student  @relation(fields: [studentId], references: [id])
   currentEmail String?
   currentPhone String?
   occupation   String?
@@ -1562,6 +1566,25 @@ model Alumni {
   note         String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model AlumniEvent {
+  id                       String           @id @default(cuid())
+  title                    String
+  eventFor                 String           @default("all") // "all" | "class"
+  sessionId                String?
+  session                  AcademicSession? @relation(fields: [sessionId], references: [id])
+  classId                  String?
+  class                    Class?           @relation(fields: [classId], references: [id])
+  section                  String?
+  fromDate                 DateTime
+  toDate                   DateTime
+  note                     String?
+  photo                    String?
+  isActive                 Boolean          @default(true)
+  eventNotificationMessage String?
+  showOnWebsite            Boolean          @default(false)
+  createdAt                DateTime         @default(now())
 }
 
 // ─── Admissions ───────────────────────────────────────────────────────────────

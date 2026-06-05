@@ -237,6 +237,9 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/api/notification-settings", roles: ["SUPER_ADMIN", "ADMIN"] },
   { prefix: "/api/sms-config",            roles: ["SUPER_ADMIN", "ADMIN"] },
   { prefix: "/api/attendance-settings",   roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Alumni
+  { prefix: "/alumni",          roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/alumni",      roles: ["SUPER_ADMIN", "ADMIN"] },
   // Fees sub-routes
   { prefix: "/api/fees/types",  roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { prefix: "/api/fees/groups", roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },

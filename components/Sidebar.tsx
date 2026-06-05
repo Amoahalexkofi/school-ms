@@ -53,6 +53,7 @@ const navItems = [
   { href: "/hostel", label: "Hostel", icon: Building },
   { href: "/inventory", label: "Inventory", icon: Package },
   { href: "/front-office", label: "Front Office", icon: ConciergeBell },
+  { href: "/alumni", label: "Alumni", icon: GraduationCap },
   { href: "/online-exams", label: "Online Exams", icon: Monitor },
   { href: "/admissions", label: "Admissions", icon: UserPlus },
   { href: "/audit-log", label: "Audit Log", icon: ShieldCheck },
