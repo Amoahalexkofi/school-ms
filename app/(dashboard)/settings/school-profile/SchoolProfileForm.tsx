@@ -28,6 +28,17 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
     state: profile?.state ?? "",
     city: profile?.city ?? "",
     feeDueDays: String(profile?.feeDueDays ?? "30"),
+    lowAttendanceLimit: String(profile?.lowAttendanceLimit ?? "75"),
+    // Admission number
+    admPrefix: profile?.admPrefix ?? "",
+    admStartFrom: String(profile?.admStartFrom ?? "1"),
+    admNoDigit: String(profile?.admNoDigit ?? "4"),
+    admAutoInsert: profile?.admAutoInsert ?? true,
+    // Staff ID
+    staffidPrefix: profile?.staffidPrefix ?? "",
+    staffidStartFrom: String(profile?.staffidStartFrom ?? "1"),
+    staffidNoDigit: String(profile?.staffidNoDigit ?? "4"),
+    staffidAutoInsert: profile?.staffidAutoInsert ?? true,
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -44,7 +55,15 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
       const res = await fetch("/api/school-profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, feeDueDays: parseInt(form.feeDueDays) || 30 }),
+        body: JSON.stringify({
+        ...form,
+        feeDueDays: parseInt(form.feeDueDays) || 30,
+        lowAttendanceLimit: parseInt(form.lowAttendanceLimit) || 75,
+        admStartFrom: parseInt(form.admStartFrom) || 1,
+        admNoDigit: parseInt(form.admNoDigit) || 4,
+        staffidStartFrom: parseInt(form.staffidStartFrom) || 1,
+        staffidNoDigit: parseInt(form.staffidNoDigit) || 4,
+      }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -153,6 +172,64 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
               placeholder="30"
             />
             <p className="text-xs text-gray-400 mt-1">Days after issue before fee is overdue</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Number Auto-generation */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Admission Number Settings</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label>Prefix</Label>
+            <Input value={form.admPrefix} onChange={(e) => set("admPrefix", e.target.value)} placeholder="e.g. ADM, STU" />
+          </div>
+          <div>
+            <Label>Start From</Label>
+            <Input type="number" value={form.admStartFrom} onChange={(e) => set("admStartFrom", e.target.value)} min={1} />
+          </div>
+          <div>
+            <Label>Number of Digits</Label>
+            <Input type="number" value={form.admNoDigit} onChange={(e) => set("admNoDigit", e.target.value)} min={1} max={10} />
+            <p className="text-xs text-gray-400 mt-1">e.g. 4 digits → ADM0001</p>
+          </div>
+          <div className="flex items-center gap-2 h-full pt-5">
+            <input type="checkbox" id="admAuto" checked={form.admAutoInsert} onChange={(e) => set("admAutoInsert", e.target.checked as any)} className="h-4 w-4 rounded border-gray-300" />
+            <label htmlFor="admAuto" className="text-sm text-gray-700">Auto-generate on new admission</label>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle className="text-base">Staff ID Settings</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label>Prefix</Label>
+            <Input value={form.staffidPrefix} onChange={(e) => set("staffidPrefix", e.target.value)} placeholder="e.g. EMP, STF" />
+          </div>
+          <div>
+            <Label>Start From</Label>
+            <Input type="number" value={form.staffidStartFrom} onChange={(e) => set("staffidStartFrom", e.target.value)} min={1} />
+          </div>
+          <div>
+            <Label>Number of Digits</Label>
+            <Input type="number" value={form.staffidNoDigit} onChange={(e) => set("staffidNoDigit", e.target.value)} min={1} max={10} />
+            <p className="text-xs text-gray-400 mt-1">e.g. 4 digits → EMP0001</p>
+          </div>
+          <div className="flex items-center gap-2 h-full pt-5">
+            <input type="checkbox" id="staffAuto" checked={form.staffidAutoInsert} onChange={(e) => set("staffidAutoInsert", e.target.checked as any)} className="h-4 w-4 rounded border-gray-300" />
+            <label htmlFor="staffAuto" className="text-sm text-gray-700">Auto-generate on new staff</label>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle className="text-base">Other Settings</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label>Low Attendance Limit (%)</Label>
+            <Input type="number" value={form.lowAttendanceLimit} onChange={(e) => set("lowAttendanceLimit", e.target.value)} min={1} max={100} />
+            <p className="text-xs text-gray-400 mt-1">Students below this % are flagged in reports</p>
           </div>
         </CardContent>
       </Card>

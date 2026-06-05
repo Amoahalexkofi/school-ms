@@ -56,6 +56,7 @@ model AcademicSession {
   lessonPlans      LessonPlan[]
   examSchedules    ExamSchedule[]
   subjects         Subject[]
+  holidays         Holiday[]
 }
 
 // ─── Classes & Sections (independent masters, reused across sessions) ─────────
@@ -670,7 +671,8 @@ model StaffAttendanceType {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
-  staffAttendances StaffAttendance[]
+  staffAttendances          StaffAttendance[]
+  staffAttendanceSchedules  StaffAttendanceSchedule[]
 }
 
 model StaffAttendance {
@@ -1632,21 +1634,35 @@ model Transaction {
 // ─── School Profile & System Settings ────────────────────────────────────────
 
 model SchoolProfile {
-  id         String  @id @default(cuid())
-  name       String
-  code       String?
-  address    String?
-  phone      String?
-  email      String?
-  website    String?
-  logo       String?
-  motto      String?
-  currency   String  @default("GHS")
-  dateFormat String  @default("DD/MM/YYYY")
-  country    String?
-  state      String?
-  city       String?
-  feeDueDays Int     @default(30)
+  id               String  @id @default(cuid())
+  name             String
+  code             String?
+  address          String?
+  phone            String?
+  email            String?
+  website          String?
+  logo             String?
+  motto            String?
+  currency         String  @default("GHS")
+  dateFormat       String  @default("DD/MM/YYYY")
+  country          String?
+  state            String?
+  city             String?
+  feeDueDays       Int     @default(30)
+  // Admission number auto-generation
+  admPrefix        String?
+  admStartFrom     Int     @default(1)
+  admNoDigit       Int     @default(4)
+  admAutoInsert    Boolean @default(true)
+  // Staff ID auto-generation
+  staffidPrefix    String?
+  staffidStartFrom Int     @default(1)
+  staffidNoDigit   Int     @default(4)
+  staffidAutoInsert Boolean @default(true)
+  // Other system toggles
+  lowAttendanceLimit Int   @default(75)
+  classTeacher     Boolean @default(true)
+  studentTimeline  Boolean @default(true)
 }
 
 // ─── Custom Fields ────────────────────────────────────────────────────────────
@@ -1696,4 +1712,101 @@ model AuditLog {
   entityId  String?
   metadata  Json?
   createdAt DateTime @default(now())
+}
+
+// ─── Holidays ─────────────────────────────────────────────────────────────────
+
+model HolidayType {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  isDefault Boolean   @default(false)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+
+  holidays  Holiday[]
+}
+
+model Holiday {
+  id            String           @id @default(cuid())
+  holidayTypeId String
+  holidayType   HolidayType      @relation(fields: [holidayTypeId], references: [id])
+  sessionId     String?
+  session       AcademicSession? @relation(fields: [sessionId], references: [id])
+  fromDate      DateTime         @db.Date
+  toDate        DateTime         @db.Date
+  description   String?
+  isActive      Boolean          @default(true)
+  frontSite     Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+}
+
+// ─── Sources & References (for enquiries / admissions) ────────────────────────
+
+model Source {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Reference {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+// ─── Email Configuration ──────────────────────────────────────────────────────
+
+model EmailConfig {
+  id           String  @id @default(cuid())
+  smtpHost     String  @default("")
+  smtpPort     Int     @default(587)
+  smtpUsername String  @default("")
+  smtpPassword String  @default("")
+  smtpSecure   String  @default("tls") // "tls" | "ssl" | "none"
+  fromEmail    String  @default("")
+  fromName     String  @default("")
+  isActive     Boolean @default(false)
+}
+
+// ─── Notification Settings ────────────────────────────────────────────────────
+
+model NotificationSetting {
+  id                Int     @id @default(autoincrement())
+  type              String  @unique // "fee_payment", "attendance_student", "exam_result", etc.
+  label             String
+  emailEnabled      Boolean @default(false)
+  smsEnabled        Boolean @default(false)
+  pushEnabled       Boolean @default(false)
+}
+
+// ─── SMS Configuration ────────────────────────────────────────────────────────
+
+model SmsConfig {
+  id       String  @id @default(cuid())
+  provider String  @unique // "twilio" | "africas_talking" | "msg91" | "nexmo"
+  apiKey   String  @default("")
+  senderId String  @default("")
+  username String  @default("")
+  password String  @default("")
+  isActive Boolean @default(false)
+}
+
+// ─── Staff Attendance Schedule (by role) ─────────────────────────────────────
+
+model StaffAttendanceSchedule {
+  id                    String              @id @default(cuid())
+  role                  String              // "TEACHER" | "ACCOUNTANT" | "LIBRARIAN" etc.
+  staffAttendanceTypeId String
+  staffAttendanceType   StaffAttendanceType @relation(fields: [staffAttendanceTypeId], references: [id])
+  entryTimeFrom         String              // "08:00"
+  entryTimeTo           String              // "09:00"
+  totalHours            String?
+  isActive              Boolean             @default(true)
+  createdAt             DateTime            @default(now())
+
+  @@unique([role, staffAttendanceTypeId])
 }

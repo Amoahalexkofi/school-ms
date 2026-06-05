@@ -224,7 +224,17 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // Reports APIs
   { prefix: "/api/reports", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT"] },
   // Custom fields API
-  { prefix: "/api/custom-fields", roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/custom-fields",         roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Settings sub-APIs
+  { prefix: "/api/holidays",              roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/holiday-types",         roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/school-houses",         roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/sources",               roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/references",            roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/email-config",          roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/notification-settings", roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/sms-config",            roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/attendance-settings",   roles: ["SUPER_ADMIN", "ADMIN"] },
   // Fees sub-routes
   { prefix: "/api/fees/types",  roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { prefix: "/api/fees/groups", roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },

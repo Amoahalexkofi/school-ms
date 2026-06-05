@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink } from "lucide-react";
+import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink, Home, Bell, Mail, MessageSquare, Clock, Landmark } from "lucide-react";
 import Link from "next/link";
 
 const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
@@ -357,43 +357,31 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Link href="/settings/school-profile" className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center shrink-0">
-                  <School className="h-4 w-4 text-orange-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm">School Profile</p>
-                  <p className="text-xs text-gray-500">Name, logo, currency, date format</p>
-                </div>
-              </Link>
-              <Link href="/settings/custom-fields" className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
-                  <FormInput className="h-4 w-4 text-blue-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm">Custom Fields</p>
-                  <p className="text-xs text-gray-500">Extra fields for student & staff profiles</p>
-                </div>
-              </Link>
-              <Link href="/settings/roles" className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
-                  <ShieldCheck className="h-4 w-4 text-purple-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm">Roles & Permissions</p>
-                  <p className="text-xs text-gray-500">View access matrix per role</p>
-                </div>
-              </Link>
-              <Link href="/audit-log" className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
-                  <ShieldCheck className="h-4 w-4 text-green-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm">Audit Log</p>
-                  <p className="text-xs text-gray-500">Searchable activity history</p>
-                </div>
-              </Link>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {[
+                { href: "/settings/school-profile", icon: School,       bg: "bg-orange-100", ic: "text-orange-600", label: "School Profile",        desc: "Name, logo, currency, number formats" },
+                { href: "/settings/custom-fields",  icon: FormInput,     bg: "bg-blue-100",   ic: "text-blue-600",   label: "Custom Fields",         desc: "Extra fields for student & staff" },
+                { href: "/settings/holidays",        icon: CalendarDays,  bg: "bg-red-100",    ic: "text-red-600",    label: "Holidays",              desc: "Holiday list & types by session" },
+                { href: "/settings/school-houses",   icon: Home,          bg: "bg-yellow-100", ic: "text-yellow-600", label: "School Houses",         desc: "Manage student houses" },
+                { href: "/settings/attendance",      icon: Clock,         bg: "bg-teal-100",   ic: "text-teal-600",   label: "Attendance Settings",   desc: "Time windows per class & role" },
+                { href: "/settings/sources",         icon: Landmark,      bg: "bg-lime-100",   ic: "text-lime-700",   label: "Enquiry Sources",       desc: "Sources for admission enquiries" },
+                { href: "/settings/references",      icon: BookOpen,      bg: "bg-cyan-100",   ic: "text-cyan-600",   label: "References",            desc: "Reference types for enquiries" },
+                { href: "/settings/email",           icon: Mail,          bg: "bg-pink-100",   ic: "text-pink-600",   label: "Email Config",          desc: "SMTP outgoing email setup" },
+                { href: "/settings/sms",             icon: MessageSquare, bg: "bg-violet-100", ic: "text-violet-600", label: "SMS Config",            desc: "SMS gateway for alerts" },
+                { href: "/settings/notifications",   icon: Bell,          bg: "bg-amber-100",  ic: "text-amber-600",  label: "Notifications",         desc: "Email / SMS / push toggles" },
+                { href: "/settings/roles",           icon: ShieldCheck,   bg: "bg-purple-100", ic: "text-purple-600", label: "Roles & Permissions",   desc: "Access matrix per role" },
+                { href: "/audit-log",                icon: ShieldCheck,   bg: "bg-green-100",  ic: "text-green-600",  label: "Audit Log",             desc: "Searchable activity history" },
+              ].map(({ href, icon: Icon, bg, ic, label, desc }) => (
+                <Link key={href} href={href} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className={`w-9 h-9 ${bg} rounded-lg flex items-center justify-center shrink-0`}>
+                    <Icon className={`h-4 w-4 ${ic}`} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">{label}</p>
+                    <p className="text-xs text-gray-500">{desc}</p>
+                  </div>
+                </Link>
+              ))}
             </div>
           </CardContent>
         </Card>
