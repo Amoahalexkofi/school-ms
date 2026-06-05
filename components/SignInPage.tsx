@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { SignInForm } from "@/components/SignInForm";
 
-export function SignInPage() {
+export function SignInPage({ tenant }: { tenant: string }) {
   const router = useRouter();
 
   async function handleSignIn({
@@ -17,6 +17,7 @@ export function SignInPage() {
     const result = await signIn("credentials", {
       email,
       password,
+      tenant,
       redirect: false,
     });
 

@@ -1,7 +1,11 @@
+import { headers } from "next/headers";
 import { GraduationCap } from "lucide-react";
 import { SignInPage } from "@/components/SignInPage";
 
-export default function SignInRoute() {
+export default async function SignInRoute() {
+  const h = await headers();
+  const tenant = h.get("x-novalss-host") ?? h.get("host") ?? "";
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
       <div className="w-full max-w-md">
@@ -13,7 +17,7 @@ export default function SignInRoute() {
           <p className="text-gray-500 mt-1 text-sm">Sign in to continue</p>
         </div>
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-          <SignInPage />
+          <SignInPage tenant={tenant} />
         </div>
       </div>
     </div>
