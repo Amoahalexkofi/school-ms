@@ -8,7 +8,6 @@ import {
   ClipboardList,
   BookOpen,
   DollarSign,
-  Bell,
   GraduationCap,
   LogOut,
   Menu,
@@ -63,7 +62,6 @@ const navItems = [
   { href: "/chat", label: "Chat", icon: MessageCircle },
   { href: "/settings", label: "Settings", icon: Settings },
   { href: "/reports", label: "Reports", icon: BarChart2 },
-  { href: "/notifications", label: "Notifications", icon: Bell },
 ];
 
 export function Sidebar() {

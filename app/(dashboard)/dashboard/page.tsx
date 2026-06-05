@@ -1,18 +1,13 @@
 import { auth } from "@/lib/auth";
 import { getDashboardStats } from "@/lib/services/dashboard";
 import { Topbar } from "@/components/Topbar";
-import { Users, ClipboardList, DollarSign, BookOpen, TrendingUp, AlertCircle } from "lucide-react";
+import { Users, ClipboardList, DollarSign, BookOpen, TrendingUp, AlertCircle, UserCog, Receipt } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
-function StatCard({
-  title, value, sub, icon: Icon, color, alert,
-}: {
-  title: string;
-  value: string | number;
-  sub?: string;
-  icon: React.ElementType;
-  color: string;
-  alert?: boolean;
+function StatCard({ title, value, sub, icon: Icon, color, alert }: {
+  title: string; value: string | number; sub?: string;
+  icon: React.ElementType; color: string; alert?: boolean;
 }) {
   return (
     <Card className={alert ? "border-red-200 bg-red-50" : ""}>
@@ -33,13 +28,13 @@ function StatCard({
 export default async function DashboardPage() {
   const session = await auth();
   const role = (session?.user as any)?.role;
-  const stats = await getDashboardStats("session-2026").catch(() => null);
+  const stats = await getDashboardStats().catch(() => null);
 
   const attendancePct = stats && (stats.presentToday + stats.absentToday) > 0
     ? Math.round((stats.presentToday / (stats.presentToday + stats.absentToday)) * 100)
-    : 0;
+    : null;
 
-  const highAbsence = attendancePct < 75 && (stats?.presentToday ?? 0) + (stats?.absentToday ?? 0) > 0;
+  const highAbsence = attendancePct !== null && attendancePct < 75;
 
   return (
     <div className="flex flex-col flex-1">
@@ -49,38 +44,57 @@ export default async function DashboardPage() {
           <h2 className="text-lg font-semibold text-gray-800 mb-1">
             Welcome back{session?.user?.email ? `, ${session.user.email.split("@")[0]}` : ""}
           </h2>
-          <p className="text-sm text-gray-500">Here&apos;s what&apos;s happening today</p>
+          <p className="text-sm text-gray-500">
+            {stats ? `Session: ${stats.currentSession}` : "Here's what's happening today"}
+          </p>
         </div>
 
         {stats ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
-                title="Total Students"
+                title="Active Students"
                 value={stats.totalStudents}
                 icon={Users}
                 color="bg-blue-600"
               />
               <StatCard
+                title="Active Staff"
+                value={stats.totalStaff}
+                icon={UserCog}
+                color="bg-indigo-600"
+              />
+              <StatCard
                 title="Today's Attendance"
-                value={`${attendancePct}%`}
-                sub={`${stats.presentToday} present · ${stats.absentToday} absent`}
+                value={attendancePct !== null ? `${attendancePct}%` : "Not marked"}
+                sub={attendancePct !== null ? `${stats.presentToday} present · ${stats.absentToday} absent` : "No attendance data yet"}
                 icon={ClipboardList}
                 color={highAbsence ? "bg-red-500" : "bg-green-600"}
                 alert={highAbsence}
               />
               <StatCard
-                title="Fees Collected"
-                value={`₵${stats.collectedFees.toLocaleString()}`}
-                sub={`₵${stats.pendingFees.toLocaleString()} pending`}
+                title="Upcoming Exams"
+                value={stats.upcomingExams}
+                sub="scheduled from today"
+                icon={BookOpen}
+                color="bg-purple-600"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <StatCard
+                title="Fees Assigned (This Session)"
+                value={`₵${stats.totalFeeAssigned.toLocaleString()}`}
+                sub={`${stats.totalFeeDeposits} payment records`}
                 icon={DollarSign}
                 color="bg-yellow-500"
               />
               <StatCard
-                title="Upcoming Exams"
-                value={stats.upcomingExams}
-                icon={BookOpen}
-                color="bg-purple-600"
+                title="Fee Payments Recorded"
+                value={stats.totalFeeDeposits}
+                sub="deposits this session"
+                icon={Receipt}
+                color="bg-emerald-600"
               />
             </div>
 
@@ -91,42 +105,43 @@ export default async function DashboardPage() {
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" /> Quick Actions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {(role === "ADMIN" || role === "SUPER_ADMIN" || role === "TEACHER") && (
-                    <a href="/attendance" className="block text-sm text-blue-600 hover:underline">→ Mark today&apos;s attendance</a>
-                  )}
-                  {(role === "ADMIN" || role === "SUPER_ADMIN" || role === "ACCOUNTANT") && (
-                    <a href="/fees" className="block text-sm text-blue-600 hover:underline">→ View outstanding invoices</a>
-                  )}
-                  {(role === "ADMIN" || role === "SUPER_ADMIN") && (
-                    <a href="/students" className="block text-sm text-blue-600 hover:underline">→ Manage students</a>
-                  )}
-                  {(role === "ADMIN" || role === "SUPER_ADMIN" || role === "TEACHER") && (
-                    <a href="/exam-groups" className="block text-sm text-blue-600 hover:underline">→ Enter exam marks</a>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium text-gray-600">Staff Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-gray-900">{stats.totalStaff}</div>
-                  <p className="text-xs text-gray-500 mt-1">Total staff members</p>
-                </CardContent>
-              </Card>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" /> Quick Actions
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {(role === "ADMIN" || role === "SUPER_ADMIN" || role === "TEACHER") && (
+                  <Link href="/attendance" className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-2.5 rounded-lg transition-colors">
+                    <ClipboardList className="h-4 w-4 shrink-0" /> Mark Today's Attendance
+                  </Link>
+                )}
+                {(role === "ADMIN" || role === "SUPER_ADMIN" || role === "ACCOUNTANT") && (
+                  <Link href="/fees/collect" className="flex items-center gap-2 text-sm text-yellow-700 bg-yellow-50 hover:bg-yellow-100 px-3 py-2.5 rounded-lg transition-colors">
+                    <DollarSign className="h-4 w-4 shrink-0" /> Collect Fees
+                  </Link>
+                )}
+                {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+                  <Link href="/students/new" className="flex items-center gap-2 text-sm text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-2.5 rounded-lg transition-colors">
+                    <Users className="h-4 w-4 shrink-0" /> Add New Student
+                  </Link>
+                )}
+                {(role === "ADMIN" || role === "SUPER_ADMIN" || role === "TEACHER") && (
+                  <Link href="/exam-groups" className="flex items-center gap-2 text-sm text-purple-700 bg-purple-50 hover:bg-purple-100 px-3 py-2.5 rounded-lg transition-colors">
+                    <BookOpen className="h-4 w-4 shrink-0" /> Enter Exam Marks
+                  </Link>
+                )}
+              </CardContent>
+            </Card>
           </>
         ) : (
-          <div className="text-center py-12 text-gray-400">No data available for this session.</div>
+          <div className="text-center py-16 text-gray-400 border-2 border-dashed rounded-xl">
+            <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-30" />
+            <p className="font-medium">No data available</p>
+            <p className="text-sm mt-1">Make sure an active academic session exists in Settings.</p>
+            <Link href="/settings" className="inline-block mt-4 text-sm text-blue-600 hover:underline">Go to Settings →</Link>
+          </div>
         )}
       </main>
     </div>

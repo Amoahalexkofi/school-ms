@@ -5,55 +5,76 @@ export interface DashboardStats {
   totalStaff: number;
   presentToday: number;
   absentToday: number;
-  collectedFees: number;
-  pendingFees: number;
+  totalFeeAssigned: number;
+  totalFeeDeposits: number;
   upcomingExams: number;
+  currentSession: string;
 }
 
-export async function getDashboardStats(sessionId: string): Promise<DashboardStats> {
+export async function getDashboardStats(): Promise<DashboardStats> {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  // Get the most recent active session
+  const currentSession = await (prisma as any).academicSession.findFirst({
+    where: { isActive: true },
+    orderBy: { startDate: "desc" },
+  });
+
+  // AttendanceType IDs for P=Present, A=Absent
+  const [presentType, absentType] = await Promise.all([
+    (prisma as any).attendanceType.findUnique({ where: { keyValue: "P" } }),
+    (prisma as any).attendanceType.findUnique({ where: { keyValue: "A" } }),
+  ]);
 
   const [
     totalStudents,
     totalStaff,
     presentToday,
     absentToday,
-    collectedAgg,
-    totalInvoicedAgg,
+    feeAssignedAgg,
+    totalFeeDeposits,
     upcomingExams,
   ] = await Promise.all([
-    (prisma as any).student.count(),
-    (prisma as any).staff.count(),
-    (prisma as any).studentAttendance.count({
-      where: { status: "PRESENT", attendanceDay: { date: today, sessionId } },
-    }),
-    (prisma as any).studentAttendance.count({
-      where: { status: "ABSENT", attendanceDay: { date: today, sessionId } },
-    }),
-    (prisma as any).feeInvoice.aggregate({
-      where: { feeGroup: { sessionId } },
-      _sum: { paidAmount: true },
-    }),
-    (prisma as any).feeInvoice.aggregate({
-      where: { feeGroup: { sessionId } },
-      _sum: { totalAmount: true },
-    }),
-    (prisma as any).examGroup.count({
-      where: { sessionId, startDate: { gte: today } },
+    (prisma as any).student.count({ where: { isActive: true } }),
+    (prisma as any).staff.count({ where: { isActive: true } }),
+    presentType
+      ? (prisma as any).studentAttendance.count({
+          where: { attendanceTypeId: presentType.id, attendanceDay: { date: today } },
+        })
+      : 0,
+    absentType
+      ? (prisma as any).studentAttendance.count({
+          where: { attendanceTypeId: absentType.id, attendanceDay: { date: today } },
+        })
+      : 0,
+    currentSession
+      ? (prisma as any).studentFeesMaster.aggregate({
+          where: { studentSession: { sessionId: currentSession.id }, isActive: true },
+          _sum: { amount: true },
+        })
+      : { _sum: { amount: 0 } },
+    currentSession
+      ? (prisma as any).feeDeposit.count({
+          where: { isActive: true, studentFeesMaster: { studentSession: { sessionId: currentSession.id } } },
+        })
+      : 0,
+    (prisma as any).examSchedule.count({
+      where: {
+        dateOfExam: { gte: today },
+        ...(currentSession ? { sessionId: currentSession.id } : {}),
+      },
     }),
   ]);
-
-  const collectedFees = Number(collectedAgg._sum.paidAmount ?? 0);
-  const totalInvoiced = Number(totalInvoicedAgg._sum.totalAmount ?? 0);
 
   return {
     totalStudents,
     totalStaff,
     presentToday,
     absentToday,
-    collectedFees,
-    pendingFees: Math.max(0, totalInvoiced - collectedFees),
+    totalFeeAssigned: Number(feeAssignedAgg._sum?.amount ?? 0),
+    totalFeeDeposits,
     upcomingExams,
+    currentSession: currentSession?.session ?? "No active session",
   };
 }
