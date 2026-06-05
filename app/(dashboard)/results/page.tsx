@@ -55,20 +55,20 @@ export default async function ResultsPage() {
   } else {
     // For admin/teacher: show all published results grouped by exam group
     const allGroups = await (prisma as any).examGroup.findMany({
-      where: { published: true },
+      where: { isPublished: true },
       include: {
         schedules: {
           include: {
             markEntries: {
               include: {
-                student: { select: { firstName: true, lastName: true, admissionNumber: true } },
+                student: { select: { firstName: true, lastName: true, admissionNo: true } },
                 subject: { select: { name: true } },
               },
             },
           },
         },
       },
-      orderBy: { startDate: "desc" },
+      orderBy: { createdAt: "desc" },
     });
     groups = allGroups.map((g: any) => ({
       name: g.name,
@@ -95,10 +95,10 @@ export default async function ResultsPage() {
           // Student view — marksheet per exam group
           <div className="space-y-6">
             {groups.map((g: any) => {
-              const total = g.entries.reduce((s: number, e: any) => s + Number(e.totalMarks ?? 0), 0);
-              const maxTotal = g.entries.reduce((s: number, e: any) => s + (e.examSchedule?.maxMarks ?? 0), 0);
+              const total = g.entries.reduce((s: number, e: any) => s + Number(e.marksObtained ?? 0), 0);
+              const maxTotal = g.entries.reduce((s: number, e: any) => s + (e.examSchedule?.fullMarks ?? 0), 0);
               const pct = maxTotal > 0 ? Math.round((total / maxTotal) * 100) : 0;
-              const passed = g.entries.every((e: any) => e.isPassed);
+              const passed = g.entries.every((e: any) => e.isPassing);
 
               return (
                 <Card key={g.name}>
@@ -124,23 +124,23 @@ export default async function ResultsPage() {
                       </thead>
                       <tbody className="divide-y">
                         {g.entries.map((e: any) => {
-                          const subjectPct = e.examSchedule?.maxMarks > 0
-                            ? Math.round((Number(e.totalMarks) / e.examSchedule.maxMarks) * 100)
+                          const subjectPct = e.examSchedule?.fullMarks > 0
+                            ? Math.round((Number(e.marksObtained) / e.examSchedule.maxMarks) * 100)
                             : 0;
                           return (
                             <tr key={e.id} className="hover:bg-gray-50">
                               <td className="px-3 py-2.5 font-medium">{e.subject?.name}</td>
                               <td className="px-3 py-2.5">
-                                <span className="font-semibold">{Number(e.totalMarks)}</span>
-                                <span className="text-gray-400"> / {e.examSchedule?.maxMarks}</span>
+                                <span className="font-semibold">{Number(e.marksObtained)}</span>
+                                <span className="text-gray-400"> / {e.examSchedule?.fullMarks}</span>
                               </td>
                               <td className="px-3 py-2.5 text-gray-600">{subjectPct}%</td>
                               <td className="px-3 py-2.5">
                                 <span className="font-bold text-blue-700 text-base">{e.grade ?? "—"}</span>
                               </td>
                               <td className="px-3 py-2.5">
-                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${e.isPassed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                                  {e.isPassed ? "PASS" : "FAIL"}
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${e.isPassing ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                                  {e.isPassing ? "PASS" : "FAIL"}
                                 </span>
                               </td>
                             </tr>
@@ -189,8 +189,8 @@ export default async function ResultsPage() {
                           {s.markEntries?.map((m: any) => (
                             <tr key={m.id} className="hover:bg-gray-50">
                               <td className="px-3 py-2">{m.student?.firstName} {m.student?.lastName}</td>
-                              <td className="px-3 py-2 font-mono text-xs text-gray-500">{m.student?.admissionNumber}</td>
-                              <td className="px-3 py-2">{Number(m.totalMarks)} / {s.maxMarks}</td>
+                              <td className="px-3 py-2 font-mono text-xs text-gray-500">{m.student?.admissionNo}</td>
+                              <td className="px-3 py-2">{Number(m.totalMarks)} / {s.fullMarks}</td>
                               <td className="px-3 py-2 font-bold text-blue-700">{m.grade ?? "—"}</td>
                               <td className="px-3 py-2">
                                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.isPassed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>

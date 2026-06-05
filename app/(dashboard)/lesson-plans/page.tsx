@@ -8,7 +8,7 @@ async function getLessonPlans() {
     include: {
       staff: true,
       subject: true,
-      section: { include: { class: true } },
+      classSection: { include: { class: true, section: true } },
     },
     orderBy: { date: "desc" },
   });
@@ -84,7 +84,7 @@ export default async function LessonPlansPage() {
                         </div>
                         <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500">
                           <span>{p.subject.name} ({p.subject.code})</span>
-                          <span>{p.section.class.name} – {p.section.name}</span>
+                          <span>{p.classSection?.class?.name} – {p.classSection?.section?.name}</span>
                           <span>By: {p.staff.firstName} {p.staff.lastName}</span>
                           <span>{new Date(p.date).toLocaleDateString()}</span>
                         </div>

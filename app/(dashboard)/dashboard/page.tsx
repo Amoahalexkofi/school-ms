@@ -52,9 +52,9 @@ export default async function DashboardPage() {
   const feesPaidPct = feesTotal > 0 ? Math.round(((stats?.feesPaid ?? 0) / feesTotal) * 100) : 0;
   const feesUnpaidPct = feesTotal > 0 ? Math.round(((stats?.feesUnpaid ?? 0) / feesTotal) * 100) : 0;
 
-  const enquiryTotal = Math.max(stats?.enquiries.total ?? 0, 1);
-  const enqWonPct    = Math.round(((stats?.enquiries.won ?? 0) / enquiryTotal) * 100);
-  const enqActivePct = Math.round(((stats?.enquiries.active ?? 0) / enquiryTotal) * 100);
+  const enquiryTotal    = Math.max(stats?.enquiries.total ?? 0, 1);
+  const enqConvertedPct = Math.round(((stats?.enquiries.converted ?? 0) / enquiryTotal) * 100);
+  const enqContactedPct = Math.round(((stats?.enquiries.contacted ?? 0) / enquiryTotal) * 100);
 
   return (
     <div className="flex flex-col flex-1">
@@ -196,12 +196,12 @@ export default async function DashboardPage() {
                   ) : (
                     <>
                       <div>
-                        <div className="flex justify-between text-xs text-gray-500 mb-0.5"><span>Won</span><span>{stats.enquiries.won}</span></div>
-                        <ProgressBar value={enqWonPct} color="bg-emerald-500" />
+                        <div className="flex justify-between text-xs text-gray-500 mb-0.5"><span>Converted</span><span>{stats.enquiries.converted}</span></div>
+                        <ProgressBar value={enqConvertedPct} color="bg-emerald-500" />
                       </div>
                       <div>
-                        <div className="flex justify-between text-xs text-gray-500 mb-0.5"><span>Active</span><span>{stats.enquiries.active}</span></div>
-                        <ProgressBar value={enqActivePct} color="bg-blue-400" />
+                        <div className="flex justify-between text-xs text-gray-500 mb-0.5"><span>Contacted</span><span>{stats.enquiries.contacted}</span></div>
+                        <ProgressBar value={enqContactedPct} color="bg-blue-400" />
                       </div>
                       <p className="text-xs text-gray-400">Total: {stats.enquiries.total}</p>
                     </>
