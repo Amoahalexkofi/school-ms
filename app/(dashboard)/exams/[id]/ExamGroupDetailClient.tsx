@@ -170,7 +170,7 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
       <Dialog open={addOpen} onOpenChange={o => !o && setAddOpen(false)}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>Add Exam Schedule</DialogTitle></DialogHeader>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Session *</label>
               <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"

@@ -218,7 +218,7 @@ export default function ExamGroupsPage() {
                 <Label>Name</Label>
                 <Input name="name" required placeholder="e.g. Term 1 Exams" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Start Date</Label>
                   <Input name="startDate" type="date" required />
@@ -256,7 +256,7 @@ export default function ExamGroupsPage() {
                 <Label>Date</Label>
                 <Input name="date" type="date" required />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Start Time</Label>
                   <Input name="startTime" type="time" required />
@@ -266,7 +266,7 @@ export default function ExamGroupsPage() {
                   <Input name="endTime" type="time" required />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Max Marks</Label>
                   <Input name="maxMarks" type="number" defaultValue={100} required />

@@ -146,7 +146,7 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
         <DialogContent>
           <DialogHeader><DialogTitle>Generate Payroll</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Month</Label>
                 <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={payrollForm.month} onChange={e => setPayrollForm(f => ({ ...f, month: e.target.value }))}>

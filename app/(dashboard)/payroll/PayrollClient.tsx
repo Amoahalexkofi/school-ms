@@ -114,7 +114,7 @@ export function PayrollClient({ departments }: Props) {
       {loaded && (
         <>
           {/* Summary */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { label: `Total Net Salary (${MONTHS.find(m => m.value === month)?.label} ${year})`, value: `₵${totalNetSalary.toLocaleString()}`, cls: "text-gray-900" },
               { label: "Paid",    value: paidCount,    cls: "text-green-700" },

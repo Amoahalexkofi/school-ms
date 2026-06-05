@@ -280,7 +280,7 @@ export function OnlineExamsClient({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Class (optional)</Label>
                 <select className={SEL} value={form.classId} onChange={(e) => set("classId", e.target.value)}>
@@ -301,7 +301,7 @@ export function OnlineExamsClient({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Duration (minutes) *</Label>
                 <Input
@@ -323,7 +323,7 @@ export function OnlineExamsClient({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Start Time *</Label>
                 <Input

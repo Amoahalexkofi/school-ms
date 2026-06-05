@@ -21,8 +21,8 @@ export function Topbar({ title }: { title: string }) {
   const initials = email.slice(0, 2).toUpperCase();
 
   return (
-    <header className="bg-white border-b px-6 py-3 flex items-center justify-between">
-      <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
+    <header className="bg-white border-b px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+      <h1 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{title}</h1>
       <div className="flex items-center gap-3">
         <span className={`text-xs font-medium px-2 py-1 rounded-full ${roleColors[role] ?? "bg-gray-100 text-gray-700"}`}>
           {role.replace("_", " ")}

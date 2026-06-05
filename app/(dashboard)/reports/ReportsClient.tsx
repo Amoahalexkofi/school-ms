@@ -470,7 +470,7 @@ function StaffAttendanceReport({ departments, onPrint }: { departments: Props["d
     <div className="space-y-4">
       <div className="bg-white border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Staff Attendance Report</h3>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <Label>Department</Label>
             <select className={SEL} value={departmentId} onChange={(e) => setDepartmentId(e.target.value)}>
@@ -582,7 +582,7 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
     <div className="space-y-4">
       <div className="bg-white border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Fee Collection Report</h3>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <Label>Session</Label>
             <select className={SEL} value={sessionId} onChange={(e) => setSessionId(e.target.value)}>
@@ -827,7 +827,7 @@ function ExamResultsReport({ examGroups, sessions, classSections, onPrint }: {
     <div className="space-y-4">
       <div className="bg-white border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Exam Results Report</h3>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <Label>Exam Group *</Label>
             <select className={SEL} value={examGroupId} onChange={(e) => setExamGroupId(e.target.value)}>
@@ -1069,7 +1069,7 @@ function LibraryReport({ onPrint }: { onPrint: () => void }) {
     <div className="space-y-4">
       <div className="bg-white border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Library Issue Log</h3>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <Label>Status</Label>
             <select className={SEL} value={status} onChange={(e) => setStatus(e.target.value)}>

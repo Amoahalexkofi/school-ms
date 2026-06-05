@@ -92,7 +92,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                     <Label className="text-xs mb-1 block">Name *</Label>
                     <Input placeholder="e.g. 2025/2026" value={sessionForm.form.name} onChange={sessionForm.set("name")} />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <Label className="text-xs mb-1 block">Start Date *</Label>
                       <Input type="date" value={sessionForm.form.startDate} onChange={sessionForm.set("startDate")} />
@@ -265,7 +265,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                   <button type="button" onClick={closePanel} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
                 </div>
                 <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <Label className="text-xs mb-1 block">Name *</Label>
                       <Input placeholder="e.g. Mathematics" value={subjectForm.form.name} onChange={subjectForm.set("name")} />

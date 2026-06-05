@@ -96,7 +96,7 @@ export default async function StaffProfilePage({
                 <User className="h-4 w-4 text-gray-600" /> Personal Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
               {[
                 ["Father's Name",    staff.fatherName],
                 ["Mother's Name",    staff.motherName],
@@ -122,7 +122,7 @@ export default async function StaffProfilePage({
                 <Briefcase className="h-4 w-4 text-blue-600" /> Employment &amp; Finance
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
               {[
                 ["Payscale",          staff.payscale],
                 ["Basic Salary",      staff.basicSalary ? `₵${Number(staff.basicSalary).toLocaleString()}` : null],

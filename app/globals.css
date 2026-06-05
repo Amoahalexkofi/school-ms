@@ -128,3 +128,71 @@
     @apply font-sans;
   }
 }
+
+@media print {
+  /* Hide chrome */
+  aside,
+  header,
+  nav,
+  [data-slot="sidebar"],
+  .no-print,
+  button:not(.print-btn) {
+    display: none !important;
+  }
+
+  body, html {
+    background: white !important;
+    color: black !important;
+    font-size: 12px;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Full width when sidebar is hidden */
+  .flex-1 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 4px 8px;
+    text-align: left;
+  }
+
+  thead {
+    background: #f3f4f6 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Cards become borderless boxes */
+  .rounded-xl, .rounded-lg {
+    border-radius: 0 !important;
+  }
+
+  /* Avoid page breaks inside rows */
+  tr {
+    page-break-inside: avoid;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-after: always;
+  }
+
+  /* Hide filters/search/action toolbar */
+  .print-hide {
+    display: none !important;
+  }
+}

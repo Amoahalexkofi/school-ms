@@ -105,7 +105,7 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
         <>
           {/* Summary */}
           {rows.length > 0 && (
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
                 { label: "Total Collected", value: `₵${totalCollected.toLocaleString()}`, cls: "text-green-700" },
                 { label: "Total Due",       value: `₵${totalDue.toLocaleString()}`,       cls: "text-red-700" },
