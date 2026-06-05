@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, CheckCircle2, XCircle, Pencil, Trash2 } from "lucide-react";
 
-type Props = { leaveTypes: any[]; staffRequests: any[]; studentRequests: any[]; staff: any[]; students: any[] };
-type Tab = "types" | "staff" | "students";
+type Props = { leaveTypes: any[]; staffRequests: any[]; studentRequests: any[]; staff: any[]; students: any[]; leaveBalances: any[] };
+type Tab = "types" | "staff" | "students" | "balance";
 
 const STATUS_STYLE: Record<string, string> = {
   PENDING:  "bg-amber-100 text-amber-700",
@@ -17,7 +17,7 @@ const STATUS_STYLE: Record<string, string> = {
   REJECTED: "bg-red-100 text-red-700",
 };
 
-export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff, students }: Props) {
+export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff, students, leaveBalances }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("types");
 
@@ -67,9 +67,10 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
   }
 
   const TABS = [
-    { key: "types" as Tab,    label: "Leave Types" },
-    { key: "staff" as Tab,    label: "Staff Leave" },
+    { key: "types"    as Tab, label: "Leave Types" },
+    { key: "staff"    as Tab, label: "Staff Leave" },
     { key: "students" as Tab, label: "Student Leave" },
+    { key: "balance"  as Tab, label: "Leave Balance" },
   ];
 
   return (
@@ -211,6 +212,54 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* ── Leave Balance ── */}
+      {tab === "balance" && (
+        <div className="space-y-4">
+          <p className="text-sm text-gray-500">Leave balance per staff member — Total Allocated vs Used Days</p>
+          {leaveBalances.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-200 p-10 text-center text-sm text-gray-400">
+              No leave balances configured. Allocate leave to staff from their profiles.
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    {["Staff", "Employee ID", "Leave Type", "Allocated", "Used", "Available", ""].map(h => (
+                      <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {leaveBalances.map((b: any) => {
+                    const available = b.totalDays - b.usedDays;
+                    const pct = b.totalDays > 0 ? Math.round((b.usedDays / b.totalDays) * 100) : 0;
+                    return (
+                      <tr key={b.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 font-medium">{b.staff.firstName} {b.staff.lastName}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-gray-400">{b.staff.employeeId}</td>
+                        <td className="px-4 py-3 text-gray-600">{b.leaveType.name}</td>
+                        <td className="px-4 py-3 text-center">{b.totalDays}</td>
+                        <td className="px-4 py-3 text-center text-orange-600">{b.usedDays}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <span className={`font-semibold ${available <= 0 ? "text-red-600" : available <= 3 ? "text-amber-600" : "text-green-600"}`}>{available}</span>
+                            <div className="flex-1 bg-gray-100 rounded-full h-1.5 min-w-[60px]">
+                              <div className={`h-1.5 rounded-full ${pct > 80 ? "bg-red-400" : pct > 50 ? "bg-amber-400" : "bg-green-400"}`} style={{ width: `${Math.min(100, pct)}%` }} />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-gray-400">{pct}% used</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 

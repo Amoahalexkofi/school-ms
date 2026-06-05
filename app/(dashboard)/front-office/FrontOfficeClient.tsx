@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Plus, CheckCircle2, UserCheck } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Plus, CheckCircle2, UserCheck, X, Pencil, Trash2 } from "lucide-react";
 
 type Props = { purposes: any[]; visitors: any[]; complaintTypes: any[]; complaints: any[]; enquiries: any[] };
-type Tab = "visitors" | "complaints" | "enquiries";
+type Tab = "visitors" | "complaints" | "enquiries" | "complaint-types";
 
 const COMPLAINT_STATUS_STYLE: Record<string, string> = {
   OPEN:        "bg-red-100 text-red-700",
@@ -21,14 +23,31 @@ const ENQ_STATUS_STYLE: Record<string, string> = {
   CLOSED:    "bg-gray-100 text-gray-600",
 };
 
-export function FrontOfficeClient({ purposes, visitors, complaintTypes, complaints, enquiries }: Props) {
+export function FrontOfficeClient({ purposes, visitors, complaintTypes: initTypes, complaints, enquiries }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("visitors");
   const [checkedOut, setCheckedOut] = useState<string | null>(null);
 
+  // Complaint types state
+  const [types, setTypes]         = useState(initTypes);
+  const [typePanel, setTypePanel] = useState(false);
+  const [typeEdit, setTypeEdit]   = useState<any>(null);
+  const [typeName, setTypeName]   = useState("");
+  const [typeLoad, setTypeLoad]   = useState(false);
+  const [typeErr,  setTypeErr]    = useState("");
+
+  // Enquiry follow-up state
+  const [followUpId,   setFollowUpId]   = useState<string | null>(null);
+  const [followNote,   setFollowNote]   = useState("");
+  const [followDate,   setFollowDate]   = useState("");
+  const [followLoad,   setFollowLoad]   = useState(false);
+
   async function patch(url: string, body: object) {
     const res = await fetch(url, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const d = await res.json(); if (!res.ok) throw new Error(d.error); return d;
+  }
+  async function del(url: string) {
+    const res = await fetch(url, { method: "DELETE" }); if (!res.ok) throw new Error("Failed");
   }
 
   async function checkout(id: string) {
@@ -47,15 +66,51 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes, complain
     router.refresh();
   }
 
+  async function saveFollowUp(enquiryId: string) {
+    setFollowLoad(true);
+    try {
+      await patch(`/api/front-office/enquiries/${enquiryId}`, {
+        status: "CONTACTED",
+        followUpNote: followNote || null,
+        nextFollowUp: followDate ? new Date(followDate).toISOString() : null,
+      });
+      setFollowUpId(null); router.refresh();
+    } finally { setFollowLoad(false); }
+  }
+
+  // Complaint type CRUD
+  async function saveType() {
+    if (!typeName.trim()) { setTypeErr("Name required"); return; }
+    setTypeLoad(true); setTypeErr("");
+    try {
+      if (typeEdit) {
+        const updated = await patch(`/api/front-office/complaint-types/${typeEdit.id}`, { name: typeName });
+        setTypes(t => t.map(x => x.id === typeEdit.id ? updated : x));
+      } else {
+        const res = await fetch("/api/front-office/complaint-types", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: typeName }) });
+        const created = await res.json();
+        setTypes(t => [...t, created]);
+      }
+      setTypePanel(false); setTypeEdit(null); setTypeName("");
+    } catch (e: any) { setTypeErr(e.message); }
+    finally { setTypeLoad(false); }
+  }
+  async function deleteType(id: string) {
+    if (!confirm("Delete this complaint type?")) return;
+    try { await del(`/api/front-office/complaint-types/${id}`); setTypes(t => t.filter(x => x.id !== id)); }
+    catch { alert("Failed to delete"); }
+  }
+
   const TABS = [
-    { key: "visitors"   as Tab, label: `Visitors (${visitors.filter(v => !v.outTime).length} in)` },
-    { key: "complaints" as Tab, label: `Complaints (${complaints.filter(c => c.status === "OPEN").length} open)` },
-    { key: "enquiries"  as Tab, label: `Enquiries (${enquiries.filter(e => e.status === "NEW").length} new)` },
+    { key: "visitors"        as Tab, label: `Visitors (${visitors.filter(v => !v.outTime).length} in)` },
+    { key: "complaints"      as Tab, label: `Complaints (${complaints.filter(c => c.status === "OPEN").length} open)` },
+    { key: "enquiries"       as Tab, label: `Enquiries (${enquiries.filter(e => e.status === "NEW").length} new)` },
+    { key: "complaint-types" as Tab, label: "Complaint Types" },
   ];
 
   return (
     <main className="flex-1 p-6 space-y-5 bg-gray-50">
-      <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
+      <div className="flex flex-wrap gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
@@ -69,11 +124,9 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes, complain
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{visitors.length} visitor{visitors.length !== 1 ? "s" : ""} today</p>
-            <Link href="/front-office/visitors/new">
-              <Button><Plus className="h-4 w-4 mr-1.5" />Log Visitor</Button>
-            </Link>
+            <Link href="/front-office/visitors/new"><Button><Plus className="h-4 w-4 mr-1.5" />Log Visitor</Button></Link>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>{["Visitor","Phone","Purpose","Host","# Visitors","In","Out",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
@@ -107,11 +160,9 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes, complain
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{complaints.length} complaint{complaints.length !== 1 ? "s" : ""}</p>
-            <Link href="/front-office/complaints/new">
-              <Button><Plus className="h-4 w-4 mr-1.5" />Add Complaint</Button>
-            </Link>
+            <Link href="/front-office/complaints/new"><Button><Plus className="h-4 w-4 mr-1.5" />Add Complaint</Button></Link>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>{["Title","Type","Raised By","Date","Status","Actions"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
@@ -126,7 +177,7 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes, complain
                     <td className="px-4 py-3 text-xs text-gray-500">{new Date(c.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${COMPLAINT_STATUS_STYLE[c.status]}`}>{c.status.replace(/_/g, " ")}</span></td>
                     <td className="px-4 py-3">
-                      {c.status === "OPEN" && <Button size="sm" variant="outline" onClick={() => updateComplaintStatus(c.id, "IN_PROGRESS")}>In Progress</Button>}
+                      {c.status === "OPEN"        && <Button size="sm" variant="outline" onClick={() => updateComplaintStatus(c.id, "IN_PROGRESS")}>In Progress</Button>}
                       {c.status === "IN_PROGRESS" && <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={() => updateComplaintStatus(c.id, "RESOLVED")}><CheckCircle2 className="h-3.5 w-3.5 mr-1" />Resolve</Button>}
                     </td>
                   </tr>
@@ -142,33 +193,105 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes, complain
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{enquiries.length} enqu{enquiries.length !== 1 ? "iries" : "iry"}</p>
-            <Link href="/front-office/enquiries/new">
-              <Button><Plus className="h-4 w-4 mr-1.5" />Add Enquiry</Button>
-            </Link>
+            <Link href="/front-office/enquiries/new"><Button><Plus className="h-4 w-4 mr-1.5" />Add Enquiry</Button></Link>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+
+          {/* Follow-up inline form */}
+          {followUpId && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-amber-800">Log Follow-Up</p>
+                <button onClick={() => setFollowUpId(null)}><X className="h-4 w-4 text-gray-400" /></button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Follow-up Note</Label>
+                  <Input value={followNote} onChange={e => setFollowNote(e.target.value)} placeholder="What was discussed…" />
+                </div>
+                <div>
+                  <Label className="text-xs">Next Follow-up Date</Label>
+                  <Input type="date" value={followDate} onChange={e => setFollowDate(e.target.value)} />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" disabled={followLoad} onClick={() => saveFollowUp(followUpId)}>{followLoad ? "Saving…" : "Save & Mark Contacted"}</Button>
+                <Button size="sm" variant="outline" onClick={() => setFollowUpId(null)}>Cancel</Button>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b">
-                <tr>{["Name","Phone","Email","Description","Date","Status","Actions"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+                <tr>{["Name","Phone","Description","Next Follow-up","Follow-up Note","Date","Status","Actions"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600 text-xs">{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y">
-                {enquiries.length === 0 ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-400">No enquiries.</td></tr>
+                {enquiries.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-400">No enquiries.</td></tr>
                 : enquiries.map((e: any) => (
                   <tr key={e.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium">{e.name}</td>
-                    <td className="px-4 py-3 text-gray-500">{e.phone ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{e.email ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-500 max-w-[200px] truncate text-xs">{e.description ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500 text-xs">{e.phone ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500 max-w-[160px] truncate text-xs">{e.description ?? "—"}</td>
+                    <td className="px-4 py-3 text-xs text-amber-700">{e.nextFollowUp ? new Date(e.nextFollowUp).toLocaleDateString() : "—"}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500 max-w-[160px] truncate">{e.followUpNote ?? "—"}</td>
                     <td className="px-4 py-3 text-xs text-gray-500">{new Date(e.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ENQ_STATUS_STYLE[e.status]}`}>{e.status}</span></td>
                     <td className="px-4 py-3">
-                      {e.status === "NEW"       && <Button size="sm" variant="outline" onClick={() => updateEnquiryStatus(e.id, "CONTACTED")}>Contacted</Button>}
-                      {e.status === "CONTACTED" && <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={() => updateEnquiryStatus(e.id, "CONVERTED")}>Converted</Button>}
+                      <div className="flex gap-1">
+                        {e.status === "NEW"       && <Button size="sm" variant="outline" onClick={() => { setFollowUpId(e.id); setFollowNote(e.followUpNote ?? ""); setFollowDate(e.nextFollowUp ? new Date(e.nextFollowUp).toISOString().slice(0,10) : ""); }}>Follow Up</Button>}
+                        {e.status === "CONTACTED" && <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={() => updateEnquiryStatus(e.id, "CONVERTED")}>Converted</Button>}
+                        {(e.status === "NEW" || e.status === "CONTACTED") && <Button size="sm" variant="ghost" onClick={() => updateEnquiryStatus(e.id, "CLOSED")} className="text-gray-400">Close</Button>}
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* ── Complaint Types ── */}
+      {tab === "complaint-types" && (
+        <div className="space-y-4">
+          <div className="flex justify-between">
+            <p className="text-sm text-gray-500">{types.length} type{types.length !== 1 ? "s" : ""}</p>
+            <Button onClick={() => { setTypeName(""); setTypeEdit(null); setTypeErr(""); setTypePanel(true); }}>
+              <Plus className="h-4 w-4 mr-1.5" /> Add Type
+            </Button>
+          </div>
+
+          {typePanel && (
+            <div className="bg-white rounded-xl border border-blue-200 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-blue-800">{typeEdit ? "Edit Type" : "New Complaint Type"}</p>
+                <button onClick={() => setTypePanel(false)}><X className="h-4 w-4 text-gray-400" /></button>
+              </div>
+              <div className="flex gap-3 items-end">
+                <div className="flex-1">
+                  <Label>Name *</Label>
+                  <Input value={typeName} onChange={e => setTypeName(e.target.value)} placeholder="e.g. Infrastructure, Academic" />
+                </div>
+                <Button disabled={typeLoad} onClick={saveType}>{typeLoad ? "Saving…" : "Save"}</Button>
+                <Button variant="outline" onClick={() => setTypePanel(false)}>Cancel</Button>
+              </div>
+              {typeErr && <p className="text-sm text-red-600">{typeErr}</p>}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {types.length === 0
+              ? <p className="text-sm text-gray-400 col-span-3 text-center py-8">No complaint types yet. Add one above.</p>
+              : types.map((t: any) => (
+                <div key={t.id} className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between">
+                  <p className="font-medium text-gray-800">{t.name}</p>
+                  <div className="flex gap-1">
+                    <Button size="sm" variant="ghost" onClick={() => { setTypeName(t.name); setTypeEdit(t); setTypeErr(""); setTypePanel(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => deleteType(t.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>
+                  </div>
+                </div>
+              ))
+            }
           </div>
         </div>
       )}
