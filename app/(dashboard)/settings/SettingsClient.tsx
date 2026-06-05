@@ -371,7 +371,6 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                 { href: "/settings/notifications",   icon: Bell,          bg: "bg-amber-100",  ic: "text-amber-600",  label: "Notifications",         desc: "Email / SMS / push toggles" },
                 { href: "/settings/roles",           icon: ShieldCheck,   bg: "bg-purple-100", ic: "text-purple-600", label: "Roles & Permissions",   desc: "Access matrix per role" },
                 { href: "/audit-log",                icon: ShieldCheck,   bg: "bg-green-100",  ic: "text-green-600",  label: "Audit Log",             desc: "Searchable activity history" },
-                { href: "/novalss-admin",            icon: Building2,     bg: "bg-slate-100",  ic: "text-slate-600",  label: "Novalss Admin",         desc: "Company dashboard — manage all schools" },
               ].map(({ href, icon: Icon, bg, ic, label, desc }) => (
                 <Link key={href} href={href} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                   <div className={`w-9 h-9 ${bg} rounded-lg flex items-center justify-center shrink-0`}>
