@@ -13,7 +13,7 @@ import Link from "next/link";
 const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type Props = {
-  sessions: any[]; classes: any[]; subjects: any[]; profile: any; staff: any[];
+  sessions: any[]; classes: any[]; sections: any[]; subjects: any[]; profile: any; staff: any[];
 };
 
 function useForm<T extends Record<string, string>>(initial: T) {
@@ -30,15 +30,15 @@ async function postData(url: string, body: object) {
   return res.json();
 }
 
-export function SettingsClient({ sessions, classes, subjects, profile, staff }: Props) {
+export function SettingsClient({ sessions, classes, sections, subjects, profile, staff }: Props) {
   const router = useRouter();
   const [addingType, setAddingType] = useState<"session" | "class" | "section" | "subject" | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const sessionForm = useForm({ name: "", startDate: "", endDate: "", setActive: "true" });
-  const classForm = useForm({ name: "", sessionId: sessions[0]?.id ?? "" });
-  const sectionForm = useForm({ name: "", classId: classes[0]?.id ?? "" });
+  const classForm = useForm({ name: "" });
+  const sectionForm = useForm({ name: "" });
   const subjectForm = useForm({ name: "", code: "", classId: classes[0]?.id ?? "" });
 
   function openPanel(type: "session" | "class" | "section" | "subject") {
@@ -178,18 +178,12 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
                 <div className="space-y-3">
                   <div>
                     <Label className="text-xs mb-1 block">Class Name *</Label>
-                    <Input placeholder="e.g. Grade 7" value={classForm.form.name} onChange={classForm.set("name")} />
-                  </div>
-                  <div>
-                    <Label className="text-xs mb-1 block">Session *</Label>
-                    <select className={SEL} value={classForm.form.sessionId} onChange={classForm.set("sessionId")}>
-                      {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                    </select>
+                    <Input placeholder="e.g. Grade 7, JHS 1, Form 1" value={classForm.form.name} onChange={classForm.set("name")} />
                   </div>
                   {error && <p className="text-sm text-red-600">{error}</p>}
                   <div className="flex gap-2 justify-end">
                     <Button variant="outline" size="sm" onClick={closePanel}>Cancel</Button>
-                    <Button size="sm" disabled={loading} onClick={() => submit("/api/classes", classForm.form)}>
+                    <Button size="sm" disabled={loading} onClick={() => submit("/api/classes", { name: classForm.form.name })}>
                       {loading ? "Creating…" : "Create Class"}
                     </Button>
                   </div>
@@ -207,18 +201,12 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
                 <div className="space-y-3">
                   <div>
                     <Label className="text-xs mb-1 block">Section Name *</Label>
-                    <Input placeholder="e.g. A" value={sectionForm.form.name} onChange={sectionForm.set("name")} />
-                  </div>
-                  <div>
-                    <Label className="text-xs mb-1 block">Class *</Label>
-                    <select className={SEL} value={sectionForm.form.classId} onChange={sectionForm.set("classId")}>
-                      {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name} ({c.session.name})</option>)}
-                    </select>
+                    <Input placeholder="e.g. A, B, Gold, Blue" value={sectionForm.form.name} onChange={sectionForm.set("name")} />
                   </div>
                   {error && <p className="text-sm text-red-600">{error}</p>}
                   <div className="flex gap-2 justify-end">
                     <Button variant="outline" size="sm" onClick={closePanel}>Cancel</Button>
-                    <Button size="sm" disabled={loading} onClick={() => submit("/api/sections", sectionForm.form)}>
+                    <Button size="sm" disabled={loading} onClick={() => submit("/api/sections", { name: sectionForm.form.name })}>
                       {loading ? "Creating…" : "Create Section"}
                     </Button>
                   </div>
@@ -230,26 +218,29 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
               <p className="text-sm text-gray-500 text-center py-6">No classes yet.</p>
             ) : (
               <div className="space-y-3">
-                {classes.map((cls: any) => (
-                  <div key={cls.id} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <p className="font-semibold">{cls.name}</p>
-                        <p className="text-xs text-gray-500">{cls.session.name} · {cls._count.subjects} subjects</p>
+                {classes.map((cls: any) => {
+                  const linkedSections = cls.classSections ?? [];
+                  return (
+                    <div key={cls.id} className="border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <p className="font-semibold">{cls.name}</p>
+                          <p className="text-xs text-gray-500">{cls._count?.subjects ?? 0} subject{cls._count?.subjects !== 1 ? "s" : ""}</p>
+                        </div>
+                        <span className="text-xs text-gray-500">{linkedSections.length} section{linkedSections.length !== 1 ? "s" : ""}</span>
                       </div>
-                      <span className="text-xs text-gray-500">{cls.sections.length} section{cls.sections.length !== 1 ? "s" : ""}</span>
+                      {linkedSections.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {linkedSections.map((cs: any) => (
+                            <span key={cs.id} className="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded">
+                              <Layers className="h-3 w-3 inline mr-1" />{cs.section?.name ?? cs.id}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    {cls.sections.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {cls.sections.map((sec: any) => (
-                          <span key={sec.id} className="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded">
-                            <Layers className="h-3 w-3 inline mr-1" />{sec.name}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
@@ -287,7 +278,7 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
                   <div>
                     <Label className="text-xs mb-1 block">Class *</Label>
                     <select className={SEL} value={subjectForm.form.classId} onChange={subjectForm.set("classId")}>
-                      {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name} ({c.session.name})</option>)}
+                      {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                   </div>
                   {error && <p className="text-sm text-red-600">{error}</p>}
@@ -309,15 +300,13 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
                   <th className="text-left px-3 py-2 font-medium text-gray-600">Name</th>
                   <th className="text-left px-3 py-2 font-medium text-gray-600">Code</th>
                   <th className="text-left px-3 py-2 font-medium text-gray-600">Class</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Session</th>
                 </tr></thead>
                 <tbody className="divide-y">
                   {subjects.map((sub: any) => (
                     <tr key={sub.id} className="hover:bg-gray-50">
                       <td className="px-3 py-2.5 font-medium">{sub.name}</td>
-                      <td className="px-3 py-2.5 font-mono text-xs text-gray-500">{sub.code}</td>
-                      <td className="px-3 py-2.5 text-gray-600">{sub.class.name}</td>
-                      <td className="px-3 py-2.5 text-gray-400 text-xs">{sub.class.session.name}</td>
+                      <td className="px-3 py-2.5 font-mono text-xs text-gray-500">{sub.code ?? "—"}</td>
+                      <td className="px-3 py-2.5 text-gray-600">{sub.class?.name ?? "—"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -437,7 +426,7 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
                     return (
                       <tr key={s.id} className="hover:bg-gray-50">
                         <td className="px-3 py-2.5 font-medium">{s.firstName} {s.lastName}</td>
-                        <td className="px-3 py-2.5 text-gray-500">{s.designation ?? "—"}</td>
+                        <td className="px-3 py-2.5 text-gray-500">{s.designation?.name ?? "—"}</td>
                         <td className="px-3 py-2.5 text-right">{basic > 0 ? `₵${basic.toLocaleString()}` : "—"}</td>
                         <td className="px-3 py-2.5 text-right text-green-600">{allow > 0 ? `+₵${allow.toLocaleString()}` : "—"}</td>
                         <td className="px-3 py-2.5 text-right text-red-600">{deduct > 0 ? `-₵${deduct.toLocaleString()}` : "—"}</td>
