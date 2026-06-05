@@ -10,7 +10,7 @@ export type UserRole =
 // Routes accessible without authentication
 const PUBLIC_PREFIXES = [
   "/api/auth", "/sign-in", "/apply", "/_next", "/favicon",
-  "/novalss-admin", "/register", "/api/admin",
+  "/novalss-admin", "/register", "/api/admin", "/api/debug-auth",
 ];
 
 export function isPublicRoute(pathname: string): boolean {
