@@ -19,7 +19,8 @@ export interface DashboardStats {
   currentSessionId: string | null;
 }
 
-async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function safe(fn: () => Promise<any>, fallback: any): Promise<any> {
   try { return await fn(); } catch (e) { console.error("[dashboard]", e); return fallback; }
 }
 
