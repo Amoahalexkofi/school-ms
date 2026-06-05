@@ -35,7 +35,7 @@ function statusLabel(exam: Exam) {
   return { label: "Live", color: "bg-green-100 text-green-700" };
 }
 
-const emptyForm = {
+const emptyEditForm = {
   title: "",
   classId: "",
   subjectId: "",
@@ -56,21 +56,15 @@ export function OnlineExamsClient({
   subjects: { id: string; name: string }[];
 }) {
   const [exams, setExams] = useState<Exam[]>(initial);
-  const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<Exam | null>(null);
-  const [form, setForm] = useState<any>(emptyForm);
+  const [form, setForm] = useState<any>(emptyEditForm);
   const [saving, setSaving] = useState(false);
 
   const live = useMemo(() => {
     const now = new Date();
     return exams.filter((e) => e.isPublished && now >= new Date(e.startTime) && now <= new Date(e.endTime)).length;
   }, [exams]);
-
-  function openAdd() {
-    setEditing(null);
-    setForm(emptyForm);
-    setOpen(true);
-  }
 
   function openEdit(e: Exam) {
     setEditing(e);
@@ -84,16 +78,17 @@ export function OnlineExamsClient({
       startTime: e.startTime ? e.startTime.slice(0, 16) : "",
       endTime: e.endTime ? e.endTime.slice(0, 16) : "",
     });
-    setOpen(true);
+    setEditOpen(true);
   }
 
   function set(k: string, v: any) {
     setForm((f: any) => ({ ...f, [k]: v }));
   }
 
-  async function save() {
+  async function saveEdit() {
     if (!form.title.trim()) return alert("Title required");
     if (!form.startTime || !form.endTime) return alert("Start and end time required");
+    if (!editing) return;
     setSaving(true);
     try {
       const payload = {
@@ -106,35 +101,15 @@ export function OnlineExamsClient({
         startTime: new Date(form.startTime).toISOString(),
         endTime: new Date(form.endTime).toISOString(),
       };
-
-      if (editing) {
-        const res = await fetch(`/api/online-exams/${editing.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error();
-        const updated = await res.json();
-        setExams((es) => es.map((e) => (e.id === editing.id ? { ...e, ...updated } : e)));
-      } else {
-        const res = await fetch("/api/online-exams", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error();
-        const created = await res.json();
-        setExams((es) => [
-          {
-            ...created,
-            class: classes.find((c) => c.id === created.classId),
-            _count: { questions: 0, attempts: 0 },
-            attempts: [],
-          },
-          ...es,
-        ]);
-      }
-      setOpen(false);
+      const res = await fetch(`/api/online-exams/${editing.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error();
+      const updated = await res.json();
+      setExams((es) => es.map((e) => (e.id === editing.id ? { ...e, ...updated } : e)));
+      setEditOpen(false);
     } catch {
       alert("Failed to save exam");
     } finally {
@@ -193,9 +168,11 @@ export function OnlineExamsClient({
             <BookOpen className="h-4 w-4 mr-1" /> Question Bank
           </Button>
         </Link>
-        <Button onClick={openAdd}>
-          <Plus className="h-4 w-4 mr-1" /> Create Exam
-        </Button>
+        <Link href="/online-exams/new">
+          <Button>
+            <Plus className="h-4 w-4 mr-1" /> Create Exam
+          </Button>
+        </Link>
       </div>
 
       {/* Exam cards */}
@@ -286,11 +263,11 @@ export function OnlineExamsClient({
         </div>
       )}
 
-      {/* Create/Edit Dialog */}
-      <Dialog open={open} onOpenChange={setOpen}>
+      {/* Edit Dialog (kept for editing existing exams) */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Exam" : "Create Online Exam"}</DialogTitle>
+            <DialogTitle>Edit Exam</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -375,9 +352,9 @@ export function OnlineExamsClient({
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button onClick={save} disabled={saving}>
-                {saving ? "Saving…" : editing ? "Update" : "Create"}
+              <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+              <Button onClick={saveEdit} disabled={saving}>
+                {saving ? "Saving…" : "Update"}
               </Button>
             </div>
           </div>

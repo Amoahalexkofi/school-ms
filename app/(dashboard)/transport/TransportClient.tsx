@@ -2,66 +2,58 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Bus, MapPin, Users, Plus, Pencil, Trash2 } from "lucide-react";
+import { Bus, MapPin, Users, Plus, X } from "lucide-react";
 
 type Props = { vehicles: any[]; routes: any[]; pickupPoints: any[]; students: any[] };
 type Tab = "vehicles" | "routes" | "points" | "students";
+type Panel = "point" | "assign" | null;
+
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 export function TransportClient({ vehicles, routes, pickupPoints, students }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("vehicles");
+  const [panel, setPanel] = useState<Panel>(null);
 
-  const [vOpen, setVOpen] = useState(false);
-  const [vForm, setVForm] = useState({ vehicleNo: "", vehicleModel: "", manufactureYear: "", driverName: "", driverContact: "", driverLicence: "" });
-  const [vErr,  setVErr]  = useState(""); const [vLoad, setVLoad] = useState(false);
-
-  const [rOpen, setROpen] = useState(false);
-  const [rForm, setRForm] = useState({ title: "", vehicleId: "" });
-  const [rErr,  setRErr]  = useState(""); const [rLoad, setRLoad] = useState(false);
-
-  const [pOpen, setPOpen] = useState(false);
+  // Pickup point panel
   const [pName, setPName] = useState("");
-  const [pErr,  setPErr]  = useState(""); const [pLoad, setPLoad] = useState(false);
+  const [pLoad, setPLoad] = useState(false);
 
-  const [assignOpen, setAssignOpen] = useState(false);
+  // Assign student panel
   const [assignForm, setAssignForm] = useState({ studentId: "", routeId: "", pickupPointId: "" });
-  const [assignErr,  setAssignErr]  = useState(""); const [assignLoad, setAssignLoad] = useState(false);
+  const [assignLoad, setAssignLoad] = useState(false);
 
   async function post(url: string, body: object) {
     const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const d = await res.json(); if (!res.ok) throw new Error(d.error); return d;
   }
-  async function del(url: string) {
-    const res = await fetch(url, { method: "DELETE" }); if (!res.ok) throw new Error((await res.json()).error);
+
+  async function savePoint() {
+    if (!pName.trim()) { alert("Name required"); return; }
+    setPLoad(true);
+    try {
+      await post("/api/transport/pickup-points", { name: pName });
+      setPName("");
+      setPanel(null);
+      router.refresh();
+    } catch (e: any) { alert(e.message); }
+    finally { setPLoad(false); }
   }
 
-  async function saveVehicle() {
-    if (!vForm.vehicleNo.trim()) { setVErr("Vehicle number required"); return; }
-    setVLoad(true); setVErr("");
-    try { await post("/api/transport/vehicles", vForm); setVOpen(false); router.refresh(); }
-    catch (e: any) { setVErr(e.message); } finally { setVLoad(false); }
-  }
-  async function saveRoute() {
-    if (!rForm.title.trim()) { setRErr("Title required"); return; }
-    setRLoad(true); setRErr("");
-    try { await post("/api/transport/routes", rForm); setROpen(false); router.refresh(); }
-    catch (e: any) { setRErr(e.message); } finally { setRLoad(false); }
-  }
-  async function savePoint() {
-    if (!pName.trim()) { setPErr("Name required"); return; }
-    setPLoad(true); setPErr("");
-    try { await post("/api/transport/pickup-points", { name: pName }); setPOpen(false); router.refresh(); }
-    catch (e: any) { setPErr(e.message); } finally { setPLoad(false); }
-  }
   async function saveAssign() {
-    if (!assignForm.studentId || !assignForm.routeId) { setAssignErr("Student and route required"); return; }
-    setAssignLoad(true); setAssignErr("");
-    try { await post("/api/transport/assign", assignForm); setAssignOpen(false); router.refresh(); }
-    catch (e: any) { setAssignErr(e.message); } finally { setAssignLoad(false); }
+    if (!assignForm.studentId || !assignForm.routeId) { alert("Student and route required"); return; }
+    setAssignLoad(true);
+    try {
+      await post("/api/transport/assign", assignForm);
+      setAssignForm({ studentId: "", routeId: "", pickupPointId: "" });
+      setPanel(null);
+      router.refresh();
+    } catch (e: any) { alert(e.message); }
+    finally { setAssignLoad(false); }
   }
 
   const TABS = [
@@ -87,9 +79,9 @@ export function TransportClient({ vehicles, routes, pickupPoints, students }: Pr
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""}</p>
-            <Button onClick={() => { setVForm({ vehicleNo: "", vehicleModel: "", manufactureYear: "", driverName: "", driverContact: "", driverLicence: "" }); setVErr(""); setVOpen(true); }}>
-              <Plus className="h-4 w-4 mr-1.5" /> Add Vehicle
-            </Button>
+            <Link href="/transport/vehicles/new">
+              <Button><Plus className="h-4 w-4 mr-1.5" /> Add Vehicle</Button>
+            </Link>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
@@ -119,9 +111,9 @@ export function TransportClient({ vehicles, routes, pickupPoints, students }: Pr
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{routes.length} route{routes.length !== 1 ? "s" : ""}</p>
-            <Button onClick={() => { setRForm({ title: "", vehicleId: "" }); setRErr(""); setROpen(true); }}>
-              <Plus className="h-4 w-4 mr-1.5" /> Add Route
-            </Button>
+            <Link href="/transport/routes/new">
+              <Button><Plus className="h-4 w-4 mr-1.5" /> Add Route</Button>
+            </Link>
           </div>
           <div className="space-y-3">
             {routes.map((r: any) => (
@@ -155,10 +147,26 @@ export function TransportClient({ vehicles, routes, pickupPoints, students }: Pr
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{pickupPoints.length} pickup point{pickupPoints.length !== 1 ? "s" : ""}</p>
-            <Button onClick={() => { setPName(""); setPErr(""); setPOpen(true); }}>
+            <Button onClick={() => { setPName(""); setPanel(panel === "point" ? null : "point"); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Add Point
             </Button>
           </div>
+
+          {/* Inline Pickup Point Panel */}
+          {panel === "point" && (
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-gray-800">Add Pickup Point</h3>
+                <button onClick={() => setPanel(null)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+              </div>
+              <Input value={pName} onChange={e => setPName(e.target.value)} placeholder="Pickup point name" onKeyDown={e => e.key === "Enter" && savePoint()} />
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setPanel(null)}>Cancel</Button>
+                <Button disabled={pLoad} onClick={savePoint}>{pLoad ? "Saving…" : "Add"}</Button>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {pickupPoints.map((p: any) => (
               <Card key={p.id}><CardContent className="pt-4 text-sm font-medium text-gray-800">{p.name}</CardContent></Card>
@@ -173,10 +181,40 @@ export function TransportClient({ vehicles, routes, pickupPoints, students }: Pr
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{students.filter((s: any) => s.transportRoute).length} students assigned</p>
-            <Button onClick={() => { setAssignForm({ studentId: "", routeId: "", pickupPointId: "" }); setAssignErr(""); setAssignOpen(true); }}>
+            <Button onClick={() => { setAssignForm({ studentId: "", routeId: "", pickupPointId: "" }); setPanel(panel === "assign" ? null : "assign"); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Assign Student
             </Button>
           </div>
+
+          {/* Inline Assign Panel */}
+          {panel === "assign" && (
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-gray-800">Assign Student to Route</h3>
+                <button onClick={() => setPanel(null)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  ["Student *", "studentId", students.map((s: any) => ({ v: s.id, l: `${s.firstName} ${s.lastName} (${s.admissionNo})` }))],
+                  ["Route *", "routeId", routes.map((r: any) => ({ v: r.id, l: r.title }))],
+                  ["Pickup Point", "pickupPointId", pickupPoints.map((p: any) => ({ v: p.id, l: p.name }))],
+                ].map(([label, key, opts]: any) => (
+                  <div key={key}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+                    <select className={SEL} value={(assignForm as any)[key]} onChange={e => setAssignForm(f => ({ ...f, [key]: e.target.value }))}>
+                      <option value="">— Select —</option>
+                      {opts.map((o: any) => <option key={o.v} value={o.v}>{o.l}</option>)}
+                    </select>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setPanel(null)}>Cancel</Button>
+                <Button disabled={assignLoad} onClick={saveAssign}>{assignLoad ? "Saving…" : "Assign"}</Button>
+              </div>
+            </div>
+          )}
+
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b">
@@ -199,74 +237,6 @@ export function TransportClient({ vehicles, routes, pickupPoints, students }: Pr
           </div>
         </div>
       )}
-
-      {/* Dialogs */}
-      <Dialog open={vOpen} onOpenChange={o => !o && setVOpen(false)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>Add Vehicle</DialogTitle></DialogHeader>
-          <div className="grid grid-cols-2 gap-3">
-            {[["Vehicle Reg No. *","vehicleNo"],["Model","vehicleModel"],["Year","manufactureYear"],["Driver Name","driverName"],["Driver Contact","driverContact"],["Licence No.","driverLicence"]].map(([label, key]) => (
-              <div key={key}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-                <Input value={(vForm as any)[key]} onChange={e => setVForm(f => ({ ...f, [key]: e.target.value }))} />
-              </div>
-            ))}
-          </div>
-          {vErr && <p className="text-sm text-red-600 mt-1">{vErr}</p>}
-          <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setVOpen(false)}>Cancel</Button><Button disabled={vLoad} onClick={saveVehicle}>{vLoad ? "Saving…" : "Add"}</Button></div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={rOpen} onOpenChange={o => !o && setROpen(false)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Add Route</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Title *</label><Input value={rForm.title} onChange={e => setRForm(f => ({ ...f, title: e.target.value }))} /></div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={rForm.vehicleId} onChange={e => setRForm(f => ({ ...f, vehicleId: e.target.value }))}>
-                <option value="">— None —</option>
-                {vehicles.map((v: any) => <option key={v.id} value={v.id}>{v.vehicleNo} {v.vehicleModel ? `(${v.vehicleModel})` : ""}</option>)}
-              </select>
-            </div>
-          </div>
-          {rErr && <p className="text-sm text-red-600">{rErr}</p>}
-          <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setROpen(false)}>Cancel</Button><Button disabled={rLoad} onClick={saveRoute}>{rLoad ? "Saving…" : "Add"}</Button></div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={pOpen} onOpenChange={o => !o && setPOpen(false)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Add Pickup Point</DialogTitle></DialogHeader>
-          <Input value={pName} onChange={e => setPName(e.target.value)} placeholder="Pickup point name" onKeyDown={e => e.key === "Enter" && savePoint()} />
-          {pErr && <p className="text-sm text-red-600">{pErr}</p>}
-          <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setPOpen(false)}>Cancel</Button><Button disabled={pLoad} onClick={savePoint}>{pLoad ? "Saving…" : "Add"}</Button></div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={assignOpen} onOpenChange={o => !o && setAssignOpen(false)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Assign Student to Route</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            {[["Student *","studentId", students.map((s: any) => ({ v: s.id, l: `${s.firstName} ${s.lastName} (${s.admissionNo})` }))],
-              ["Route *","routeId", routes.map((r: any) => ({ v: r.id, l: r.title }))],
-              ["Pickup Point","pickupPointId", pickupPoints.map((p: any) => ({ v: p.id, l: p.name }))],
-            ].map(([label, key, opts]: any) => (
-              <div key={key}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-                <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={(assignForm as any)[key]} onChange={e => setAssignForm(f => ({ ...f, [key]: e.target.value }))}>
-                  <option value="">— Select —</option>
-                  {opts.map((o: any) => <option key={o.v} value={o.v}>{o.l}</option>)}
-                </select>
-              </div>
-            ))}
-          </div>
-          {assignErr && <p className="text-sm text-red-600">{assignErr}</p>}
-          <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setAssignOpen(false)}>Cancel</Button><Button disabled={assignLoad} onClick={saveAssign}>{assignLoad ? "Saving…" : "Assign"}</Button></div>
-        </DialogContent>
-      </Dialog>
     </main>
   );
 }

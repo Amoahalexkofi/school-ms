@@ -2,56 +2,65 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Package, Plus, TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, AlertTriangle, X } from "lucide-react";
 
 type Props = { categories: any[]; suppliers: any[]; stores: any[]; items: any[] };
 type Tab = "items" | "categories";
+type Panel = "category" | "stockIn" | "stockOut" | null;
+
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 export function InventoryClient({ categories, suppliers, stores, items }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("items");
+  const [panel, setPanel] = useState<Panel>(null);
 
-  const [itemOpen, setItemOpen] = useState(false);
-  const [itemForm, setItemForm] = useState({ name: "", categoryId: "", supplierId: "", storeId: "", quantity: "0", lowStockAlert: "5", unit: "" });
-  const [itemErr, setItemErr] = useState(""); const [itemLoad, setItemLoad] = useState(false);
+  // Category panel state
+  const [catName, setCatName] = useState("");
+  const [catLoad, setCatLoad] = useState(false);
 
-  const [catOpen, setCatOpen] = useState(false); const [catName, setCatName] = useState(""); const [catErr, setCatErr] = useState(""); const [catLoad, setCatLoad] = useState(false);
-
-  const [stockOpen, setStockOpen] = useState(false);
+  // Stock movement panel state
   const [stockForm, setStockForm] = useState({ itemId: "", type: "IN", quantity: "1", note: "", issuedTo: "" });
-  const [stockErr, setStockErr] = useState(""); const [stockLoad, setStockLoad] = useState(false);
+  const [stockLoad, setStockLoad] = useState(false);
 
   async function post(url: string, body: object) {
     const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const d = await res.json(); if (!res.ok) throw new Error(d.error); return d;
   }
-  async function del(url: string) {
-    const res = await fetch(url, { method: "DELETE" }); if (!res.ok) throw new Error((await res.json()).error);
-  }
-
-  async function saveItem() {
-    if (!itemForm.name.trim()) { setItemErr("Name required"); return; }
-    setItemLoad(true); setItemErr("");
-    try { await post("/api/inventory/items", itemForm); setItemOpen(false); router.refresh(); }
-    catch (e: any) { setItemErr(e.message); } finally { setItemLoad(false); }
-  }
 
   async function saveCategory() {
-    if (!catName.trim()) { setCatErr("Name required"); return; }
-    setCatLoad(true); setCatErr("");
-    try { await post("/api/inventory/categories", { name: catName }); setCatOpen(false); router.refresh(); }
-    catch (e: any) { setCatErr(e.message); } finally { setCatLoad(false); }
+    if (!catName.trim()) { alert("Category name is required"); return; }
+    setCatLoad(true);
+    try {
+      await post("/api/inventory/categories", { name: catName });
+      setCatName("");
+      setPanel(null);
+      router.refresh();
+    } catch (e: any) { alert(e.message); }
+    finally { setCatLoad(false); }
   }
 
   async function saveStock() {
-    if (!stockForm.itemId || !stockForm.quantity || parseInt(stockForm.quantity) <= 0) { setStockErr("Item and positive quantity required"); return; }
-    setStockLoad(true); setStockErr("");
-    try { await post("/api/inventory/stock", stockForm); setStockOpen(false); router.refresh(); }
-    catch (e: any) { setStockErr(e.message); } finally { setStockLoad(false); }
+    if (!stockForm.itemId || !stockForm.quantity || parseInt(stockForm.quantity) <= 0) {
+      alert("Item and positive quantity required"); return;
+    }
+    setStockLoad(true);
+    try {
+      await post("/api/inventory/stock", stockForm);
+      setStockForm({ itemId: "", type: "IN", quantity: "1", note: "", issuedTo: "" });
+      setPanel(null);
+      router.refresh();
+    } catch (e: any) { alert(e.message); }
+    finally { setStockLoad(false); }
+  }
+
+  function openStock(type: "IN" | "OUT", itemId = "") {
+    setStockForm({ itemId, type, quantity: "1", note: "", issuedTo: "" });
+    setPanel(type === "IN" ? "stockIn" : "stockOut");
   }
 
   const lowStockItems = items.filter((i: any) => i.quantity <= i.lowStockAlert);
@@ -79,14 +88,63 @@ export function InventoryClient({ categories, suppliers, stores, items }: Props)
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{items.length} item{items.length !== 1 ? "s" : ""}</p>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => { setStockForm({ itemId: "", type: "IN", quantity: "1", note: "", issuedTo: "" }); setStockErr(""); setStockOpen(true); }}>
+              <Button variant="outline" onClick={() => openStock(panel === "stockIn" ? "OUT" : "IN")}>
                 Stock Movement
               </Button>
-              <Button onClick={() => { setItemForm({ name: "", categoryId: "", supplierId: "", storeId: "", quantity: "0", lowStockAlert: "5", unit: "" }); setItemErr(""); setItemOpen(true); }}>
-                <Plus className="h-4 w-4 mr-1.5" />Add Item
-              </Button>
+              <Link href="/inventory/items/new">
+                <Button><Plus className="h-4 w-4 mr-1.5" />Add Item</Button>
+              </Link>
             </div>
           </div>
+
+          {/* Inline Stock Movement Panel */}
+          {(panel === "stockIn" || panel === "stockOut") && (
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-gray-800">Stock Movement</h3>
+                <button onClick={() => setPanel(null)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Item *</label>
+                  <select className={SEL} value={stockForm.itemId} onChange={e => setStockForm(f => ({ ...f, itemId: e.target.value }))}>
+                    <option value="">— Select —</option>
+                    {items.map((i: any) => <option key={i.id} value={i.id}>{i.name} (stock: {i.quantity})</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <div className="flex gap-2">
+                    {["IN", "OUT"].map(t => (
+                      <button key={t} type="button" onClick={() => setStockForm(f => ({ ...f, type: t }))}
+                        className={`px-4 py-1.5 rounded-lg text-sm border font-medium ${stockForm.type === t ? (t === "IN" ? "bg-green-600 text-white border-green-600" : "bg-red-600 text-white border-red-600") : "bg-white text-gray-600 border-gray-200"}`}>
+                        {t === "IN" ? "Stock In" : "Stock Out"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
+                  <Input type="number" min="1" value={stockForm.quantity} onChange={e => setStockForm(f => ({ ...f, quantity: e.target.value }))} />
+                </div>
+                {stockForm.type === "OUT" && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Issued To</label>
+                    <Input value={stockForm.issuedTo} onChange={e => setStockForm(f => ({ ...f, issuedTo: e.target.value }))} placeholder="Staff / student name" />
+                  </div>
+                )}
+                <div className={stockForm.type === "OUT" ? "" : "sm:col-span-2"}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Note</label>
+                  <Input value={stockForm.note} onChange={e => setStockForm(f => ({ ...f, note: e.target.value }))} placeholder="Optional" />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setPanel(null)}>Cancel</Button>
+                <Button disabled={stockLoad} onClick={saveStock}>{stockLoad ? "Saving…" : "Confirm"}</Button>
+              </div>
+            </div>
+          )}
+
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b">
@@ -110,11 +168,11 @@ export function InventoryClient({ categories, suppliers, stores, items }: Props)
                       <td className="px-4 py-3 text-gray-400">{i.lowStockAlert}</td>
                       <td className="px-4 py-3 flex gap-1">
                         <Button size="sm" variant="outline" className="text-green-600 border-green-200"
-                          onClick={() => { setStockForm({ itemId: i.id, type: "IN", quantity: "1", note: "", issuedTo: "" }); setStockErr(""); setStockOpen(true); }}>
+                          onClick={() => openStock("IN", i.id)}>
                           <TrendingUp className="h-3.5 w-3.5" />
                         </Button>
                         <Button size="sm" variant="outline" className="text-red-600 border-red-200"
-                          onClick={() => { setStockForm({ itemId: i.id, type: "OUT", quantity: "1", note: "", issuedTo: "" }); setStockErr(""); setStockOpen(true); }}>
+                          onClick={() => openStock("OUT", i.id)}>
                           <TrendingDown className="h-3.5 w-3.5" />
                         </Button>
                       </td>
@@ -131,8 +189,31 @@ export function InventoryClient({ categories, suppliers, stores, items }: Props)
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{categories.length} categor{categories.length !== 1 ? "ies" : "y"}</p>
-            <Button onClick={() => { setCatName(""); setCatErr(""); setCatOpen(true); }}><Plus className="h-4 w-4 mr-1.5" />Add Category</Button>
+            <Button onClick={() => { setCatName(""); setPanel(panel === "category" ? null : "category"); }}>
+              <Plus className="h-4 w-4 mr-1.5" />Add Category
+            </Button>
           </div>
+
+          {/* Inline Category Panel */}
+          {panel === "category" && (
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-gray-800">Add Category</h3>
+                <button onClick={() => setPanel(null)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+              </div>
+              <Input
+                value={catName}
+                onChange={e => setCatName(e.target.value)}
+                placeholder="Category name"
+                onKeyDown={e => e.key === "Enter" && saveCategory()}
+              />
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setPanel(null)}>Cancel</Button>
+                <Button disabled={catLoad} onClick={saveCategory}>{catLoad ? "Saving…" : "Add"}</Button>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {categories.map((c: any) => (
               <Card key={c.id}><CardContent className="pt-4">
@@ -144,62 +225,6 @@ export function InventoryClient({ categories, suppliers, stores, items }: Props)
           </div>
         </div>
       )}
-
-      {/* Add Item Dialog */}
-      <Dialog open={itemOpen} onOpenChange={o => !o && setItemOpen(false)}>
-        <DialogContent className="max-w-md"><DialogHeader><DialogTitle>Add Item</DialogTitle></DialogHeader>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-2"><label className="block text-sm font-medium text-gray-700 mb-1">Name *</label><Input value={itemForm.name} onChange={e => setItemForm(f => ({ ...f, name: e.target.value }))} /></div>
-          {[["Category","categoryId",categories],["Supplier","supplierId",suppliers],["Store","storeId",stores]].map(([label, key, opts]: any) => (
-            <div key={key}><label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={(itemForm as any)[key]} onChange={e => setItemForm(f => ({ ...f, [key]: e.target.value }))}>
-                <option value="">— None —</option>
-                {opts.map((o: any) => <option key={o.id} value={o.id}>{o.name}</option>)}
-              </select>
-            </div>
-          ))}
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Initial Qty</label><Input type="number" min="0" value={itemForm.quantity} onChange={e => setItemForm(f => ({ ...f, quantity: e.target.value }))} /></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Low Stock Alert</label><Input type="number" min="0" value={itemForm.lowStockAlert} onChange={e => setItemForm(f => ({ ...f, lowStockAlert: e.target.value }))} /></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Unit</label><Input value={itemForm.unit} onChange={e => setItemForm(f => ({ ...f, unit: e.target.value }))} placeholder="e.g. pcs, kg, box" /></div>
-        </div>
-        {itemErr && <p className="text-sm text-red-600 mt-1">{itemErr}</p>}
-        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setItemOpen(false)}>Cancel</Button><Button disabled={itemLoad} onClick={saveItem}>{itemLoad ? "Saving…" : "Add"}</Button></div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Category Dialog */}
-      <Dialog open={catOpen} onOpenChange={o => !o && setCatOpen(false)}>
-        <DialogContent className="max-w-sm"><DialogHeader><DialogTitle>Add Category</DialogTitle></DialogHeader>
-        <Input value={catName} onChange={e => setCatName(e.target.value)} placeholder="Category name" onKeyDown={e => e.key === "Enter" && saveCategory()} />
-        {catErr && <p className="text-sm text-red-600">{catErr}</p>}
-        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setCatOpen(false)}>Cancel</Button><Button disabled={catLoad} onClick={saveCategory}>{catLoad ? "Saving…" : "Add"}</Button></div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Stock Movement Dialog */}
-      <Dialog open={stockOpen} onOpenChange={o => !o && setStockOpen(false)}>
-        <DialogContent className="max-w-sm"><DialogHeader><DialogTitle>Stock Movement</DialogTitle></DialogHeader>
-        <div className="space-y-3">
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Item *</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={stockForm.itemId} onChange={e => setStockForm(f => ({ ...f, itemId: e.target.value }))}>
-              <option value="">— Select —</option>
-              {items.map((i: any) => <option key={i.id} value={i.id}>{i.name} (stock: {i.quantity})</option>)}
-            </select>
-          </div>
-          <div className="flex gap-2">
-            {["IN","OUT"].map(t => <button key={t} onClick={() => setStockForm(f => ({ ...f, type: t }))}
-              className={`px-4 py-1.5 rounded-lg text-sm border font-medium ${stockForm.type === t ? (t === "IN" ? "bg-green-600 text-white border-green-600" : "bg-red-600 text-white border-red-600") : "bg-white text-gray-600 border-gray-200"}`}>{t === "IN" ? "Stock In" : "Stock Out"}</button>)}
-          </div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label><Input type="number" min="1" value={stockForm.quantity} onChange={e => setStockForm(f => ({ ...f, quantity: e.target.value }))} /></div>
-          {stockForm.type === "OUT" && <div><label className="block text-sm font-medium text-gray-700 mb-1">Issued To</label><Input value={stockForm.issuedTo} onChange={e => setStockForm(f => ({ ...f, issuedTo: e.target.value }))} placeholder="Staff / student name" /></div>}
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Note</label><Input value={stockForm.note} onChange={e => setStockForm(f => ({ ...f, note: e.target.value }))} placeholder="Optional" /></div>
-        </div>
-        {stockErr && <p className="text-sm text-red-600">{stockErr}</p>}
-        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setStockOpen(false)}>Cancel</Button><Button disabled={stockLoad} onClick={saveStock}>{stockLoad ? "Saving…" : "Confirm"}</Button></div>
-        </DialogContent>
-      </Dialog>
     </main>
   );
 }

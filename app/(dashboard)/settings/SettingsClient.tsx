@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus } from "lucide-react";
+import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X } from "lucide-react";
+
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type Props = {
   sessions: any[]; classes: any[]; subjects: any[]; profile: any; staff: any[];
@@ -19,10 +20,10 @@ function useForm<T extends Record<string, string>>(initial: T) {
   const set = (k: keyof T) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
   const reset = () => setForm(initial);
-  return { form, set, reset };
+  return { form, set, reset, setForm };
 }
 
-async function post(url: string, body: object) {
+async function postData(url: string, body: object) {
   const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (!res.ok) { const d = await res.json(); throw new Error(d.error ?? "Failed"); }
   return res.json();
@@ -30,7 +31,7 @@ async function post(url: string, body: object) {
 
 export function SettingsClient({ sessions, classes, subjects, profile, staff }: Props) {
   const router = useRouter();
-  const [open, setOpen] = useState<string | null>(null);
+  const [addingType, setAddingType] = useState<"session" | "class" | "section" | "subject" | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -39,9 +40,23 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
   const sectionForm = useForm({ name: "", classId: classes[0]?.id ?? "" });
   const subjectForm = useForm({ name: "", code: "", classId: classes[0]?.id ?? "" });
 
+  function openPanel(type: "session" | "class" | "section" | "subject") {
+    setError("");
+    setAddingType(type);
+  }
+
+  function closePanel() {
+    setAddingType(null);
+    setError("");
+    sessionForm.reset();
+    classForm.reset();
+    sectionForm.reset();
+    subjectForm.reset();
+  }
+
   async function submit(url: string, body: object) {
     setLoading(true); setError("");
-    try { await post(url, body); setOpen(null); router.refresh(); }
+    try { await postData(url, body); closePanel(); router.refresh(); }
     catch (e: any) { setError(e.message); }
     finally { setLoading(false); }
   }
@@ -59,11 +74,53 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
             <CardTitle className="text-base flex items-center gap-2">
               <CalendarDays className="h-4 w-4 text-blue-600" /> Academic Sessions
             </CardTitle>
-            <Button size="sm" onClick={() => { setError(""); setOpen("session"); }}>
+            <Button size="sm" onClick={() => openPanel("session")}>
               <Plus className="h-4 w-4 mr-1" /> New Session
             </Button>
           </CardHeader>
           <CardContent>
+            {/* Inline Add Session Panel */}
+            {addingType === "session" && (
+              <div className="mb-4 border border-blue-200 rounded-lg bg-blue-50 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium text-sm text-blue-800">Add Session</h3>
+                  <button type="button" onClick={closePanel} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-xs mb-1 block">Name *</Label>
+                    <Input placeholder="e.g. 2025/2026" value={sessionForm.form.name} onChange={sessionForm.set("name")} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs mb-1 block">Start Date *</Label>
+                      <Input type="date" value={sessionForm.form.startDate} onChange={sessionForm.set("startDate")} />
+                    </div>
+                    <div>
+                      <Label className="text-xs mb-1 block">End Date *</Label>
+                      <Input type="date" value={sessionForm.form.endDate} onChange={sessionForm.set("endDate")} />
+                    </div>
+                  </div>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={sessionForm.form.setActive === "true"}
+                      onChange={e => sessionForm.set("setActive")({ target: { value: String(e.target.checked) } } as any)}
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    Set as active session
+                  </label>
+                  {error && <p className="text-sm text-red-600">{error}</p>}
+                  <div className="flex gap-2 justify-end">
+                    <Button variant="outline" size="sm" onClick={closePanel}>Cancel</Button>
+                    <Button size="sm" disabled={loading} onClick={() => submit("/api/sessions", { ...sessionForm.form, setActive: sessionForm.form.setActive === "true" })}>
+                      {loading ? "Creating…" : "Create Session"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {sessions.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-6">No sessions yet.</p>
             ) : (
@@ -101,15 +158,73 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
               {activeSession && <span className="text-xs text-gray-400 font-normal">({activeSession.name})</span>}
             </CardTitle>
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => { setError(""); setOpen("section"); }}>
+              <Button size="sm" variant="outline" onClick={() => openPanel("section")}>
                 <Plus className="h-4 w-4 mr-1" /> Section
               </Button>
-              <Button size="sm" onClick={() => { setError(""); setOpen("class"); }}>
+              <Button size="sm" onClick={() => openPanel("class")}>
                 <Plus className="h-4 w-4 mr-1" /> Class
               </Button>
             </div>
           </CardHeader>
           <CardContent>
+            {/* Inline Add Class Panel */}
+            {addingType === "class" && (
+              <div className="mb-4 border border-purple-200 rounded-lg bg-purple-50 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium text-sm text-purple-800">Add Class</h3>
+                  <button type="button" onClick={closePanel} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-xs mb-1 block">Class Name *</Label>
+                    <Input placeholder="e.g. Grade 7" value={classForm.form.name} onChange={classForm.set("name")} />
+                  </div>
+                  <div>
+                    <Label className="text-xs mb-1 block">Session *</Label>
+                    <select className={SEL} value={classForm.form.sessionId} onChange={classForm.set("sessionId")}>
+                      {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                  </div>
+                  {error && <p className="text-sm text-red-600">{error}</p>}
+                  <div className="flex gap-2 justify-end">
+                    <Button variant="outline" size="sm" onClick={closePanel}>Cancel</Button>
+                    <Button size="sm" disabled={loading} onClick={() => submit("/api/classes", classForm.form)}>
+                      {loading ? "Creating…" : "Create Class"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Inline Add Section Panel */}
+            {addingType === "section" && (
+              <div className="mb-4 border border-purple-200 rounded-lg bg-purple-50 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium text-sm text-purple-800">Add Section</h3>
+                  <button type="button" onClick={closePanel} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-xs mb-1 block">Section Name *</Label>
+                    <Input placeholder="e.g. A" value={sectionForm.form.name} onChange={sectionForm.set("name")} />
+                  </div>
+                  <div>
+                    <Label className="text-xs mb-1 block">Class *</Label>
+                    <select className={SEL} value={sectionForm.form.classId} onChange={sectionForm.set("classId")}>
+                      {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name} ({c.session.name})</option>)}
+                    </select>
+                  </div>
+                  {error && <p className="text-sm text-red-600">{error}</p>}
+                  <div className="flex gap-2 justify-end">
+                    <Button variant="outline" size="sm" onClick={closePanel}>Cancel</Button>
+                    <Button size="sm" disabled={loading} onClick={() => submit("/api/sections", sectionForm.form)}>
+                      {loading ? "Creating…" : "Create Section"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {classes.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-6">No classes yet.</p>
             ) : (
@@ -145,11 +260,46 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
             <CardTitle className="text-base flex items-center gap-2">
               <BookOpen className="h-4 w-4 text-green-600" /> Subjects
             </CardTitle>
-            <Button size="sm" onClick={() => { setError(""); setOpen("subject"); }}>
+            <Button size="sm" onClick={() => openPanel("subject")}>
               <Plus className="h-4 w-4 mr-1" /> Subject
             </Button>
           </CardHeader>
           <CardContent>
+            {/* Inline Add Subject Panel */}
+            {addingType === "subject" && (
+              <div className="mb-4 border border-green-200 rounded-lg bg-green-50 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium text-sm text-green-800">Add Subject</h3>
+                  <button type="button" onClick={closePanel} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+                </div>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs mb-1 block">Name *</Label>
+                      <Input placeholder="e.g. Mathematics" value={subjectForm.form.name} onChange={subjectForm.set("name")} />
+                    </div>
+                    <div>
+                      <Label className="text-xs mb-1 block">Code *</Label>
+                      <Input placeholder="e.g. MATH" value={subjectForm.form.code} onChange={subjectForm.set("code")} />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs mb-1 block">Class *</Label>
+                    <select className={SEL} value={subjectForm.form.classId} onChange={subjectForm.set("classId")}>
+                      {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name} ({c.session.name})</option>)}
+                    </select>
+                  </div>
+                  {error && <p className="text-sm text-red-600">{error}</p>}
+                  <div className="flex gap-2 justify-end">
+                    <Button variant="outline" size="sm" onClick={closePanel}>Cancel</Button>
+                    <Button size="sm" disabled={loading} onClick={() => submit("/api/subjects", subjectForm.form)}>
+                      {loading ? "Creating…" : "Create Subject"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {subjects.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-6">No subjects yet.</p>
             ) : (
@@ -239,91 +389,6 @@ export function SettingsClient({ sessions, classes, subjects, profile, staff }: 
           </CardContent>
         </Card>
       </main>
-
-      {/* New Session Dialog */}
-      <Dialog open={open === "session"} onOpenChange={o => !o && setOpen(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>New Academic Session</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div><Label>Name *</Label><Input className="mt-1" placeholder="e.g. 2025/2026" value={sessionForm.form.name} onChange={sessionForm.set("name")} /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Start Date *</Label><Input className="mt-1" type="date" value={sessionForm.form.startDate} onChange={sessionForm.set("startDate")} /></div>
-              <div><Label>End Date *</Label><Input className="mt-1" type="date" value={sessionForm.form.endDate} onChange={sessionForm.set("endDate")} /></div>
-            </div>
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input type="checkbox" checked={sessionForm.form.setActive === "true"} onChange={e => sessionForm.set("setActive")({ target: { value: String(e.target.checked) } } as any)} />
-              Set as active session
-            </label>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Button className="w-full" disabled={loading} onClick={() => submit("/api/sessions", { ...sessionForm.form, setActive: sessionForm.form.setActive === "true" })}>
-              {loading ? "Creating…" : "Create Session"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* New Class Dialog */}
-      <Dialog open={open === "class"} onOpenChange={o => !o && setOpen(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>New Class</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div><Label>Class Name *</Label><Input className="mt-1" placeholder="e.g. Grade 7" value={classForm.form.name} onChange={classForm.set("name")} /></div>
-            <div>
-              <Label>Session *</Label>
-              <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={classForm.form.sessionId} onChange={classForm.set("sessionId")}>
-                {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
-              </select>
-            </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Button className="w-full" disabled={loading} onClick={() => submit("/api/classes", classForm.form)}>
-              {loading ? "Creating…" : "Create Class"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* New Section Dialog */}
-      <Dialog open={open === "section"} onOpenChange={o => !o && setOpen(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>New Section</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div><Label>Section Name *</Label><Input className="mt-1" placeholder="e.g. A" value={sectionForm.form.name} onChange={sectionForm.set("name")} /></div>
-            <div>
-              <Label>Class *</Label>
-              <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={sectionForm.form.classId} onChange={sectionForm.set("classId")}>
-                {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name} ({c.session.name})</option>)}
-              </select>
-            </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Button className="w-full" disabled={loading} onClick={() => submit("/api/sections", sectionForm.form)}>
-              {loading ? "Creating…" : "Create Section"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* New Subject Dialog */}
-      <Dialog open={open === "subject"} onOpenChange={o => !o && setOpen(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>New Subject</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Name *</Label><Input className="mt-1" placeholder="e.g. Mathematics" value={subjectForm.form.name} onChange={subjectForm.set("name")} /></div>
-              <div><Label>Code *</Label><Input className="mt-1" placeholder="e.g. MATH" value={subjectForm.form.code} onChange={subjectForm.set("code")} /></div>
-            </div>
-            <div>
-              <Label>Class *</Label>
-              <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={subjectForm.form.classId} onChange={subjectForm.set("classId")}>
-                {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name} ({c.session.name})</option>)}
-              </select>
-            </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Button className="w-full" disabled={loading} onClick={() => submit("/api/subjects", subjectForm.form)}>
-              {loading ? "Creating…" : "Create Subject"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

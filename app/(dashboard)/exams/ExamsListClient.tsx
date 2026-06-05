@@ -30,12 +30,11 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
 
   async function handleSave() {
     if (!form.name.trim()) { setError("Name is required"); return; }
+    if (!edit) return;
     setLoading(true); setError("");
     try {
-      const url    = edit ? `/api/exams/${edit.id}` : "/api/exams";
-      const method = edit ? "PATCH" : "POST";
-      const res    = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      const data   = await res.json();
+      const res  = await fetch(`/api/exams/${edit.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setOpen(false); router.refresh();
     } catch (e: any) { setError(e.message); }
@@ -57,10 +56,6 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
     router.refresh();
   }
 
-  function openNew() {
-    setForm({ name: "", examType: "", description: "" });
-    setEdit(null); setError(""); setOpen(true);
-  }
   function openEdit(g: Group) {
     setForm({ name: g.name, examType: g.examType ?? "", description: g.description ?? "" });
     setEdit(g); setError(""); setOpen(true);
@@ -70,7 +65,9 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
     <main className="flex-1 p-6 space-y-5 bg-gray-50">
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">{groups.length} exam group{groups.length !== 1 ? "s" : ""}</p>
-        <Button onClick={openNew}><Plus className="h-4 w-4 mr-1.5" /> New Exam Group</Button>
+        <Link href="/exams/new">
+          <Button><Plus className="h-4 w-4 mr-1.5" /> New Exam Group</Button>
+        </Link>
       </div>
 
       {groups.length === 0 ? (
@@ -116,10 +113,10 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
         </div>
       )}
 
-      {/* Add/Edit Dialog */}
+      {/* Edit Dialog */}
       <Dialog open={open} onOpenChange={o => !o && setOpen(false)}>
         <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>{edit ? "Edit Exam Group" : "New Exam Group"}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Edit Exam Group</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>

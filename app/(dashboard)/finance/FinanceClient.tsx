@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { TrendingUp, TrendingDown, Wallet, Users, Plus } from "lucide-react";
+import { Wallet, Users, Plus } from "lucide-react";
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -22,7 +23,6 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
   const [open, setOpen] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [txForm, setTxForm] = useState({ type: "INCOME", amount: "", date: new Date().toISOString().split("T")[0], headId: "", note: "" });
   const [headForm, setHeadForm] = useState({ name: "", type: "INCOME" });
   const [payrollForm, setPayrollForm] = useState({ month: String(new Date().getMonth() + 1), year: String(new Date().getFullYear()) });
 
@@ -35,8 +35,6 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
     catch (e: any) { setError(e.message); }
     finally { setLoading(false); }
   }
-
-  const heads = txForm.type === "INCOME" ? incomeHeads : expenseHeads;
 
   return (
     <main className="flex-1 p-6 space-y-8">
@@ -54,9 +52,9 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
           <CardTitle className="text-base flex items-center gap-2"><Wallet className="h-4 w-4 text-blue-600" /> Transactions</CardTitle>
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={() => { setError(""); setOpen("head"); }}>+ Head</Button>
-            <Button size="sm" onClick={() => { setError(""); setOpen("tx"); }}>
-              <Plus className="h-4 w-4 mr-1" /> Record
-            </Button>
+            <Link href="/finance/new">
+              <Button size="sm"><Plus className="h-4 w-4 mr-1" /> Record</Button>
+            </Link>
           </div>
         </CardHeader>
         <CardContent>
@@ -121,38 +119,6 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
           )}
         </CardContent>
       </Card>
-
-      {/* Record Transaction Dialog */}
-      <Dialog open={open === "tx"} onOpenChange={o => !o && setOpen(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Record Transaction</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Type</Label>
-              <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={txForm.type} onChange={e => setTxForm(f => ({ ...f, type: e.target.value, headId: "" }))}>
-                <option value="INCOME">Income</option>
-                <option value="EXPENSE">Expense</option>
-              </select>
-            </div>
-            <div>
-              <Label>Head *</Label>
-              <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={txForm.headId} onChange={e => setTxForm(f => ({ ...f, headId: e.target.value }))}>
-                <option value="">Select head</option>
-                {heads.map((h: any) => <option key={h.id} value={h.id}>{h.name}</option>)}
-              </select>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Amount (₵) *</Label><Input className="mt-1" type="number" min="0.01" step="0.01" value={txForm.amount} onChange={e => setTxForm(f => ({ ...f, amount: e.target.value }))} /></div>
-              <div><Label>Date *</Label><Input className="mt-1" type="date" value={txForm.date} onChange={e => setTxForm(f => ({ ...f, date: e.target.value }))} /></div>
-            </div>
-            <div><Label>Note</Label><Input className="mt-1" value={txForm.note} onChange={e => setTxForm(f => ({ ...f, note: e.target.value }))} /></div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Button className="w-full" disabled={loading} onClick={() => submit("/api/finance/transactions", { ...txForm, amount: Number(txForm.amount) })}>
-              {loading ? "Saving…" : "Record Transaction"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* New Head Dialog */}
       <Dialog open={open === "head"} onOpenChange={o => !o && setOpen(null)}>

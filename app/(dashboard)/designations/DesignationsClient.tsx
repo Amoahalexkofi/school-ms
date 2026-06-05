@@ -5,18 +5,45 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Layers, Plus, Pencil, Trash2 } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Layers, Plus, Pencil, Trash2, X, Check } from "lucide-react";
 
 type Desig = { id: string; name: string; isActive: boolean; _count: { staff: number } };
 
 export function DesignationsClient({ designations }: { designations: Desig[] }) {
   const router = useRouter();
-  const [addOpen, setAddOpen]   = useState(false);
-  const [editItem, setEditItem] = useState<Desig | null>(null);
-  const [name, setName]         = useState("");
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
+  const [showAddPanel, setShowAddPanel] = useState(false);
+  const [editItemId, setEditItemId] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [editName, setEditName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  function openAdd() {
+    setName("");
+    setError("");
+    setEditItemId(null);
+    setShowAddPanel(true);
+  }
+
+  function closeAdd() {
+    setShowAddPanel(false);
+    setName("");
+    setError("");
+  }
+
+  function openEdit(d: Desig) {
+    setEditItemId(d.id);
+    setEditName(d.name);
+    setError("");
+    setShowAddPanel(false);
+  }
+
+  function closeEdit() {
+    setEditItemId(null);
+    setEditName("");
+    setError("");
+  }
 
   async function handleAdd() {
     if (!name.trim()) { setError("Name is required"); return; }
@@ -29,23 +56,25 @@ export function DesignationsClient({ designations }: { designations: Desig[] }) 
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setAddOpen(false); setName(""); router.refresh();
+      closeAdd();
+      router.refresh();
     } catch (e: any) { setError(e.message); }
     finally { setLoading(false); }
   }
 
-  async function handleEdit() {
-    if (!editItem || !name.trim()) { setError("Name is required"); return; }
+  async function handleEdit(id: string) {
+    if (!editName.trim()) { setError("Name is required"); return; }
     setLoading(true); setError("");
     try {
-      const res = await fetch(`/api/designations/${editItem.id}`, {
+      const res = await fetch(`/api/designations/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name: editName }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setEditItem(null); setName(""); router.refresh();
+      closeEdit();
+      router.refresh();
     } catch (e: any) { setError(e.message); }
     finally { setLoading(false); }
   }
@@ -65,10 +94,41 @@ export function DesignationsClient({ designations }: { designations: Desig[] }) 
     <main className="flex-1 p-6 space-y-5 max-w-2xl">
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-500">{designations.length} designation{designations.length !== 1 ? "s" : ""}</p>
-        <Button onClick={() => { setName(""); setError(""); setAddOpen(true); }}>
+        <Button onClick={openAdd}>
           <Plus className="h-4 w-4 mr-1" /> Add Designation
         </Button>
       </div>
+
+      {/* Inline Add Panel */}
+      {showAddPanel && (
+        <div className="border border-blue-200 rounded-lg bg-blue-50 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-medium text-sm text-blue-800">Add Designation</h3>
+            <button type="button" onClick={closeAdd} className="text-gray-400 hover:text-gray-600">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs mb-1 block">Designation Name *</Label>
+              <Input
+                placeholder="e.g. Head Teacher"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleAdd()}
+                autoFocus
+              />
+            </div>
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" size="sm" onClick={closeAdd}>Cancel</Button>
+              <Button size="sm" disabled={loading} onClick={handleAdd}>
+                {loading ? "Adding…" : "Add Designation"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Card>
         <CardContent className="p-0">
@@ -90,7 +150,17 @@ export function DesignationsClient({ designations }: { designations: Desig[] }) 
               <tbody className="divide-y">
                 {designations.map((d) => (
                   <tr key={d.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium">{d.name}</td>
+                    <td className="px-4 py-3 font-medium">
+                      {editItemId === d.id ? (
+                        <Input
+                          value={editName}
+                          onChange={e => setEditName(e.target.value)}
+                          onKeyDown={e => { if (e.key === "Enter") handleEdit(d.id); if (e.key === "Escape") closeEdit(); }}
+                          className="h-7 text-sm"
+                          autoFocus
+                        />
+                      ) : d.name}
+                    </td>
                     <td className="px-4 py-3 text-gray-500">{d._count.staff}</td>
                     <td className="px-4 py-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${d.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
@@ -98,13 +168,28 @@ export function DesignationsClient({ designations }: { designations: Desig[] }) 
                       </span>
                     </td>
                     <td className="px-4 py-3 flex gap-2 justify-end">
-                      <Button size="sm" variant="outline" onClick={() => { setName(d.name); setError(""); setEditItem(d); }}>
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
-                        onClick={() => handleDelete(d.id)}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      {editItemId === d.id ? (
+                        <>
+                          {error && <span className="text-xs text-red-600 self-center mr-2">{error}</span>}
+                          <Button size="sm" variant="outline" className="text-green-600 border-green-200 hover:bg-green-50"
+                            disabled={loading} onClick={() => handleEdit(d.id)}>
+                            <Check className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={closeEdit}>
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button size="sm" variant="outline" onClick={() => openEdit(d)}>
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
+                            onClick={() => handleDelete(d.id)}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -113,34 +198,6 @@ export function DesignationsClient({ designations }: { designations: Desig[] }) 
           )}
         </CardContent>
       </Card>
-
-      {/* Add Dialog */}
-      <Dialog open={addOpen} onOpenChange={o => !o && setAddOpen(false)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Add Designation</DialogTitle></DialogHeader>
-          <Input placeholder="Designation name" value={name} onChange={e => setName(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleAdd()} />
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
-            <Button disabled={loading} onClick={handleAdd}>{loading ? "Adding…" : "Add"}</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Dialog */}
-      <Dialog open={!!editItem} onOpenChange={o => !o && setEditItem(null)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Edit Designation</DialogTitle></DialogHeader>
-          <Input placeholder="Designation name" value={name} onChange={e => setName(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleEdit()} />
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setEditItem(null)}>Cancel</Button>
-            <Button disabled={loading} onClick={handleEdit}>{loading ? "Saving…" : "Save"}</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </main>
   );
 }

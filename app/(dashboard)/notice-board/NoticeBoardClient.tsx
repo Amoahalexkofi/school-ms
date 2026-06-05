@@ -1,32 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Megaphone, Trash2, Plus } from "lucide-react";
 
 const audienceColor: Record<string, string> = { ALL: "bg-blue-100 text-blue-700", STAFF: "bg-purple-100 text-purple-700", STUDENTS: "bg-green-100 text-green-700", PARENTS: "bg-orange-100 text-orange-700" };
 
 export function NoticeBoardClient({ notices }: any) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [form, setForm] = useState({ title: "", content: "", audience: "ALL" });
-
-  async function post() {
-    setLoading(true); setError("");
-    try {
-      const res = await fetch("/api/notices", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      if (!res.ok) { const d = await res.json(); throw new Error(d.error ?? "Failed"); }
-      setOpen(false); setForm({ title: "", content: "", audience: "ALL" }); router.refresh();
-    } catch (e: any) { setError(e.message); }
-    finally { setLoading(false); }
-  }
 
   async function deleteNotice(id: string) {
     if (!confirm("Delete this notice?")) return;
@@ -38,7 +21,9 @@ export function NoticeBoardClient({ notices }: any) {
     <main className="flex-1 p-6 space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">{notices.length} notice{notices.length !== 1 ? "s" : ""}</p>
-        <Button onClick={() => { setError(""); setOpen(true); }}><Plus className="h-4 w-4 mr-1" /> Post Notice</Button>
+        <Link href="/notice-board/new">
+          <Button><Plus className="h-4 w-4 mr-1" /> Post Notice</Button>
+        </Link>
       </div>
 
       {notices.length === 0 ? (
@@ -68,26 +53,6 @@ export function NoticeBoardClient({ notices }: any) {
         </div>
       )}
 
-      <Dialog open={open} onOpenChange={o => !o && setOpen(false)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Post Notice</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div><Label>Title *</Label><Input className="mt-1" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} /></div>
-            <div>
-              <Label>Audience</Label>
-              <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={form.audience} onChange={e => setForm(f => ({ ...f, audience: e.target.value }))}>
-                <option value="ALL">Everyone</option>
-                <option value="STAFF">Staff only</option>
-                <option value="STUDENTS">Students only</option>
-                <option value="PARENTS">Parents only</option>
-              </select>
-            </div>
-            <div><Label>Content *</Label><textarea className="mt-1 w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={4} value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} /></div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Button className="w-full" disabled={loading} onClick={post}>{loading ? "Posting…" : "Post Notice"}</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </main>
   );
 }

@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, CheckCircle2, Clock, UserCheck } from "lucide-react";
+import { Plus, CheckCircle2, UserCheck } from "lucide-react";
 
 type Props = { purposes: any[]; visitors: any[]; complaintTypes: any[]; complaints: any[]; enquiries: any[] };
 type Tab = "visitors" | "complaints" | "enquiries";
@@ -25,37 +24,11 @@ const ENQ_STATUS_STYLE: Record<string, string> = {
 export function FrontOfficeClient({ purposes, visitors, complaintTypes, complaints, enquiries }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("visitors");
-
-  // Visitor state
-  const [vOpen, setVOpen] = useState(false);
-  const [vForm, setVForm] = useState({ name: "", phone: "", purposeId: "", host: "", numVisitors: "1", idProof: "", note: "" });
-  const [vErr, setVErr] = useState(""); const [vLoad, setVLoad] = useState(false);
   const [checkedOut, setCheckedOut] = useState<string | null>(null);
 
-  // Complaint state
-  const [cOpen, setCOpen] = useState(false);
-  const [cForm, setCForm] = useState({ title: "", raisedBy: "", phone: "", complaintTypeId: "", description: "" });
-  const [cErr, setCErr] = useState(""); const [cLoad, setCLoad] = useState(false);
-
-  // Enquiry state
-  const [eOpen, setEOpen] = useState(false);
-  const [eForm, setEForm] = useState({ name: "", phone: "", email: "", classId: "", description: "", note: "" });
-  const [eErr, setEErr] = useState(""); const [eLoad, setELoad] = useState(false);
-
-  async function post(url: string, body: object) {
-    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    const d = await res.json(); if (!res.ok) throw new Error(d.error); return d;
-  }
   async function patch(url: string, body: object) {
     const res = await fetch(url, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const d = await res.json(); if (!res.ok) throw new Error(d.error); return d;
-  }
-
-  async function logVisitor() {
-    if (!vForm.name.trim()) { setVErr("Name required"); return; }
-    setVLoad(true); setVErr("");
-    try { await post("/api/front-office/visitors", vForm); setVOpen(false); router.refresh(); }
-    catch (e: any) { setVErr(e.message); } finally { setVLoad(false); }
   }
 
   async function checkout(id: string) {
@@ -64,23 +37,9 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes, complain
     router.refresh(); setCheckedOut(null);
   }
 
-  async function logComplaint() {
-    if (!cForm.title.trim() || !cForm.raisedBy.trim() || !cForm.description.trim()) { setCErr("Title, raised by, and description required"); return; }
-    setCLoad(true); setCErr("");
-    try { await post("/api/front-office/complaints", cForm); setCOpen(false); router.refresh(); }
-    catch (e: any) { setCErr(e.message); } finally { setCLoad(false); }
-  }
-
   async function updateComplaintStatus(id: string, status: string) {
     await patch(`/api/front-office/complaints/${id}`, { status });
     router.refresh();
-  }
-
-  async function logEnquiry() {
-    if (!eForm.name.trim()) { setEErr("Name required"); return; }
-    setELoad(true); setEErr("");
-    try { await post("/api/front-office/enquiries", eForm); setEOpen(false); router.refresh(); }
-    catch (e: any) { setEErr(e.message); } finally { setELoad(false); }
   }
 
   async function updateEnquiryStatus(id: string, status: string) {
@@ -110,9 +69,9 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes, complain
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{visitors.length} visitor{visitors.length !== 1 ? "s" : ""} today</p>
-            <Button onClick={() => { setVForm({ name: "", phone: "", purposeId: "", host: "", numVisitors: "1", idProof: "", note: "" }); setVErr(""); setVOpen(true); }}>
-              <Plus className="h-4 w-4 mr-1.5" />Log Visitor
-            </Button>
+            <Link href="/front-office/visitors/new">
+              <Button><Plus className="h-4 w-4 mr-1.5" />Log Visitor</Button>
+            </Link>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
@@ -148,9 +107,9 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes, complain
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{complaints.length} complaint{complaints.length !== 1 ? "s" : ""}</p>
-            <Button onClick={() => { setCForm({ title: "", raisedBy: "", phone: "", complaintTypeId: "", description: "" }); setCErr(""); setCOpen(true); }}>
-              <Plus className="h-4 w-4 mr-1.5" />Add Complaint
-            </Button>
+            <Link href="/front-office/complaints/new">
+              <Button><Plus className="h-4 w-4 mr-1.5" />Add Complaint</Button>
+            </Link>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
@@ -183,9 +142,9 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes, complain
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{enquiries.length} enqu{enquiries.length !== 1 ? "iries" : "iry"}</p>
-            <Button onClick={() => { setEForm({ name: "", phone: "", email: "", classId: "", description: "", note: "" }); setEErr(""); setEOpen(true); }}>
-              <Plus className="h-4 w-4 mr-1.5" />Add Enquiry
-            </Button>
+            <Link href="/front-office/enquiries/new">
+              <Button><Plus className="h-4 w-4 mr-1.5" />Add Enquiry</Button>
+            </Link>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
@@ -214,65 +173,6 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes, complain
         </div>
       )}
 
-      {/* Log Visitor Dialog */}
-      <Dialog open={vOpen} onOpenChange={o => !o && setVOpen(false)}>
-        <DialogContent className="max-w-md"><DialogHeader><DialogTitle>Log Visitor</DialogTitle></DialogHeader>
-        <div className="grid grid-cols-2 gap-3">
-          {[["Visitor Name *","name"],["Phone","phone"],["Host / Person to See","host"],["ID Proof","idProof"]].map(([l, k]) => (
-            <div key={k}><label className="block text-sm font-medium text-gray-700 mb-1">{l}</label><Input value={(vForm as any)[k]} onChange={e => setVForm(f => ({ ...f, [k]: e.target.value }))} /></div>
-          ))}
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={vForm.purposeId} onChange={e => setVForm(f => ({ ...f, purposeId: e.target.value }))}>
-              <option value="">— None —</option>
-              {purposes.map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
-          </div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">No. of Visitors</label><Input type="number" min="1" value={vForm.numVisitors} onChange={e => setVForm(f => ({ ...f, numVisitors: e.target.value }))} /></div>
-        </div>
-        {vErr && <p className="text-sm text-red-600 mt-1">{vErr}</p>}
-        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setVOpen(false)}>Cancel</Button><Button disabled={vLoad} onClick={logVisitor}>{vLoad ? "Saving…" : "Log Visitor"}</Button></div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Complaint Dialog */}
-      <Dialog open={cOpen} onOpenChange={o => !o && setCOpen(false)}>
-        <DialogContent className="max-w-md"><DialogHeader><DialogTitle>Add Complaint</DialogTitle></DialogHeader>
-        <div className="space-y-3">
-          {[["Title *","title"],["Raised By *","raisedBy"],["Phone","phone"]].map(([l, k]) => (
-            <div key={k}><label className="block text-sm font-medium text-gray-700 mb-1">{l}</label><Input value={(cForm as any)[k]} onChange={e => setCForm(f => ({ ...f, [k]: e.target.value }))} /></div>
-          ))}
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={cForm.complaintTypeId} onChange={e => setCForm(f => ({ ...f, complaintTypeId: e.target.value }))}>
-              <option value="">— None —</option>
-              {complaintTypes.map((ct: any) => <option key={ct.id} value={ct.id}>{ct.name}</option>)}
-            </select>
-          </div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-            <textarea rows={3} className="w-full border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={cForm.description} onChange={e => setCForm(f => ({ ...f, description: e.target.value }))} /></div>
-        </div>
-        {cErr && <p className="text-sm text-red-600">{cErr}</p>}
-        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setCOpen(false)}>Cancel</Button><Button disabled={cLoad} onClick={logComplaint}>{cLoad ? "Saving…" : "Submit"}</Button></div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Enquiry Dialog */}
-      <Dialog open={eOpen} onOpenChange={o => !o && setEOpen(false)}>
-        <DialogContent className="max-w-md"><DialogHeader><DialogTitle>Add Enquiry</DialogTitle></DialogHeader>
-        <div className="grid grid-cols-2 gap-3">
-          {[["Name *","name"],["Phone","phone"],["Email","email"],["Note","note"]].map(([l, k]) => (
-            <div key={k}><label className="block text-sm font-medium text-gray-700 mb-1">{l}</label><Input value={(eForm as any)[k]} onChange={e => setEForm(f => ({ ...f, [k]: e.target.value }))} /></div>
-          ))}
-          <div className="col-span-2"><label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-            <textarea rows={2} className="w-full border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={eForm.description} onChange={e => setEForm(f => ({ ...f, description: e.target.value }))} /></div>
-        </div>
-        {eErr && <p className="text-sm text-red-600">{eErr}</p>}
-        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setEOpen(false)}>Cancel</Button><Button disabled={eLoad} onClick={logEnquiry}>{eLoad ? "Saving…" : "Submit"}</Button></div>
-        </DialogContent>
-      </Dialog>
     </main>
   );
 }

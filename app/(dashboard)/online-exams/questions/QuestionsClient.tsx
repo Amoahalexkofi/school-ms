@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,7 +42,7 @@ const TYPE_LABELS: Record<string, string> = {
 
 const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
-const empty = {
+const emptyEdit = {
   questionType: "MCQ",
   level: "MEDIUM",
   question: "",
@@ -66,9 +67,9 @@ export function QuestionsClient({
   subjects: { id: string; name: string }[];
 }) {
   const [questions, setQuestions] = useState<Question[]>(initial);
-  const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<Question | null>(null);
-  const [form, setForm] = useState<any>(empty);
+  const [form, setForm] = useState<any>(emptyEdit);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
@@ -82,12 +83,6 @@ export function QuestionsClient({
       return matchSearch && matchType && matchLevel;
     });
   }, [questions, search, filterType, filterLevel]);
-
-  function openAdd() {
-    setEditing(null);
-    setForm(empty);
-    setOpen(true);
-  }
 
   function openEdit(q: Question) {
     setEditing(q);
@@ -105,15 +100,16 @@ export function QuestionsClient({
       subjectId: q.subject?.id ?? "",
       classId: q.class?.id ?? "",
     });
-    setOpen(true);
+    setEditOpen(true);
   }
 
   function set(k: string, v: any) {
     setForm((f: any) => ({ ...f, [k]: v }));
   }
 
-  async function save() {
+  async function saveEdit() {
     if (!form.question.trim()) return alert("Question text is required");
+    if (!editing) return;
     setSaving(true);
     try {
       const payload: any = {
@@ -133,26 +129,15 @@ export function QuestionsClient({
         payload.optionE = form.optionE || null;
       }
 
-      if (editing) {
-        const res = await fetch(`/api/questions/${editing.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error();
-        const updated = await res.json();
-        setQuestions((qs) => qs.map((q) => (q.id === editing.id ? { ...q, ...updated } : q)));
-      } else {
-        const res = await fetch("/api/questions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error();
-        const created = await res.json();
-        setQuestions((qs) => [created, ...qs]);
-      }
-      setOpen(false);
+      const res = await fetch(`/api/questions/${editing.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error();
+      const updated = await res.json();
+      setQuestions((qs) => qs.map((q) => (q.id === editing.id ? { ...q, ...updated } : q)));
+      setEditOpen(false);
     } catch {
       alert("Failed to save question");
     } finally {
@@ -197,9 +182,11 @@ export function QuestionsClient({
             {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
         </div>
-        <Button onClick={openAdd} className="shrink-0">
-          <Plus className="h-4 w-4 mr-1" /> Add Question
-        </Button>
+        <Link href="/online-exams/questions/new" className="shrink-0">
+          <Button>
+            <Plus className="h-4 w-4 mr-1" /> Add Question
+          </Button>
+        </Link>
       </div>
 
       <p className="text-sm text-gray-500">
@@ -260,11 +247,11 @@ export function QuestionsClient({
         </div>
       )}
 
-      {/* Add/Edit Dialog */}
-      <Dialog open={open} onOpenChange={setOpen}>
+      {/* Edit Dialog (kept for editing existing questions) */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Question" : "Add Question"}</DialogTitle>
+            <DialogTitle>Edit Question</DialogTitle>
           </DialogHeader>
 
           <div className="grid grid-cols-2 gap-4">
@@ -357,8 +344,8 @@ export function QuestionsClient({
           )}
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save"}</Button>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button onClick={saveEdit} disabled={saving}>{saving ? "Saving…" : "Save"}</Button>
           </div>
         </DialogContent>
       </Dialog>
