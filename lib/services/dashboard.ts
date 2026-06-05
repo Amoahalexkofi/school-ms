@@ -89,10 +89,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     (prisma as any).enquiry.count({ where: { createdAt: { gte: monthStart, lte: monthEnd }, status: "CONVERTED" } }),
 
     (prisma as any).studentLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd } } }),
-    (prisma as any).studentLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd }, status: "approved" } }),
+    (prisma as any).studentLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd }, status: "APPROVED" } }),
 
     (prisma as any).staffLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd } } }),
-    (prisma as any).staffLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd }, status: "approved" } }),
+    (prisma as any).staffLeaveRequest.count({ where: { fromDate: { gte: monthStart }, toDate: { lte: monthEnd }, status: "APPROVED" } }),
 
     (prisma as any).feeDeposit.findMany({
       where: { createdAt: { gte: today }, isActive: true },

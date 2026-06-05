@@ -125,7 +125,7 @@ export default async function ResultsPage() {
                       <tbody className="divide-y">
                         {g.entries.map((e: any) => {
                           const subjectPct = e.examSchedule?.fullMarks > 0
-                            ? Math.round((Number(e.marksObtained) / e.examSchedule.maxMarks) * 100)
+                            ? Math.round((Number(e.marksObtained) / e.examSchedule.fullMarks) * 100)
                             : 0;
                           return (
                             <tr key={e.id} className="hover:bg-gray-50">
@@ -190,11 +190,11 @@ export default async function ResultsPage() {
                             <tr key={m.id} className="hover:bg-gray-50">
                               <td className="px-3 py-2">{m.student?.firstName} {m.student?.lastName}</td>
                               <td className="px-3 py-2 font-mono text-xs text-gray-500">{m.student?.admissionNo}</td>
-                              <td className="px-3 py-2">{Number(m.totalMarks)} / {s.fullMarks}</td>
+                              <td className="px-3 py-2">{Number(m.marksObtained)} / {s.fullMarks}</td>
                               <td className="px-3 py-2 font-bold text-blue-700">{m.grade ?? "—"}</td>
                               <td className="px-3 py-2">
-                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.isPassed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                                  {m.isPassed ? "PASS" : "FAIL"}
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.isPassing ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                                  {m.isPassing ? "PASS" : "FAIL"}
                                 </span>
                               </td>
                             </tr>
