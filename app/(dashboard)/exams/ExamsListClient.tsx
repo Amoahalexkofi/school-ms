@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BookOpen, Plus, ChevronRight, Pencil, Trash2, Globe, Lock } from "lucide-react";
+import { BookOpen, Plus, ChevronRight, Pencil, Trash2, Globe, Lock, FileText, CreditCard } from "lucide-react";
 
 const EXAM_TYPES = ["TERM", "MIDTERM", "FINAL", "UNIT_TEST", "MOCK", "OTHER"];
 
@@ -63,11 +63,19 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
 
   return (
     <main className="flex-1 p-6 space-y-5 bg-gray-50">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <p className="text-sm text-gray-500">{groups.length} exam group{groups.length !== 1 ? "s" : ""}</p>
-        <Link href="/exams/new">
-          <Button><Plus className="h-4 w-4 mr-1.5" /> New Exam Group</Button>
-        </Link>
+        <div className="flex gap-2 flex-wrap">
+          <Link href="/exams/admit-card">
+            <Button variant="outline"><CreditCard className="h-4 w-4 mr-1.5" /> Admit Cards</Button>
+          </Link>
+          <Link href="/exams/marksheet">
+            <Button variant="outline"><FileText className="h-4 w-4 mr-1.5" /> Marksheets</Button>
+          </Link>
+          <Link href="/exams/new">
+            <Button><Plus className="h-4 w-4 mr-1.5" /> New Exam Group</Button>
+          </Link>
+        </div>
       </div>
 
       {groups.length === 0 ? (
