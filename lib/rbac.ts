@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
 type Action = "canView" | "canAdd" | "canEdit" | "canDelete";
@@ -12,11 +12,10 @@ export async function hasPermission(shortCode: string, action: Action = "canView
   const session = await auth();
   if (!session?.user?.id) return false;
 
-  // Super Admin at UserRole level always has full access
   const userRole = (session.user as any).role as string | undefined;
   if (userRole === "SUPER_ADMIN") return true;
 
-  // Lookup the staff's AppRole
+  const prisma = await getDb();
   const staffRole = await (prisma as any).staffAppRole.findFirst({
     where: { staff: { userId: session.user.id } },
     include: {
@@ -31,7 +30,6 @@ export async function hasPermission(shortCode: string, action: Action = "canView
   });
 
   if (!staffRole) {
-    // No AppRole assigned — fall back to UserRole-based defaults
     if (userRole === "ADMIN") return true;
     if (userRole === "TEACHER" && ["student_attendance", "homework", "student", "subject"].includes(shortCode)) return true;
     if (userRole === "ACCOUNTANT" && ["income", "expense", "collect_fees", "fees_type", "fees_group", "search_fees_payment", "search_due_fees"].includes(shortCode)) return true;
@@ -55,8 +53,9 @@ export async function hasPermission(shortCode: string, action: Action = "canView
 export async function getUserPermissions(): Promise<Record<string, Record<Action, boolean>>> {
   const session = await auth();
   if (!session?.user?.id) return {};
-  if ((session.user as any).role === "SUPER_ADMIN") return {}; // handled separately
+  if ((session.user as any).role === "SUPER_ADMIN") return {};
 
+  const prisma = await getDb();
   const staffRole = await (prisma as any).staffAppRole.findFirst({
     where: { staff: { userId: session.user.id } },
     include: {

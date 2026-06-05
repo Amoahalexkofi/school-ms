@@ -1,6 +1,7 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function getSchoolProfile() {
+  const prisma = await getDb();
   return (prisma as any).schoolProfile.findFirst();
 }
 
@@ -21,6 +22,7 @@ export async function upsertSchoolProfile(input: {
   feeDueDays?: number;
 }) {
   if (!input.name?.trim()) throw Object.assign(new Error("School name is required"), { code: "VALIDATION" });
+  const prisma = await getDb();
   const existing = await (prisma as any).schoolProfile.findFirst();
   if (existing) {
     return (prisma as any).schoolProfile.update({ where: { id: existing.id }, data: input });

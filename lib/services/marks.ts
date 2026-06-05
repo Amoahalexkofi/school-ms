@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { calculateGrade, calculatePercentage, calculateTotalMarks, isPassingGrade, type GradeRange } from "@/lib/domain/grades";
 
 export interface SubmitMarksInput {
@@ -9,14 +9,13 @@ export interface SubmitMarksInput {
 }
 
 export async function submitMarks(input: SubmitMarksInput) {
+  const prisma = await getDb();
   const schedule = await (prisma as any).examSchedule.findUnique({
     where: { id: input.examScheduleId },
   });
   if (!schedule) throw new Error("exam schedule not found");
 
   const total = calculateTotalMarks(input.theoryMarks, input.practicalMarks);
-
-  // validates marks <= maxMarks
   calculatePercentage(total, schedule.maxMarks);
 
   const scale = await (prisma as any).gradingScale.findFirst({
@@ -66,6 +65,7 @@ export async function submitMarks(input: SubmitMarksInput) {
 }
 
 export async function getStudentResults(studentId: string, examGroupId: string) {
+  const prisma = await getDb();
   return (prisma as any).markEntry.findMany({
     where: {
       studentId,

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function markAttendance(input: {
   classSectionId: string;
@@ -13,6 +13,7 @@ export async function markAttendance(input: {
   now.setHours(23, 59, 59, 999);
   if (input.date > now) throw new Error("Cannot mark attendance for a future date");
 
+  const prisma = await getDb();
   const attendanceDay = await (prisma as any).attendanceDay.upsert({
     where: { date_classSectionId: { date: input.date, classSectionId: input.classSectionId } },
     create: { date: input.date, classSectionId: input.classSectionId, sessionId: input.sessionId },
@@ -44,6 +45,7 @@ export async function markAttendance(input: {
 }
 
 export async function getStudentAttendanceSummary(studentId: string, sessionId: string) {
+  const prisma = await getDb();
   const rows = await (prisma as any).studentAttendance.findMany({
     where: { studentId, attendanceDay: { sessionId } },
     include: { attendanceDay: true, attendanceType: true },

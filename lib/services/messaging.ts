@@ -1,6 +1,7 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function listMessageLogs() {
+  const prisma = await getDb();
   return (prisma as any).messageLog.findMany({
     include: { sentBy: true },
     orderBy: { createdAt: "desc" },
@@ -17,7 +18,8 @@ export async function sendBulkMessage(input: {
   if (!input.subject.trim()) throw Object.assign(new Error("Subject is required"), { code: "VALIDATION" });
   if (!input.message.trim()) throw Object.assign(new Error("Message is required"), { code: "VALIDATION" });
 
-  // Count recipients
+  const prisma = await getDb();
+
   let recipientCount = 0;
   if (input.recipientType === "ALL_PARENTS") {
     recipientCount = await (prisma as any).user.count({ where: { role: "PARENT" } });
@@ -29,7 +31,6 @@ export async function sendBulkMessage(input: {
     recipientCount = await (prisma as any).user.count();
   }
 
-  // If IN_APP, create individual notifications
   if (input.channel === "IN_APP") {
     const users = await (prisma as any).user.findMany({ select: { id: true } });
     await (prisma as any).notification.createMany({

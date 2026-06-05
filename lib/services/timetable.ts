@@ -1,13 +1,12 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import {
   validateSlot,
-  hasTeacherConflict,
-  detectConflicts,
   type TimetableSlot,
   type DayOfWeek,
 } from "@/lib/domain/timetable";
 
 export async function getSectionTimetable(sectionId: string) {
+  const prisma = await getDb();
   return (prisma as any).timetableSlot.findMany({
     where: { sectionId },
     orderBy: [{ day: "asc" }, { period: "asc" }],
@@ -27,7 +26,6 @@ export async function addTimetableSlot(input: {
   staffId?: string;
   subjectId?: string;
 }) {
-  // Domain validation first
   const candidate: TimetableSlot = {
     id: "__new__",
     sectionId: input.sectionId,
@@ -39,12 +37,11 @@ export async function addTimetableSlot(input: {
   };
   validateSlot(candidate);
 
-  // Load existing slots for section + day to check conflicts
+  const prisma = await getDb();
   const existing: TimetableSlot[] = await (prisma as any).timetableSlot.findMany({
     where: { sectionId: input.sectionId, day: input.day },
   });
 
-  // Check duplicate period in this section
   const dupPeriod = existing.find((s) => s.period === input.period);
   if (dupPeriod) {
     throw new Error(
@@ -52,7 +49,6 @@ export async function addTimetableSlot(input: {
     );
   }
 
-  // Check teacher double-booking across all sections on same day
   if (input.staffId) {
     const teacherSlots: TimetableSlot[] = await (prisma as any).timetableSlot.findMany({
       where: { staffId: input.staffId, day: input.day, period: input.period },

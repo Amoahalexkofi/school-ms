@@ -1,7 +1,8 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function listApplications(status?: string) {
   const where = status ? { status } : {};
+  const prisma = await getDb();
   return (prisma as any).admissionApplication.findMany({
     where,
     orderBy: { createdAt: "desc" },
@@ -26,6 +27,7 @@ export async function submitApplication(input: {
   if (!input.parentPhone.trim()) throw Object.assign(new Error("Parent phone is required"), { code: "VALIDATION" });
   if (!input.classAppliedFor.trim()) throw Object.assign(new Error("Class is required"), { code: "VALIDATION" });
 
+  const prisma = await getDb();
   return (prisma as any).admissionApplication.create({
     data: {
       ...input,
@@ -41,6 +43,7 @@ export async function reviewApplication(
   status: "REVIEWED" | "APPROVED" | "REJECTED",
   reviewNote?: string,
 ) {
+  const prisma = await getDb();
   const app = await (prisma as any).admissionApplication.findUnique({ where: { id } });
   if (!app) throw Object.assign(new Error("Application not found"), { code: "NOT_FOUND" });
   return (prisma as any).admissionApplication.update({ where: { id }, data: { status, reviewNote } });

@@ -1,6 +1,7 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function listItems() {
+  const prisma = await getDb();
   return (prisma as any).item.findMany({
     include: { category: true, supplier: true, store: true },
     orderBy: { name: "asc" },
@@ -17,6 +18,7 @@ export async function addItem(input: {
   unit?: string;
 }) {
   if (!input.name.trim()) throw Object.assign(new Error("Item name is required"), { code: "VALIDATION" });
+  const prisma = await getDb();
   return (prisma as any).item.create({
     data: {
       name: input.name.trim(),
@@ -32,6 +34,7 @@ export async function addItem(input: {
 
 export async function stockIn(itemId: string, quantity: number, note?: string) {
   if (quantity <= 0) throw Object.assign(new Error("Quantity must be positive"), { code: "VALIDATION" });
+  const prisma = await getDb();
   return (prisma as any).$transaction([
     (prisma as any).stockMovement.create({ data: { itemId, type: "IN", quantity, note } }),
     (prisma as any).item.update({ where: { id: itemId }, data: { quantity: { increment: quantity } } }),
@@ -40,6 +43,7 @@ export async function stockIn(itemId: string, quantity: number, note?: string) {
 
 export async function stockOut(itemId: string, quantity: number, note?: string) {
   if (quantity <= 0) throw Object.assign(new Error("Quantity must be positive"), { code: "VALIDATION" });
+  const prisma = await getDb();
   const item = await (prisma as any).item.findUnique({ where: { id: itemId } });
   if (!item) throw Object.assign(new Error("Item not found"), { code: "NOT_FOUND" });
   if (item.quantity < quantity) throw Object.assign(new Error("Insufficient stock"), { code: "CONFLICT" });
@@ -50,26 +54,30 @@ export async function stockOut(itemId: string, quantity: number, note?: string) 
 }
 
 export async function issueItem(input: { itemId: string; issuedTo: string; quantity: number; note?: string }) {
-  return stockOut(input.itemId, input.quantity, input.note ?? `Issued to ${input.issuedTo}`).then(async () => {
-    return (prisma as any).itemIssue.create({
-      data: { itemId: input.itemId, issuedTo: input.issuedTo, quantity: input.quantity, note: input.note },
-    });
+  await stockOut(input.itemId, input.quantity, input.note ?? `Issued to ${input.issuedTo}`);
+  const prisma = await getDb();
+  return (prisma as any).itemIssue.create({
+    data: { itemId: input.itemId, issuedTo: input.issuedTo, quantity: input.quantity, note: input.note },
   });
 }
 
 export async function getLowStockItems() {
+  const prisma = await getDb();
   const items = await (prisma as any).item.findMany({ include: { category: true } });
   return items.filter((i: any) => i.quantity <= i.lowStockAlert);
 }
 
 export async function listCategories() {
+  const prisma = await getDb();
   return (prisma as any).itemCategory.findMany({ orderBy: { name: "asc" } });
 }
 
 export async function listSuppliers() {
+  const prisma = await getDb();
   return (prisma as any).supplier.findMany({ orderBy: { name: "asc" } });
 }
 
 export async function listStores() {
+  const prisma = await getDb();
   return (prisma as any).store.findMany({ orderBy: { name: "asc" } });
 }

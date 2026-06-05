@@ -353,7 +353,7 @@ Before implementing any school feature, read the corresponding PHP model in:
 
 ---
 
-### 🔄 Phase 20 — Novalss SaaS Platform (IN PROGRESS)
+### ✅ Phase 20 — Novalss SaaS Platform (COMPLETE)
 
 This is the multi-tenant hosting layer that wraps the school management system.
 
@@ -379,22 +379,21 @@ This is the multi-tenant hosting layer that wraps the school management system.
 - [x] 3-step UX: form → provisioning → done with login link
 - [x] Calls same `/api/admin/schools` POST endpoint
 
-**20d. Tenant Routing (TODO — critical for SaaS to work)**
-- [ ] Middleware: read subdomain from `Host` header → look up `SchoolTenant.schemaName` in registry → inject `DATABASE_SCHEMA` header or set schema per request
-- [ ] Per-request Prisma client factory (not a singleton) so each request uses the right schema
-- [ ] Tenant-aware login: school users at `sunshine.novalss.com` authenticate against `school_sunshine` schema
-- [ ] 404 page for unknown subdomains
+**20d. Tenant Routing (COMPLETE)**
+- [x] Middleware: reads subdomain from `x-forwarded-host`/`host` → looks up `SchoolTenant.schemaName` → injects `x-tenant-schema` header per request (`proxy.ts`)
+- [x] Per-request Prisma client factory (`lib/db.ts` `getDb()`) — reads `x-tenant-schema` header, caches clients per schema; all 24 service files + `lib/rbac.ts` migrated to use `getDb()`
+- [x] Tenant-aware login: `lib/auth/config.ts` uses `getDb()` so NextAuth authenticates against the tenant's schema
+- [x] 404 page for unknown subdomains (in `proxy.ts`)
 
 ---
 
 ## What's Left (Priority Order)
 
-1. **Phase 20d — Tenant routing** — makes the SaaS actually work end-to-end
-2. **Phase 14** — Bulk messaging + notification bell
-3. **Phase 5** — Fee Carry Forward + Discounts
-4. **Phase 9** — Pickup Points UI + student assignment
-5. **Phase 2** — Student promote + ID card
-6. **Domain** — connect novalss.com to Vercel
+1. **Phase 14** — Bulk messaging + notification bell (messaging UI done; SMS/email gateway config TODO)
+2. **Phase 5** — Fee Carry Forward + Discounts
+3. **Phase 9** — Pickup Points UI + student assignment
+4. **Phase 2** — Student promote + ID card
+5. **Domain** — connect novalss.com to Vercel
 
 ---
 

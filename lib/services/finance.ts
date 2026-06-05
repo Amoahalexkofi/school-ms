@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function listTransactions(filters?: { type?: "INCOME" | "EXPENSE"; from?: Date; to?: Date }) {
   const where: any = {};
@@ -8,6 +8,7 @@ export async function listTransactions(filters?: { type?: "INCOME" | "EXPENSE"; 
     if (filters.from) where.date.gte = filters.from;
     if (filters.to) where.date.lte = filters.to;
   }
+  const prisma = await getDb();
   return (prisma as any).transaction.findMany({
     where,
     include: { incomeHead: true, expenseHead: true },
@@ -31,10 +32,12 @@ export async function createTransaction(input: {
   };
   if (input.type === "INCOME") data.incomeHeadId = input.headId;
   else data.expenseHeadId = input.headId;
+  const prisma = await getDb();
   return (prisma as any).transaction.create({ data });
 }
 
 export async function getFinanceSummary() {
+  const prisma = await getDb();
   const [incomeAgg, expenseAgg] = await Promise.all([
     (prisma as any).transaction.aggregate({ where: { type: "INCOME" }, _sum: { amount: true } }),
     (prisma as any).transaction.aggregate({ where: { type: "EXPENSE" }, _sum: { amount: true } }),
@@ -45,6 +48,7 @@ export async function getFinanceSummary() {
 }
 
 export async function generatePayroll(month: number, year: number) {
+  const prisma = await getDb();
   const existing = await (prisma as any).payroll.findUnique({ where: { month_year: { month, year } } });
   if (existing) throw Object.assign(new Error("Payroll already generated for this month"), { code: "CONFLICT" });
 
@@ -70,6 +74,7 @@ export async function generatePayroll(month: number, year: number) {
 }
 
 export async function markPayrollPaid(payrollId: string) {
+  const prisma = await getDb();
   const payroll = await (prisma as any).payroll.findUnique({ where: { id: payrollId } });
   if (!payroll) throw Object.assign(new Error("Payroll not found"), { code: "NOT_FOUND" });
   if (payroll.status === "PAID") throw Object.assign(new Error("Payroll already paid"), { code: "CONFLICT" });

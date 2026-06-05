@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export interface DashboardStats {
   totalStudents: number;
@@ -25,12 +25,13 @@ async function safe(fn: () => Promise<any>, fallback: any): Promise<any> {
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
+  const prisma = await getDb();
+
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // midnight local
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-  // Active session — most recently started active session, fallback to any most recent
   const currentSession = await safe(() =>
     (prisma as any).academicSession.findFirst({
       orderBy: [{ isActive: "desc" }, { startDate: "desc" }],
@@ -38,7 +39,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
   const sid = currentSession?.id ?? null;
 
-  // Attendance type IDs
   const [presentType, absentType, lateType, halfDayType] = await Promise.all([
     safe(() => (prisma as any).attendanceType.findUnique({ where: { keyValue: "P" } }), null),
     safe(() => (prisma as any).attendanceType.findUnique({ where: { keyValue: "A" } }), null),

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function log(entry: {
   userId?: string;
@@ -8,10 +8,12 @@ export async function log(entry: {
   entityId?: string;
   metadata?: Record<string, unknown>;
 }) {
+  const prisma = await getDb();
   return (prisma as any).auditLog.create({ data: entry });
 }
 
 export async function getAuditLogs(filters?: { entity?: string; userId?: string; limit?: number }) {
+  const prisma = await getDb();
   return (prisma as any).auditLog.findMany({
     where: {
       ...(filters?.entity ? { entity: filters.entity } : {}),

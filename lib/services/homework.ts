@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export interface CreateHomeworkInput {
   title: string;
@@ -25,6 +25,7 @@ export async function createHomework(input: CreateHomeworkInput) {
   due.setHours(0, 0, 0, 0);
   if (due < today) throw new Error("dueDate cannot be in the past");
 
+  const prisma = await getDb();
   return (prisma as any).homework.create({
     data: {
       title: input.title.trim(),
@@ -41,6 +42,7 @@ export async function listHomework(filter: ListHomeworkFilter) {
   const where: Record<string, unknown> = { sectionId: filter.sectionId };
   if (filter.subjectId) where.subjectId = filter.subjectId;
 
+  const prisma = await getDb();
   return (prisma as any).homework.findMany({
     where,
     orderBy: { dueDate: "asc" },
@@ -52,6 +54,7 @@ export async function listHomework(filter: ListHomeworkFilter) {
 }
 
 export async function acknowledgeHomework(homeworkId: string, studentId: string) {
+  const prisma = await getDb();
   const hw = await (prisma as any).homework.findUnique({ where: { id: homeworkId } });
   if (!hw) throw new Error("homework not found");
 

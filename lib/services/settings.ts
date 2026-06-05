@@ -1,21 +1,25 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function listSessions() {
+  const prisma = await getDb();
   return (prisma as any).academicSession.findMany({ orderBy: { startDate: "desc" } });
 }
 
 export async function createSession(input: { name: string; startDate: Date; endDate: Date }) {
   if (!input.name.trim()) throw Object.assign(new Error("Name is required"), { code: "VALIDATION" });
   if (input.endDate <= input.startDate) throw Object.assign(new Error("End date must be after start date"), { code: "VALIDATION" });
+  const prisma = await getDb();
   return (prisma as any).academicSession.create({ data: { name: input.name.trim(), startDate: input.startDate, endDate: input.endDate } });
 }
 
 export async function setActiveSession(sessionId: string) {
+  const prisma = await getDb();
   await (prisma as any).academicSession.updateMany({ data: { isActive: false } });
   return (prisma as any).academicSession.update({ where: { id: sessionId }, data: { isActive: true } });
 }
 
 export async function listClasses(sessionId?: string) {
+  const prisma = await getDb();
   return (prisma as any).class.findMany({
     where: sessionId ? { sessionId } : {},
     include: { session: true, sections: true, subjects: true },
@@ -25,11 +29,13 @@ export async function listClasses(sessionId?: string) {
 
 export async function createClass(input: { name: string; sessionId: string }) {
   if (!input.name.trim()) throw Object.assign(new Error("Class name is required"), { code: "VALIDATION" });
+  const prisma = await getDb();
   return (prisma as any).class.create({ data: { name: input.name.trim(), sessionId: input.sessionId } });
 }
 
 export async function createSection(input: { name: string; classId: string }) {
   if (!input.name.trim()) throw Object.assign(new Error("Section name is required"), { code: "VALIDATION" });
+  const prisma = await getDb();
   return (prisma as any).section.create({ data: { name: input.name.trim(), classId: input.classId } });
 }
 
@@ -37,6 +43,7 @@ export async function listSubjects(classId?: string, sessionId?: string) {
   const where: any = {};
   if (classId)   where.classId   = classId;
   if (sessionId) where.sessionId = sessionId;
+  const prisma = await getDb();
   return (prisma as any).subject.findMany({
     where,
     include: { class: true },
@@ -47,5 +54,6 @@ export async function listSubjects(classId?: string, sessionId?: string) {
 export async function createSubject(input: { name: string; code: string; classId: string }) {
   if (!input.name.trim()) throw Object.assign(new Error("Subject name is required"), { code: "VALIDATION" });
   if (!input.code.trim()) throw Object.assign(new Error("Subject code is required"), { code: "VALIDATION" });
+  const prisma = await getDb();
   return (prisma as any).subject.create({ data: { name: input.name.trim(), code: input.code.trim().toUpperCase(), classId: input.classId } });
 }

@@ -1,6 +1,7 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export async function listOnlineExams() {
+  const prisma = await getDb();
   return (prisma as any).onlineExam.findMany({
     include: { class: true, _count: { select: { questions: true, attempts: true } } },
     orderBy: { startTime: "desc" },
@@ -18,6 +19,7 @@ export async function createOnlineExam(input: {
   if (!input.title.trim()) throw Object.assign(new Error("Title is required"), { code: "VALIDATION" });
   if (input.duration <= 0) throw Object.assign(new Error("Duration must be positive"), { code: "VALIDATION" });
   if (input.endTime <= input.startTime) throw Object.assign(new Error("End time must be after start time"), { code: "VALIDATION" });
+  const prisma = await getDb();
   return (prisma as any).onlineExam.create({ data: { ...input, title: input.title.trim() } });
 }
 
@@ -33,6 +35,7 @@ export async function addQuestion(input: {
   if (input.correctIndex < 0 || input.correctIndex >= input.options.length)
     throw Object.assign(new Error("Invalid correct answer index"), { code: "VALIDATION" });
 
+  const prisma = await getDb();
   const exam = await (prisma as any).onlineExam.findUnique({ where: { id: input.onlineExamId } });
   if (!exam) throw Object.assign(new Error("Exam not found"), { code: "NOT_FOUND" });
   if (exam.isPublished) throw Object.assign(new Error("Cannot edit a published exam"), { code: "CONFLICT" });
@@ -51,6 +54,7 @@ export async function addQuestion(input: {
 }
 
 export async function publishExam(examId: string) {
+  const prisma = await getDb();
   const exam = await (prisma as any).onlineExam.findUnique({
     where: { id: examId },
     include: { _count: { select: { questions: true } } },
@@ -62,6 +66,7 @@ export async function publishExam(examId: string) {
 }
 
 export async function startAttempt(examId: string, studentId: string) {
+  const prisma = await getDb();
   const exam = await (prisma as any).onlineExam.findUnique({ where: { id: examId } });
   if (!exam) throw Object.assign(new Error("Exam not found"), { code: "NOT_FOUND" });
   if (!exam.isPublished) throw Object.assign(new Error("Exam is not published"), { code: "CONFLICT" });
@@ -78,6 +83,7 @@ export async function startAttempt(examId: string, studentId: string) {
 }
 
 export async function submitAttempt(attemptId: string, answers: { questionId: string; selectedIndex: number }[]) {
+  const prisma = await getDb();
   const attempt = await (prisma as any).examAttempt.findUnique({ where: { id: attemptId } });
   if (!attempt) throw Object.assign(new Error("Attempt not found"), { code: "NOT_FOUND" });
   if (attempt.submittedAt) throw Object.assign(new Error("Already submitted"), { code: "CONFLICT" });
@@ -105,6 +111,7 @@ export async function submitAttempt(attemptId: string, answers: { questionId: st
 }
 
 export async function getExamWithQuestions(examId: string) {
+  const prisma = await getDb();
   return (prisma as any).onlineExam.findUnique({
     where: { id: examId },
     include: { questions: { orderBy: { order: "asc" } }, class: true },
@@ -112,6 +119,7 @@ export async function getExamWithQuestions(examId: string) {
 }
 
 export async function getAttemptResults(examId: string) {
+  const prisma = await getDb();
   return (prisma as any).examAttempt.findMany({
     where: { onlineExamId: examId },
     include: { student: true, answers: { include: { question: true } } },

@@ -1,7 +1,8 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { generateAdmissionNumber, validateStudentAge, formatStudentName } from "@/lib/domain/students";
 
 export async function getStudentById(id: string) {
+  const prisma = await getDb();
   return (prisma as any).student.findUnique({
     where: { id },
     include: {
@@ -14,6 +15,7 @@ export async function getStudentById(id: string) {
 
 export async function updateStudent(id: string, data: Record<string, unknown>) {
   if (data.dateOfBirth) validateStudentAge(data.dateOfBirth as Date, new Date());
+  const prisma = await getDb();
   if (data.firstName !== undefined || data.lastName !== undefined) {
     const current = await (prisma as any).student.findUnique({ where: { id } });
     if (!current) throw new Error("student not found");
@@ -28,6 +30,7 @@ export async function updateStudent(id: string, data: Record<string, unknown>) {
 }
 
 export async function deleteStudent(id: string) {
+  const prisma = await getDb();
   const sessions = await (prisma as any).studentSession.count({ where: { studentId: id, isActive: true } });
   if (sessions > 0) throw new Error("Cannot delete student with active session enrollments");
   const student = await (prisma as any).student.findUnique({ where: { id } });
@@ -42,7 +45,6 @@ export interface CreateStudentInput {
   dateOfBirth: Date;
   gender: string;
   sessionYear: number;
-  // extended fields
   middleName?: string;
   admissionDate?: Date;
   bloodGroup?: string;
@@ -61,6 +63,7 @@ export interface CreateStudentInput {
 export async function createStudent(input: CreateStudentInput) {
   validateStudentAge(input.dateOfBirth, new Date());
 
+  const prisma = await getDb();
   const existingUser = await (prisma as any).user.findUnique({ where: { email: input.email } });
   if (existingUser) throw new Error("email already registered");
 

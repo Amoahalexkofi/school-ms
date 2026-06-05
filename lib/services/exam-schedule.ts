@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 
 export interface CreateExamGroupInput {
   name: string;
@@ -23,6 +23,7 @@ export async function createExamGroup(input: CreateExamGroupInput) {
   if (!input.sessionId) throw new Error("sessionId is required");
   if (input.endDate <= input.startDate) throw new Error("endDate must be after startDate");
 
+  const prisma = await getDb();
   return (prisma as any).examGroup.create({
     data: {
       name: input.name.trim(),
@@ -39,6 +40,7 @@ export async function addExamSchedule(input: AddExamScheduleInput) {
   if (input.passingMarks > input.maxMarks) throw new Error("passingMarks cannot exceed maxMarks");
   if (input.endTime <= input.startTime) throw new Error("endTime must be after startTime");
 
+  const prisma = await getDb();
   const group = await (prisma as any).examGroup.findUnique({
     where: { id: input.examGroupId },
   });
@@ -60,6 +62,7 @@ export async function addExamSchedule(input: AddExamScheduleInput) {
 }
 
 export async function publishExamGroup(examGroupId: string) {
+  const prisma = await getDb();
   const group = await (prisma as any).examGroup.findUnique({
     where: { id: examGroupId },
   });
@@ -78,6 +81,7 @@ export async function publishExamGroup(examGroupId: string) {
 }
 
 export async function getExamGroupWithSchedules(examGroupId: string) {
+  const prisma = await getDb();
   return (prisma as any).examGroup.findUnique({
     where: { id: examGroupId },
     include: {

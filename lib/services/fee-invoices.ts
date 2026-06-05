@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import {
   calculateInvoiceTotal,
   calculateBalanceDue,
@@ -31,6 +31,7 @@ export async function generateInvoice(input: GenerateInvoiceInput) {
   due.setHours(0, 0, 0, 0);
   if (due < today) throw new Error("dueDate cannot be in the past");
 
+  const prisma = await getDb();
   const feeGroup = await (prisma as any).feeGroup.findUnique({
     where: { id: input.feeGroupId },
     include: { items: { include: { feeType: true } } },
@@ -59,6 +60,7 @@ export async function generateInvoice(input: GenerateInvoiceInput) {
 export async function recordPayment(input: RecordPaymentInput) {
   if (input.amount <= 0) throw new Error("payment amount must be greater than 0");
 
+  const prisma = await getDb();
   const invoice = await (prisma as any).feeInvoice.findUnique({
     where: { id: input.invoiceId },
   });
@@ -84,6 +86,7 @@ export async function recordPayment(input: RecordPaymentInput) {
 }
 
 export async function applyDiscount(input: ApplyDiscountInput) {
+  const prisma = await getDb();
   const invoice = await (prisma as any).feeInvoice.findUnique({
     where: { id: input.invoiceId },
   });
