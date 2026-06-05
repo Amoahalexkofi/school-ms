@@ -33,9 +33,12 @@ export async function createSection(input: { name: string; classId: string }) {
   return (prisma as any).section.create({ data: { name: input.name.trim(), classId: input.classId } });
 }
 
-export async function listSubjects(classId?: string) {
+export async function listSubjects(classId?: string, sessionId?: string) {
+  const where: any = {};
+  if (classId)   where.classId   = classId;
+  if (sessionId) where.sessionId = sessionId;
   return (prisma as any).subject.findMany({
-    where: classId ? { classId } : {},
+    where,
     include: { class: true },
     orderBy: { name: "asc" },
   });

@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSubject, listSubjects } from "@/lib/services/settings";
 
 export async function GET(req: NextRequest) {
-  const classId = req.nextUrl.searchParams.get("classId") ?? undefined;
-  return NextResponse.json(await listSubjects(classId));
+  const classId   = req.nextUrl.searchParams.get("classId")   ?? undefined;
+  const sessionId = req.nextUrl.searchParams.get("sessionId") ?? undefined;
+  return NextResponse.json(await listSubjects(classId, sessionId));
 }
 
 export async function POST(req: NextRequest) {
