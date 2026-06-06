@@ -101,7 +101,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       : 0, 0),
     safe(() => (prisma as any).staff.count({ where: { isActive: true } }), 0),
 
-    safe(() => (prisma as any).book.aggregate({ _sum: { qty: true } }), { _sum: { qty: 0 } }),
+    safe(() => (prisma as any).book.aggregate({ _sum: { quantity: true } }), { _sum: { quantity: 0 } }),
     safe(() => (prisma as any).bookIssue.count({ where: { returnedAt: null } }), 0),
     safe(() => (prisma as any).bookIssue.count({ where: { returnedAt: null, dueDate: { lt: today } } }), 0),
 
@@ -137,7 +137,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const feesPaid   = allFeesMasters.filter((fm: any) => fm.deposits?.length > 0).length;
   const feesUnpaid = allFeesMasters.length - feesPaid;
   const studTotal  = studPresent + studAbsent + studLate + studHalf;
-  const totalBooks = Number(totalBooksAgg._sum?.qty ?? 0);
+  const totalBooks = Number(totalBooksAgg._sum?.quantity ?? 0);
 
   return {
     totalStudents,
