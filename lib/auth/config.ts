@@ -66,10 +66,11 @@ export const authConfig: NextAuthConfig = {
 
           const sql = neon(process.env.DATABASE_URL!);
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const rows = await (sql as any)(
+          const result = await (sql as any).query(
             `SELECT id, email, password, role FROM "${schema}"."User" WHERE email = $1 LIMIT 1`,
             [credentials.email as string]
           );
+          const rows: Record<string, unknown>[] = result.rows ?? result;
 
           if (!rows.length) return null;
           const user = rows[0];
