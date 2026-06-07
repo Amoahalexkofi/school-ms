@@ -3,8 +3,64 @@
  * Creates a new Postgres schema for a new school and seeds it with
  * the table structure + initial admin user.
  */
-import { Pool } from "pg";
+import { Pool, PoolClient } from "pg";
 import bcrypt from "bcryptjs";
+
+/**
+ * Creates all public-schema enum types inside a tenant schema, then alters
+ * any columns that still reference public enum types to use the tenant-local
+ * copies. Safe to call multiple times (idempotent).
+ */
+export async function migrateEnumsForSchema(client: PoolClient, schemaName: string) {
+  // 1. Get every enum type defined in the public schema
+  const enumsResult = await client.query<{ enum_name: string; values: string[] }>(`
+    SELECT t.typname AS enum_name,
+           array_agg(e.enumlabel ORDER BY e.enumsortorder) AS values
+    FROM pg_type t
+    JOIN pg_enum e ON t.oid = e.enumtypid
+    JOIN pg_namespace n ON t.typnamespace = n.oid
+    WHERE n.nspname = 'public'
+    GROUP BY t.typname
+  `);
+
+  // 2. Create each enum in the tenant schema (no-op if already exists)
+  for (const { enum_name, values } of enumsResult.rows) {
+    const valueList = values.map((v) => `'${v}'`).join(", ");
+    await client.query(`
+      DO $$ BEGIN
+        CREATE TYPE "${schemaName}"."${enum_name}" AS ENUM (${valueList});
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$
+    `);
+  }
+
+  // 3. Find columns in the tenant schema that still reference public enum types
+  const columnsResult = await client.query<{
+    table_name: string; column_name: string; udt_name: string;
+  }>(`
+    SELECT c.table_name, c.column_name, c.udt_name
+    FROM information_schema.columns c
+    WHERE c.table_schema = $1
+      AND c.udt_schema = 'public'
+      AND EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE n.nspname = 'public'
+          AND t.typname = c.udt_name
+          AND t.typtype = 'e'
+      )
+  `, [schemaName]);
+
+  // 4. Alter each column to use the tenant-local enum type
+  for (const { table_name, column_name, udt_name } of columnsResult.rows) {
+    await client.query(`
+      ALTER TABLE "${schemaName}"."${table_name}"
+        ALTER COLUMN "${column_name}"
+        TYPE "${schemaName}"."${udt_name}"
+        USING "${column_name}"::text::"${schemaName}"."${udt_name}"
+    `);
+  }
+}
 
 // Generates a safe schema name from a subdomain
 export function makeSchemaName(subdomain: string): string {
@@ -44,6 +100,9 @@ export async function provisionSchool(input: {
         (LIKE "public"."${tablename}" INCLUDING ALL)
       `);
     }
+
+    // 2b. Create tenant-local enum types and migrate columns off public enums
+    await migrateEnumsForSchema(client, input.schemaName);
 
     // Copy sequences (for auto-increment, though we use cuid so mostly not needed)
     const sequences = await client.query<{ sequence_name: string }>(`
