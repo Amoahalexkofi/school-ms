@@ -24,15 +24,20 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Check actual search_path that Prisma is using
   let prismaStudentCount: number | string = "not tested";
   let prismaSearchPath: string = "not tested";
+  let rawSqlCount: number | string = "not tested";
+  let currentSchema: string = "not tested";
   try {
     const { getDb } = await import("@/lib/db");
     const db = await getDb();
-    prismaStudentCount = await (db as any).student.count();
     const spResult = await (db as any).$queryRawUnsafe("SHOW search_path");
     prismaSearchPath = spResult?.[0]?.search_path ?? "unknown";
+    const schemaResult = await (db as any).$queryRawUnsafe("SELECT current_schema()");
+    currentSchema = schemaResult?.[0]?.current_schema ?? "unknown";
+    const rawCount = await (db as any).$queryRawUnsafe('SELECT COUNT(*) as cnt FROM "Student"');
+    rawSqlCount = rawCount?.[0]?.cnt ?? "unknown";
+    prismaStudentCount = await (db as any).student.count();
   } catch (e: any) {
     prismaStudentCount = `error: ${e.message}`;
   }
@@ -44,7 +49,9 @@ export async function GET(req: NextRequest) {
     "x-tenant-schema (next/headers)": tenantSchema,
     rawHost,
     schemaFromDb,
-    prismaStudentCount,
     prismaSearchPath,
+    currentSchema,
+    rawSqlCount,
+    prismaStudentCount,
   });
 }

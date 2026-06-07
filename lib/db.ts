@@ -5,12 +5,13 @@ import { PrismaNeon } from "@prisma/adapter-neon";
 const clientCache = new Map<string, PrismaClient>();
 
 function createClient(schema: string): PrismaClient {
-  // search_path: tenant schema first so table lookups land in the right schema,
-  // then public so unqualified enum types (UserRole, etc.) resolve via public.
-  const adapter = new PrismaNeon({
-    connectionString: process.env.DATABASE_URL!,
-    options: `-c search_path="${schema}",public`,
-  });
+  // Pass schema to PrismaNeonOptions so Prisma qualifies all generated SQL
+  // with the correct schema name (e.g. "school_bb"."Student").
+  // Also set search_path so unqualified enum types (defined in public) resolve.
+  const adapter = new PrismaNeon(
+    { connectionString: process.env.DATABASE_URL!, options: `-c search_path="${schema}",public` },
+    { schema }
+  );
   return new PrismaClient({ adapter });
 }
 
