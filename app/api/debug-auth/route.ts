@@ -28,19 +28,23 @@ export async function GET(req: NextRequest) {
   let prismaSearchPath: string = "not tested";
   let rawSqlCount: number | string = "not tested";
   let currentSchema: string = "not tested";
+  const { getDb } = await import("@/lib/db");
+  const db = await getDb();
   try {
-    const { getDb } = await import("@/lib/db");
-    const db = await getDb();
     const spResult = await (db as any).$queryRawUnsafe("SHOW search_path");
     prismaSearchPath = spResult?.[0]?.search_path ?? "unknown";
-    const schemaResult = await (db as any).$queryRawUnsafe("SELECT current_schema()");
-    currentSchema = schemaResult?.[0]?.current_schema ?? "unknown";
-    const rawCount = await (db as any).$queryRawUnsafe('SELECT COUNT(*) as cnt FROM "Student"');
+  } catch (e: any) { prismaSearchPath = `error: ${e.message}`; }
+  try {
+    const schemaResult = await (db as any).$queryRawUnsafe("SELECT current_schema()::text as cs");
+    currentSchema = schemaResult?.[0]?.cs ?? "unknown";
+  } catch (e: any) { currentSchema = `error: ${e.message}`; }
+  try {
+    const rawCount = await (db as any).$queryRawUnsafe('SELECT COUNT(*)::int as cnt FROM "Student"');
     rawSqlCount = rawCount?.[0]?.cnt ?? "unknown";
+  } catch (e: any) { rawSqlCount = `error: ${e.message}`; }
+  try {
     prismaStudentCount = await (db as any).student.count();
-  } catch (e: any) {
-    prismaStudentCount = `error: ${e.message}`;
-  }
+  } catch (e: any) { prismaStudentCount = `error: ${e.message}`; }
 
   return NextResponse.json({
     "x-novalss-host": novalssHost,
