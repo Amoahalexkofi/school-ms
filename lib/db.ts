@@ -22,8 +22,6 @@ export async function getDb(): Promise<PrismaClient> {
     process.env.DATABASE_SCHEMA ??
     "public";
 
-  console.log("[getDb] x-tenant-schema:", h.get("x-tenant-schema"), "→ using schema:", schema);
-
   if (!clientCache.has(schema)) {
     clientCache.set(schema, createClient(schema));
   }
