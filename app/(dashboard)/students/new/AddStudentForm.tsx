@@ -19,6 +19,56 @@ const GENDERS = ["Male", "Female", "Other"];
 const RELIGIONS = ["Christian", "Muslim", "Traditional", "Other"];
 const GUARDIAN_IS = ["Father", "Mother", "Guardian", "Other"];
 
+type FieldProps = {
+  label: string;
+  name: string;
+  type?: string;
+  options?: string[] | { value: string; label: string }[];
+  textarea?: boolean;
+  colSpan2?: boolean;
+  form: Record<string, any>;
+  set: (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+};
+
+function Field({ label, name, type = "text", options, textarea, colSpan2, form, set }: FieldProps) {
+  if (options) {
+    return (
+      <div className={colSpan2 ? "col-span-2" : ""}>
+        <Label className="text-xs mb-1 block">{label}</Label>
+        <select className={SEL} value={form[name]} onChange={set(name)}>
+          <option value="">— Select —</option>
+          {options.map((o) =>
+            typeof o === "string" ? (
+              <option key={o} value={o}>{o}</option>
+            ) : (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            )
+          )}
+        </select>
+      </div>
+    );
+  }
+  if (textarea) {
+    return (
+      <div className={colSpan2 ? "col-span-2" : ""}>
+        <Label className="text-xs mb-1 block">{label}</Label>
+        <textarea
+          rows={3}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          value={form[name]}
+          onChange={set(name)}
+        />
+      </div>
+    );
+  }
+  return (
+    <div className={colSpan2 ? "col-span-2" : ""}>
+      <Label className="text-xs mb-1 block">{label}</Label>
+      <Input type={type} value={form[name]} onChange={set(name)} />
+    </div>
+  );
+}
+
 type Props = {
   sessions: any[];
   classSections: any[];
@@ -60,6 +110,8 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
       setForm((f) => ({ ...f, [k]: e.target.value }));
 
+  const fp = { form: form as Record<string, any>, set };
+
   async function handleSubmit() {
     if (!form.firstName || !form.lastName || !form.dateOfBirth || !form.gender) {
       setError("First name, last name, date of birth and gender are required.");
@@ -83,54 +135,6 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
     } finally {
       setLoading(false);
     }
-  }
-
-  function Field({
-    label, name, type = "text", options, textarea, colSpan2,
-  }: {
-    label: string;
-    name: string;
-    type?: string;
-    options?: string[] | { value: string; label: string }[];
-    textarea?: boolean;
-    colSpan2?: boolean;
-  }) {
-    if (options) {
-      return (
-        <div className={colSpan2 ? "col-span-2" : ""}>
-          <Label className="text-xs mb-1 block">{label}</Label>
-          <select className={SEL} value={(form as any)[name]} onChange={set(name)}>
-            <option value="">— Select —</option>
-            {options.map((o) =>
-              typeof o === "string" ? (
-                <option key={o} value={o}>{o}</option>
-              ) : (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              )
-            )}
-          </select>
-        </div>
-      );
-    }
-    if (textarea) {
-      return (
-        <div className={colSpan2 ? "col-span-2" : ""}>
-          <Label className="text-xs mb-1 block">{label}</Label>
-          <textarea
-            rows={3}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            value={(form as any)[name]}
-            onChange={set(name)}
-          />
-        </div>
-      );
-    }
-    return (
-      <div className={colSpan2 ? "col-span-2" : ""}>
-        <Label className="text-xs mb-1 block">{label}</Label>
-        <Input type={type} value={(form as any)[name]} onChange={set(name)} />
-      </div>
-    );
   }
 
   return (
@@ -175,21 +179,21 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label="First Name *" name="firstName" />
-                <Field label="Middle Name" name="middleName" />
-                <Field label="Last Name *" name="lastName" />
-                <Field label="Admission No." name="admissionNo" />
-                <Field label="Admission Date" name="admissionDate" type="date" />
-                <Field label="Date of Birth *" name="dateOfBirth" type="date" />
-                <Field label="Gender *" name="gender" options={GENDERS} />
-                <Field label="Blood Group" name="bloodGroup" options={BLOOD_GROUPS} />
-                <Field label="Religion" name="religion" options={RELIGIONS} />
-                <Field label="Caste / Category" name="caste" />
-                <Field label="Nationality" name="nationality" />
-                <Field label="Mobile No." name="mobileNo" />
-                <Field label="Email" name="email" type="email" />
-                <Field label="Height (cm)" name="height" />
-                <Field label="Weight (kg)" name="weight" />
+                <Field {...fp} label="First Name *" name="firstName" />
+                <Field {...fp} label="Middle Name" name="middleName" />
+                <Field {...fp} label="Last Name *" name="lastName" />
+                <Field {...fp} label="Admission No." name="admissionNo" />
+                <Field {...fp} label="Admission Date" name="admissionDate" type="date" />
+                <Field {...fp} label="Date of Birth *" name="dateOfBirth" type="date" />
+                <Field {...fp} label="Gender *" name="gender" options={GENDERS} />
+                <Field {...fp} label="Blood Group" name="bloodGroup" options={BLOOD_GROUPS} />
+                <Field {...fp} label="Religion" name="religion" options={RELIGIONS} />
+                <Field {...fp} label="Caste / Category" name="caste" />
+                <Field {...fp} label="Nationality" name="nationality" />
+                <Field {...fp} label="Mobile No." name="mobileNo" />
+                <Field {...fp} label="Email" name="email" type="email" />
+                <Field {...fp} label="Height (cm)" name="height" />
+                <Field {...fp} label="Weight (kg)" name="weight" />
                 <div className="col-span-2 flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -215,22 +219,22 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label="Guardian Is" name="guardianIs" options={GUARDIAN_IS} />
+                <Field {...fp} label="Guardian Is" name="guardianIs" options={GUARDIAN_IS} />
                 <div />
-                <Field label="Father's Name" name="fatherName" />
-                <Field label="Father's Phone" name="fatherPhone" />
-                <Field label="Father's Email" name="fatherEmail" type="email" />
-                <Field label="Father's Occupation" name="fatherOccupation" />
-                <Field label="Mother's Name" name="motherName" />
-                <Field label="Mother's Phone" name="motherPhone" />
-                <Field label="Mother's Email" name="motherEmail" type="email" />
-                <Field label="Mother's Occupation" name="motherOccupation" />
-                <Field label="Guardian Name" name="guardianName" />
-                <Field label="Guardian Relation" name="guardianRelation" />
-                <Field label="Guardian Phone" name="guardianPhone" />
-                <Field label="Guardian Email" name="guardianEmail" type="email" />
-                <Field label="Guardian Occupation" name="guardianOccupation" />
-                <Field label="Guardian Address" name="guardianAddress" textarea colSpan2 />
+                <Field {...fp} label="Father's Name" name="fatherName" />
+                <Field {...fp} label="Father's Phone" name="fatherPhone" />
+                <Field {...fp} label="Father's Email" name="fatherEmail" type="email" />
+                <Field {...fp} label="Father's Occupation" name="fatherOccupation" />
+                <Field {...fp} label="Mother's Name" name="motherName" />
+                <Field {...fp} label="Mother's Phone" name="motherPhone" />
+                <Field {...fp} label="Mother's Email" name="motherEmail" type="email" />
+                <Field {...fp} label="Mother's Occupation" name="motherOccupation" />
+                <Field {...fp} label="Guardian Name" name="guardianName" />
+                <Field {...fp} label="Guardian Relation" name="guardianRelation" />
+                <Field {...fp} label="Guardian Phone" name="guardianPhone" />
+                <Field {...fp} label="Guardian Email" name="guardianEmail" type="email" />
+                <Field {...fp} label="Guardian Occupation" name="guardianOccupation" />
+                <Field {...fp} label="Guardian Address" name="guardianAddress" textarea colSpan2 />
               </div>
             </CardContent>
           </Card>
@@ -244,12 +248,12 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label="Current Address" name="currentAddress" textarea colSpan2 />
-                <Field label="Permanent Address" name="permanentAddress" textarea colSpan2 />
-                <Field label="City" name="city" />
-                <Field label="State / Region" name="state" />
-                <Field label="Country" name="country" />
-                <Field label="Pincode / Post Code" name="pincode" />
+                <Field {...fp} label="Current Address" name="currentAddress" textarea colSpan2 />
+                <Field {...fp} label="Permanent Address" name="permanentAddress" textarea colSpan2 />
+                <Field {...fp} label="City" name="city" />
+                <Field {...fp} label="State / Region" name="state" />
+                <Field {...fp} label="Country" name="country" />
+                <Field {...fp} label="Pincode / Post Code" name="pincode" />
               </div>
             </CardContent>
           </Card>
@@ -283,7 +287,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
                     ))}
                   </select>
                 </div>
-                <Field label="Roll No." name="rollNo" />
+                <Field {...fp} label="Roll No." name="rollNo" />
                 <div>
                   <Label className="text-xs mb-1 block">School House</Label>
                   <select className={SEL} value={form.schoolHouseId} onChange={set("schoolHouseId")}>
@@ -293,10 +297,10 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
                     ))}
                   </select>
                 </div>
-                <Field label="Previous School" name="previousSchool" />
-                <Field label="Previous Class" name="previousClass" />
-                <Field label="Previous Percentage (%)" name="previousPercent" />
-                <Field label="Previous TC No." name="previousTc" />
+                <Field {...fp} label="Previous School" name="previousSchool" />
+                <Field {...fp} label="Previous Class" name="previousClass" />
+                <Field {...fp} label="Previous Percentage (%)" name="previousPercent" />
+                <Field {...fp} label="Previous TC No." name="previousTc" />
               </div>
             </CardContent>
           </Card>
@@ -310,14 +314,14 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label="Bank Account No." name="bankAccountNo" />
-                <Field label="Bank Name" name="bankName" />
-                <Field label="IFSC / Sort Code" name="ifscCode" />
-                <Field label="Bank Branch" name="bankBranch" />
-                <Field label="Aadhar / National ID" name="aadharNo" />
+                <Field {...fp} label="Bank Account No." name="bankAccountNo" />
+                <Field {...fp} label="Bank Name" name="bankName" />
+                <Field {...fp} label="IFSC / Sort Code" name="ifscCode" />
+                <Field {...fp} label="Bank Branch" name="bankBranch" />
+                <Field {...fp} label="Aadhar / National ID" name="aadharNo" />
                 <div />
-                <Field label="Note" name="note" textarea colSpan2 />
-                <Field label="About" name="about" textarea colSpan2 />
+                <Field {...fp} label="Note" name="note" textarea colSpan2 />
+                <Field {...fp} label="About" name="about" textarea colSpan2 />
               </div>
             </CardContent>
           </Card>
