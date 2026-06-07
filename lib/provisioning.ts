@@ -35,9 +35,9 @@ export async function migrateEnumsForSchema(client: PoolClient, schemaName: stri
 
   // 3. Find columns in the tenant schema that still reference public enum types
   const columnsResult = await client.query<{
-    table_name: string; column_name: string; udt_name: string;
+    table_name: string; column_name: string; udt_name: string; column_default: string | null;
   }>(`
-    SELECT c.table_name, c.column_name, c.udt_name
+    SELECT c.table_name, c.column_name, c.udt_name, c.column_default
     FROM information_schema.columns c
     WHERE c.table_schema = $1
       AND c.udt_schema = 'public'
@@ -51,13 +51,30 @@ export async function migrateEnumsForSchema(client: PoolClient, schemaName: stri
   `, [schemaName]);
 
   // 4. Alter each column to use the tenant-local enum type
-  for (const { table_name, column_name, udt_name } of columnsResult.rows) {
+  for (const { table_name, column_name, udt_name, column_default } of columnsResult.rows) {
+    // Drop default first so ALTER TYPE doesn't fail on the cast
+    if (column_default !== null) {
+      await client.query(
+        `ALTER TABLE "${schemaName}"."${table_name}" ALTER COLUMN "${column_name}" DROP DEFAULT`
+      );
+    }
+
     await client.query(`
       ALTER TABLE "${schemaName}"."${table_name}"
         ALTER COLUMN "${column_name}"
         TYPE "${schemaName}"."${udt_name}"
         USING "${column_name}"::text::"${schemaName}"."${udt_name}"
     `);
+
+    // Restore the default using the tenant-local enum type
+    if (column_default !== null) {
+      const match = column_default.match(/^'([^']+)'/);
+      if (match) {
+        await client.query(
+          `ALTER TABLE "${schemaName}"."${table_name}" ALTER COLUMN "${column_name}" SET DEFAULT '${match[1]}'::"${schemaName}"."${udt_name}"`
+        );
+      }
+    }
   }
 }
 
