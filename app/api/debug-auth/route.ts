@@ -24,12 +24,15 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Try to count students using getDb() to confirm which schema Prisma uses
+  // Check actual search_path that Prisma is using
   let prismaStudentCount: number | string = "not tested";
+  let prismaSearchPath: string = "not tested";
   try {
     const { getDb } = await import("@/lib/db");
     const db = await getDb();
     prismaStudentCount = await (db as any).student.count();
+    const spResult = await (db as any).$queryRawUnsafe("SHOW search_path");
+    prismaSearchPath = spResult?.[0]?.search_path ?? "unknown";
   } catch (e: any) {
     prismaStudentCount = `error: ${e.message}`;
   }
@@ -42,5 +45,6 @@ export async function GET(req: NextRequest) {
     rawHost,
     schemaFromDb,
     prismaStudentCount,
+    prismaSearchPath,
   });
 }
