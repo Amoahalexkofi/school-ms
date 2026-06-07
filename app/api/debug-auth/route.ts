@@ -24,6 +24,16 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // Try to count students using getDb() to confirm which schema Prisma uses
+  let prismaStudentCount: number | string = "not tested";
+  try {
+    const { getDb } = await import("@/lib/db");
+    const db = await getDb();
+    prismaStudentCount = await (db as any).student.count();
+  } catch (e: any) {
+    prismaStudentCount = `error: ${e.message}`;
+  }
+
   return NextResponse.json({
     "x-novalss-host": novalssHost,
     "x-forwarded-host": forwardedHost,
@@ -31,5 +41,6 @@ export async function GET(req: NextRequest) {
     "x-tenant-schema (next/headers)": tenantSchema,
     rawHost,
     schemaFromDb,
+    prismaStudentCount,
   });
 }
