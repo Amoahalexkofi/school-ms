@@ -12,10 +12,10 @@ import bcrypt from "bcryptjs";
  * copies. Safe to call multiple times (idempotent).
  */
 export async function migrateEnumsForSchema(client: PoolClient, schemaName: string) {
-  // 1. Get every enum type defined in the public schema
-  const enumsResult = await client.query<{ enum_name: string; values: string[] }>(`
+  // 1. Get every enum type defined in the public schema with its values pre-quoted
+  const enumsResult = await client.query<{ enum_name: string; value_list: string }>(`
     SELECT t.typname AS enum_name,
-           array_agg(e.enumlabel ORDER BY e.enumsortorder) AS values
+           string_agg(quote_literal(e.enumlabel), ', ' ORDER BY e.enumsortorder) AS value_list
     FROM pg_type t
     JOIN pg_enum e ON t.oid = e.enumtypid
     JOIN pg_namespace n ON t.typnamespace = n.oid
@@ -24,11 +24,10 @@ export async function migrateEnumsForSchema(client: PoolClient, schemaName: stri
   `);
 
   // 2. Create each enum in the tenant schema (no-op if already exists)
-  for (const { enum_name, values } of enumsResult.rows) {
-    const valueList = values.map((v) => `'${v}'`).join(", ");
+  for (const { enum_name, value_list } of enumsResult.rows) {
     await client.query(`
       DO $$ BEGIN
-        CREATE TYPE "${schemaName}"."${enum_name}" AS ENUM (${valueList});
+        CREATE TYPE "${schemaName}"."${enum_name}" AS ENUM (${value_list});
       EXCEPTION WHEN duplicate_object THEN NULL;
       END $$
     `);
