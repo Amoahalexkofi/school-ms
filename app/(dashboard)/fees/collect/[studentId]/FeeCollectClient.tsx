@@ -12,7 +12,7 @@ import { ArrowLeft, DollarSign, CheckCircle2, AlertCircle, Receipt } from "lucid
 const PAYMENT_MODES = ["CASH", "BANK_TRANSFER", "CHEQUE", "MOBILE_MONEY", "ONLINE"];
 
 type Master = {
-  id: string; amount: number;
+  id: string; amount: number; isSystem: boolean;
   feeSessionGroup: {
     feeGroup: { name: string }; session: { session: string };
     items: { id: string; amount: number; feeType: { name: string; code: string }; dueDate: string | null }[];
@@ -174,10 +174,13 @@ export function FeeCollectClient({ student, masters }: Props) {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                      {master.feeSessionGroup.items.map((item) => (
+                      {master.feeSessionGroup.items.map((item, idx) => (
                         <tr key={item.id}>
                           <td className="py-1.5 text-gray-700">{item.feeType.name}</td>
-                          <td className="py-1.5 text-right font-medium text-gray-900">₵{Number(item.amount).toLocaleString()}</td>
+                          <td className="py-1.5 text-right font-medium text-gray-900">
+                            {/* Smart School: for system (carry-forward) masters, item[0].amount = master.amount */}
+                            ₵{(master.isSystem && idx === 0 ? Number(master.amount) : Number(item.amount)).toLocaleString()}
+                          </td>
                           <td className="py-1.5 text-right text-gray-400">{item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "—"}</td>
                         </tr>
                       ))}

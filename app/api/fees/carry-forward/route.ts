@@ -76,6 +76,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Get or create the system FeeType for "Previous Balance"
+    let balanceFeeType = await (db as any).feeType.findFirst({ where: { code: "PREV_BAL", isSystem: true } });
+    if (!balanceFeeType) {
+      balanceFeeType = await (db as any).feeType.create({
+        data: { name: "Previous Balance", code: "PREV_BAL", isSystem: true },
+      });
+    }
+
     // Get or create FeeSessionGroup for this group + target session
     let sessionGroup = await (db as any).feeSessionGroup.findFirst({
       where: { feeGroupId: balanceGroup.id, sessionId: toSessionId },
@@ -88,6 +96,22 @@ export async function POST(req: NextRequest) {
 
     let carried = 0;
     let skipped = 0;
+
+    // Ensure a FeeGroupItem exists for the balance type in this session group
+    // (Smart School uses one item row per fee type; the per-student amount is on StudentFeesMaster)
+    let balanceItem = await (db as any).feeGroupItem.findFirst({
+      where: { feeSessionGroupId: sessionGroup.id, feeTypeId: balanceFeeType.id },
+    });
+    if (!balanceItem) {
+      balanceItem = await (db as any).feeGroupItem.create({
+        data: {
+          feeSessionGroupId: sessionGroup.id,
+          feeTypeId: balanceFeeType.id,
+          amount: 0,
+          ...(dueDate ? { dueDate: new Date(dueDate) } : {}),
+        },
+      });
+    }
 
     for (const { studentId, balance } of rows) {
       // Find student's session record in the target session
@@ -109,7 +133,6 @@ export async function POST(req: NextRequest) {
           feeSessionGroupId: sessionGroup.id,
           amount: balance,
           isSystem: true,
-          ...(dueDate ? { createdAt: new Date(dueDate) } : {}),
         },
       });
       carried++;
