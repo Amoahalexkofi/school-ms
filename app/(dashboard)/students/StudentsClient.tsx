@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Users, Plus, Search, Eye } from "lucide-react";
+import { Users, Plus, Search, Eye, GraduationCap } from "lucide-react";
 
 type Props = { students: any[]; sessions: any[]; classSections: any[]; schoolHouses: any[] };
 
@@ -34,11 +34,18 @@ export function StudentsClient({ students }: Props) {
           </div>
           <span className="text-sm text-gray-500">{filtered.length} student{filtered.length !== 1 ? "s" : ""}</span>
         </div>
-        <Link href="/students/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-1" /> Add Student
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/students/promote">
+            <Button variant="outline">
+              <GraduationCap className="h-4 w-4 mr-1" /> Promote
+            </Button>
+          </Link>
+          <Link href="/students/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-1" /> Add Student
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Table */}

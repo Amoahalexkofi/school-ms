@@ -104,9 +104,17 @@ export default async function StudentProfilePage({
     <div className="flex flex-col flex-1">
       <Topbar title="Student Profile" />
       <main className="flex-1 p-6 space-y-6 max-w-5xl">
-        <Link href="/students" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800">
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to Students
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link href="/students" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800">
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to Students
+          </Link>
+          <Link
+            href={`/students/${student.id}/id-card`}
+            className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium"
+          >
+            <GraduationCap className="h-3.5 w-3.5" /> Print ID Card
+          </Link>
+        </div>
 
         {/* Header card */}
         <Card>
