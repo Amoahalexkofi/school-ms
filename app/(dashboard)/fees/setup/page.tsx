@@ -3,7 +3,7 @@ import { Topbar } from "@/components/Topbar";
 import { FeeSetupClient } from "./FeeSetupClient";
 
 export default async function FeeSetupPage() {
-  const [categories, types, groups, sessions] = await Promise.all([
+  const [categories, types, groups, sessions, discounts] = await Promise.all([
     ((await getDb()) as any).feeCategory.findMany({
       orderBy: { name: "asc" },
       include: { _count: { select: { feeTypes: true } } },
@@ -26,12 +26,13 @@ export default async function FeeSetupPage() {
       orderBy: { name: "asc" },
     }),
     ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
+    ((await getDb()) as any).feeDiscount.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
   ]);
 
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Fee Setup" />
-      <FeeSetupClient categories={categories} types={types} groups={groups} sessions={sessions} />
+      <FeeSetupClient categories={categories} types={types} groups={groups} sessions={sessions} discounts={discounts} />
     </div>
   );
 }

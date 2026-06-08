@@ -35,9 +35,9 @@ export function FeeCollectClient({ student, masters }: Props) {
   const [amount,    setAmount]    = useState("");
   const [mode,      setMode]      = useState("CASH");
   const [desc,      setDesc]      = useState("");
-  const [loading,   setLoading]   = useState(false);
-  const [error,     setError]     = useState("");
-  const [success,   setSuccess]   = useState("");
+  const [loading,    setLoading]    = useState(false);
+  const [error,      setError]      = useState("");
+  const [lastDepositId, setLastDepositId] = useState<string | null>(null);
 
   const grandTotal   = masters.reduce((s, m) => s + Number(m.amount), 0);
   const grandPaid    = masters.reduce((s, m) => s + computePaid(m.deposits), 0);
@@ -53,8 +53,8 @@ export function FeeCollectClient({ student, masters }: Props) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setPayDialog(null); setSuccess(`₵${Number(amount).toLocaleString()} collected successfully.`);
-      setTimeout(() => setSuccess(""), 4000);
+      setPayDialog(null);
+      setLastDepositId(data.id ?? null);
       router.refresh();
     } catch (e: any) { setError(e.message); }
     finally { setLoading(false); }
@@ -106,9 +106,13 @@ export function FeeCollectClient({ student, masters }: Props) {
         </div>
       </div>
 
-      {success && (
-        <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
-          <CheckCircle2 className="h-4 w-4 shrink-0" /> {success}
+      {lastDepositId && (
+        <div className="flex items-center justify-between text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+          <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0" /> Payment recorded successfully.</span>
+          <Link href={`/fees/receipt/${lastDepositId}`} target="_blank"
+            className="flex items-center gap-1 font-medium text-green-800 hover:underline">
+            <Receipt className="h-4 w-4" /> Print Receipt
+          </Link>
         </div>
       )}
 

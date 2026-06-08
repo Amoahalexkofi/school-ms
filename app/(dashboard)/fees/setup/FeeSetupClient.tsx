@@ -9,8 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, Plus, Pencil, Trash2, ChevronRight } from "lucide-react";
 
-type Props = { categories: any[]; types: any[]; groups: any[]; sessions: any[] };
-type Tab = "categories" | "types" | "groups";
+type Props = { categories: any[]; types: any[]; groups: any[]; sessions: any[]; discounts: any[] };
+type Tab = "categories" | "types" | "groups" | "discounts";
 
 function Field({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
@@ -21,7 +21,7 @@ function Field({ label, value, onChange, placeholder }: { label: string; value: 
   );
 }
 
-export function FeeSetupClient({ categories, types, groups, sessions }: Props) {
+export function FeeSetupClient({ categories, types, groups, sessions, discounts: initialDiscounts }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("categories");
 
@@ -42,6 +42,20 @@ export function FeeSetupClient({ categories, types, groups, sessions }: Props) {
   const [typeDesc, setTypeDesc]       = useState("");
   const [typeErr,  setTypeErr]        = useState("");
   const [typeLoad, setTypeLoad]       = useState(false);
+
+  // ── Discount state ──
+  const [discounts,    setDiscounts]    = useState<any[]>(initialDiscounts);
+  const [discOpen,     setDiscOpen]     = useState(false);
+  const [discEdit,     setDiscEdit]     = useState<any>(null);
+  const [discName,     setDiscName]     = useState("");
+  const [discCode,     setDiscCode]     = useState("");
+  const [discType,     setDiscType]     = useState("percentage");
+  const [discPct,      setDiscPct]      = useState("");
+  const [discAmt,      setDiscAmt]      = useState("");
+  const [discDesc,     setDiscDesc]     = useState("");
+  const [discExpiry,   setDiscExpiry]   = useState("");
+  const [discErr,      setDiscErr]      = useState("");
+  const [discLoad,     setDiscLoad]     = useState(false);
 
   // ── Group state ──
   const [grpOpen,    setGrpOpen]    = useState(false);
@@ -108,6 +122,44 @@ export function FeeSetupClient({ categories, types, groups, sessions }: Props) {
     catch (e: any) { alert(e.message); }
   }
 
+  // ── Discount handlers ──
+  async function saveDiscount() {
+    if (!discName.trim() || !discCode.trim()) { setDiscErr("Name and code are required"); return; }
+    setDiscLoad(true); setDiscErr("");
+    try {
+      if (discEdit) {
+        const updated = await patch(`/api/fees/discounts/${discEdit.id}`, {
+          name: discName, code: discCode.toUpperCase(), type: discType,
+          percentage: discPct ? parseFloat(discPct) : 0,
+          amount:     discAmt ? parseFloat(discAmt) : 0,
+          description: discDesc || null, expireDate: discExpiry ? new Date(discExpiry) : null,
+        });
+        setDiscounts(prev => prev.map(d => d.id === discEdit.id ? updated : d));
+      } else {
+        const res = await fetch("/api/fees/discounts", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: discName, code: discCode, type: discType,
+            percentage: discPct, amount: discAmt,
+            description: discDesc || null, expireDate: discExpiry || null,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        setDiscounts(prev => [...prev, data]);
+      }
+      setDiscOpen(false);
+    } catch (e: any) { setDiscErr(e.message); }
+    finally { setDiscLoad(false); }
+  }
+  async function deleteDiscount(id: string) {
+    if (!confirm("Deactivate this discount?")) return;
+    try {
+      await del(`/api/fees/discounts/${id}`);
+      setDiscounts(prev => prev.filter(d => d.id !== id));
+    } catch (e: any) { alert(e.message); }
+  }
+
   // ── Group handlers ──
   async function saveGroup() {
     if (!grpName.trim()) { setGrpErr("Name is required"); return; }
@@ -138,6 +190,7 @@ export function FeeSetupClient({ categories, types, groups, sessions }: Props) {
     { key: "categories", label: "Fee Categories" },
     { key: "types",      label: "Fee Types" },
     { key: "groups",     label: "Fee Groups" },
+    { key: "discounts",  label: "Discounts" },
   ];
 
   return (
@@ -289,6 +342,59 @@ export function FeeSetupClient({ categories, types, groups, sessions }: Props) {
         </div>
       )}
 
+      {/* ── Discounts ── */}
+      {tab === "discounts" && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-500">{discounts.length} discount{discounts.length !== 1 ? "s" : ""}</p>
+            <Button onClick={() => { setDiscName(""); setDiscCode(""); setDiscType("percentage"); setDiscPct(""); setDiscAmt(""); setDiscDesc(""); setDiscExpiry(""); setDiscEdit(null); setDiscErr(""); setDiscOpen(true); }}>
+              <Plus className="h-4 w-4 mr-1.5" /> Add Discount
+            </Button>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  {["Name", "Code", "Type", "Value", "Expires", ""].map(h => (
+                    <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {discounts.length === 0 ? (
+                  <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No discounts yet.</td></tr>
+                ) : discounts.map((d: any) => (
+                  <tr key={d.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium text-gray-900">{d.name}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{d.code}</td>
+                    <td className="px-4 py-3 text-gray-500 capitalize">{d.type}</td>
+                    <td className="px-4 py-3 text-gray-700">
+                      {d.type === "percentage" ? `${d.percentage}%` : `₵${Number(d.amount).toLocaleString()}`}
+                    </td>
+                    <td className="px-4 py-3 text-gray-400 text-xs">
+                      {d.expireDate ? new Date(d.expireDate).toLocaleDateString() : "—"}
+                    </td>
+                    <td className="px-4 py-3 flex gap-2 justify-end">
+                      <Button size="sm" variant="outline" onClick={() => {
+                        setDiscName(d.name); setDiscCode(d.code); setDiscType(d.type);
+                        setDiscPct(String(d.percentage ?? "")); setDiscAmt(String(d.amount ?? ""));
+                        setDiscDesc(d.description ?? ""); setDiscExpiry(d.expireDate ? d.expireDate.slice(0, 10) : "");
+                        setDiscEdit(d); setDiscErr(""); setDiscOpen(true);
+                      }}>
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => deleteDiscount(d.id)}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Category dialog */}
       <Dialog open={catOpen} onOpenChange={o => !o && setCatOpen(false)}>
         <DialogContent className="max-w-sm">
@@ -362,6 +468,38 @@ export function FeeSetupClient({ categories, types, groups, sessions }: Props) {
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setSgOpen(false)}>Cancel</Button>
             <Button disabled={sgLoad} onClick={addSessionGroup}>{sgLoad ? "Linking…" : "Link Session"}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Discount dialog */}
+      <Dialog open={discOpen} onOpenChange={o => !o && setDiscOpen(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>{discEdit ? "Edit Discount" : "Add Discount"}</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <Field label="Name *" value={discName} onChange={setDiscName} placeholder="e.g. Staff Child Discount" />
+            <Field label="Code *" value={discCode} onChange={v => setDiscCode(v.toUpperCase())} placeholder="e.g. STAFF10" />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={discType} onChange={e => setDiscType(e.target.value)}>
+                <option value="percentage">Percentage</option>
+                <option value="amount">Fixed Amount</option>
+              </select>
+            </div>
+            {discType === "percentage"
+              ? <Field label="Percentage %" value={discPct} onChange={setDiscPct} placeholder="e.g. 10" />
+              : <Field label="Amount (₵)" value={discAmt} onChange={setDiscAmt} placeholder="e.g. 500" />}
+            <Field label="Description" value={discDesc} onChange={setDiscDesc} />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date (optional)</label>
+              <input type="date" value={discExpiry} onChange={e => setDiscExpiry(e.target.value)}
+                className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+          </div>
+          {discErr && <p className="text-sm text-red-600">{discErr}</p>}
+          <div className="flex justify-end gap-2 mt-2">
+            <Button variant="outline" onClick={() => setDiscOpen(false)}>Cancel</Button>
+            <Button disabled={discLoad} onClick={saveDiscount}>{discLoad ? "Saving…" : "Save"}</Button>
           </div>
         </DialogContent>
       </Dialog>

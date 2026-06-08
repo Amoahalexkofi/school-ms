@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DollarSign, Settings, Users, Search, ArrowRight, BarChart3, Tag, Layers } from "lucide-react";
+import { DollarSign, Settings, Users, Search, ArrowRight, BarChart3, ArrowRightLeft, Tag } from "lucide-react";
 
 type Props = { totalStudents: number; totalMasters: number; totalCollected: number; students: any[] };
 
@@ -91,9 +91,10 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, stu
             </h2>
             <div className="space-y-2">
               {[
-                { href: "/fees/setup",   label: "Fee Setup",        sub: "Categories, types & groups",        icon: Settings,  color: "bg-indigo-50 text-indigo-600" },
-                { href: "/fees/assign",  label: "Assign Fees",      sub: "Assign fee groups to a class",       icon: Users,     color: "bg-blue-50 text-blue-600" },
-                { href: "/fees/report",  label: "Fee Reports",      sub: "Collection & due fee reports",       icon: BarChart3, color: "bg-amber-50 text-amber-600" },
+                { href: "/fees/setup",          label: "Fee Setup",        sub: "Categories, types, groups & discounts",  icon: Settings,       color: "bg-indigo-50 text-indigo-600" },
+                { href: "/fees/assign",         label: "Assign Fees",      sub: "Assign fee groups to a class",           icon: Users,          color: "bg-blue-50 text-blue-600" },
+                { href: "/fees/carry-forward",  label: "Carry Forward",    sub: "Roll over outstanding balances",         icon: ArrowRightLeft, color: "bg-orange-50 text-orange-600" },
+                { href: "/fees/report",         label: "Fee Reports",      sub: "Collection & due fee reports",           icon: BarChart3,      color: "bg-amber-50 text-amber-600" },
               ].map(({ href, label, sub, icon: Icon, color }) => (
                 <Link key={href} href={href}>
                   <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 transition-colors cursor-pointer">
