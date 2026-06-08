@@ -13,3 +13,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(r, { status: 201 });
   } catch (err: any) { return NextResponse.json({ error: err.message }, { status: 500 }); }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { studentId } = await req.json();
+    if (!studentId) return NextResponse.json({ error: "studentId required" }, { status: 422 });
+    await ((await getDb()) as any).studentRoute.delete({ where: { studentId } });
+    return NextResponse.json({ ok: true });
+  } catch (err: any) { return NextResponse.json({ error: err.message }, { status: 500 }); }
+}
