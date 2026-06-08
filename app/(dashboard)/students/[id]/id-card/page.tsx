@@ -6,7 +6,7 @@ export default async function IdCardPage({ params }: { params: Promise<{ id: str
   const { id } = await params;
   const db = await getDb();
 
-  const [student, school] = await Promise.all([
+  const [student, school, template] = await Promise.all([
     (db as any).student.findUnique({
       where: { id },
       include: {
@@ -19,9 +19,11 @@ export default async function IdCardPage({ params }: { params: Promise<{ id: str
       },
     }),
     (db as any).schoolProfile.findFirst(),
+    // Smart School: use the active (status=1) template
+    (db as any).idCard.findFirst({ where: { status: 1, isActive: true } }),
   ]);
 
   if (!student) notFound();
 
-  return <IdCardClient student={student} school={school} />;
+  return <IdCardClient student={student} school={school} template={template} />;
 }

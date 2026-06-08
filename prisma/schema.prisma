@@ -48,16 +48,18 @@ model AcademicSession {
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  studentSessions  StudentSession[]
-  feeSessionGroups FeeSessionGroup[]
-  subjectGroups    SubjectGroup[]
-  attendanceDays   AttendanceDay[]
-  homeworkItems    Homework[]
-  lessonPlans      LessonPlan[]
-  examSchedules    ExamSchedule[]
-  subjects         Subject[]
-  holidays         Holiday[]
-  alumniEvents     AlumniEvent[]
+  studentSessions      StudentSession[]
+  feeSessionGroups     FeeSessionGroup[]
+  subjectGroups        SubjectGroup[]
+  attendanceDays       AttendanceDay[]
+  homeworkItems        Homework[]
+  lessonPlans          LessonPlan[]
+  examSchedules        ExamSchedule[]
+  subjects             Subject[]
+  holidays             Holiday[]
+  alumniEvents         AlumniEvent[]
+  routePickupPoints    RoutePickupPoint[]
+  transportFeemasters  TransportFeemaster[]
 }
 
 // ─── Classes & Sections (independent masters, reused across sessions) ─────────
@@ -392,21 +394,25 @@ model StudentSession {
   session        AcademicSession @relation(fields: [sessionId], references: [id])
   classSectionId String
   classSection   ClassSection    @relation(fields: [classSectionId], references: [id])
-  rollNo         String?
-  hostelRoomId   String?
-  hostelRoom     HostelRoom?     @relation(fields: [hostelRoomId], references: [id])
-  routeId        String?
-  pickupPointId  String?
-  transportFees  Decimal?        @db.Decimal(10, 2)
-  feesDiscount   Decimal?        @db.Decimal(10, 2)
-  isActive       Boolean         @default(true)
-  isAlumni       Boolean         @default(false)
-  defaultLogin   Boolean         @default(false)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  rollNo             String?
+  hostelRoomId       String?
+  hostelRoom         HostelRoom?       @relation(fields: [hostelRoomId], references: [id])
+  routeId            String?
+  pickupPointId      String?
+  routePickupPointId String?          // route_pickup_point_id — the specific stop assigned (Smart School)
+  routePickupPoint   RoutePickupPoint? @relation(fields: [routePickupPointId], references: [id])
+  pickupPointRef     PickupPoint?      @relation(fields: [pickupPointId], references: [id])
+  transportFees      Decimal?          @db.Decimal(10, 2)
+  feesDiscount       Decimal?          @db.Decimal(10, 2)
+  isActive           Boolean           @default(true)
+  isAlumni           Boolean           @default(false)
+  defaultLogin       Boolean           @default(false)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
 
-  attendances StudentAttendance[]
-  feesMasters StudentFeesMaster[]
+  attendances          StudentAttendance[]
+  feesMasters          StudentFeesMaster[]
+  studentTransportFees StudentTransportFee[]
 
   @@unique([studentId, sessionId, classSectionId])
 }
@@ -528,15 +534,17 @@ model StudentFeesMaster {
 
 // student_fees_deposite — actual payment records with JSON amount_detail
 model FeeDeposit {
-  id                  String            @id @default(cuid())
-  studentFeesMasterId String
-  studentFeesMaster   StudentFeesMaster @relation(fields: [studentFeesMasterId], references: [id])
-  feeGroupItemId      String?
-  feeGroupItem        FeeGroupItem?     @relation(fields: [feeGroupItemId], references: [id])
-  // JSON: { "1": { amount, discount, fine, date, payment_mode, description, received_by } }
-  amountDetail        Json
-  isActive            Boolean           @default(true)
-  createdAt           DateTime          @default(now())
+  id                    String               @id @default(cuid())
+  studentFeesMasterId   String?
+  studentFeesMaster     StudentFeesMaster?   @relation(fields: [studentFeesMasterId], references: [id])
+  studentTransportFeeId String?              // set when collecting transport fees
+  studentTransportFee   StudentTransportFee? @relation(fields: [studentTransportFeeId], references: [id])
+  feeGroupItemId        String?
+  feeGroupItem          FeeGroupItem?        @relation(fields: [feeGroupItemId], references: [id])
+  // JSON: { "1": { amount, discount, fine, date, payment_mode, description, received_by, inv_no } }
+  amountDetail          Json
+  isActive              Boolean              @default(true)
+  createdAt             DateTime             @default(now())
 }
 
 // fee_discounts — discount definitions
@@ -1056,24 +1064,64 @@ model Route {
 model PickupPoint {
   id        String   @id @default(cuid())
   name      String   @unique
+  latitude  Float?
+  longitude Float?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
   routePickupPoints RoutePickupPoint[]
   studentRoutes     StudentRoute[]
+  studentSessions   StudentSession[]
 }
 
 model RoutePickupPoint {
-  id            String      @id @default(cuid())
-  routeId       String
-  route         Route       @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  pickupPointId String
-  pickupPoint   PickupPoint @relation(fields: [pickupPointId], references: [id])
-  timing        String?
-  fees          Decimal?    @db.Decimal(10, 2)
-  order         Int         @default(0)
+  id                  String           @id @default(cuid())
+  routeId             String
+  route               Route            @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  pickupPointId       String
+  pickupPoint         PickupPoint      @relation(fields: [pickupPointId], references: [id])
+  timing              String?          // pickup_time
+  fees                Decimal?         @db.Decimal(10, 2)
+  destinationDistance Float?           // destination_distance
+  order               Int              @default(0) // order_number
+  sessionId           String?
+  session             AcademicSession? @relation(fields: [sessionId], references: [id])
+
+  studentSessions      StudentSession[]
+  studentTransportFees StudentTransportFee[]
 
   @@unique([routeId, pickupPointId])
+}
+
+// transport_feemaster — monthly fee schedule for a session
+model TransportFeemaster {
+  id             String           @id @default(cuid())
+  sessionId      String
+  session        AcademicSession  @relation(fields: [sessionId], references: [id])
+  month          String           // "January", "February", etc.
+  dueDate        DateTime?        @db.Date
+  fineAmount     Decimal          @default(0) @db.Decimal(10, 2)
+  fineType       String           @default("none") // "none" | "percentage" | "fixed"
+  finePercentage Decimal          @default(0) @db.Decimal(5, 2)
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+
+  studentTransportFees StudentTransportFee[]
+}
+
+// student_transport_fees — links a student session to a monthly transport fee
+model StudentTransportFee {
+  id                   String             @id @default(cuid())
+  studentSessionId     String
+  studentSession       StudentSession     @relation(fields: [studentSessionId], references: [id])
+  routePickupPointId   String
+  routePickupPoint     RoutePickupPoint   @relation(fields: [routePickupPointId], references: [id])
+  transportFeemasterId String
+  transportFeemaster   TransportFeemaster @relation(fields: [transportFeemasterId], references: [id])
+  isActive             Boolean            @default(true)
+  createdAt            DateTime           @default(now())
+
+  deposits FeeDeposit[]
 }
 
 model StudentRoute {
@@ -1085,6 +1133,23 @@ model StudentRoute {
   pickupPointId String?
   pickupPoint   PickupPoint? @relation(fields: [pickupPointId], references: [id])
   assignedAt    DateTime     @default(now())
+}
+
+// id_card — printable ID card templates (configurable per school)
+model IdCard {
+  id         String   @id @default(cuid())
+  heading    String?
+  title      String?
+  bgColor    String   @default("#1a56db")
+  fontColor  String   @default("#ffffff")
+  bodyColor  String   @default("#f9fafb")
+  schoolName String?
+  leftLogo   String?  // URL
+  rightLogo  String?  // URL
+  fieldList  Json?    // array of field names to display
+  status     Int      @default(0) // 1 = active/default
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
 }
 
 // ─── Hostel ───────────────────────────────────────────────────────────────────

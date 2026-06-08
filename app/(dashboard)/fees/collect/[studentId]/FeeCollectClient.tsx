@@ -35,9 +35,10 @@ export function FeeCollectClient({ student, masters }: Props) {
   const [amount,    setAmount]    = useState("");
   const [mode,      setMode]      = useState("CASH");
   const [desc,      setDesc]      = useState("");
-  const [loading,    setLoading]    = useState(false);
-  const [error,      setError]      = useState("");
-  const [lastDepositId, setLastDepositId] = useState<string | null>(null);
+  const [loading,         setLoading]        = useState(false);
+  const [error,           setError]          = useState("");
+  const [lastDepositId,   setLastDepositId]   = useState<string | null>(null);
+  const [lastSubInvoice,  setLastSubInvoice]  = useState<number | null>(null);
 
   const grandTotal   = masters.reduce((s, m) => s + Number(m.amount), 0);
   const grandPaid    = masters.reduce((s, m) => s + computePaid(m.deposits), 0);
@@ -47,14 +48,23 @@ export function FeeCollectClient({ student, masters }: Props) {
     if (!payDialog || !amount || Number(amount) <= 0) { setError("Enter a valid amount"); return; }
     setLoading(true); setError("");
     try {
-      const res  = await fetch("/api/fees/collect", {
+      // Pass the first feeGroupItemId (Smart School fee_deposit uses item-level keying)
+    const firstItemId = payDialog.master.feeSessionGroup.items[0]?.id ?? null;
+    const res  = await fetch("/api/fees/collect", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentFeesMasterId: payDialog.master.id, amount: Number(amount), paymentMode: mode, description: desc }),
+        body: JSON.stringify({
+          studentFeesMasterId: payDialog.master.id,
+          feeGroupItemId: firstItemId,
+          amount: Number(amount),
+          paymentMode: mode,
+          description: desc,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setPayDialog(null);
       setLastDepositId(data.id ?? null);
+      setLastSubInvoice(data.subInvoiceId ?? 1);
       router.refresh();
     } catch (e: any) { setError(e.message); }
     finally { setLoading(false); }
@@ -109,7 +119,7 @@ export function FeeCollectClient({ student, masters }: Props) {
       {lastDepositId && (
         <div className="flex items-center justify-between text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
           <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0" /> Payment recorded successfully.</span>
-          <Link href={`/fees/receipt/${lastDepositId}`} target="_blank"
+          <Link href={`/fees/receipt/${lastDepositId}/${lastSubInvoice ?? 1}`} target="_blank"
             className="flex items-center gap-1 font-medium text-green-800 hover:underline">
             <Receipt className="h-4 w-4" /> Print Receipt
           </Link>

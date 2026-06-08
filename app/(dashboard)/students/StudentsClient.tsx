@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Users, Plus, Search, Eye, GraduationCap } from "lucide-react";
+import { Users, Plus, Search, Eye, GraduationCap, CreditCard } from "lucide-react";
 
 type Props = { students: any[]; sessions: any[]; classSections: any[]; schoolHouses: any[] };
 
@@ -35,6 +35,11 @@ export function StudentsClient({ students }: Props) {
           <span className="text-sm text-gray-500">{filtered.length} student{filtered.length !== 1 ? "s" : ""}</span>
         </div>
         <div className="flex gap-2">
+          <Link href="/students/id-card">
+            <Button variant="outline">
+              <CreditCard className="h-4 w-4 mr-1" /> ID Card Setup
+            </Button>
+          </Link>
           <Link href="/students/promote">
             <Button variant="outline">
               <GraduationCap className="h-4 w-4 mr-1" /> Promote
