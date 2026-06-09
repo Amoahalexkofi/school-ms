@@ -1,9 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const sessionId = searchParams.get("sessionId");
+
   const groups = await ((await getDb()) as any).examGroup.findMany({
-    where: { sessionId: "session-2026" },
+    where: sessionId ? { sessionId } : {},
     include: {
       schedules: {
         include: {
