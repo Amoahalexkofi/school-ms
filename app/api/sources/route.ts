@@ -6,8 +6,8 @@ export async function GET() {
 }
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const s = await ((await getDb()) as any).source.create({ data: body });
+    const { name } = await req.json();
+    const s = await ((await getDb()) as any).source.create({ data: { name: name?.trim() } });
     return NextResponse.json(s, { status: 201 });
   } catch (err: any) {
     if (err.code === "P2002") return NextResponse.json({ error: "Source already exists" }, { status: 409 });

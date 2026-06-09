@@ -15,9 +15,13 @@ async function recompute(payslipId: string) {
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string; lineId: string }> }) {
   const { id: payslipId, lineId } = await params;
-  const body = await req.json();
-  if (body.amount) body.amount = parseFloat(body.amount);
-  await ((await getDb()) as any).payslipAllowance.update({ where: { id: lineId }, data: body });
+  const { type, amount, calType, isDeduction } = await req.json();
+  const data: any = {};
+  if (type        !== undefined) data.type        = type        || null;
+  if (amount      !== undefined) data.amount      = parseFloat(amount);
+  if (calType     !== undefined) data.calType     = calType     || "fixed";
+  if (isDeduction !== undefined) data.isDeduction = Boolean(isDeduction);
+  await ((await getDb()) as any).payslipAllowance.update({ where: { id: lineId }, data });
   await recompute(payslipId);
   return NextResponse.json({ ok: true });
 }

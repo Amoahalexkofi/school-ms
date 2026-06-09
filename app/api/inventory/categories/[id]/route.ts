@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  return NextResponse.json(await ((await getDb()) as any).itemCategory.update({ where: { id }, data: await req.json() }));
+  const { name, isActive } = await req.json();
+  const data: any = {};
+  if (name     !== undefined) data.name     = name?.trim() || null;
+  if (isActive !== undefined) data.isActive = Boolean(isActive);
+  return NextResponse.json(await ((await getDb()) as any).itemCategory.update({ where: { id }, data }));
 }
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

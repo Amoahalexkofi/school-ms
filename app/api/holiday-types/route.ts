@@ -12,8 +12,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const t = await ((await getDb()) as any).holidayType.create({ data: body });
+    const { name, isDefault } = await req.json();
+    const t = await ((await getDb()) as any).holidayType.create({ data: { name: name?.trim(), isDefault: Boolean(isDefault) } });
     return NextResponse.json(t, { status: 201 });
   } catch (err: any) {
     if (err.code === "P2002") return NextResponse.json({ error: "Type already exists" }, { status: 409 });

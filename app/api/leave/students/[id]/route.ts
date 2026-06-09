@@ -3,9 +3,13 @@ import { getDb } from "@/lib/db";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const body = await req.json();
-  if (body.approvedAt) body.approvedAt = new Date(body.approvedAt);
-  const r = await ((await getDb()) as any).studentLeaveRequest.update({ where: { id }, data: body });
+  const { status, approvedAt, approvedBy, adminNote } = await req.json();
+  const data: any = {};
+  if (status    !== undefined) data.status    = status    || null;
+  if (approvedAt !== undefined && approvedAt) data.approvedAt = new Date(approvedAt);
+  if (approvedBy !== undefined) data.approvedBy = approvedBy || null;
+  if (adminNote  !== undefined) data.adminNote  = adminNote  || null;
+  const r = await ((await getDb()) as any).studentLeaveRequest.update({ where: { id }, data });
   return NextResponse.json(r);
 }
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

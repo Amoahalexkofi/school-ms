@@ -4,8 +4,11 @@ import { getDb } from "@/lib/db";
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    const body = await req.json();
-    return NextResponse.json(await ((await getDb()) as any).complaintType.update({ where: { id }, data: body }));
+    const { name, isActive } = await req.json();
+    const data: any = {};
+    if (name     !== undefined) data.name     = name?.trim() || null;
+    if (isActive !== undefined) data.isActive = Boolean(isActive);
+    return NextResponse.json(await ((await getDb()) as any).complaintType.update({ where: { id }, data }));
   } catch { return NextResponse.json({ error: "Failed" }, { status: 500 }); }
 }
 

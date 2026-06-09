@@ -8,11 +8,18 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const existing = await ((await getDb()) as any).smsConfig.findUnique({ where: { provider: body.provider } });
+    const { provider, apiKey, senderId, username, password, isActive } = await req.json();
+    const data: any = {};
+    if (provider !== undefined) data.provider = provider || null;
+    if (apiKey   !== undefined) data.apiKey   = apiKey   || "";
+    if (senderId !== undefined) data.senderId = senderId || "";
+    if (username !== undefined) data.username = username || "";
+    if (password !== undefined) data.password = password || "";
+    if (isActive !== undefined) data.isActive = Boolean(isActive);
+    const existing = await ((await getDb()) as any).smsConfig.findUnique({ where: { provider } });
     const config = existing
-      ? await ((await getDb()) as any).smsConfig.update({ where: { provider: body.provider }, data: body })
-      : await ((await getDb()) as any).smsConfig.create({ data: body });
+      ? await ((await getDb()) as any).smsConfig.update({ where: { provider }, data })
+      : await ((await getDb()) as any).smsConfig.create({ data });
     return NextResponse.json(config);
   } catch (err: any) {
     console.error(err);

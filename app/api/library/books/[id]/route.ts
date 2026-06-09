@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+
+const ALLOWED = ["title","bookNo","isbn","subject","rackNo","publisher","author","quantity","available","perUnitCost","description","isActive"];
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await req.json();
-  if (body.quantity)    body.quantity    = parseInt(body.quantity);
-  if (body.available)   body.available   = parseInt(body.available);
-  if (body.perUnitCost) body.perUnitCost = parseFloat(body.perUnitCost);
-  return NextResponse.json(await ((await getDb()) as any).book.update({ where: { id }, data: body }));
+  const data: any = {};
+  for (const key of ALLOWED) {
+    if (key in body) {
+      if (["quantity","available"].includes(key) && body[key] !== undefined) data[key] = body[key] ? parseInt(body[key]) : 0;
+      else if (key === "perUnitCost" && body[key] !== undefined) data[key] = body[key] ? parseFloat(body[key]) : null;
+      else data[key] = body[key] ?? null;
+    }
+  }
+  return NextResponse.json(await ((await getDb()) as any).book.update({ where: { id }, data }));
 }
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

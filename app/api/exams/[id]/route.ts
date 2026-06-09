@@ -21,10 +21,20 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   return NextResponse.json(group);
 }
 
+const EG_ALLOWED = ["name","examType","sessionId","dateFrom","dateTo","description","isPublished","passingPercentage"];
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await req.json();
-  const group = await ((await getDb()) as any).examGroup.update({ where: { id }, data: body });
+  const data: any = {};
+  for (const key of EG_ALLOWED) {
+    if (key in body) {
+      if (["dateFrom","dateTo"].includes(key) && body[key]) data[key] = new Date(body[key]);
+      else if (key === "passingPercentage" && body[key] !== undefined) data[key] = body[key] ? parseFloat(body[key]) : null;
+      else data[key] = body[key] ?? null;
+    }
+  }
+  const group = await ((await getDb()) as any).examGroup.update({ where: { id }, data });
   return NextResponse.json(group);
 }
 

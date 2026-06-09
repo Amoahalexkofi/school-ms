@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+
+const ALLOWED = ["name","categoryId","supplierId","storeId","description","unit","quantity","lowStockAlert","isActive"];
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await req.json();
-  if (body.quantity)      body.quantity      = parseInt(body.quantity);
-  if (body.lowStockAlert) body.lowStockAlert = parseInt(body.lowStockAlert);
-  return NextResponse.json(await ((await getDb()) as any).item.update({ where: { id }, data: body }));
+  const data: any = {};
+  for (const key of ALLOWED) {
+    if (key in body) {
+      if (["quantity","lowStockAlert"].includes(key) && body[key] !== undefined) data[key] = body[key] ? parseInt(body[key]) : null;
+      else data[key] = body[key] ?? null;
+    }
+  }
+  return NextResponse.json(await ((await getDb()) as any).item.update({ where: { id }, data }));
 }
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

@@ -4,8 +4,12 @@ import { getDb } from "@/lib/db";
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    const body = await req.json();
-    const t = await ((await getDb()) as any).holidayType.update({ where: { id }, data: body });
+    const { name, isDefault, isActive } = await req.json();
+    const data: any = {};
+    if (name      !== undefined) data.name      = name?.trim() || null;
+    if (isDefault !== undefined) data.isDefault = Boolean(isDefault);
+    if (isActive  !== undefined) data.isActive  = Boolean(isActive);
+    const t = await ((await getDb()) as any).holidayType.update({ where: { id }, data });
     return NextResponse.json(t);
   } catch { return NextResponse.json({ error: "Failed" }, { status: 500 }); }
 }

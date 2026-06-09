@@ -5,8 +5,20 @@ import { deprovisionSchool } from "@/lib/provisioning";
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    const body = await req.json();
-    const school = await (registry as any).schoolTenant.update({ where: { id }, data: body });
+    const { name, plan, status, adminEmail, adminName, phone, address, country, trialEndsAt, notes, customDomain } = await req.json();
+    const data: any = {};
+    if (name         !== undefined) data.name         = name         || null;
+    if (plan         !== undefined) data.plan         = plan         || null;
+    if (status       !== undefined) data.status       = status       || null;
+    if (adminEmail   !== undefined) data.adminEmail   = adminEmail   || null;
+    if (adminName    !== undefined) data.adminName    = adminName    || null;
+    if (phone        !== undefined) data.phone        = phone        || null;
+    if (address      !== undefined) data.address      = address      || null;
+    if (country      !== undefined) data.country      = country      || "Ghana";
+    if (notes        !== undefined) data.notes        = notes        || null;
+    if (customDomain !== undefined) data.customDomain = customDomain || null;
+    if (trialEndsAt  !== undefined && trialEndsAt) data.trialEndsAt = new Date(trialEndsAt);
+    const school = await (registry as any).schoolTenant.update({ where: { id }, data });
     return NextResponse.json(school);
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
