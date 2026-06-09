@@ -5,7 +5,7 @@ import { getDb } from "@/lib/db";
 export async function GET() {
   const invoices = await ((await getDb()) as any).feeInvoice.findMany({
     include: {
-      student: { select: { firstName: true, lastName: true, admissionNumber: true } },
+      student: { select: { firstName: true, lastName: true, admissionNo: true } },
       feeGroup: { select: { name: true } },
     },
     orderBy: { createdAt: "desc" },
