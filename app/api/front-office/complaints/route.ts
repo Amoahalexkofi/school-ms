@@ -9,10 +9,22 @@ export async function GET() {
 }
 export async function POST(req: NextRequest) {
   try {
-    const { title, raisedBy, phone, complaintTypeId, description } = await req.json();
+    const { title, raisedBy, phone, complaintTypeId, description, source, assignedTo, date, image } = await req.json();
     if (!title?.trim() || !raisedBy?.trim() || !description?.trim())
       return NextResponse.json({ error: "Title, raised by, and description required" }, { status: 422 });
-    const c = await ((await getDb()) as any).complaint.create({ data: { title: title.trim(), raisedBy: raisedBy.trim(), phone: phone || null, complaintTypeId: complaintTypeId || null, description: description.trim() } });
+    const c = await ((await getDb()) as any).complaint.create({
+      data: {
+        title:          title.trim(),
+        raisedBy:       raisedBy.trim(),
+        phone:          phone          || null,
+        complaintTypeId:complaintTypeId|| null,
+        description:    description.trim(),
+        source:         source         || null,
+        assignedTo:     assignedTo     || null,
+        date:           date ? new Date(date) : new Date(),
+        image:          image          || null,
+      },
+    });
     return NextResponse.json(c, { status: 201 });
   } catch (err: any) { return NextResponse.json({ error: err.message }, { status: 500 }); }
 }

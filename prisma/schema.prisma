@@ -1471,6 +1471,10 @@ model Complaint {
   description     String
   raisedBy        String
   phone           String?
+  source          String?
+  assignedTo      String?
+  date            DateTime?       @default(now())
+  image           String?
   status          ComplaintStatus @default(OPEN)
   resolution      String?
   actionTaken     String?
@@ -1478,13 +1482,6 @@ model Complaint {
   resolvedAt      DateTime?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
-}
-
-enum EnquiryStatus {
-  NEW
-  CONTACTED
-  CONVERTED
-  CLOSED
 }
 
 model Enquiry {
@@ -1500,8 +1497,9 @@ model Enquiry {
   noOfChild    Int?
   date         DateTime      @default(now())
   nextFollowUp DateTime?
-  status       EnquiryStatus @default(NEW)
+  status       String        @default("active") // "active", "inactive", or EnquiryStatus values
   classId      String?
+  enquiryType  String?
   reference    String?
   followUpNote String?
   createdAt    DateTime      @default(now())
@@ -1595,6 +1593,7 @@ model OnlineExamQuestion {
   questionId   String
   question     Question   @relation(fields: [questionId], references: [id])
   marks        Int        @default(1)
+  negMarks     Float?     @default(0)
   order        Int        @default(0)
 
   @@unique([onlineExamId, questionId])
@@ -1931,6 +1930,22 @@ model HolidayType {
 
   holidays  Holiday[]
 }
+
+// ─── Grades & Divisions ───────────────────────────────────────────────────────
+
+model Grade {
+  id          String   @id @default(cuid())
+  examType    String?
+  gradeName   String
+  percentFrom Float
+  percentTo   Float
+  gradePoint  Float?
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+// ─── Holidays ─────────────────────────────────────────────────────────────────
 
 model Holiday {
   id            String           @id @default(cuid())

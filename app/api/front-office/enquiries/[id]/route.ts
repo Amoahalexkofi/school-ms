@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
 const ALLOWED = [
-  "name","phone","email","classInterested","note",
+  "name","phone","email","classId","note",
   "source","assignedTo","noOfChild","date","reference","enquiryType","status",
-  "nextFollowUp",
+  "nextFollowUp","followUpNote",
 ];
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

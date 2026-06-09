@@ -18,8 +18,20 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const holiday = await ((await getDb()) as any).holiday.create({ data: body });
+    const { holidayTypeId, sessionId, fromDate, toDate, description, frontSite } = await req.json();
+    if (!holidayTypeId || !fromDate || !toDate)
+      return NextResponse.json({ error: "holidayTypeId, fromDate, toDate required" }, { status: 422 });
+
+    const holiday = await ((await getDb()) as any).holiday.create({
+      data: {
+        holidayTypeId,
+        sessionId:   sessionId   || null,
+        fromDate:    new Date(fromDate),
+        toDate:      new Date(toDate),
+        description: description || null,
+        frontSite:   frontSite   ?? false,
+      },
+    });
     return NextResponse.json(holiday, { status: 201 });
   } catch (err: any) {
     console.error(err);

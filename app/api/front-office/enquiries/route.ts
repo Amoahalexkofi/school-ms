@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const where: any = {};
   if (source)  where.source  = source;
   if (status)  where.status  = status;
-  if (classId) where.classInterested = classId;
+  if (classId) where.classId = classId;
   if (from || to) {
     where.date = {};
     if (from) where.date.gte = new Date(from);
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const {
-      name, phone, email, classInterested, note,
+      name, phone, email, classId, note,
       source, assignedTo, noOfChild, date, reference, enquiryType, status,
     } = await req.json();
     if (!name?.trim()) return NextResponse.json({ error: "Name required" }, { status: 422 });
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
         name:            name.trim(),
         phone:           phone           || null,
         email:           email           || null,
-        classInterested: classInterested || null,
+        classId: classId || null,
         note:            note            || null,
         source:          source          || null,
         assignedTo:      assignedTo      || null,
