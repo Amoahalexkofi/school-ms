@@ -1,21 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
-const DISC_ALLOWED = ["name","discountType","value","applicableTo","studentSessionId","feeGroupItemId","isActive"];
-
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const body = await req.json();
-  const data: any = {};
-  for (const key of DISC_ALLOWED) {
-    if (key in body) {
-      if (key === "value" && body[key] !== undefined) data[key] = body[key] ? parseFloat(body[key]) : null;
-      else data[key] = body[key] ?? null;
-    }
+  try {
+    const { name, code, type, percentage, amount, description, expireDate, discountLimit, sessionId, isActive } = await req.json();
+    const data: any = {};
+    if (name          !== undefined) data.name          = name?.trim()             || null;
+    if (code          !== undefined) data.code          = code?.trim().toUpperCase() || null;
+    if (type          !== undefined) data.type          = type;
+    if (percentage    !== undefined) data.percentage    = parseFloat(percentage)   || 0;
+    if (amount        !== undefined) data.amount        = parseFloat(amount)       || 0;
+    if (description   !== undefined) data.description   = description              || null;
+    if (discountLimit !== undefined) data.discountLimit = discountLimit ? parseInt(discountLimit) : null;
+    if (sessionId     !== undefined) data.sessionId     = sessionId                || null;
+    if (isActive      !== undefined) data.isActive      = Boolean(isActive);
+    if (expireDate    !== undefined && expireDate) data.expireDate = new Date(expireDate);
+    const d = await ((await getDb()) as any).feeDiscount.update({ where: { id }, data });
+    return NextResponse.json(d);
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
-  const db = await getDb();
-  const d = await (db as any).feeDiscount.update({ where: { id }, data });
-  return NextResponse.json(d);
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
