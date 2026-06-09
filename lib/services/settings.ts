@@ -9,7 +9,7 @@ export async function createSession(input: { name: string; startDate: Date; endD
   if (!input.name.trim()) throw Object.assign(new Error("Name is required"), { code: "VALIDATION" });
   if (input.endDate <= input.startDate) throw Object.assign(new Error("End date must be after start date"), { code: "VALIDATION" });
   const prisma = await getDb();
-  return (prisma as any).academicSession.create({ data: { name: input.name.trim(), startDate: input.startDate, endDate: input.endDate } });
+  return (prisma as any).academicSession.create({ data: { session: input.name.trim(), startDate: input.startDate, endDate: input.endDate } });
 }
 
 export async function setActiveSession(sessionId: string) {
@@ -18,25 +18,34 @@ export async function setActiveSession(sessionId: string) {
   return (prisma as any).academicSession.update({ where: { id: sessionId }, data: { isActive: true } });
 }
 
-export async function listClasses(sessionId?: string) {
+export async function listClasses(_sessionId?: string) {
   const prisma = await getDb();
   return (prisma as any).class.findMany({
-    where: sessionId ? { sessionId } : {},
-    include: { session: true, sections: true, subjects: true },
+    where: { isActive: true },
+    include: { classSections: { include: { section: true } }, subjects: true },
     orderBy: { name: "asc" },
   });
 }
 
-export async function createClass(input: { name: string; sessionId: string }) {
+export async function createClass(input: { name: string; sessionId?: string }) {
   if (!input.name.trim()) throw Object.assign(new Error("Class name is required"), { code: "VALIDATION" });
   const prisma = await getDb();
-  return (prisma as any).class.create({ data: { name: input.name.trim(), sessionId: input.sessionId } });
+  return (prisma as any).class.create({ data: { name: input.name.trim() } });
 }
 
-export async function createSection(input: { name: string; classId: string }) {
+export async function createSection(input: { name: string; classId?: string }) {
   if (!input.name.trim()) throw Object.assign(new Error("Section name is required"), { code: "VALIDATION" });
   const prisma = await getDb();
-  return (prisma as any).section.create({ data: { name: input.name.trim(), classId: input.classId } });
+  // Section is standalone; link to a class via ClassSection if classId provided
+  const section = await (prisma as any).section.create({ data: { name: input.name.trim() } });
+  if (input.classId) {
+    await (prisma as any).classSection.upsert({
+      where: { classId_sectionId: { classId: input.classId, sectionId: section.id } },
+      create: { classId: input.classId, sectionId: section.id },
+      update: {},
+    });
+  }
+  return section;
 }
 
 export async function listSubjects(classId?: string, sessionId?: string) {

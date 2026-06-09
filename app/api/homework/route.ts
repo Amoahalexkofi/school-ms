@@ -24,19 +24,22 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { title, description, subjectId, classSectionId, staffId, sessionId, dueDate } = await req.json();
+    const { title, description, subjectId, classSectionId, staffId, sessionId, dueDate, homeworkDate, marks, attachment } = await req.json();
     if (!title || !subjectId || !classSectionId || !sessionId || !dueDate)
       return NextResponse.json({ error: "title, subjectId, classSectionId, sessionId, dueDate required" }, { status: 422 });
 
     const hw = await ((await getDb()) as any).homework.create({
       data: {
-        title: title.trim(),
-        description: description?.trim() || null,
+        title:        title.trim(),
+        description:  description?.trim() || null,
         subjectId,
         classSectionId,
-        staffId: staffId || null,
+        staffId:      staffId      || null,
         sessionId,
-        dueDate: new Date(dueDate),
+        dueDate:      new Date(dueDate),
+        homeworkDate: homeworkDate ? new Date(homeworkDate) : new Date(),
+        marks:        marks        ? parseFloat(marks)      : null,
+        attachment:   attachment   || null,
       },
     });
     return NextResponse.json(hw, { status: 201 });

@@ -103,7 +103,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
     previousSchool: "", previousClass: "", previousPercent: "", previousTc: "",
     // Other
     bankAccountNo: "", bankName: "", ifscCode: "", bankBranch: "",
-    aadharNo: "", note: "", about: "",
+    aadharNo: "", samagraId: "", note: "", about: "",
   });
 
   const set = (k: string) =>
@@ -300,7 +300,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
                 <Field {...fp} label="Previous School" name="previousSchool" />
                 <Field {...fp} label="Previous Class" name="previousClass" />
                 <Field {...fp} label="Previous Percentage (%)" name="previousPercent" />
-                <Field {...fp} label="Previous TC No." name="previousTc" />
+                <Field {...fp} label="Previous TC No." name="previousTcNo" />
               </div>
             </CardContent>
           </Card>
@@ -319,7 +319,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
                 <Field {...fp} label="IFSC / Sort Code" name="ifscCode" />
                 <Field {...fp} label="Bank Branch" name="bankBranch" />
                 <Field {...fp} label="Aadhar / National ID" name="aadharNo" />
-                <div />
+                <Field {...fp} label="Samagra ID" name="samagraId" />
                 <Field {...fp} label="Note" name="note" textarea colSpan2 />
                 <Field {...fp} label="About" name="about" textarea colSpan2 />
               </div>

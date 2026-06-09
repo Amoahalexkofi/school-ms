@@ -6,6 +6,18 @@ function generateEmployeeId(count: number) {
   return `EMP${String(count + 1).padStart(4, "0")}`;
 }
 
+const ALLOWED_FIELDS = [
+  "departmentId","designationId","firstName","lastName","fatherName","motherName",
+  "dob","gender","maritalStatus","religion","qualification","workExperience",
+  "dateOfJoining","dateOfLeaving","contractType","contactNo","emergencyContact",
+  "localAddress","permanentAddress","city","state","country","image",
+  "basicSalary","bankAccountNo","bankName","bankBranch","ifscCode","epfNo",
+  "payscale","shift","location",
+  "facebook","twitter","linkedin","instagram",
+  "resume","joiningLetter","resignationLetter","otherDocumentName","otherDocumentFile",
+  "note","isActive","disabledAt",
+];
+
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const departmentId  = searchParams.get("departmentId");
@@ -19,8 +31,8 @@ export async function GET(req: NextRequest) {
   if (designationId) where.designationId = designationId;
   if (search) {
     where.OR = [
-      { firstName: { contains: search, mode: "insensitive" } },
-      { lastName:  { contains: search, mode: "insensitive" } },
+      { firstName:  { contains: search, mode: "insensitive" } },
+      { lastName:   { contains: search, mode: "insensitive" } },
       { employeeId: { contains: search, mode: "insensitive" } },
       { contactNo:  { contains: search, mode: "insensitive" } },
     ];
@@ -48,41 +60,45 @@ export async function POST(req: NextRequest) {
       if (!body[f]) return NextResponse.json({ error: `${f} is required` }, { status: 422 });
     }
 
-    const count = await ((await getDb()) as any).staff.count();
+    const db = await getDb();
+    const count = await (db as any).staff.count();
     const employeeId = body.employeeId || generateEmployeeId(count);
 
-    const existingEmp = await ((await getDb()) as any).staff.findUnique({ where: { employeeId } });
+    const existingEmp = await (db as any).staff.findUnique({ where: { employeeId } });
     if (existingEmp) return NextResponse.json({ error: "Employee ID already exists" }, { status: 409 });
 
     const email    = body.email || `${employeeId.toLowerCase()}@school.local`;
     const username = `staff_${employeeId.toLowerCase()}`;
 
-    const existingUser = await ((await getDb()) as any).user.findUnique({ where: { email } });
+    const existingUser = await (db as any).user.findUnique({ where: { email } });
     if (existingUser) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
 
     const password = await bcrypt.hash("Staff@1234", 12);
     const role     = body.role || "TEACHER";
 
-    const staff = await ((await getDb()) as any).$transaction(async (tx: any) => {
+    // Fetch all active leave types to auto-create leave balances (mirrors batchInsert)
+    const leaveTypes = await (db as any).leaveType.findMany({ where: { isActive: true } });
+
+    const staff = await (db as any).$transaction(async (tx: any) => {
       const user = await tx.user.create({ data: { email, username, password, role } });
 
-      return tx.staff.create({
+      const s = await tx.staff.create({
         data: {
           userId:           user.id,
           employeeId,
           departmentId:     body.departmentId     || null,
-          designationId:    body.designationId     || null,
+          designationId:    body.designationId    || null,
           firstName:        body.firstName?.trim(),
           lastName:         body.lastName?.trim(),
           fatherName:       body.fatherName        || null,
           motherName:       body.motherName        || null,
-          dob:              body.dob               ? new Date(body.dob)              : null,
+          dob:              body.dob               ? new Date(body.dob)           : null,
           gender:           body.gender,
           maritalStatus:    body.maritalStatus     || null,
           religion:         body.religion          || null,
           qualification:    body.qualification     || null,
-          workExperience:   body.workExperience     || null,
-          dateOfJoining:    body.dateOfJoining     ? new Date(body.dateOfJoining)    : null,
+          workExperience:   body.workExperience    || null,
+          dateOfJoining:    body.dateOfJoining     ? new Date(body.dateOfJoining) : null,
           contractType:     body.contractType      || null,
           contactNo:        body.contactNo         || null,
           emergencyContact: body.emergencyContact  || null,
@@ -91,7 +107,7 @@ export async function POST(req: NextRequest) {
           city:             body.city              || null,
           state:            body.state             || null,
           country:          body.country           || null,
-          basicSalary:      body.basicSalary       ? parseFloat(body.basicSalary)    : null,
+          basicSalary:      body.basicSalary       ? parseFloat(body.basicSalary) : null,
           bankAccountNo:    body.bankAccountNo     || null,
           bankName:         body.bankName          || null,
           ifscCode:         body.ifscCode          || null,
@@ -107,6 +123,21 @@ export async function POST(req: NextRequest) {
           note:             body.note              || null,
         },
       });
+
+      // Smart School batchInsert: auto-create leave balances for all active leave types
+      if (leaveTypes.length > 0) {
+        await tx.staffLeaveBalance.createMany({
+          data: leaveTypes.map((lt: any) => ({
+            staffId:     s.id,
+            leaveTypeId: lt.id,
+            totalDays:   lt.daysAllowed ?? 0,
+            usedDays:    0,
+          })),
+          skipDuplicates: true,
+        });
+      }
+
+      return s;
     });
 
     return NextResponse.json(staff, { status: 201 });

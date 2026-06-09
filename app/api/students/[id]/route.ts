@@ -1,6 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
+const ALLOWED_FIELDS = [
+  "firstName","middleName","lastName","admissionDate","dateOfBirth","gender",
+  "bloodGroup","religion","caste","category","nationality","rte",
+  "mobileNo","image",
+  "currentAddress","permanentAddress","city","state","country","pincode",
+  "guardianIs","fatherName","fatherPhone","fatherEmail","fatherOccupation","fatherPic",
+  "motherName","motherPhone","motherEmail","motherOccupation","motherPic",
+  "guardianName","guardianRelation","guardianPhone","guardianEmail","guardianOccupation",
+  "guardianAddress","guardianPic",
+  "previousSchool","previousClass","previousPercent","previousTcNo","samagraId",
+  "schoolHouseId","height","weight","measurementDate",
+  "bankAccountNo","bankName","bankBranch","ifscCode","aadharNo",
+  "appKey","parentAppKey","note","about",
+  "isActive","disableReason","disableNote","disabledAt",
+];
+
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const student = await ((await getDb()) as any).student.findUnique({
@@ -27,13 +43,21 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   try {
     const body = await req.json();
-    // Convert date strings
-    if (body.dateOfBirth)   body.dateOfBirth   = new Date(body.dateOfBirth);
-    if (body.admissionDate) body.admissionDate = new Date(body.admissionDate);
-    if (body.measurementDate) body.measurementDate = new Date(body.measurementDate);
-    if (body.disabledAt)    body.disabledAt    = new Date(body.disabledAt);
 
-    const student = await ((await getDb()) as any).student.update({ where: { id }, data: body });
+    // Whitelist only allowed student fields
+    const data: any = {};
+    for (const f of ALLOWED_FIELDS) {
+      if (f in body) data[f] = body[f];
+    }
+
+    // Parse date fields
+    if (data.dateOfBirth)     data.dateOfBirth     = new Date(data.dateOfBirth);
+    if (data.admissionDate)   data.admissionDate   = new Date(data.admissionDate);
+    if (data.measurementDate) data.measurementDate = new Date(data.measurementDate);
+    if (data.disabledAt)      data.disabledAt      = new Date(data.disabledAt);
+    if (typeof data.rte !== "undefined") data.rte = data.rte === true || data.rte === "true";
+
+    const student = await ((await getDb()) as any).student.update({ where: { id }, data });
     return NextResponse.json(student);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -42,9 +66,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const sessions = await ((await getDb()) as any).studentSession.count({ where: { studentId: id, isActive: true } });
+  const db = await getDb();
+  const sessions = await (db as any).studentSession.count({ where: { studentId: id, isActive: true } });
   if (sessions > 0)
     return NextResponse.json({ error: "Cannot delete student with active enrollments" }, { status: 409 });
-  await ((await getDb()) as any).student.delete({ where: { id } });
+  await (db as any).student.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

@@ -18,6 +18,7 @@ export function NewExamGroupForm() {
     name: "",
     examType: "",
     description: "",
+    passingPercentage: "33",
   });
   const [loading, setLoading] = useState(false);
 
@@ -71,6 +72,11 @@ export function NewExamGroupForm() {
                 <option key={t} value={t}>{t.replace(/_/g, " ")}</option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <Label>Passing Percentage (%)</Label>
+            <Input type="number" min="0" max="100" value={form.passingPercentage} onChange={set("passingPercentage")} placeholder="33" />
           </div>
 
           <div className="md:col-span-2">

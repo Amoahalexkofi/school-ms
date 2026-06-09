@@ -57,20 +57,25 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { studentId, ...data } = body;
+    const { studentId, currentEmail, currentPhone, occupation, address, photo, note } = await req.json();
+    if (!studentId) return NextResponse.json({ error: "studentId required" }, { status: 422 });
 
-    // Mark student as alumni
-    await ((await getDb()) as any).student.update({
-      where: { id: studentId },
-      data: { isAlumni: true },
-    });
+    const db = await getDb();
+    await (db as any).student.update({ where: { id: studentId }, data: { isAlumni: true } });
 
-    // Create or update alumni record
-    const existing = await ((await getDb()) as any).alumni.findUnique({ where: { studentId } });
+    const alumniData = {
+      currentEmail: currentEmail || null,
+      currentPhone: currentPhone || null,
+      occupation:   occupation   || null,
+      address:      address      || null,
+      photo:        photo        || null,
+      note:         note         || null,
+    };
+
+    const existing = await (db as any).alumni.findUnique({ where: { studentId } });
     const alumni = existing
-      ? await ((await getDb()) as any).alumni.update({ where: { studentId }, data })
-      : await ((await getDb()) as any).alumni.create({ data: { studentId, ...data } });
+      ? await (db as any).alumni.update({ where: { studentId }, data: alumniData })
+      : await (db as any).alumni.create({ data: { studentId, ...alumniData } });
 
     return NextResponse.json(alumni, { status: 201 });
   } catch (err: any) {

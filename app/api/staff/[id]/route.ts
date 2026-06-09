@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
+const ALLOWED_FIELDS = [
+  "departmentId","designationId","firstName","lastName","fatherName","motherName",
+  "dob","gender","maritalStatus","religion","qualification","workExperience",
+  "dateOfJoining","dateOfLeaving","contractType","contactNo","emergencyContact",
+  "localAddress","permanentAddress","city","state","country","image",
+  "basicSalary","bankAccountNo","bankName","bankBranch","ifscCode","epfNo",
+  "payscale","shift","location",
+  "facebook","twitter","linkedin","instagram",
+  "resume","joiningLetter","resignationLetter","otherDocumentName","otherDocumentFile",
+  "note","isActive","disabledAt",
+];
+
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const staff = await ((await getDb()) as any).staff.findUnique({
@@ -28,15 +40,23 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   try {
     const body = await req.json();
-    if (body.dob)           body.dob           = new Date(body.dob);
-    if (body.dateOfJoining) body.dateOfJoining = new Date(body.dateOfJoining);
-    if (body.dateOfLeaving) body.dateOfLeaving = new Date(body.dateOfLeaving);
-    if (body.disabledAt)    body.disabledAt    = new Date(body.disabledAt);
-    if (body.basicSalary !== undefined && body.basicSalary !== null && body.basicSalary !== "") {
-      body.basicSalary = parseFloat(body.basicSalary);
+
+    // Whitelist only allowed staff fields
+    const staffData: any = {};
+    for (const f of ALLOWED_FIELDS) {
+      if (f in body) staffData[f] = body[f];
     }
 
-    const { role, ...staffData } = body;
+    // Parse date fields
+    if (staffData.dob)           staffData.dob           = new Date(staffData.dob);
+    if (staffData.dateOfJoining) staffData.dateOfJoining = new Date(staffData.dateOfJoining);
+    if (staffData.dateOfLeaving) staffData.dateOfLeaving = new Date(staffData.dateOfLeaving);
+    if (staffData.disabledAt)    staffData.disabledAt    = new Date(staffData.disabledAt);
+    if (staffData.basicSalary !== undefined && staffData.basicSalary !== null && staffData.basicSalary !== "") {
+      staffData.basicSalary = parseFloat(staffData.basicSalary);
+    }
+
+    const { role } = body;
 
     const staff = await ((await getDb()) as any).$transaction(async (tx: any) => {
       if (role) {

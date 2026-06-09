@@ -25,9 +25,33 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const question = await ((await getDb()) as any).question.create({ data: body });
-    return NextResponse.json(question, { status: 201 });
+    const {
+      staffId, subjectId, classId, sectionId, questionType, level,
+      question, optionA, optionB, optionC, optionD, optionE,
+      correctAnswer, wordLimit, image,
+    } = await req.json();
+    if (!question?.trim()) return NextResponse.json({ error: "question text required" }, { status: 422 });
+
+    const q = await ((await getDb()) as any).question.create({
+      data: {
+        staffId:       staffId       || null,
+        subjectId:     subjectId     || null,
+        classId:       classId       || null,
+        sectionId:     sectionId     || null,
+        questionType:  questionType  || "MCQ",
+        level:         level         || "MEDIUM",
+        question:      question.trim(),
+        optionA:       optionA       || null,
+        optionB:       optionB       || null,
+        optionC:       optionC       || null,
+        optionD:       optionD       || null,
+        optionE:       optionE       || null,
+        correctAnswer: correctAnswer || null,
+        wordLimit:     wordLimit     ? parseInt(wordLimit) : null,
+        image:         image         || null,
+      },
+    });
+    return NextResponse.json(q, { status: 201 });
   } catch (err: any) {
     console.error(err);
     return NextResponse.json({ error: "Failed to create question" }, { status: 500 });

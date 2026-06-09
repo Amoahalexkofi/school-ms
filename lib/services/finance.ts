@@ -20,15 +20,21 @@ export async function createTransaction(input: {
   type: "INCOME" | "EXPENSE";
   amount: number;
   date: Date;
+  name?: string;
+  invoiceNo?: string;
   note?: string;
+  attachment?: string;
   headId: string;
 }) {
   if (input.amount <= 0) throw Object.assign(new Error("Amount must be positive"), { code: "VALIDATION" });
   const data: any = {
-    type: input.type,
-    amount: input.amount,
-    date: input.date,
-    note: input.note,
+    type:       input.type,
+    name:       input.name      || null,
+    invoiceNo:  input.invoiceNo || null,
+    amount:     input.amount,
+    date:       input.date,
+    note:       input.note       || null,
+    attachment: input.attachment || null,
   };
   if (input.type === "INCOME") data.incomeHeadId = input.headId;
   else data.expenseHeadId = input.headId;

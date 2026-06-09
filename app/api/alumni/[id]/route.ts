@@ -23,11 +23,17 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
   return NextResponse.json(alumni);
 }
 
+const ALUMNI_ALLOWED = ["currentEmail","currentPhone","occupation","address","photo","note"];
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
     const body = await req.json();
-    const alumni = await ((await getDb()) as any).alumni.update({ where: { id }, data: body });
+    const data: any = {};
+    for (const key of ALUMNI_ALLOWED) {
+      if (key in body) data[key] = body[key] ?? null;
+    }
+    const alumni = await ((await getDb()) as any).alumni.update({ where: { id }, data });
     return NextResponse.json(alumni);
   } catch { return NextResponse.json({ error: "Failed" }, { status: 500 }); }
 }

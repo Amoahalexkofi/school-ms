@@ -28,11 +28,26 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
   return NextResponse.json(exam);
 }
 
+const EXAM_ALLOWED = [
+  "title","classId","sectionId","subjectId","sessionId","instructions",
+  "duration","totalMarks","passingPercentage","negativeMarking","negativeMarks",
+  "maxAttempts","startTime","endTime","isPublished",
+];
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
     const body = await req.json();
-    const exam = await ((await getDb()) as any).onlineExam.update({ where: { id }, data: body });
+    const data: any = {};
+    for (const key of EXAM_ALLOWED) {
+      if (key in body) {
+        if (["startTime","endTime"].includes(key) && body[key]) data[key] = new Date(body[key]);
+        else if (["duration","maxAttempts"].includes(key) && body[key] !== undefined) data[key] = parseInt(body[key]);
+        else if (["totalMarks","passingPercentage","negativeMarks"].includes(key) && body[key] !== undefined) data[key] = body[key] ? parseFloat(body[key]) : null;
+        else data[key] = body[key] ?? null;
+      }
+    }
+    const exam = await ((await getDb()) as any).onlineExam.update({ where: { id }, data });
     return NextResponse.json(exam);
   } catch {
     return NextResponse.json({ error: "Failed" }, { status: 500 });

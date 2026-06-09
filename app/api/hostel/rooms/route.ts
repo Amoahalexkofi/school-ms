@@ -3,9 +3,19 @@ import { getDb } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
-    const { hostelId, roomNo, roomTypeId, capacity } = await req.json();
+    const { hostelId, roomNo, roomTypeId, capacity, costPerBed, title, description } = await req.json();
     if (!hostelId || !roomNo) return NextResponse.json({ error: "hostelId and roomNo required" }, { status: 422 });
-    const r = await ((await getDb()) as any).hostelRoom.create({ data: { hostelId, roomNo, roomTypeId: roomTypeId || null, capacity: parseInt(capacity) || 1 } });
+    const r = await ((await getDb()) as any).hostelRoom.create({
+      data: {
+        hostelId,
+        roomNo,
+        roomTypeId:  roomTypeId  || null,
+        capacity:    parseInt(capacity) || 1,
+        costPerBed:  costPerBed  ? parseFloat(costPerBed) : null,
+        title:       title       || null,
+        description: description || null,
+      },
+    });
     return NextResponse.json(r, { status: 201 });
   } catch (err: any) {
     if (err.code === "P2002") return NextResponse.json({ error: "Room number already exists in this hostel" }, { status: 409 });

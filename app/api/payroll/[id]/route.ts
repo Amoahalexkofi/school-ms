@@ -25,11 +25,19 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   try {
     const body = await req.json();
-    if (body.paymentDate) body.paymentDate = new Date(body.paymentDate);
+    const data: any = {};
 
-    // Recompute net from current allowances if not explicitly set
+    const ALLOWED = ["status","paymentMode","paymentDate","remark","tax","leaveDeduction","basicSalary"];
+    for (const f of ALLOWED) {
+      if (f in body) data[f] = body[f];
+    }
+    if (data.paymentDate) data.paymentDate = new Date(data.paymentDate);
+    if (data.tax !== undefined)           data.tax           = parseFloat(data.tax);
+    if (data.basicSalary !== undefined)   data.basicSalary   = parseFloat(data.basicSalary);
+    if (data.leaveDeduction !== undefined) data.leaveDeduction = parseInt(data.leaveDeduction);
+
+    // Recompute net from current allowances when requested (mirrors Smart School recalculate)
     if (body.recompute) {
-      delete body.recompute;
       const current = await ((await getDb()) as any).staffPayslip.findUnique({
         where: { id },
         include: { allowances: true },
@@ -41,14 +49,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         const totalDeduction = current.allowances
           .filter((a: any) => a.isDeduction)
           .reduce((s: number, a: any) => s + Number(a.amount), 0);
-        const netSalary = Number(current.basicSalary) + totalAllowance - totalDeduction - Number(current.tax);
-        body.totalAllowance = totalAllowance;
-        body.totalDeduction = totalDeduction;
-        body.netSalary      = Math.max(netSalary, 0);
+        const netSalary = Number(data.basicSalary ?? current.basicSalary) + totalAllowance - totalDeduction - Number(data.tax ?? current.tax);
+        data.totalAllowance = totalAllowance;
+        data.totalDeduction = totalDeduction;
+        data.netSalary      = Math.max(netSalary, 0);
       }
     }
 
-    const payslip = await ((await getDb()) as any).staffPayslip.update({ where: { id }, data: body });
+    const payslip = await ((await getDb()) as any).staffPayslip.update({ where: { id }, data });
     return NextResponse.json(payslip);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

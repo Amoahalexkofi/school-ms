@@ -58,19 +58,21 @@ export async function POST(req: NextRequest) {
       if (!body[f]) return NextResponse.json({ error: `${f} is required` }, { status: 422 });
     }
 
+    const db = await getDb();
+
     if (body.email) {
-      const exists = await ((await getDb()) as any).user.findUnique({ where: { email: body.email } });
+      const exists = await (db as any).user.findUnique({ where: { email: body.email } });
       if (exists) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
     }
 
-    const count  = await ((await getDb()) as any).student.count();
+    const count  = await (db as any).student.count();
     const year   = new Date().getFullYear();
-    const admissionNo = generateAdmissionNumber({ sessionYear: year, sequenceNumber: count + 1 });
+    const admissionNo = body.admissionNo?.trim() || generateAdmissionNumber({ sessionYear: year, sequenceNumber: count + 1 });
     const email    = body.email || `${admissionNo.toLowerCase().replace(/\//g, ".")}@school.local`;
     const username = `stu_${admissionNo.toLowerCase().replace(/\//g, "_")}`;
     const password = await bcrypt.hash("Student@1234", 12);
 
-    const student = await ((await getDb()) as any).$transaction(async (tx: any) => {
+    const student = await (db as any).$transaction(async (tx: any) => {
       const user = await tx.user.create({ data: { email, username, password, role: "STUDENT" } });
 
       const s = await tx.student.create({
@@ -78,60 +80,78 @@ export async function POST(req: NextRequest) {
           userId:             user.id,
           admissionNo,
           firstName:          body.firstName?.trim(),
-          middleName:         body.middleName?.trim()     || null,
+          middleName:         body.middleName?.trim()       || null,
           lastName:           body.lastName?.trim(),
-          admissionDate:      body.admissionDate          ? new Date(body.admissionDate)  : new Date(),
-          dateOfBirth:        body.dateOfBirth            ? new Date(body.dateOfBirth)     : null,
+          admissionDate:      body.admissionDate            ? new Date(body.admissionDate)  : new Date(),
+          dateOfBirth:        body.dateOfBirth              ? new Date(body.dateOfBirth)     : null,
           gender:             body.gender,
-          bloodGroup:         body.bloodGroup             || null,
-          religion:           body.religion               || null,
-          caste:              body.caste                  || null,
-          category:           body.category               || null,
-          nationality:        body.nationality            || null,
+          bloodGroup:         body.bloodGroup               || null,
+          religion:           body.religion                 || null,
+          caste:              body.caste                    || null,
+          category:           body.category                 || null,
+          nationality:        body.nationality              || null,
           rte:                body.rte === true || body.rte === "true",
-          mobileNo:           body.mobileNo               || null,
-          currentAddress:     body.currentAddress         || null,
-          permanentAddress:   body.permanentAddress       || null,
-          city:               body.city                   || null,
-          state:              body.state                  || null,
-          country:            body.country                || null,
-          pincode:            body.pincode                || null,
-          guardianIs:         body.guardianIs             || null,
-          fatherName:         body.fatherName             || null,
-          fatherPhone:        body.fatherPhone            || null,
-          fatherOccupation:   body.fatherOccupation       || null,
-          motherName:         body.motherName             || null,
-          motherPhone:        body.motherPhone            || null,
-          motherOccupation:   body.motherOccupation       || null,
-          guardianName:       body.guardianName           || null,
-          guardianRelation:   body.guardianRelation       || null,
-          guardianPhone:      body.guardianPhone          || null,
-          guardianEmail:      body.guardianEmail          || null,
-          guardianOccupation: body.guardianOccupation     || null,
-          guardianAddress:    body.guardianAddress        || null,
-          previousSchool:     body.previousSchool         || null,
-          schoolHouseId:      body.schoolHouseId          || null,
-          height:             body.height                 || null,
-          weight:             body.weight                 || null,
-          bankAccountNo:      body.bankAccountNo          || null,
-          bankName:           body.bankName               || null,
-          ifscCode:           body.ifscCode               || null,
-          aadharNo:           body.aadharNo               || null,
-          note:               body.note                   || null,
-          about:              body.about                  || null,
+          mobileNo:           body.mobileNo                 || null,
+          currentAddress:     body.currentAddress           || null,
+          permanentAddress:   body.permanentAddress         || null,
+          city:               body.city                     || null,
+          state:              body.state                    || null,
+          country:            body.country                  || null,
+          pincode:            body.pincode                  || null,
+          guardianIs:         body.guardianIs               || null,
+          fatherName:         body.fatherName               || null,
+          fatherPhone:        body.fatherPhone              || null,
+          fatherEmail:        body.fatherEmail              || null,
+          fatherOccupation:   body.fatherOccupation         || null,
+          motherName:         body.motherName               || null,
+          motherPhone:        body.motherPhone              || null,
+          motherEmail:        body.motherEmail              || null,
+          motherOccupation:   body.motherOccupation         || null,
+          guardianName:       body.guardianName             || null,
+          guardianRelation:   body.guardianRelation         || null,
+          guardianPhone:      body.guardianPhone            || null,
+          guardianEmail:      body.guardianEmail            || null,
+          guardianOccupation: body.guardianOccupation       || null,
+          guardianAddress:    body.guardianAddress          || null,
+          previousSchool:     body.previousSchool           || null,
+          previousClass:      body.previousClass            || null,
+          previousPercent:    body.previousPercent          || null,
+          previousTcNo:       body.previousTcNo || body.previousTc || null,
+          samagraId:          body.samagraId                || null,
+          schoolHouseId:      body.schoolHouseId            || null,
+          height:             body.height                   || null,
+          weight:             body.weight                   || null,
+          bankAccountNo:      body.bankAccountNo            || null,
+          bankName:           body.bankName                 || null,
+          bankBranch:         body.bankBranch               || null,
+          ifscCode:           body.ifscCode                 || null,
+          aadharNo:           body.aadharNo                 || null,
+          note:               body.note                     || null,
+          about:              body.about                    || null,
         },
       });
 
+      // Smart School add_student_session(): upsert by (sessionId, studentId)
       if (body.sessionId && body.classSectionId) {
-        await tx.studentSession.create({
-          data: {
-            studentId:      s.id,
-            sessionId:      body.sessionId,
-            classSectionId: body.classSectionId,
-            rollNo:         body.rollNo || null,
-            defaultLogin:   true,
-          },
+        const existing = await tx.studentSession.findFirst({
+          where: { studentId: s.id, sessionId: body.sessionId },
         });
+        if (existing) {
+          await tx.studentSession.update({
+            where: { id: existing.id },
+            data: { classSectionId: body.classSectionId, rollNo: body.rollNo || null },
+          });
+        } else {
+          await tx.studentSession.create({
+            data: {
+              studentId:      s.id,
+              sessionId:      body.sessionId,
+              classSectionId: body.classSectionId,
+              rollNo:         body.rollNo || null,
+              defaultLogin:   true,
+            },
+          });
+        }
       }
       return s;
     });

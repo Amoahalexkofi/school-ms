@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
+const ALLOWED = ["name","code","feeCategoryId","description","nature","studentSessionId","isActive"];
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await req.json();
-  const type = await ((await getDb()) as any).feeType.update({ where: { id }, data: body });
+  const data: any = {};
+  for (const key of ALLOWED) {
+    if (key in body) data[key] = body[key] ?? null;
+  }
+  const type = await ((await getDb()) as any).feeType.update({ where: { id }, data });
   return NextResponse.json(type);
 }
 

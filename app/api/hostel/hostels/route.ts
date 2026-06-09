@@ -9,9 +9,17 @@ export async function GET() {
 }
 export async function POST(req: NextRequest) {
   try {
-    const { name, type } = await req.json();
+    const { name, type, address, intake, description } = await req.json();
     if (!name?.trim()) return NextResponse.json({ error: "Name required" }, { status: 422 });
-    return NextResponse.json(await ((await getDb()) as any).hostel.create({ data: { name: name.trim(), type: type || null } }), { status: 201 });
+    return NextResponse.json(await ((await getDb()) as any).hostel.create({
+      data: {
+        name: name.trim(),
+        type: type || null,
+        address: address || null,
+        intake: intake ? parseInt(intake) : null,
+        description: description || null,
+      },
+    }), { status: 201 });
   } catch (err: any) {
     if (err.code === "P2002") return NextResponse.json({ error: "Already exists" }, { status: 409 });
     return NextResponse.json({ error: err.message }, { status: 500 });

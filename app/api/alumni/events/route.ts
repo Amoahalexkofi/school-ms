@@ -15,8 +15,29 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const event = await ((await getDb()) as any).alumniEvent.create({ data: body });
+    const {
+      title, eventFor, sessionId, classId, section,
+      fromDate, toDate, note, photo,
+      eventNotificationMessage, showOnWebsite,
+    } = await req.json();
+    if (!title?.trim() || !fromDate || !toDate)
+      return NextResponse.json({ error: "title, fromDate, toDate required" }, { status: 422 });
+
+    const event = await ((await getDb()) as any).alumniEvent.create({
+      data: {
+        title:                    title.trim(),
+        eventFor:                 eventFor || "all",
+        sessionId:                sessionId || null,
+        classId:                  classId   || null,
+        section:                  section   || null,
+        fromDate:                 new Date(fromDate),
+        toDate:                   new Date(toDate),
+        note:                     note      || null,
+        photo:                    photo     || null,
+        eventNotificationMessage: eventNotificationMessage || null,
+        showOnWebsite:            showOnWebsite ?? false,
+      },
+    });
     return NextResponse.json(event, { status: 201 });
   } catch (err: any) {
     console.error(err);

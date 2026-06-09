@@ -18,8 +18,12 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    const body = await req.json();
-    const role = await ((await getDb()) as any).appRole.update({ where: { id }, data: body });
+    const { name, slug, isActive } = await req.json();
+    const data: any = {};
+    if (name     !== undefined) data.name     = name?.trim()  || null;
+    if (slug     !== undefined) data.slug     = slug?.trim()  || null;
+    if (isActive !== undefined) data.isActive = Boolean(isActive);
+    const role = await ((await getDb()) as any).appRole.update({ where: { id }, data });
     return NextResponse.json(role);
   } catch { return NextResponse.json({ error: "Failed" }, { status: 500 }); }
 }

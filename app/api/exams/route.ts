@@ -11,10 +11,15 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, examType, description } = await req.json();
+    const { name, examType, description, passingPercentage } = await req.json();
     if (!name?.trim()) return NextResponse.json({ error: "Name is required" }, { status: 422 });
     const group = await ((await getDb()) as any).examGroup.create({
-      data: { name: name.trim(), examType: examType || null, description: description || null },
+      data: {
+        name: name.trim(),
+        examType: examType || null,
+        description: description || null,
+        passingPercentage: passingPercentage ? parseFloat(passingPercentage) : 33,
+      },
     });
     return NextResponse.json(group, { status: 201 });
   } catch (err: any) {
