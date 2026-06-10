@@ -5,20 +5,30 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, RotateCcw } from "lucide-react";
+import { Plus, RotateCcw, Trash2, X } from "lucide-react";
 
-type Props = { books: any[]; issues: any[]; students: any[]; staff: any[] };
-type Tab = "catalog" | "issues";
+type Props = { books: any[]; issues: any[]; students: any[]; staff: any[]; members: any[] };
+type Tab = "catalog" | "issues" | "members";
 
 const STATUS_STYLE: Record<string, string> = {
   ISSUED: "bg-blue-100 text-blue-700", RETURNED: "bg-green-100 text-green-700", OVERDUE: "bg-red-100 text-red-700",
 };
 
-export function LibraryClient({ books, issues, students, staff }: Props) {
+export function LibraryClient({ books, issues, students, staff, members: initialMembers }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("catalog");
   const [search, setSearch] = useState("");
   const [returning, setReturning] = useState<string | null>(null);
+
+  // Members state
+  const [members,       setMembers]       = useState(initialMembers);
+  const [memPanel,      setMemPanel]      = useState(false);
+  const [memType,       setMemType]       = useState("student");
+  const [memPersonId,   setMemPersonId]   = useState("");
+  const [memCardNo,     setMemCardNo]     = useState("");
+  const [memLoad,       setMemLoad]       = useState(false);
+  const [memErr,        setMemErr]        = useState("");
+  const [removingMem,   setRemovingMem]   = useState<string | null>(null);
 
   async function returnBook(id: string) {
     setReturning(id);
@@ -29,10 +39,46 @@ export function LibraryClient({ books, issues, students, staff }: Props) {
 
   const filtered = books.filter(b => !search || [b.title, b.author, b.bookNo].some(v => v?.toLowerCase().includes(search.toLowerCase())));
 
+  // Already-registered person IDs for the selected type
+  const registeredIds = new Set(members.filter((m: any) => m.memberType === memType).map((m: any) => m.memberId));
+  const personOptions = (memType === "student" ? students : staff).filter((p: any) => !registeredIds.has(p.id));
+
+  async function saveMember() {
+    if (!memPersonId) { setMemErr("Select a person"); return; }
+    setMemLoad(true); setMemErr("");
+    try {
+      const res = await fetch("/api/library/members", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ memberType: memType, memberId: memPersonId, libraryCardNo: memCardNo || undefined }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      const person = (memType === "student" ? students : staff).find((p: any) => p.id === memPersonId);
+      setMembers(ms => [{ ...data, person }, ...ms]);
+      setMemPanel(false); setMemPersonId(""); setMemCardNo("");
+    } catch (e: any) { setMemErr(e.message); }
+    finally { setMemLoad(false); }
+  }
+
+  async function removeMember(id: string) {
+    if (!confirm("Remove this library member?")) return;
+    setRemovingMem(id);
+    try {
+      const res = await fetch("/api/library/members", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+      setMembers(ms => ms.filter((m: any) => m.id !== id));
+    } catch (e: any) { alert(e.message); }
+    finally { setRemovingMem(null); }
+  }
+
   return (
     <main className="flex-1 p-6 space-y-5 bg-gray-50">
       <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
-        {[{ key: "catalog" as Tab, label: "Book Catalog" }, { key: "issues" as Tab, label: `Issue Log (${issues.filter(i => i.status === "ISSUED").length} active)` }].map(t => (
+        {[
+          { key: "catalog" as Tab, label: "Book Catalog" },
+          { key: "issues"  as Tab, label: `Issue Log (${issues.filter(i => i.status === "ISSUED").length} active)` },
+          { key: "members" as Tab, label: `Members (${members.length})` },
+        ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
             {t.label}
@@ -79,6 +125,92 @@ export function LibraryClient({ books, issues, students, staff }: Props) {
                       ) : (
                         <Button size="sm" variant="outline" disabled>Issue</Button>
                       )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {tab === "members" && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-500">{members.length} member{members.length !== 1 ? "s" : ""}</p>
+            <Button onClick={() => { setMemPanel(true); setMemPersonId(""); setMemCardNo(""); setMemErr(""); }}>
+              <Plus className="h-4 w-4 mr-1.5" /> Add Member
+            </Button>
+          </div>
+
+          {memPanel && (
+            <div className="bg-white rounded-xl border border-blue-200 p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-blue-800">Register Library Member</p>
+                <button onClick={() => setMemPanel(false)}><X className="h-4 w-4 text-gray-400" /></button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Member Type *</label>
+                  <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={memType} onChange={e => { setMemType(e.target.value); setMemPersonId(""); }}>
+                    <option value="student">Student</option>
+                    <option value="teacher">Staff</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">{memType === "student" ? "Student" : "Staff"} *</label>
+                  <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={memPersonId} onChange={e => setMemPersonId(e.target.value)}>
+                    <option value="">— Select —</option>
+                    {personOptions.map((p: any) => (
+                      <option key={p.id} value={p.id}>
+                        {p.firstName} {p.lastName} ({memType === "student" ? p.admissionNo : p.employeeId})
+                      </option>
+                    ))}
+                  </select>
+                  {personOptions.length === 0 && <p className="text-xs text-gray-400 mt-1">All {memType === "student" ? "students" : "staff"} are already registered.</p>}
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Library Card No (optional)</label>
+                  <Input value={memCardNo} onChange={e => setMemCardNo(e.target.value)} placeholder="Auto-generated if blank" />
+                </div>
+              </div>
+              {memErr && <p className="text-sm text-red-600">{memErr}</p>}
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setMemPanel(false)}>Cancel</Button>
+                <Button disabled={memLoad} onClick={saveMember}>{memLoad ? "Saving…" : "Register"}</Button>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Card No.","Name","ID / Adm No.","Type","Joined",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+              </thead>
+              <tbody className="divide-y">
+                {members.length === 0 ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No library members registered.</td></tr>
+                : members.map((m: any) => (
+                  <tr key={m.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{m.libraryCardNo ?? "—"}</td>
+                    <td className="px-4 py-3 font-medium text-gray-900">
+                      {m.person ? `${m.person.firstName} ${m.person.lastName}` : `[${m.memberId.slice(0, 8)}…]`}
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs text-gray-500">
+                      {m.memberType === "student" ? m.person?.admissionNo : m.person?.employeeId ?? "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.memberType === "student" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}>
+                        {m.memberType === "student" ? "Student" : "Staff"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-gray-400">{new Date(m.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3">
+                      <button onClick={() => removeMember(m.id)} disabled={removingMem === m.id}
+                        className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}

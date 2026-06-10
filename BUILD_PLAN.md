@@ -282,10 +282,10 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Internal chat — polling-based real-time chat (`/chat`)
 - [x] Notice Board — post + view notices (`/notice-board`) — basic implementation
 - [x] Lesson Plans (`/lesson-plans`) — basic implementation
-- [ ] Bulk messaging (SMS/Email/In-App broadcast)
-- [ ] Notification bell (real-time or polling)
-- [ ] SMS gateway configuration (Africa's Talking / Twilio)
-- [ ] Email configuration (SMTP/SendGrid)
+- [x] Bulk messaging — UI at `/messaging`, API at `/api/messaging` (schedule, group/class/individual targeting)
+- [x] Notification bell — polling on load in Topbar, mark read/all-read, badge count
+- [ ] SMS gateway integration — actual send via Africa's Talking / Twilio (config exists, send not wired)
+- [ ] Email gateway integration — actual send via SMTP/SendGrid (config exists, send not wired)
 
 ---
 

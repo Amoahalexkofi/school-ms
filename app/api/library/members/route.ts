@@ -9,7 +9,35 @@ export async function GET() {
     where: { isActive: true },
     orderBy: { createdAt: "desc" },
   });
-  return NextResponse.json(members);
+
+  // Enrich with student/staff name data (polymorphic relation — manual lookup)
+  const studentIds = members.filter((m: any) => m.memberType === "student").map((m: any) => m.memberId);
+  const staffIds   = members.filter((m: any) => m.memberType === "teacher").map((m: any) => m.memberId);
+
+  const [students, staffList] = await Promise.all([
+    studentIds.length > 0
+      ? (db as any).student.findMany({
+          where: { id: { in: studentIds } },
+          select: { id: true, firstName: true, lastName: true, admissionNo: true },
+        })
+      : [],
+    staffIds.length > 0
+      ? (db as any).staff.findMany({
+          where: { id: { in: staffIds } },
+          select: { id: true, firstName: true, lastName: true, employeeId: true },
+        })
+      : [],
+  ]);
+
+  const studentMap = new Map((students as any[]).map((s: any) => [s.id, s]));
+  const staffMap   = new Map((staffList as any[]).map((s: any) => [s.id, s]));
+
+  const enriched = members.map((m: any) => ({
+    ...m,
+    person: m.memberType === "student" ? studentMap.get(m.memberId) : staffMap.get(m.memberId),
+  }));
+
+  return NextResponse.json(enriched);
 }
 
 export async function POST(req: NextRequest) {
