@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
+// Mirrors Smart School: deposit + discount both reduce the outstanding balance
 function computePaid(deposits: any[]): number {
   return deposits.reduce((s, d) => {
     return s + Object.values(d.amountDetail as Record<string, any>)
-      .reduce((ds: number, v: any) => ds + Number(v?.amount ?? 0), 0);
+      .reduce((ds: number, v: any) => ds + Number(v?.amount ?? 0) + Number(v?.discount ?? 0), 0);
   }, 0);
 }
 
@@ -99,6 +100,7 @@ export async function POST(req: NextRequest) {
 
     // Ensure a FeeGroupItem exists for the balance type in this session group
     // (Smart School uses one item row per fee type; the per-student amount is on StudentFeesMaster)
+    // Get or create FeeGroupItem; update dueDate if already exists (mirrors Smart School update_batch)
     let balanceItem = await (db as any).feeGroupItem.findFirst({
       where: { feeSessionGroupId: sessionGroup.id, feeTypeId: balanceFeeType.id },
     });
@@ -111,31 +113,41 @@ export async function POST(req: NextRequest) {
           ...(dueDate ? { dueDate: new Date(dueDate) } : {}),
         },
       });
+    } else if (dueDate) {
+      await (db as any).feeGroupItem.update({
+        where: { id: balanceItem.id },
+        data: { dueDate: new Date(dueDate) },
+      });
     }
 
     for (const { studentId, balance } of rows) {
-      // Find student's session record in the target session
       const toSS = await (db as any).studentSession.findFirst({
         where: { studentId, sessionId: toSessionId },
       });
       if (!toSS) { skipped++; continue; }
 
-      // Skip if carry-forward already exists
+      // Upsert — update amount if carry-forward already exists (mirrors Smart School update_batch)
       const existing = await (db as any).studentFeesMaster.findFirst({
         where: { studentSessionId: toSS.id, feeSessionGroupId: sessionGroup.id },
       });
-      if (existing) { skipped++; continue; }
-
-      await (db as any).studentFeesMaster.create({
-        data: {
-          studentId,
-          studentSessionId: toSS.id,
-          feeSessionGroupId: sessionGroup.id,
-          amount: balance,
-          isSystem: true,
-        },
-      });
-      carried++;
+      if (existing) {
+        await (db as any).studentFeesMaster.update({
+          where: { id: existing.id },
+          data: { amount: balance },
+        });
+        carried++;
+      } else {
+        await (db as any).studentFeesMaster.create({
+          data: {
+            studentId,
+            studentSessionId: toSS.id,
+            feeSessionGroupId: sessionGroup.id,
+            amount: balance,
+            isSystem: true,
+          },
+        });
+        carried++;
+      }
     }
 
     return NextResponse.json({ carried, skipped });
