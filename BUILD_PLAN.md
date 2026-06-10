@@ -252,8 +252,8 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Add Item form
 - [x] Stock In / Stock Out
 - [x] API: CRUD `/api/inventory/{categories,items,stock}`
-- [ ] Issue to staff/student
-- [ ] Low stock alerts
+- [x] Issue to staff — Issues tab in `/inventory`, form to issue item to staff member, tracks return date + status
+- [x] Low stock alerts — amber banner on inventory page when item.quantity ≤ item.lowStockAlert
 
 ---
 

@@ -6,18 +6,23 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, TrendingUp, TrendingDown, AlertTriangle, X } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, AlertTriangle, X, ArrowUpRight } from "lucide-react";
 
-type Props = { categories: any[]; suppliers: any[]; stores: any[]; items: any[] };
-type Tab = "items" | "categories";
-type Panel = "category" | "stockIn" | "stockOut" | null;
+type Props = { categories: any[]; suppliers: any[]; stores: any[]; items: any[]; issues: any[]; staff: any[] };
+type Tab = "items" | "categories" | "issues";
+type Panel = "category" | "stockIn" | "stockOut" | "issueItem" | null;
 
 const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
-export function InventoryClient({ categories, suppliers, stores, items }: Props) {
+export function InventoryClient({ categories, suppliers, stores, items, issues: initialIssues, staff }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("items");
   const [panel, setPanel] = useState<Panel>(null);
+
+  // Issue item state
+  const [issues,     setIssues]     = useState(initialIssues);
+  const [issueForm,  setIssueForm]  = useState({ itemId: "", issueType: "staff", issuedToId: "", issuedTo: "", quantity: "1", returnDate: "", note: "" });
+  const [issueLoad,  setIssueLoad]  = useState(false);
 
   // Category panel state
   const [catName, setCatName] = useState("");
@@ -58,6 +63,34 @@ export function InventoryClient({ categories, suppliers, stores, items }: Props)
     finally { setStockLoad(false); }
   }
 
+  async function saveIssue() {
+    if (!issueForm.itemId || parseInt(issueForm.quantity) <= 0) { alert("Item and quantity required"); return; }
+    setIssueLoad(true);
+    try {
+      const staffMember = issueForm.issueType === "staff" ? staff.find((s: any) => s.id === issueForm.issuedToId) : null;
+      const res = await fetch("/api/inventory/issues", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          itemId:     issueForm.itemId,
+          issueType:  issueForm.issueType,
+          issuedToId: issueForm.issuedToId || null,
+          issuedTo:   staffMember ? `${staffMember.firstName} ${staffMember.lastName}` : (issueForm.issuedTo || null),
+          quantity:   issueForm.quantity,
+          returnDate: issueForm.returnDate || null,
+          note:       issueForm.note || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      const item = items.find((i: any) => i.id === issueForm.itemId);
+      setIssues(is => [{ ...data, item: { name: item?.name } }, ...is]);
+      setPanel(null);
+      setIssueForm({ itemId: "", issueType: "staff", issuedToId: "", issuedTo: "", quantity: "1", returnDate: "", note: "" });
+      router.refresh();
+    } catch (e: any) { alert(e.message); }
+    finally { setIssueLoad(false); }
+  }
+
   function openStock(type: "IN" | "OUT", itemId = "") {
     setStockForm({ itemId, type, quantity: "1", note: "", issuedTo: "" });
     setPanel(type === "IN" ? "stockIn" : "stockOut");
@@ -75,7 +108,11 @@ export function InventoryClient({ categories, suppliers, stores, items }: Props)
       )}
 
       <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
-        {[{ key: "items" as Tab, label: `Items (${items.length})` }, { key: "categories" as Tab, label: `Categories (${categories.length})` }].map(t => (
+        {[
+          { key: "items"      as Tab, label: `Items (${items.length})` },
+          { key: "categories" as Tab, label: `Categories (${categories.length})` },
+          { key: "issues"     as Tab, label: `Issues (${issues.filter((i: any) => !i.isReturned).length} active)` },
+        ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
             {t.label}
@@ -179,6 +216,90 @@ export function InventoryClient({ categories, suppliers, stores, items }: Props)
                     </tr>
                   );
                 })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {tab === "issues" && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-500">{issues.length} issue record{issues.length !== 1 ? "s" : ""}</p>
+            <Button onClick={() => { setPanel(panel === "issueItem" ? null : "issueItem"); setIssueForm({ itemId: "", issueType: "staff", issuedToId: "", issuedTo: "", quantity: "1", returnDate: "", note: "" }); }}>
+              <ArrowUpRight className="h-4 w-4 mr-1.5" /> Issue Item
+            </Button>
+          </div>
+
+          {panel === "issueItem" && (
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-gray-800">Issue Item to Staff</h3>
+                <button onClick={() => setPanel(null)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Item *</label>
+                  <select className={SEL} value={issueForm.itemId} onChange={e => setIssueForm(f => ({ ...f, itemId: e.target.value }))}>
+                    <option value="">— Select Item —</option>
+                    {items.filter((i: any) => i.available > 0).map((i: any) => <option key={i.id} value={i.id}>{i.name} (avail: {i.available})</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Issued To (Staff)</label>
+                  <select className={SEL} value={issueForm.issuedToId} onChange={e => setIssueForm(f => ({ ...f, issuedToId: e.target.value }))}>
+                    <option value="">— Select Staff —</option>
+                    {staff.map((s: any) => <option key={s.id} value={s.id}>{s.firstName} {s.lastName} ({s.employeeId})</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
+                  <Input type="number" min="1" value={issueForm.quantity} onChange={e => setIssueForm(f => ({ ...f, quantity: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Return Date (optional)</label>
+                  <input type="date" value={issueForm.returnDate} onChange={e => setIssueForm(f => ({ ...f, returnDate: e.target.value }))}
+                    className={SEL} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Note</label>
+                  <Input value={issueForm.note} onChange={e => setIssueForm(f => ({ ...f, note: e.target.value }))} placeholder="Optional" />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setPanel(null)}>Cancel</Button>
+                <Button disabled={issueLoad} onClick={saveIssue}>{issueLoad ? "Issuing…" : "Issue"}</Button>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Item","Issued To","Qty","Issued","Return By","Status","Note"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+              </thead>
+              <tbody className="divide-y">
+                {issues.length === 0 ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-400">No issue records yet.</td></tr>
+                : issues.map((i: any) => {
+                    const overdue = !i.isReturned && i.returnDate && new Date(i.returnDate) < new Date();
+                    return (
+                      <tr key={i.id} className={`hover:bg-gray-50 ${overdue ? "bg-red-50/30" : ""}`}>
+                        <td className="px-4 py-3 font-medium">{i.item?.name ?? "—"}</td>
+                        <td className="px-4 py-3 text-gray-700">{i.issuedTo ?? "—"}</td>
+                        <td className="px-4 py-3 text-center font-medium">{i.quantity}</td>
+                        <td className="px-4 py-3 text-xs text-gray-500">{new Date(i.issuedAt).toLocaleDateString()}</td>
+                        <td className={`px-4 py-3 text-xs ${overdue ? "text-red-600 font-medium" : "text-gray-500"}`}>
+                          {i.returnDate ? new Date(i.returnDate).toLocaleDateString() : "—"}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${i.isReturned ? "bg-green-100 text-green-700" : overdue ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}>
+                            {i.isReturned ? "Returned" : overdue ? "Overdue" : "Issued"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-gray-400 max-w-[150px] truncate">{i.note ?? "—"}</td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
