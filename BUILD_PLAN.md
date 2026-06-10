@@ -129,7 +129,7 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Designation management page — CRUD with staff count
 - [x] API: GET/POST `/api/staff`, GET/PATCH/DELETE `/api/staff/[id]`
 - [x] API: CRUD `/api/departments`, `/api/designations`
-- [ ] Teacher subject assignment UI
+- [x] Teacher subject assignment UI — interactive checklist in staff profile `/staff/[id]`, saves via PUT `/api/staff/[id]/subjects`
 - [ ] Staff ID card (printable)
 
 ---
@@ -239,8 +239,8 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Issue book form — to student or staff, with due date
 - [x] Return book — calculate fine (overdue days × rate)
 - [x] API: CRUD `/api/library/{books,issues}`
-- [ ] Library member management
-- [ ] Issue log report (separate from main reports page)
+- [x] Library member management — Members tab in `/library`, register student/staff as members with card no
+- [ ] Issue log report (date-range filter on issues tab — low priority)
 
 ---
 

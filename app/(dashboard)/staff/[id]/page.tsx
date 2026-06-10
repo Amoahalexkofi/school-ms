@@ -5,25 +5,28 @@ import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, User, Briefcase, DollarSign, BookOpen, Share2 } from "lucide-react";
 import { StaffProfileActions } from "./StaffProfileActions";
+import { StaffSubjectsManager } from "./StaffSubjectsManager";
 
 async function getData(id: string) {
-  const [staff, departments, designations] = await Promise.all([
-    ((await getDb()) as any).staff.findUnique({
+  const db = await getDb();
+  const [staff, departments, designations, allSubjects] = await Promise.all([
+    (db as any).staff.findUnique({
       where: { id },
       include: {
         user:        { select: { email: true, role: true } },
         department:  true,
         designation: true,
-        teacherSubjects: { include: { subject: { select: { name: true, code: true } } } },
+        teacherSubjects: { include: { subject: { select: { id: true, name: true, code: true } } } },
         classSectionsTeaching: { include: { class: true, section: true } },
         payslips:      { orderBy: { createdAt: "desc" }, take: 6 },
         leaveRequests: { orderBy: { createdAt: "desc" }, take: 5 },
       },
     }),
-    ((await getDb()) as any).department.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
-    ((await getDb()) as any).designation.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    (db as any).department.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    (db as any).designation.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    (db as any).subject.findMany({ where: { isActive: true }, orderBy: { name: "asc" }, select: { id: true, name: true, code: true } }),
   ]);
-  return { staff, departments, designations };
+  return { staff, departments, designations, allSubjects };
 }
 
 export default async function StaffProfilePage({
@@ -32,7 +35,7 @@ export default async function StaffProfilePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { staff, departments, designations } = await getData(id);
+  const { staff, departments, designations, allSubjects } = await getData(id);
   if (!staff) notFound();
 
   const dob    = staff.dob          ? new Date(staff.dob).toLocaleDateString()          : "—";
@@ -166,26 +169,12 @@ export default async function StaffProfilePage({
           </CardContent>
         </Card>
 
-        {/* Subjects taught */}
-        {staff.teacherSubjects.length > 0 && (
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-indigo-600" /> Subjects Taught
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {staff.teacherSubjects.map((ts: any) => (
-                  <span key={ts.id} className="text-xs px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
-                    {ts.subject.name}
-                    {ts.subject.code && <span className="text-indigo-400 ml-1">({ts.subject.code})</span>}
-                  </span>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Subjects taught — interactive manager */}
+        <StaffSubjectsManager
+          staffId={staff.id}
+          assigned={staff.teacherSubjects.map((ts: any) => ts.subject)}
+          allSubjects={allSubjects}
+        />
 
         {/* Class teacher of */}
         {staff.classSectionsTeaching.length > 0 && (
