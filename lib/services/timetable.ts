@@ -60,5 +60,15 @@ export async function addTimetableSlot(input: {
     }
   }
 
-  return (prisma as any).timetableSlot.create({ data: input });
+  return (prisma as any).timetableSlot.create({
+    data: {
+      sectionId:  input.sectionId,
+      day:        input.day,
+      period:     input.period,
+      startTime:  input.startTime,
+      endTime:    input.endTime,
+      staffId:    input.staffId,
+      subjectId:  input.subjectId,
+    },
+  });
 }
