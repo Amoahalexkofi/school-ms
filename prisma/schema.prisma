@@ -1177,20 +1177,32 @@ model StudentRoute {
 }
 
 // id_card — printable ID card templates (configurable per school)
+// Mirrors Smart School id_card table — student ID card template
 model IdCard {
-  id         String   @id @default(cuid())
-  heading    String?
-  title      String?
-  bgColor    String   @default("#1a56db")
-  fontColor  String   @default("#ffffff")
-  bodyColor  String   @default("#f9fafb")
-  schoolName String?
-  leftLogo   String?  // URL
-  rightLogo  String?  // URL
-  fieldList  Json?    // array of field names to display
-  status     Int      @default(0) // 1 = active/default
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
+  id                     String   @id @default(cuid())
+  title                  String
+  schoolName             String
+  schoolAddress          String   @default("")
+  background             String?
+  logo                   String?
+  signImage              String?
+  enableVerticalCard     Boolean  @default(false)
+  headerColor            String?
+  enableAdmissionNo      Boolean  @default(true)
+  enableStudentName      Boolean  @default(true)
+  enableClass            Boolean  @default(true)
+  enableFathersName      Boolean  @default(true)
+  enableMothersName      Boolean  @default(false)
+  enableAddress          Boolean  @default(true)
+  enablePhone            Boolean  @default(true)
+  enableDob              Boolean  @default(true)
+  enableBloodGroup       Boolean  @default(true)
+  enableStudentBarcode   Boolean  @default(true)
+  enableStudentRollno    Boolean  @default(false)
+  enableStudentHouseName Boolean  @default(false)
+  status                 Int      @default(1)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 }
 
 // ─── Hostel ───────────────────────────────────────────────────────────────────
@@ -1247,6 +1259,19 @@ model HostelAllocation {
 }
 
 // ─── Library ──────────────────────────────────────────────────────────────────
+
+// Mirrors Smart School libarary_members table
+model LibraryMember {
+  id            String   @id @default(cuid())
+  libraryCardNo String?
+  memberType    String   // "student" | "teacher"
+  memberId      String   // studentId or staffId
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([memberType, memberId])
+}
 
 model Book {
   id          String   @id @default(cuid())
@@ -1402,22 +1427,71 @@ model Notification {
   createdAt DateTime         @default(now())
 }
 
-enum MessageChannel {
-  SMS
-  EMAIL
-  IN_APP
+// Mirrors Smart School messages table — bulk/scheduled messaging
+model MessageLog {
+  id               String    @id @default(cuid())
+  title            String?
+  message          String
+  sendThrough      String?   // "email" | "sms" | "both"
+  sendMail         Boolean   @default(false)
+  sendSms          Boolean   @default(false)
+  isGroup          Boolean   @default(false)
+  isIndividual     Boolean   @default(false)
+  isClass          Boolean   @default(false)
+  isSchedule       Boolean   @default(false)
+  sent             Boolean   @default(false)
+  scheduleDatetime DateTime?
+  groupList        String?   // JSON text — role/group ids
+  userList         String?   // JSON text — individual user ids
+  sendTo           String?   // "all_students" | "all_staff" | "all_parents" | etc.
+  scheduleClass    String?
+  scheduleSection  String?
+  templateId       String?
+  sentById         String?
+  sentBy           Staff?    @relation(fields: [sentById], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
-model MessageLog {
-  id             String         @id @default(cuid())
-  subject        String
+// Mirrors Smart School send_notification table — admin broadcast notifications
+model SendNotification {
+  id             String   @id @default(cuid())
+  title          String
   message        String
-  channel        MessageChannel
-  recipientType  String
-  recipientCount Int            @default(0)
-  sentById       String?
-  sentBy         Staff?         @relation(fields: [sentById], references: [id])
-  createdAt      DateTime       @default(now())
+  publishDate    DateTime @db.Date
+  date           DateTime @db.Date
+  attachment     String?
+  visibleStudent Boolean  @default(false)
+  visibleStaff   Boolean  @default(false)
+  visibleParent  Boolean  @default(false)
+  createdById    String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  notificationRoles  NotificationRole[]
+  readNotifications  ReadNotification[]
+}
+
+// notification_roles — roles that can see the notification
+model NotificationRole {
+  id                 String           @id @default(cuid())
+  sendNotificationId String
+  sendNotification   SendNotification @relation(fields: [sendNotificationId], references: [id], onDelete: Cascade)
+  roleId             String
+  isActive           Boolean          @default(true)
+  createdAt          DateTime         @default(now())
+}
+
+// read_notification — tracks who read which notification
+model ReadNotification {
+  id                 String           @id @default(cuid())
+  sendNotificationId String
+  sendNotification   SendNotification @relation(fields: [sendNotificationId], references: [id], onDelete: Cascade)
+  staffId            String?
+  studentId          String?
+  parentId           String?
+  createdAt          DateTime         @default(now())
 }
 
 // ─── Notice Board ─────────────────────────────────────────────────────────────

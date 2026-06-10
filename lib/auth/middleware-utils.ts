@@ -283,6 +283,10 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/api/share-contents",     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Admit card templates
   { prefix: "/api/admit-card-templates", roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Library members
+  { prefix: "/api/library/members",      roles: ["SUPER_ADMIN", "ADMIN", "LIBRARIAN"] },
+  // Broadcast notifications
+  { prefix: "/api/notifications/send",   roles: ["SUPER_ADMIN", "ADMIN"] },
 ];
 
 export function canAccessRoute(pathname: string, role: UserRole): boolean {

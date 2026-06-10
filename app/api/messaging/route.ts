@@ -1,23 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendBulkMessage, listMessageLogs } from "@/lib/services/messaging";
 import { getDb } from "@/lib/db";
-import { auth } from "@/lib/auth";
+
+// Mirrors Smart School's Messages_model — messages table (bulk/scheduled messaging)
 
 export async function GET() {
-  return NextResponse.json(await listMessageLogs());
+  const db = await getDb();
+  const logs = await (db as any).messageLog.findMany({
+    orderBy: { createdAt: "desc" },
+    include: { sentBy: { select: { firstName: true, lastName: true, employeeId: true } } },
+  });
+  return NextResponse.json(logs);
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth();
-    const { subject, message, channel, recipientType } = await req.json();
-    const staff = session?.user?.id
-      ? await ((await getDb()) as any).staff.findUnique({ where: { userId: session.user.id } })
-      : null;
-    const log = await sendBulkMessage({ subject, message, channel, recipientType, sentById: staff?.id });
+    const {
+      title, message, sendThrough, sendMail, sendSms,
+      isGroup, isIndividual, isClass, isSchedule,
+      scheduleDatetime, groupList, userList, sendTo,
+      scheduleClass, scheduleSection, templateId, sentById,
+    } = await req.json();
+
+    if (!message?.trim())
+      return NextResponse.json({ error: "message is required" }, { status: 422 });
+
+    const db = await getDb();
+    const log = await (db as any).messageLog.create({
+      data: {
+        title:           title           || null,
+        message:         message.trim(),
+        sendThrough:     sendThrough     || null,
+        sendMail:        Boolean(sendMail),
+        sendSms:         Boolean(sendSms),
+        isGroup:         Boolean(isGroup),
+        isIndividual:    Boolean(isIndividual),
+        isClass:         Boolean(isClass),
+        isSchedule:      Boolean(isSchedule),
+        scheduleDatetime: scheduleDatetime ? new Date(scheduleDatetime) : null,
+        groupList:       groupList        ? JSON.stringify(groupList)   : null,
+        userList:        userList         ? JSON.stringify(userList)    : null,
+        sendTo:          sendTo           || null,
+        scheduleClass:   scheduleClass    || null,
+        scheduleSection: scheduleSection  || null,
+        templateId:      templateId       || null,
+        sentById:        sentById         || null,
+        sent:            !isSchedule,
+      },
+    });
     return NextResponse.json(log, { status: 201 });
   } catch (err: any) {
-    if (err.code === "VALIDATION") return NextResponse.json({ error: err.message }, { status: 422 });
-    return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
