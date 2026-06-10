@@ -260,6 +260,9 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/api/subject-groups", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Class sections API (teacher assignment)
   { prefix: "/api/class-sections", roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Inventory suppliers and stores
+  { prefix: "/api/inventory/suppliers", roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/inventory/stores",    roles: ["SUPER_ADMIN", "ADMIN"] },
 ];
 
 export function canAccessRoute(pathname: string, role: UserRole): boolean {
