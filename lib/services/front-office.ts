@@ -14,7 +14,13 @@ export async function logVisitor(input: { name: string; phone?: string; purpose:
   if (!input.name.trim()) throw Object.assign(new Error("Visitor name is required"), { code: "VALIDATION" });
   if (!input.purpose.trim()) throw Object.assign(new Error("Purpose is required"), { code: "VALIDATION" });
   const prisma = await getDb();
-  return (prisma as any).visitor.create({ data: { ...input, name: input.name.trim() } });
+  return (prisma as any).visitor.create({
+    data: {
+      name:  input.name.trim(),
+      phone: input.phone || null,
+      host:  input.host  || null,
+    },
+  });
 }
 
 export async function checkOutVisitor(id: string) {
@@ -35,7 +41,13 @@ export async function listComplaints() {
 export async function createComplaint(input: { title: string; description: string; raisedBy: string }) {
   if (!input.title.trim()) throw Object.assign(new Error("Title is required"), { code: "VALIDATION" });
   const prisma = await getDb();
-  return (prisma as any).complaint.create({ data: { ...input, title: input.title.trim() } });
+  return (prisma as any).complaint.create({
+    data: {
+      title:       input.title.trim(),
+      description: input.description,
+      raisedBy:    input.raisedBy,
+    },
+  });
 }
 
 export async function updateComplaintStatus(
@@ -58,7 +70,14 @@ export async function createEnquiry(input: { name: string; phone?: string; email
   if (!input.name.trim()) throw Object.assign(new Error("Name is required"), { code: "VALIDATION" });
   if (!input.message.trim()) throw Object.assign(new Error("Message is required"), { code: "VALIDATION" });
   const prisma = await getDb();
-  return (prisma as any).enquiry.create({ data: { ...input, name: input.name.trim() } });
+  return (prisma as any).enquiry.create({
+    data: {
+      name:    input.name.trim(),
+      phone:   input.phone   || null,
+      email:   input.email   || null,
+      message: input.message,
+    },
+  });
 }
 
 export async function updateEnquiryStatus(

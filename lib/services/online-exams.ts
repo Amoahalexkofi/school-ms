@@ -20,7 +20,16 @@ export async function createOnlineExam(input: {
   if (input.duration <= 0) throw Object.assign(new Error("Duration must be positive"), { code: "VALIDATION" });
   if (input.endTime <= input.startTime) throw Object.assign(new Error("End time must be after start time"), { code: "VALIDATION" });
   const prisma = await getDb();
-  return (prisma as any).onlineExam.create({ data: { ...input, title: input.title.trim() } });
+  return (prisma as any).onlineExam.create({
+    data: {
+      title:        input.title.trim(),
+      instructions: input.instructions || null,
+      duration:     input.duration,
+      startTime:    input.startTime,
+      endTime:      input.endTime,
+      classId:      input.classId || null,
+    },
+  });
 }
 
 export async function addQuestion(input: {

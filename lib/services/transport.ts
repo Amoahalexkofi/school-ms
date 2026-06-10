@@ -26,7 +26,15 @@ export async function addVehicle(input: { number: string; type: string; capacity
   const prisma = await getDb();
   const existing = await (prisma as any).vehicle.findUnique({ where: { number: input.number.trim() } });
   if (existing) throw Object.assign(new Error("Vehicle number already exists"), { code: "CONFLICT" });
-  return (prisma as any).vehicle.create({ data: { ...input, number: input.number.trim() } });
+  return (prisma as any).vehicle.create({
+    data: {
+      number:      input.number.trim(),
+      type:        input.type,
+      capacity:    input.capacity,
+      driverName:  input.driverName  || null,
+      driverPhone: input.driverPhone || null,
+    },
+  });
 }
 
 export async function assignStudentToRoute(studentId: string, routeId: string, pickupPointId?: string) {

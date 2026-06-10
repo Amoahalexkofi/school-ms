@@ -24,7 +24,14 @@ export async function createLessonPlan(input: {
   if (!input.topic.trim()) throw Object.assign(new Error("Topic is required"), { code: "VALIDATION" });
   const prisma = await getDb();
   return (prisma as any).lessonPlan.create({
-    data: { ...input, topic: input.topic.trim() },
+    data: {
+      staffId:     input.staffId,
+      subjectId:   input.subjectId,
+      sectionId:   input.sectionId,
+      date:        input.date,
+      topic:       input.topic.trim(),
+      description: input.description || null,
+    },
     include: { staff: true, subject: true, section: { include: { class: true } } },
   });
 }
