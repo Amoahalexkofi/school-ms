@@ -13,14 +13,23 @@ export async function listNotices(audience?: string) {
 export async function createNotice(input: {
   title: string;
   content: string;
-  audience: "ALL" | "STAFF" | "STUDENTS" | "PARENTS";
+  audience?: "ALL" | "STAFF" | "STUDENTS" | "PARENTS";
+  attachment?: string;
+  isPublished?: boolean;
   postedById: string;
 }) {
   if (!input.title.trim()) throw Object.assign(new Error("Title is required"), { code: "VALIDATION" });
   if (!input.content.trim()) throw Object.assign(new Error("Content is required"), { code: "VALIDATION" });
   const prisma = await getDb();
   return (prisma as any).notice.create({
-    data: { ...input, title: input.title.trim(), content: input.content.trim() },
+    data: {
+      title:       input.title.trim(),
+      content:     input.content.trim(),
+      audience:    input.audience    || "ALL",
+      attachment:  input.attachment  || null,
+      isPublished: input.isPublished !== undefined ? Boolean(input.isPublished) : true,
+      postedById:  input.postedById,
+    },
     include: { postedBy: true },
   });
 }

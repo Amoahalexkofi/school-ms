@@ -16,20 +16,26 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    if (!body.fieldLabel?.trim()) {
+    const { tableName, fieldLabel, fieldType, options, isRequired } = await req.json();
+    if (!fieldLabel?.trim()) {
       return NextResponse.json({ error: "Field label required" }, { status: 422 });
     }
 
-    // Set order to last position for that table
     const last = await ((await getDb()) as any).customField.findFirst({
-      where: { tableName: body.tableName, isActive: true },
+      where: { tableName, isActive: true },
       orderBy: { order: "desc" },
     });
     const order = last ? last.order + 1 : 0;
 
     const field = await ((await getDb()) as any).customField.create({
-      data: { ...body, order },
+      data: {
+        tableName,
+        fieldLabel: fieldLabel.trim(),
+        fieldType:  fieldType  || "TEXT",
+        options:    options    || null,
+        isRequired: Boolean(isRequired),
+        order,
+      },
     });
     return NextResponse.json(field, { status: 201 });
   } catch (err: any) {

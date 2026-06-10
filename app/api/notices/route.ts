@@ -16,7 +16,8 @@ export async function POST(req: NextRequest) {
       ? await ((await getDb()) as any).staff.findUnique({ where: { userId: session.user.id } })
       : null;
     if (!staff) return NextResponse.json({ error: "Only staff can post notices" }, { status: 403 });
-    const notice = await createNotice({ ...body, postedById: staff.id });
+    const { title, content, audience, attachment, isPublished } = body;
+    const notice = await createNotice({ title, content, audience, attachment, isPublished, postedById: staff.id });
     return NextResponse.json(notice, { status: 201 });
   } catch (err: any) {
     if (err.code === "VALIDATION") return NextResponse.json({ error: err.message }, { status: 422 });

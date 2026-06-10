@@ -34,7 +34,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     if (toInsert.length > 0) {
       await ((await getDb()) as any).rolePermission.createMany({
-        data: toInsert.map((p) => ({ roleId, ...p })),
+        data: toInsert.map((p) => ({
+          roleId,
+          permCatId: p.permCatId,
+          canView:   Boolean(p.canView),
+          canAdd:    Boolean(p.canAdd),
+          canEdit:   Boolean(p.canEdit),
+          canDelete: Boolean(p.canDelete),
+        })),
       });
     }
 

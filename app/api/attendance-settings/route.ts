@@ -37,15 +37,23 @@ export async function POST(req: NextRequest) {
     const { type, schedules } = body; // type: "student"|"staff", schedules: array
 
     if (type === "staff") {
-      // Upsert staff schedules
       const results = [];
       for (const s of schedules) {
+        const { role, staffAttendanceTypeId, entryTimeFrom, entryTimeTo, totalHours, isActive } = s;
+        const staffData = {
+          role,
+          staffAttendanceTypeId,
+          entryTimeFrom,
+          entryTimeTo,
+          totalHours:  totalHours  || null,
+          isActive:    isActive !== undefined ? Boolean(isActive) : true,
+        };
         const existing = await ((await getDb()) as any).staffAttendanceSchedule.findFirst({
-          where: { role: s.role, staffAttendanceTypeId: s.staffAttendanceTypeId },
+          where: { role: staffData.role, staffAttendanceTypeId: staffData.staffAttendanceTypeId },
         });
         const r = existing
-          ? await ((await getDb()) as any).staffAttendanceSchedule.update({ where: { id: existing.id }, data: s })
-          : await ((await getDb()) as any).staffAttendanceSchedule.create({ data: s });
+          ? await ((await getDb()) as any).staffAttendanceSchedule.update({ where: { id: existing.id }, data: staffData })
+          : await ((await getDb()) as any).staffAttendanceSchedule.create({ data: staffData });
         results.push(r);
       }
       return NextResponse.json(results);
@@ -54,12 +62,21 @@ export async function POST(req: NextRequest) {
     // Student schedules
     const results = [];
     for (const s of schedules) {
+      const { classSectionId, attendanceTypeId, entryTimeFrom, entryTimeTo, totalHours, isActive } = s;
+      const studentData = {
+        classSectionId,
+        attendanceTypeId,
+        entryTimeFrom,
+        entryTimeTo,
+        totalHours: totalHours  || null,
+        isActive:   isActive !== undefined ? Boolean(isActive) : true,
+      };
       const existing = await ((await getDb()) as any).studentAttendanceSchedule.findFirst({
-        where: { classSectionId: s.classSectionId, attendanceTypeId: s.attendanceTypeId },
+        where: { classSectionId: studentData.classSectionId, attendanceTypeId: studentData.attendanceTypeId },
       });
       const r = existing
-        ? await ((await getDb()) as any).studentAttendanceSchedule.update({ where: { id: existing.id }, data: s })
-        : await ((await getDb()) as any).studentAttendanceSchedule.create({ data: s });
+        ? await ((await getDb()) as any).studentAttendanceSchedule.update({ where: { id: existing.id }, data: studentData })
+        : await ((await getDb()) as any).studentAttendanceSchedule.create({ data: studentData });
       results.push(r);
     }
     return NextResponse.json(results);
