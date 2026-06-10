@@ -248,8 +248,10 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/alumni",          roles: ["SUPER_ADMIN", "ADMIN"] },
   { prefix: "/api/alumni",      roles: ["SUPER_ADMIN", "ADMIN"] },
   // Fees sub-routes
-  { prefix: "/api/fees/types",  roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
-  { prefix: "/api/fees/groups", roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  { prefix: "/api/fees/types",             roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  { prefix: "/api/fees/groups",            roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  { prefix: "/api/fees/discounts/assign",  roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  { prefix: "/api/fees/discounts",         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   // Lesson plans API
   { prefix: "/api/lesson-plans", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Syllabus API

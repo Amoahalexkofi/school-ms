@@ -93,6 +93,7 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, stu
               {[
                 { href: "/fees/setup",          label: "Fee Setup",        sub: "Categories, types, groups & discounts",  icon: Settings,       color: "bg-indigo-50 text-indigo-600" },
                 { href: "/fees/assign",         label: "Assign Fees",      sub: "Assign fee groups to a class",           icon: Users,          color: "bg-blue-50 text-blue-600" },
+                { href: "/fees/discounts",      label: "Assign Discounts", sub: "Assign discounts to students by class",  icon: Tag,            color: "bg-green-50 text-green-600" },
                 { href: "/fees/carry-forward",  label: "Carry Forward",    sub: "Roll over outstanding balances",         icon: ArrowRightLeft, color: "bg-orange-50 text-orange-600" },
                 { href: "/fees/report",         label: "Fee Reports",      sub: "Collection & due fee reports",           icon: BarChart3,      color: "bg-amber-50 text-amber-600" },
               ].map(({ href, label, sub, icon: Icon, color }) => (
