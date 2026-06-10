@@ -11,10 +11,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json(); // array of { type, label, emailEnabled, smsEnabled, pushEnabled }
     const results = [];
     for (const item of body) {
-      const existing = await ((await getDb()) as any).notificationSetting.findUnique({ where: { type: item.type } });
+      const { type, label, emailEnabled, smsEnabled, pushEnabled } = item;
+      const data = {
+        type,
+        label:        label        ?? undefined,
+        emailEnabled: emailEnabled !== undefined ? Boolean(emailEnabled) : undefined,
+        smsEnabled:   smsEnabled   !== undefined ? Boolean(smsEnabled)   : undefined,
+        pushEnabled:  pushEnabled  !== undefined ? Boolean(pushEnabled)  : undefined,
+      };
+      const existing = await ((await getDb()) as any).notificationSetting.findUnique({ where: { type } });
       const r = existing
-        ? await ((await getDb()) as any).notificationSetting.update({ where: { type: item.type }, data: item })
-        : await ((await getDb()) as any).notificationSetting.create({ data: item });
+        ? await ((await getDb()) as any).notificationSetting.update({ where: { type }, data })
+        : await ((await getDb()) as any).notificationSetting.create({ data });
       results.push(r);
     }
     return NextResponse.json(results);
