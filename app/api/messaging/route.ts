@@ -10,11 +10,11 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
-    const body = await req.json();
+    const { subject, message, channel, recipientType } = await req.json();
     const staff = session?.user?.id
       ? await ((await getDb()) as any).staff.findUnique({ where: { userId: session.user.id } })
       : null;
-    const log = await sendBulkMessage({ ...body, sentById: staff?.id });
+    const log = await sendBulkMessage({ subject, message, channel, recipientType, sentById: staff?.id });
     return NextResponse.json(log, { status: 201 });
   } catch (err: any) {
     if (err.code === "VALIDATION") return NextResponse.json({ error: err.message }, { status: 422 });

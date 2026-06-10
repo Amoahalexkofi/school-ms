@@ -13,10 +13,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const { firstName, lastName, dateOfBirth, gender, classAppliedFor, parentName, parentPhone, parentEmail, address, notes } = await req.json();
     const app = await submitApplication({
-      ...body,
-      dateOfBirth: new Date(body.dateOfBirth),
+      firstName, lastName,
+      dateOfBirth: new Date(dateOfBirth),
+      gender, classAppliedFor, parentName, parentPhone,
+      parentEmail: parentEmail || undefined,
+      address:     address     || undefined,
+      notes:       notes       || undefined,
     });
     return NextResponse.json(app, { status: 201 });
   } catch (err: any) {

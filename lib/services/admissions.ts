@@ -30,10 +30,16 @@ export async function submitApplication(input: {
   const prisma = await getDb();
   return (prisma as any).admissionApplication.create({
     data: {
-      ...input,
-      firstName: input.firstName.trim(),
-      lastName: input.lastName.trim(),
-      parentName: input.parentName.trim(),
+      firstName:       input.firstName.trim(),
+      lastName:        input.lastName.trim(),
+      dateOfBirth:     input.dateOfBirth,
+      gender:          input.gender,
+      classAppliedFor: input.classAppliedFor.trim(),
+      parentName:      input.parentName.trim(),
+      parentPhone:     input.parentPhone.trim(),
+      parentEmail:     input.parentEmail  || null,
+      address:         input.address      || null,
+      notes:           input.notes        || null,
     },
   });
 }

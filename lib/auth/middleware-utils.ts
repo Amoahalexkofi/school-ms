@@ -256,6 +256,10 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/api/syllabus", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Grades API
   { prefix: "/api/grades", roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Subject groups API
+  { prefix: "/api/subject-groups", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
+  // Class sections API (teacher assignment)
+  { prefix: "/api/class-sections", roles: ["SUPER_ADMIN", "ADMIN"] },
 ];
 
 export function canAccessRoute(pathname: string, role: UserRole): boolean {

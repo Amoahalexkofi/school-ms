@@ -13,8 +13,26 @@ export async function getStudentById(id: string) {
   });
 }
 
-export async function updateStudent(id: string, data: Record<string, unknown>) {
+const STUDENT_ALLOWED_FIELDS = [
+  "firstName","middleName","lastName","admissionDate","dateOfBirth","gender",
+  "bloodGroup","religion","caste","category","nationality","rte","mobileNo",
+  "currentAddress","permanentAddress","city","state","country","pincode",
+  "guardianIs","fatherName","fatherPhone","fatherEmail","fatherOccupation",
+  "motherName","motherPhone","motherEmail","motherOccupation",
+  "guardianName","guardianRelation","guardianPhone","guardianEmail","guardianOccupation","guardianAddress",
+  "previousSchool","previousClass","previousPercent","previousTcNo","samagraId",
+  "schoolHouseId","height","weight","bankAccountNo","bankName","bankBranch","ifscCode",
+  "aadharNo","note","about","image","isActive","disabledAt",
+] as const;
+
+export async function updateStudent(id: string, rawData: Record<string, unknown>) {
+  const data: Record<string, unknown> = {};
+  for (const f of STUDENT_ALLOWED_FIELDS) {
+    if (f in rawData) data[f] = rawData[f];
+  }
+
   if (data.dateOfBirth) validateStudentAge(data.dateOfBirth as Date, new Date());
+
   const prisma = await getDb();
   if (data.firstName !== undefined || data.lastName !== undefined) {
     const current = await (prisma as any).student.findUnique({ where: { id } });
