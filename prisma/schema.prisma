@@ -254,7 +254,9 @@ model Staff {
   bankName          String?
   ifscCode          String?
   bankBranch        String?
+  accountTitle      String?
   epfNo             String?
+  verificationCode  String?
   payscale          String?
   shift             String?
   location          String?
@@ -381,6 +383,12 @@ model Student {
   // App keys
   appKey             String?
   parentAppKey       String?
+  // Contact (mirrors students.email — separate from login User.email)
+  email              String?
+  // Parent user account link (mirrors students.parent_id)
+  parentId           String?
+  // Student designation/title (mirrors students.designation)
+  designation        String?
   // Status
   note               String?
   about              String?
@@ -826,6 +834,7 @@ model ExamSchedule {
   passingMarks   Int
   note           String?
   isActive       Boolean         @default(true)
+  isPublished    Boolean         @default(false)
   createdAt      DateTime        @default(now())
 
   markEntries MarkEntry[]

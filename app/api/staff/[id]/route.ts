@@ -7,7 +7,7 @@ const ALLOWED_FIELDS = [
   "dateOfJoining","dateOfLeaving","contractType","contactNo","emergencyContact",
   "localAddress","permanentAddress","city","state","country","image",
   "basicSalary","bankAccountNo","bankName","bankBranch","ifscCode","epfNo",
-  "payscale","shift","location",
+  "accountTitle","payscale","shift","location",
   "facebook","twitter","linkedin","instagram",
   "resume","joiningLetter","resignationLetter","otherDocumentName","otherDocumentFile",
   "note","isActive","disabledAt",

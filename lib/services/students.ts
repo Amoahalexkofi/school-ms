@@ -23,6 +23,9 @@ const STUDENT_ALLOWED_FIELDS = [
   "previousSchool","previousClass","previousPercent","previousTcNo","samagraId",
   "schoolHouseId","height","weight","bankAccountNo","bankName","bankBranch","ifscCode",
   "aadharNo","note","about","image","isActive","disabledAt",
+  "email","parentId","designation",
+  "fatherPic","motherPic","guardianPic","fatherEmail","motherEmail",
+  "disableReason","disableNote",
 ] as const;
 
 export async function updateStudent(id: string, rawData: Record<string, unknown>) {
@@ -76,6 +79,8 @@ export interface CreateStudentInput {
   guardianName?: string;
   guardianPhone?: string;
   schoolHouseId?: string;
+  parentId?: string;
+  designation?: string;
 }
 
 export async function createStudent(input: CreateStudentInput) {
@@ -115,6 +120,9 @@ export async function createStudent(input: CreateStudentInput) {
         guardianName: input.guardianName,
         guardianPhone: input.guardianPhone,
         schoolHouseId: input.schoolHouseId,
+        email:        input.email,
+        parentId:     input.parentId,
+        designation:  input.designation,
       },
     });
     return student;

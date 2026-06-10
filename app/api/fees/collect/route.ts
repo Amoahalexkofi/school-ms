@@ -7,7 +7,14 @@ import { getDb } from "@/lib/db";
 // Returns { id, subInvoiceId } so the receipt can reference the exact payment.
 export async function POST(req: NextRequest) {
   try {
-    const { studentFeesMasterId, feeGroupItemId, amount, paymentMode, description } = await req.json();
+    const {
+      studentFeesMasterId,
+      feeGroupItemId,
+      amount,
+      paymentMode,
+      description,
+      discountIds,   // optional: string[]
+    } = await req.json();
 
     if (!studentFeesMasterId) return NextResponse.json({ error: "studentFeesMasterId required" }, { status: 422 });
     if (!amount || Number(amount) <= 0) return NextResponse.json({ error: "Amount must be positive" }, { status: 422 });
@@ -15,9 +22,35 @@ export async function POST(req: NextRequest) {
     const db = await getDb();
     const date = new Date().toISOString().slice(0, 10);
 
+    // Resolve discount amount from discountIds (mirrors $fee_discounts loop in Smart School)
+    let totalDiscount = 0;
+    const resolvedDiscounts: Array<{ id: string; discountAmount: number }> = [];
+
+    if (Array.isArray(discountIds) && discountIds.length > 0) {
+      const feeDiscounts = await (db as any).feeDiscount.findMany({
+        where: { id: { in: discountIds }, isActive: true },
+      });
+      for (const d of feeDiscounts) {
+        let disc = 0;
+        if (d.type === "percentage") {
+          disc = (Number(amount) * Number(d.percentage)) / 100;
+        } else {
+          disc = Number(d.amount);
+        }
+        totalDiscount += disc;
+        resolvedDiscounts.push({ id: d.id, discountAmount: disc });
+      }
+    }
+
+    // Fetch master to get studentId for StudentAppliedDiscount
+    const master = await (db as any).studentFeesMaster.findUnique({
+      where: { id: studentFeesMasterId },
+      select: { studentSessionId: true, studentSession: { select: { studentId: true } } },
+    });
+
     const newEntry = {
       amount:       Number(amount),
-      discount:     0,
+      discount:     totalDiscount,
       fine:         0,
       date,
       payment_mode: paymentMode || "CASH",
@@ -36,29 +69,44 @@ export async function POST(req: NextRequest) {
     let deposit: any;
     let subInvoiceId: number;
 
-    if (existing) {
-      // Append to existing JSON (inv_no = max key + 1)
-      const detail = existing.amountDetail as Record<string, any>;
-      const keys = Object.keys(detail).map(Number);
-      subInvoiceId = Math.max(...keys) + 1;
-      const updated = { ...detail, [subInvoiceId]: { ...newEntry, inv_no: subInvoiceId } };
-      deposit = await (db as any).feeDeposit.update({
-        where: { id: existing.id },
-        data: { amountDetail: updated },
-      });
-    } else {
-      // New deposit row
-      subInvoiceId = 1;
-      deposit = await (db as any).feeDeposit.create({
-        data: {
-          studentFeesMasterId,
-          feeGroupItemId: feeGroupItemId || null,
-          amountDetail: { "1": { ...newEntry, inv_no: 1 } },
-        },
-      });
-    }
+    const result = await (db as any).$transaction(async (tx: any) => {
+      if (existing) {
+        const detail = existing.amountDetail as Record<string, any>;
+        const keys = Object.keys(detail).map(Number);
+        subInvoiceId = Math.max(...keys) + 1;
+        const updated = { ...detail, [subInvoiceId]: { ...newEntry, inv_no: subInvoiceId } };
+        deposit = await tx.feeDeposit.update({
+          where: { id: existing.id },
+          data: { amountDetail: updated },
+        });
+      } else {
+        subInvoiceId = 1;
+        deposit = await tx.feeDeposit.create({
+          data: {
+            studentFeesMasterId,
+            feeGroupItemId: feeGroupItemId || null,
+            amountDetail: { "1": { ...newEntry, inv_no: 1 } },
+          },
+        });
+      }
 
-    return NextResponse.json({ id: deposit.id, subInvoiceId }, { status: 201 });
+      // Create StudentAppliedDiscount records for each discount applied
+      if (resolvedDiscounts.length > 0 && master?.studentSession?.studentId) {
+        await tx.studentAppliedDiscount.createMany({
+          data: resolvedDiscounts.map((d) => ({
+            studentId:    master.studentSession.studentId,
+            feeDepositId: deposit.id,
+            invoiceId:    null,
+            subInvoiceId,
+          })),
+          skipDuplicates: true,
+        });
+      }
+
+      return { id: deposit.id, subInvoiceId };
+    });
+
+    return NextResponse.json(result, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
-const SCHED_ALLOWED = ["subjectId","classSectionId","sessionId","dateOfExam","startTime","endTime","fullMarks","passingMarks","room","isActive"];
+const SCHED_ALLOWED = ["subjectId","classSectionId","sessionId","dateOfExam","startTime","endTime","fullMarks","passingMarks","room","isActive","isPublished"];
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
