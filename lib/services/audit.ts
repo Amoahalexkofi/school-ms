@@ -9,7 +9,16 @@ export async function log(entry: {
   metadata?: Record<string, unknown>;
 }) {
   const prisma = await getDb();
-  return (prisma as any).auditLog.create({ data: entry });
+  return (prisma as any).auditLog.create({
+    data: {
+      userId:    entry.userId    || null,
+      userEmail: entry.userEmail || null,
+      action:    entry.action,
+      entity:    entry.entity,
+      entityId:  entry.entityId  || null,
+      metadata:  entry.metadata  ?? null,
+    },
+  });
 }
 
 export async function getAuditLogs(filters?: { entity?: string; userId?: string; limit?: number }) {
