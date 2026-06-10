@@ -159,9 +159,9 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Fee Session Group detail — view/manage items in a session group (`/fees/groups/[id]`)
 - [x] Fee Report — date range + session filter, total collected + per-student breakdown (`/fees/report`)
 - [x] API: CRUD `/api/fees/{categories,types,groups,session-groups,items,assign,collect,payments,invoices,student,report}`
-- [ ] Fee Carry Forward — carry previous session balance as `isSystem=true` StudentFeesMaster records
-- [ ] Fee Discounts — define discount types, assign to student, apply at payment
-- [ ] Print receipt
+- [x] Fee Carry Forward — carry previous session balance as `isSystem=true` StudentFeesMaster records
+- [x] Fee Discounts — define discount types (`/fees/setup` Discounts tab), assign to students (`/fees/discounts`), apply at payment (`/api/fees/collect` with `discountIds[]`)
+- [x] Print receipt — `/fees/receipt/[depositId]/[subInvoiceId]` with auto-print
 
 ---
 
@@ -214,9 +214,9 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Routes page — add routes, assign vehicle
 - [x] Add vehicle form, add route form
 - [x] API: CRUD `/api/transport/{vehicles,routes,pickup-points,assign}`
-- [ ] Pickup Points management UI
-- [ ] Route Pickup Points — add points to route with timing + fee
-- [ ] Assign student to route + pickup point
+- [x] Pickup Points management UI — "Pickup Points" tab in `/transport`
+- [x] Route Pickup Points — expandable stops on each route (timing + fee) in Routes tab
+- [x] Assign student to route + pickup point — "Assignments" tab in `/transport`
 
 ---
 
@@ -268,9 +268,9 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Add Complaint form
 - [x] Enquiries — prospective admission inquiries with follow-up date
 - [x] Add Enquiry form
-- [x] API: CRUD `/api/front-office/{visitors,complaints,complaint-types,enquiries}`
-- [ ] Dispatch log (incoming/outgoing correspondence)
-- [ ] Visitor checkout + report
+- [x] API: CRUD `/api/front-office/{visitors,complaints,complaint-types,enquiries,dispatch}`
+- [x] Dispatch log — incoming/outgoing correspondence tab in `/front-office`, API at `/api/front-office/dispatch`
+- [x] Visitor checkout — "Check Out" button in Visitors tab sets outTime
 
 ---
 

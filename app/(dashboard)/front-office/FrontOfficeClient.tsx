@@ -6,10 +6,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, CheckCircle2, UserCheck, X, Pencil, Trash2 } from "lucide-react";
+import { Plus, CheckCircle2, UserCheck, X, Pencil, Trash2, Send, Inbox } from "lucide-react";
 
-type Props = { purposes: any[]; visitors: any[]; complaintTypes: any[]; complaints: any[]; enquiries: any[] };
-type Tab = "visitors" | "complaints" | "enquiries" | "complaint-types";
+type Props = { purposes: any[]; visitors: any[]; complaintTypes: any[]; complaints: any[]; enquiries: any[]; dispatches: any[] };
+type Tab = "visitors" | "complaints" | "enquiries" | "complaint-types" | "dispatch";
 
 const COMPLAINT_STATUS_STYLE: Record<string, string> = {
   OPEN:        "bg-red-100 text-red-700",
@@ -23,10 +23,24 @@ const ENQ_STATUS_STYLE: Record<string, string> = {
   CLOSED:    "bg-gray-100 text-gray-600",
 };
 
-export function FrontOfficeClient({ purposes, visitors, complaintTypes: initTypes, complaints, enquiries }: Props) {
+export function FrontOfficeClient({ purposes, visitors, complaintTypes: initTypes, complaints, enquiries, dispatches: initialDispatches }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("visitors");
   const [checkedOut, setCheckedOut] = useState<string | null>(null);
+
+  // Dispatch state
+  const [dispatches,    setDispatches]    = useState(initialDispatches);
+  const [dispPanel,     setDispPanel]     = useState(false);
+  const [dispType,      setDispType]      = useState("incoming");
+  const [dispTitle,     setDispTitle]     = useState("");
+  const [dispRefNo,     setDispRefNo]     = useState("");
+  const [dispFromTo,    setDispFromTo]    = useState("");
+  const [dispAddress,   setDispAddress]   = useState("");
+  const [dispNote,      setDispNote]      = useState("");
+  const [dispDate,      setDispDate]      = useState(new Date().toISOString().slice(0, 10));
+  const [dispLoad,      setDispLoad]      = useState(false);
+  const [dispErr,       setDispErr]       = useState("");
+  const [dispFilter,    setDispFilter]    = useState<"all" | "incoming" | "outgoing">("all");
 
   // Complaint types state
   const [types, setTypes]         = useState(initTypes);
@@ -101,10 +115,34 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
     catch { alert("Failed to delete"); }
   }
 
+  // Dispatch CRUD
+  async function saveDispatch() {
+    if (!dispTitle.trim() || !dispDate) { setDispErr("Title and date are required"); return; }
+    setDispLoad(true); setDispErr("");
+    try {
+      const res = await fetch("/api/front-office/dispatch", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: dispType, title: dispTitle, refNo: dispRefNo || null,
+          fromTo: dispFromTo || null, address: dispAddress || null,
+          note: dispNote || null, date: dispDate,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setDispatches(ds => [data, ...ds]);
+      setDispPanel(false);
+      setDispTitle(""); setDispRefNo(""); setDispFromTo(""); setDispAddress(""); setDispNote("");
+      setDispDate(new Date().toISOString().slice(0, 10));
+    } catch (e: any) { setDispErr(e.message); }
+    finally { setDispLoad(false); }
+  }
+
   const TABS = [
     { key: "visitors"        as Tab, label: `Visitors (${visitors.filter(v => !v.outTime).length} in)` },
     { key: "complaints"      as Tab, label: `Complaints (${complaints.filter(c => c.status === "OPEN").length} open)` },
     { key: "enquiries"       as Tab, label: `Enquiries (${enquiries.filter(e => e.status === "NEW").length} new)` },
+    { key: "dispatch"        as Tab, label: `Dispatch (${dispatches.length})` },
     { key: "complaint-types" as Tab, label: "Complaint Types" },
   ];
 
@@ -245,6 +283,99 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
                     </td>
                   </tr>
                 ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ── Dispatch ── */}
+      {tab === "dispatch" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex gap-1">
+              {(["all", "incoming", "outgoing"] as const).map(f => (
+                <button key={f} onClick={() => setDispFilter(f)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${dispFilter === f ? "bg-blue-600 text-white" : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
+                  {f === "all" ? "All" : f === "incoming" ? "Incoming" : "Outgoing"}
+                </button>
+              ))}
+            </div>
+            <Button onClick={() => { setDispPanel(true); setDispErr(""); }}>
+              <Plus className="h-4 w-4 mr-1.5" /> Add Record
+            </Button>
+          </div>
+
+          {dispPanel && (
+            <div className="bg-white rounded-xl border border-blue-200 p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-blue-800">New Dispatch Record</p>
+                <button onClick={() => setDispPanel(false)}><X className="h-4 w-4 text-gray-400" /></button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Type *</label>
+                  <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={dispType} onChange={e => setDispType(e.target.value)}>
+                    <option value="incoming">Incoming</option>
+                    <option value="outgoing">Outgoing</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Title *</label>
+                  <Input value={dispTitle} onChange={e => setDispTitle(e.target.value)} placeholder="e.g. Letter from Ministry" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Reference No.</label>
+                  <Input value={dispRefNo} onChange={e => setDispRefNo(e.target.value)} placeholder="e.g. MOE/2026/001" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">{dispType === "incoming" ? "From" : "To"}</label>
+                  <Input value={dispFromTo} onChange={e => setDispFromTo(e.target.value)} placeholder={dispType === "incoming" ? "Sender name / organization" : "Recipient name / organization"} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Date *</label>
+                  <input type="date" value={dispDate} onChange={e => setDispDate(e.target.value)}
+                    className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Note</label>
+                  <Input value={dispNote} onChange={e => setDispNote(e.target.value)} placeholder="Optional note" />
+                </div>
+              </div>
+              {dispErr && <p className="text-sm text-red-600">{dispErr}</p>}
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setDispPanel(false)}>Cancel</Button>
+                <Button disabled={dispLoad} onClick={saveDispatch}>{dispLoad ? "Saving…" : "Save"}</Button>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Type","Title","Ref No.","From / To","Date","Note"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600 text-xs">{h}</th>)}</tr>
+              </thead>
+              <tbody className="divide-y">
+                {dispatches.filter(d => dispFilter === "all" || d.type === dispFilter).length === 0
+                  ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No dispatch records.</td></tr>
+                  : dispatches
+                      .filter(d => dispFilter === "all" || d.type === dispFilter)
+                      .map((d: any) => (
+                    <tr key={d.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${d.type === "incoming" ? "bg-blue-100 text-blue-700" : "bg-amber-100 text-amber-700"}`}>
+                          {d.type === "incoming" ? <Inbox className="h-3 w-3" /> : <Send className="h-3 w-3" />}
+                          {d.type}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-medium text-gray-900 max-w-[200px] truncate">{d.title}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{d.refNo ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-600 max-w-[150px] truncate">{d.fromTo ?? "—"}</td>
+                      <td className="px-4 py-3 text-xs text-gray-500">{new Date(d.date).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-xs text-gray-400 max-w-[200px] truncate">{d.note ?? "—"}</td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
