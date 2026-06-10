@@ -263,6 +263,26 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // Inventory suppliers and stores
   { prefix: "/api/inventory/suppliers", roles: ["SUPER_ADMIN", "ADMIN"] },
   { prefix: "/api/inventory/stores",    roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Disable reasons
+  { prefix: "/api/disable-reasons",    roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Fee reminders
+  { prefix: "/api/fees/reminders",     roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  // Payment gateways
+  { prefix: "/api/payment-gateways",   roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Certificate templates
+  { prefix: "/api/certificates",       roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Marksheet templates
+  { prefix: "/api/marksheets",         roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Staff ID card templates
+  { prefix: "/api/staff-id-cards",     roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Student & staff timelines
+  { prefix: "/api/timelines",          roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Subject-level attendance
+  { prefix: "/api/subject-attendance", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
+  // Share content
+  { prefix: "/api/share-contents",     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
+  // Admit card templates
+  { prefix: "/api/admit-card-templates", roles: ["SUPER_ADMIN", "ADMIN"] },
 ];
 
 export function canAccessRoute(pathname: string, role: UserRole): boolean {

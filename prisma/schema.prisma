@@ -105,8 +105,18 @@ model ClassSection {
   lessonPlans          LessonPlan[]
   attendanceSchedules  StudentAttendanceSchedule[]
   subjectGroupSections SubjectGroupSection[]
+  classSectionTimes    ClassSectionTime[]
 
   @@unique([classId, sectionId])
+}
+
+model ClassSectionTime {
+  id             String       @id @default(cuid())
+  classSectionId String
+  classSection   ClassSection @relation(fields: [classSectionId], references: [id])
+  time           String       // "HH:MM" — attendance auto-mark trigger time
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 // ─── Subjects ─────────────────────────────────────────────────────────────────
@@ -278,6 +288,7 @@ model Staff {
   payrollEntries        PayrollEntry[]
   questions             Question[]
   appRole               StaffAppRole?
+  timelines             StaffTimeline[]
 }
 
 model TeacherSubject {
@@ -392,6 +403,7 @@ model Student {
   feesMasters              StudentFeesMaster[]
   appliedDiscounts         StudentAppliedDiscount[]
   alumni                   Alumni?
+  timelines                StudentTimeline[]
 }
 
 model StudentSession {
@@ -419,9 +431,10 @@ model StudentSession {
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
 
-  attendances          StudentAttendance[]
-  feesMasters          StudentFeesMaster[]
-  studentTransportFees StudentTransportFee[]
+  attendances             StudentAttendance[]
+  feesMasters             StudentFeesMaster[]
+  studentTransportFees    StudentTransportFee[]
+  subjectAttendances      StudentSubjectAttendance[]
 
   @@unique([studentId, sessionId, classSectionId])
 }
@@ -637,8 +650,9 @@ model AttendanceType {
   forQR     Boolean  @default(true)
   createdAt DateTime @default(now())
 
-  studentAttendances StudentAttendance[]
-  schedules          StudentAttendanceSchedule[]
+  studentAttendances        StudentAttendance[]
+  schedules                 StudentAttendanceSchedule[]
+  studentSubjectAttendances StudentSubjectAttendance[]
 }
 
 model StudentAttendanceSchedule {
@@ -969,6 +983,8 @@ model TimetableSlot {
   sessionId      String?
   isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
+
+  subjectAttendances StudentSubjectAttendance[]
 
   @@unique([classSectionId, day, timeFrom])
 }
@@ -1842,6 +1858,36 @@ model CustomFieldValue {
   @@unique([customFieldId, belongTableId])
 }
 
+// ─── Disable Reasons (for student/staff disable workflow) ─────────────────────
+
+model DisableReason {
+  id        String   @id @default(cuid())
+  reason    String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Payment Gateways ─────────────────────────────────────────────────────────
+
+model PaymentGateway {
+  id                 String   @id @default(cuid())
+  paymentType        String   @unique // "stripe" | "paypal" | "razorpay" | "paytm" etc.
+  apiUsername        String?
+  apiSecretKey       String?
+  apiPublishableKey  String?
+  apiPassword        String?
+  apiSignature       String?
+  apiEmail           String?
+  accountNo          String?
+  isSandbox          Boolean  @default(true)  // true=testing, false=live
+  isActive           Boolean  @default(false)
+  chargeType         String?  // "percent" | "fixed"
+  chargeValue        String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
 // ─── Audit Log ────────────────────────────────────────────────────────────────
 
 model AuditLog {
@@ -2030,6 +2076,175 @@ model StaffAttendanceSchedule {
   createdAt             DateTime            @default(now())
 
   @@unique([role, staffAttendanceTypeId])
+}
+
+// ─── Admit Card Templates ─────────────────────────────────────────────────────
+
+model AdmitCardTemplate {
+  id           String   @id @default(cuid())
+  template     String?
+  heading      String?  @db.Text
+  title        String?  @db.Text
+  leftLogo     String?
+  rightLogo    String?
+  examName     String?
+  schoolName   String?
+  examCenter   String?
+  sign         String?
+  backgroundImg String?
+  isName       Boolean  @default(true)
+  isFatherName Boolean  @default(true)
+  isMotherName Boolean  @default(true)
+  isDob        Boolean  @default(true)
+  isAdmissionNo Boolean @default(true)
+  isRollNo     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── Student Subject-Level Attendance ────────────────────────────────────────
+
+model StudentSubjectAttendance {
+  id               String         @id @default(cuid())
+  studentSessionId String
+  studentSession   StudentSession @relation(fields: [studentSessionId], references: [id])
+  timetableSlotId  String
+  timetableSlot    TimetableSlot  @relation(fields: [timetableSlotId], references: [id])
+  attendanceTypeId String
+  attendanceType   AttendanceType @relation(fields: [attendanceTypeId], references: [id])
+  date             DateTime       @db.Date
+  remark           String?        @db.Text
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@unique([studentSessionId, timetableSlotId, date])
+}
+
+// ─── Share Content (document sharing between staff/students/parents) ──────────
+
+model ShareContent {
+  id          String   @id @default(cuid())
+  sendTo      String?
+  title       String?  @db.Text
+  shareDate   DateTime?
+  validUpto   DateTime?
+  description String?  @db.Text
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── Certificate Templates ────────────────────────────────────────────────────
+
+model Certificate {
+  id                  String   @id @default(cuid())
+  certificateName     String
+  certificateText     String   @db.Text
+  leftHeader          String   @default("")
+  centerHeader        String   @default("")
+  rightHeader         String   @default("")
+  leftFooter          String   @default("")
+  rightFooter         String   @default("")
+  centerFooter        String   @default("")
+  backgroundImage     String?
+  // createdFor: 1 = staff, 2 = students
+  createdFor          Int      @default(2)
+  status              Int      @default(1)
+  headerHeight        Int      @default(0)
+  contentHeight       Int      @default(0)
+  footerHeight        Int      @default(0)
+  contentWidth        Int      @default(0)
+  enableStudentImage  Boolean  @default(false)
+  enableImageHeight   Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// ─── Marksheet Templates ─────────────────────────────────────────────────────
+
+model TemplateMarksheet {
+  id           String   @id @default(cuid())
+  headerImage  String?
+  template     String?
+  heading      String?  @db.Text
+  title        String?  @db.Text
+  leftLogo     String?
+  rightLogo    String?
+  examName     String?
+  schoolName   String?
+  examCenter   String?
+  leftSign     String?
+  middleSign   String?
+  rightSign    String?
+  examSession  Int      @default(1)
+  isName       Boolean  @default(true)
+  isFatherName Boolean  @default(true)
+  isMotherName Boolean  @default(true)
+  isDob        Boolean  @default(true)
+  isAdmissionNo Boolean @default(true)
+  isRollNo     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── Staff ID Card Templates ──────────────────────────────────────────────────
+
+model StaffIdCard {
+  id                     String   @id @default(cuid())
+  title                  String
+  schoolName             String
+  schoolAddress          String
+  background             String?
+  logo                   String?
+  signImage              String?
+  headerColor            String?
+  enableVerticalCard     Boolean  @default(false)
+  enableStaffRole        Boolean  @default(true)
+  enableStaffId          Boolean  @default(true)
+  enableStaffDepartment  Boolean  @default(true)
+  enableDesignation      Boolean  @default(true)
+  enableName             Boolean  @default(true)
+  enableFathersName      Boolean  @default(false)
+  enableMothersName      Boolean  @default(false)
+  enableDateOfJoining    Boolean  @default(true)
+  enablePermanentAddress Boolean  @default(false)
+  enableStaffDob         Boolean  @default(false)
+  enableStaffPhone       Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+// ─── Student Timeline ─────────────────────────────────────────────────────────
+
+model StudentTimeline {
+  id               String   @id @default(cuid())
+  studentId        String
+  student          Student  @relation(fields: [studentId], references: [id])
+  title            String
+  timelineDate     DateTime
+  description      String   @db.Text
+  document         String?
+  status           String   @default("yes")
+  createdStudentId String?
+  date             DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ─── Staff Timeline ───────────────────────────────────────────────────────────
+
+model StaffTimeline {
+  id           String   @id @default(cuid())
+  staffId      String
+  staff        Staff    @relation(fields: [staffId], references: [id])
+  title        String
+  timelineDate DateTime
+  description  String
+  document     String?
+  status       String   @default("yes")
+  date         DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 // ─── SaaS Registry (lives in public schema — shared across all tenants) ───────
