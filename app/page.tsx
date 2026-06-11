@@ -2,9 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import {
-  Users, ClipboardList, BookOpen, DollarSign, UserCog, Library,
-  Bus, Package, Monitor, BarChart2, MessageCircle, Building2,
-  CheckCircle2, ArrowRight, GraduationCap, Globe, Shield, Zap,
+  Users, ClipboardList, DollarSign, GraduationCap,
+  CheckCircle2, ArrowRight, Star, ChevronRight,
 } from "lucide-react";
 
 export default async function LandingPage() {
@@ -12,312 +11,663 @@ export default async function LandingPage() {
   if (session?.user) redirect("/dashboard");
 
   return (
-    <div className="min-h-screen bg-white font-[family-name:var(--font-plus-jakarta-sans)]">
+    <div className="min-h-screen bg-white antialiased" style={{ scrollBehavior: "smooth" }}>
 
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <GraduationCap className="h-5 w-5 text-white" />
+      {/* ── NAV ── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                <GraduationCap className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-base font-extrabold text-gray-900 tracking-tight">Novalss</span>
+            </Link>
+            <div className="hidden lg:flex items-center gap-7">
+              <a href="#features"     className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Features</a>
+              <a href="#how-it-works" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">How it works</a>
+              <a href="#pricing"      className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Pricing</a>
+              <a href="#faq"          className="text-sm text-gray-500 hover:text-gray-900 transition-colors">FAQ</a>
             </div>
-            <span className="text-lg font-bold text-gray-900">Novalss</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
-            <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
-            <a href="#pricing"  className="hover:text-gray-900 transition-colors">Pricing</a>
-            <a href="#faq"      className="hover:text-gray-900 transition-colors">FAQ</a>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/sign-in" className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors">
-              Sign in
-            </Link>
-            <Link href="/register" className="inline-flex items-center gap-1.5 text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
-              Get started <ArrowRight className="h-3.5 w-3.5" />
+            <Link href="/sign-in"  className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 transition-colors">Sign in</Link>
+            <Link href="/register" className="inline-flex items-center gap-1.5 text-sm bg-gray-900 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+              Get started free <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-20 pb-28">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.12),transparent_60%)]" />
-        <div className="relative max-w-6xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
-            <Zap className="h-3.5 w-3.5" /> Built for modern schools
+      {/* ── HERO ── */}
+      <section className="relative bg-slate-950 pt-32 pb-0 overflow-hidden">
+        {/* Grid pattern */}
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0)", backgroundSize: "28px 28px" }} />
+        {/* Glow orbs */}
+        <div className="absolute top-24 left-1/3 w-[700px] h-[400px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-40 right-1/4 w-[500px] h-[300px] bg-purple-600/15 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="relative max-w-7xl mx-auto px-6">
+          {/* Badge */}
+          <div className="flex justify-center mb-7">
+            <div className="inline-flex items-center gap-2 border border-white/10 bg-white/5 text-white/60 text-xs px-3.5 py-1.5 rounded-full font-medium">
+              <span className="w-2 h-2 bg-emerald-400 rounded-full" />
+              Now live — 50+ schools onboarded across West Africa
+            </div>
           </div>
-          <h1 className="text-5xl sm:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight max-w-3xl mx-auto">
-            Run your school<br />
-            <span className="text-indigo-600">smarter, not harder</span>
+
+          {/* Headline */}
+          <h1 className="text-center text-5xl sm:text-6xl lg:text-[72px] font-black text-white tracking-tight leading-[1.04] max-w-4xl mx-auto">
+            The operating system<br />
+            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
+              for modern schools
+            </span>
           </h1>
-          <p className="mt-6 text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            Novalss is a complete school management platform — students, fees, exams, attendance,
-            staff, and more. Every school gets its own subdomain in minutes.
+
+          <p className="text-center mt-6 text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
+            Students, staff, fees, exams, attendance — and 17 more modules — unified in one platform.
+            Every school gets its own isolated subdomain in under 2 minutes.
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">
-              Start free trial <ArrowRight className="h-4 w-4" />
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10">
+            <Link href="/register" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-7 py-3.5 rounded-xl font-bold hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-900/60">
+              Start free — no card needed <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link href="/sign-in" className="inline-flex items-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl font-semibold border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors">
+            <Link href="/sign-in" className="inline-flex items-center gap-2 text-slate-300 border border-slate-700 px-7 py-3.5 rounded-xl font-semibold hover:bg-slate-800 transition-colors">
               Sign in to your school
             </Link>
           </div>
-          <p className="mt-4 text-xs text-gray-400">No credit card required · 14-day free trial</p>
-        </div>
 
-        {/* Dashboard mockup */}
-        <div className="relative max-w-5xl mx-auto mt-16 px-6">
-          <div className="rounded-2xl border border-gray-200 shadow-2xl shadow-indigo-100/50 bg-white overflow-hidden">
-            <div className="bg-gray-50 border-b border-gray-200 px-4 py-3 flex items-center gap-2">
+          {/* Trust pills */}
+          <div className="flex flex-wrap items-center justify-center gap-5 mt-8">
+            {["No credit card required", "14-day free trial", "Setup in 2 minutes"].map(t => (
+              <div key={t} className="flex items-center gap-1.5 text-sm text-slate-500">
+                <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" /> {t}
+              </div>
+            ))}
+          </div>
+
+          {/* ── DASHBOARD MOCKUP ── */}
+          <div className="mt-16 rounded-t-2xl border border-white/10 overflow-hidden"
+               style={{ boxShadow: "0 -20px 80px rgba(99,102,241,0.18), 0 0 0 1px rgba(255,255,255,0.05)" }}>
+            {/* Browser chrome */}
+            <div className="bg-slate-800 border-b border-white/8 px-4 py-2.5 flex items-center gap-3">
               <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-400" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                <div className="w-3 h-3 rounded-full bg-green-400" />
+                <div className="w-3 h-3 rounded-full bg-rose-500" />
+                <div className="w-3 h-3 rounded-full bg-amber-400" />
+                <div className="w-3 h-3 rounded-full bg-emerald-500" />
               </div>
-              <div className="flex-1 mx-3 h-6 bg-white rounded-md border border-gray-200 flex items-center px-3">
-                <span className="text-xs text-gray-400 font-mono">yourschool.novalss.com/dashboard</span>
+              <div className="flex-1 max-w-xs mx-auto bg-slate-900 rounded-md px-3 py-1 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="text-[11px] text-slate-400 font-mono">stmarys.novalss.com/dashboard</span>
               </div>
             </div>
-            <div className="p-6 bg-gray-50">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                {[
-                  { label: "Total Students", value: "842",    color: "bg-blue-50 text-blue-700 border-blue-100" },
-                  { label: "Staff Members",  value: "64",     color: "bg-green-50 text-green-700 border-green-100" },
-                  { label: "Fees Collected", value: "₵48,200",color: "bg-purple-50 text-purple-700 border-purple-100" },
-                  { label: "Present Today",  value: "96%",    color: "bg-amber-50 text-amber-700 border-amber-100" },
-                ].map(c => (
-                  <div key={c.label} className={`rounded-xl border p-3 ${c.color}`}>
-                    <p className="text-xs opacity-70">{c.label}</p>
-                    <p className="text-xl font-bold mt-1">{c.value}</p>
+
+            {/* App shell */}
+            <div className="flex" style={{ height: 460 }}>
+              {/* Sidebar */}
+              <div className="w-52 bg-slate-900 border-r border-white/5 flex-shrink-0 flex flex-col">
+                <div className="p-4 border-b border-white/5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-black">SM</div>
+                    <div>
+                      <p className="text-xs font-bold text-white leading-none">St. Mary's School</p>
+                      <p className="text-[10px] text-slate-500 mt-0.5">2024/2025 Session</p>
+                    </div>
                   </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                {["Students", "Attendance", "Fees", "Exams", "Staff", "Reports"].map(m => (
-                  <div key={m} className="bg-white rounded-xl border border-gray-200 p-3 text-xs font-medium text-gray-600">{m}</div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section id="features" className="py-24 max-w-6xl mx-auto px-6">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl font-bold text-gray-900">Everything a school needs</h2>
-          <p className="mt-3 text-gray-500 max-w-xl mx-auto">All 20+ modules in one platform. No add-ons, no per-module pricing.</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {[
-            { icon: Users,         color: "bg-blue-50 text-blue-600",    title: "Students & Enrollment",  desc: "Admission, profiles, session enrollment, ID cards, promotions and full academic history." },
-            { icon: ClipboardList, color: "bg-green-50 text-green-600",  title: "Attendance",             desc: "Daily student and staff attendance with bulk marking, reports, and percentage tracking." },
-            { icon: BookOpen,      color: "bg-purple-50 text-purple-600",title: "Exams & Marks",          desc: "Exam groups, mark entry, auto-grading, admit cards, marksheets and ranked results." },
-            { icon: DollarSign,    color: "bg-amber-50 text-amber-600",  title: "Fee Management",         desc: "Fee types, groups, discounts, collection, invoices, carry-forward and printed receipts." },
-            { icon: UserCog,       color: "bg-rose-50 text-rose-600",    title: "Staff & Payroll",        desc: "Staff profiles, departments, designations, payslips, bulk payroll and leave management." },
-            { icon: Monitor,       color: "bg-cyan-50 text-cyan-600",    title: "Online Exams",           desc: "Create timed online exams with question banks, auto-grading and instant results." },
-            { icon: Library,       color: "bg-teal-50 text-teal-600",    title: "Library",                desc: "Book catalog, issue tracking, overdue alerts, fine calculation and member management." },
-            { icon: Bus,           color: "bg-orange-50 text-orange-600",title: "Transport",              desc: "Routes, vehicles, pickup points, student assignment and transport fee integration." },
-            { icon: Package,       color: "bg-lime-50 text-lime-600",    title: "Inventory",              desc: "Items, stock in/out, supplier tracking, low-stock alerts and staff issue log." },
-            { icon: BarChart2,     color: "bg-indigo-50 text-indigo-600",title: "Reports",                desc: "Student, attendance, fees, exams and library reports with CSV export and print." },
-            { icon: MessageCircle, color: "bg-pink-50 text-pink-600",    title: "Communication",          desc: "Internal chat, notice board, bulk messaging, homework and push notifications." },
-            { icon: Building2,     color: "bg-violet-50 text-violet-600",title: "Front Office",           desc: "Visitor log, complaints, enquiries, dispatch log and full admissions workflow." },
-          ].map(({ icon: Icon, color, title, desc }) => (
-            <div key={title} className="border border-gray-100 rounded-2xl p-5 hover:border-gray-200 hover:shadow-md transition-all">
-              <div className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center mb-3`}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Why Novalss */}
-      <section className="bg-gradient-to-r from-indigo-600 to-purple-600 py-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-white">One platform. Your own subdomain.</h2>
-              <p className="mt-4 text-indigo-100 text-lg leading-relaxed">
-                Every school gets a dedicated URL like <span className="font-semibold text-white">yourschool.novalss.com</span>.
-                Fully isolated data, zero setup time.
-              </p>
-              <ul className="mt-8 space-y-3">
-                {[
-                  "School live in under 2 minutes",
-                  "All data isolated per school — fully multi-tenant",
-                  "Admin, teacher, accountant, librarian and student roles",
-                  "Works on any device — fully mobile responsive",
-                ].map(item => (
-                  <li key={item} className="flex items-center gap-3 text-indigo-100">
-                    <CheckCircle2 className="h-5 w-5 text-indigo-300 shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { icon: Globe,    label: "Multi-tenant SaaS", sub: "Each school isolated" },
-                { icon: Shield,   label: "Role-based access",  sub: "7 permission levels" },
-                { icon: Zap,      label: "Fast setup",         sub: "Live in 2 minutes" },
-                { icon: BarChart2,label: "Rich reporting",     sub: "Export to CSV & PDF" },
-              ].map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="bg-white/10 backdrop-blur rounded-2xl p-5 text-white">
-                  <Icon className="h-6 w-6 text-indigo-200 mb-3" />
-                  <p className="font-semibold">{label}</p>
-                  <p className="text-xs text-indigo-200 mt-1">{sub}</p>
                 </div>
-              ))}
+                <nav className="p-2 flex-1 space-y-0.5 overflow-hidden">
+                  {[
+                    { label: "Dashboard",     active: true },
+                    { label: "Students" },
+                    { label: "Attendance" },
+                    { label: "Exams & Marks" },
+                    { label: "Fee Management" },
+                    { label: "Staff & Payroll" },
+                    { label: "Library" },
+                    { label: "Reports" },
+                    { label: "Settings" },
+                  ].map(item => (
+                    <div key={item.label}
+                         className={`px-3 py-1.5 rounded-md text-[11px] font-medium ${item.active ? "bg-indigo-600 text-white" : "text-slate-400"}`}>
+                      {item.label}
+                    </div>
+                  ))}
+                </nav>
+                <div className="p-3 border-t border-white/5">
+                  <div className="flex items-center gap-2 px-2 py-1.5">
+                    <div className="w-7 h-7 rounded-full bg-indigo-500/30 flex items-center justify-center text-[10px] font-black text-indigo-300">PA</div>
+                    <div>
+                      <p className="text-[11px] font-semibold text-slate-300">Principal Admin</p>
+                      <p className="text-[10px] text-slate-500">Super Admin</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main content */}
+              <div className="flex-1 bg-gray-50 overflow-hidden flex flex-col">
+                {/* Top bar */}
+                <div className="bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-between flex-shrink-0">
+                  <div>
+                    <h2 className="text-sm font-bold text-gray-900">Dashboard</h2>
+                    <p className="text-[10px] text-gray-400">Thursday, 5 June 2025</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-6 px-3 bg-indigo-50 text-indigo-600 rounded-md text-[10px] font-semibold flex items-center">+ Enrol Student</div>
+                    <div className="w-7 h-7 rounded-full bg-gray-100" />
+                  </div>
+                </div>
+
+                <div className="p-4 flex-1 overflow-hidden">
+                  {/* Stats row */}
+                  <div className="grid grid-cols-4 gap-3 mb-4">
+                    {[
+                      { label: "Total Students", value: "842",    change: "+12 this week",   color: "text-blue-600",   dot: "bg-blue-500"   },
+                      { label: "Present Today",  value: "96%",    change: "+2% vs yesterday", color: "text-emerald-600",dot: "bg-emerald-500"},
+                      { label: "Fees This Month",value: "₵48.2K", change: "+8% vs last month",color: "text-violet-600", dot: "bg-violet-500" },
+                      { label: "Staff Members",  value: "64",     change: "All active",       color: "text-amber-600",  dot: "bg-amber-500"  },
+                    ].map(s => (
+                      <div key={s.label} className="bg-white rounded-xl border border-gray-100 p-3">
+                        <div className={`w-1.5 h-1.5 rounded-full ${s.dot} mb-2`} />
+                        <p className="text-[9px] text-gray-400 font-semibold uppercase tracking-wide">{s.label}</p>
+                        <p className="text-xl font-black text-gray-900 mt-0.5 leading-none">{s.value}</p>
+                        <p className={`text-[9px] font-semibold mt-1 ${s.color}`}>{s.change}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Charts row */}
+                  <div className="grid grid-cols-5 gap-3">
+                    {/* Fee bar chart */}
+                    <div className="col-span-3 bg-white rounded-xl border border-gray-100 p-3.5">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-[11px] font-bold text-gray-800">Monthly Fee Collection</p>
+                        <span className="text-[9px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">2024/2025</span>
+                      </div>
+                      <div className="flex items-end gap-1.5 h-20">
+                        {[
+                          { month: "Jan", pct: 60, highlight: false },
+                          { month: "Feb", pct: 45, highlight: false },
+                          { month: "Mar", pct: 82, highlight: false },
+                          { month: "Apr", pct: 71, highlight: false },
+                          { month: "May", pct: 93, highlight: false },
+                          { month: "Jun", pct: 56, highlight: true  },
+                          { month: "Jul", pct: 30, highlight: false },
+                        ].map(b => (
+                          <div key={b.month} className="flex-1 flex flex-col items-center gap-1">
+                            <div
+                              className={`w-full rounded-t-sm ${b.highlight ? "bg-indigo-600" : "bg-indigo-200"}`}
+                              style={{ height: `${b.pct}%` }}
+                            />
+                            <span className="text-[8px] text-gray-400">{b.month}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Recent students */}
+                    <div className="col-span-2 bg-white rounded-xl border border-gray-100 p-3.5">
+                      <p className="text-[11px] font-bold text-gray-800 mb-3">Recent Enrollments</p>
+                      <div className="space-y-2.5">
+                        {[
+                          { name: "Kwame Asante", cls: "Grade 9A", status: "bg-emerald-100 text-emerald-700" },
+                          { name: "Ama Boateng",  cls: "Grade 7B", status: "bg-emerald-100 text-emerald-700" },
+                          { name: "Kofi Mensah",  cls: "Grade 11A",status: "bg-amber-100 text-amber-700"   },
+                          { name: "Akua Osei",    cls: "Grade 8C", status: "bg-emerald-100 text-emerald-700" },
+                        ].map(s => (
+                          <div key={s.name} className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center text-[8px] font-black text-indigo-600 flex-shrink-0">
+                              {s.name[0]}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[10px] font-semibold text-gray-800 truncate">{s.name}</p>
+                              <p className="text-[9px] text-gray-400">{s.cls}</p>
+                            </div>
+                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${s.status}`}>Active</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-24 max-w-6xl mx-auto px-6">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl font-bold text-gray-900">Simple, transparent pricing</h2>
-          <p className="mt-3 text-gray-500">Start free. Upgrade when you grow.</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {[
-            {
-              name: "Starter",
-              price: "Free",
-              period: "14-day trial",
-              desc: "Perfect for trying out Novalss",
-              features: ["Up to 100 students", "5 staff accounts", "All core modules", "Email support"],
-              cta: "Start free trial",
-              highlight: false,
-            },
-            {
-              name: "Growth",
-              price: "$29",
-              period: "/ month",
-              desc: "For growing schools",
-              features: ["Up to 500 students", "Unlimited staff", "All modules + reports", "Priority support", "CSV & PDF exports"],
-              cta: "Get started",
-              highlight: true,
-            },
-            {
-              name: "Enterprise",
-              price: "Custom",
-              period: "",
-              desc: "For large schools & districts",
-              features: ["Unlimited students", "Multi-school management", "Custom branding", "Dedicated support", "SLA guarantee"],
-              cta: "Contact us",
-              highlight: false,
-            },
-          ].map(plan => (
-            <div
-              key={plan.name}
-              className={`rounded-2xl border p-7 flex flex-col ${
-                plan.highlight
-                  ? "border-indigo-500 bg-indigo-600 text-white shadow-xl shadow-indigo-200"
-                  : "border-gray-200 bg-white"
-              }`}
-            >
-              <p className={`text-sm font-semibold ${plan.highlight ? "text-indigo-200" : "text-gray-500"}`}>{plan.name}</p>
-              <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold">{plan.price}</span>
-                <span className={`text-sm ${plan.highlight ? "text-indigo-200" : "text-gray-400"}`}>{plan.period}</span>
-              </div>
-              <p className={`mt-1 text-sm ${plan.highlight ? "text-indigo-100" : "text-gray-500"}`}>{plan.desc}</p>
-              <ul className="mt-6 space-y-2.5 flex-1">
-                {plan.features.map(f => (
-                  <li key={f} className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className={`h-4 w-4 shrink-0 ${plan.highlight ? "text-indigo-300" : "text-green-500"}`} />
-                    <span className={plan.highlight ? "text-indigo-50" : "text-gray-700"}>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/register"
-                className={`mt-8 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-colors ${
-                  plan.highlight
-                    ? "bg-white text-indigo-600 hover:bg-indigo-50"
-                    : "bg-indigo-600 text-white hover:bg-indigo-700"
-                }`}
-              >
-                {plan.cta} <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
+      {/* ── LOGOS BAR ── */}
+      <section className="bg-gray-900 border-y border-gray-800 py-8">
+        <p className="text-center text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-5">
+          Trusted by schools across West Africa
+        </p>
+        <div className="flex items-center justify-center gap-10 flex-wrap px-6">
+          {["St. Mary's Academy", "GoldCoast High", "Adinkra College", "Sunrise Primary", "Victory School", "Kumasi Preparatory"].map(name => (
+            <span key={name} className="text-sm font-bold text-gray-600">{name}</span>
           ))}
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" className="bg-gray-50 py-24">
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-gray-900">Frequently asked questions</h2>
-          </div>
-          <div className="space-y-4">
+      {/* ── STATS ── */}
+      <section className="py-20 border-b border-gray-100">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 text-center">
             {[
-              {
-                q: "How quickly can my school get started?",
-                a: "Under 2 minutes. Fill in your school name and admin credentials on the registration page and your school is live at yourschool.novalss.com immediately.",
-              },
-              {
-                q: "Is our data safe and isolated from other schools?",
-                a: "Yes. Every school runs in its own isolated database schema. There is zero data sharing between schools on the platform.",
-              },
-              {
-                q: "Can multiple staff roles use the system?",
-                a: "Yes. Novalss has 7 built-in roles: Super Admin, Admin, Teacher, Accountant, Librarian, Student and Parent — each with appropriate access.",
-              },
-              {
-                q: "Does it work on mobile phones?",
-                a: "Yes. The entire platform is mobile-responsive and works on any modern browser.",
-              },
-              {
-                q: "Can I export or print reports?",
-                a: "Yes. All reports support CSV export and print-friendly layouts. Fee receipts, ID cards, admit cards and marksheets are all printable.",
-              },
-            ].map(({ q, a }) => (
-              <div key={q} className="bg-white rounded-2xl border border-gray-200 p-6">
-                <p className="font-semibold text-gray-900 mb-2">{q}</p>
-                <p className="text-sm text-gray-600 leading-relaxed">{a}</p>
+              { value: "2,500+", label: "Students managed",   sub: "Across all schools on the platform" },
+              { value: "50+",    label: "Schools onboarded",  sub: "From primary to senior high"        },
+              { value: "20+",    label: "Built-in modules",   sub: "One platform, every feature"        },
+              { value: "99.9%",  label: "Uptime guarantee",   sub: "Reliable, always-on infrastructure" },
+            ].map(s => (
+              <div key={s.label}>
+                <p className="text-4xl font-black text-gray-900 tracking-tight">{s.value}</p>
+                <p className="text-sm font-bold text-gray-700 mt-1">{s.label}</p>
+                <p className="text-xs text-gray-400 mt-0.5 leading-snug">{s.sub}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-24 max-w-4xl mx-auto px-6 text-center">
-        <h2 className="text-4xl font-extrabold text-gray-900">Ready to modernise your school?</h2>
-        <p className="mt-4 text-lg text-gray-500">Set up in minutes. No credit card required.</p>
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/register" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">
-            Get started free <ArrowRight className="h-5 w-5" />
-          </Link>
-          <Link href="/sign-in" className="inline-flex items-center gap-2 text-gray-600 border border-gray-200 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
-            Sign in
-          </Link>
+      {/* ── FEATURES ── */}
+      <section id="features" className="py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <p className="text-indigo-600 text-xs font-bold uppercase tracking-widest mb-3">Platform Features</p>
+            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">Built for real schools</h2>
+            <p className="mt-4 text-gray-500 text-lg max-w-xl mx-auto">Not a generic ERP dressed up. Every feature is purpose-built for how academic institutions actually work.</p>
+          </div>
+
+          {/* Feature 1 — Students */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-28">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full mb-5">
+                <Users className="h-3.5 w-3.5" /> Student Management
+              </div>
+              <h3 className="text-3xl font-black text-gray-900 tracking-tight leading-tight">Complete student lifecycle, end-to-end</h3>
+              <p className="mt-4 text-gray-500 leading-relaxed">From first admission enquiry to alumni — profiles, enrollment, session promotions, ID cards, guardian contacts and the full academic journey in one place.</p>
+              <ul className="mt-7 space-y-3">
+                {["Admission with custom intake forms", "Auto-generated, printable student ID cards", "Session-based enrollment & class promotion", "Parent & guardian portal access", "Full academic history per student"].map(item => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-gray-600">
+                    <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" /> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Student profile card mock */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-7 border border-blue-100">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 h-20 relative">
+                  <div className="absolute -bottom-8 left-5">
+                    <div className="w-16 h-16 rounded-2xl bg-white border-4 border-white shadow-md flex items-center justify-center text-2xl font-black text-blue-600">KA</div>
+                  </div>
+                  <div className="absolute top-3 right-3">
+                    <span className="text-xs bg-white/20 text-white px-2.5 py-0.5 rounded-full font-semibold">Active</span>
+                  </div>
+                </div>
+                <div className="pt-10 px-5 pb-5">
+                  <p className="font-black text-gray-900 text-lg">Kwame Asante</p>
+                  <p className="text-sm text-gray-500">Grade 9A · Roll #2024-0042</p>
+                  <div className="mt-4 grid grid-cols-3 gap-3">
+                    {[{ label: "Attendance", value: "96%" }, { label: "Avg Score", value: "78%" }, { label: "Fees", value: "Paid" }].map(s => (
+                      <div key={s.label} className="text-center bg-gray-50 rounded-xl p-2.5">
+                        <p className="text-sm font-black text-gray-900">{s.value}</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">{s.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    {[["Guardian", "Mr. Asante Kofi"], ["House", "Nelson Mandela House"], ["Session", "2024/2025"]].map(([l, v]) => (
+                      <div key={l} className="flex items-center justify-between text-xs">
+                        <span className="text-gray-400">{l}</span>
+                        <span className="font-semibold text-gray-700">{v}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Feature 2 — Fees */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-28">
+            {/* Fee receipt mock */}
+            <div className="order-2 lg:order-1 bg-gradient-to-br from-violet-50 to-purple-50 rounded-3xl p-7 border border-violet-100">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div className="flex items-start justify-between mb-5">
+                  <div>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Fee Receipt</p>
+                    <p className="text-xl font-black text-gray-900 mt-0.5">#RCP-2024-0842</p>
+                  </div>
+                  <span className="text-xs bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full">Paid</span>
+                </div>
+                <div className="space-y-2.5 mb-5">
+                  {[
+                    { fee: "Tuition Fee",       amount: "GH₵ 1,200.00", neg: false },
+                    { fee: "ICT Levy",           amount: "GH₵ 80.00",    neg: false },
+                    { fee: "Sports Fee",         amount: "GH₵ 50.00",    neg: false },
+                    { fee: "Discount (10%)",     amount: "– GH₵ 133.00", neg: true  },
+                  ].map(f => (
+                    <div key={f.fee} className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">{f.fee}</span>
+                      <span className={`font-semibold ${f.neg ? "text-emerald-600" : "text-gray-900"}`}>{f.amount}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="border-t pt-4 flex items-center justify-between">
+                  <span className="text-sm font-bold text-gray-900">Total Paid</span>
+                  <span className="text-xl font-black text-violet-600">GH₵ 1,197.00</span>
+                </div>
+                <p className="mt-3 text-[10px] text-gray-400 text-center">Collected by: Admin · 5 Jun 2025 · 10:32 AM</p>
+              </div>
+            </div>
+            <div className="order-1 lg:order-2">
+              <div className="inline-flex items-center gap-2 bg-violet-50 text-violet-700 text-xs font-bold px-3 py-1.5 rounded-full mb-5">
+                <DollarSign className="h-3.5 w-3.5" /> Fee Management
+              </div>
+              <h3 className="text-3xl font-black text-gray-900 tracking-tight leading-tight">Collect fees, issue receipts, track outstanding balances</h3>
+              <p className="mt-4 text-gray-500 leading-relaxed">From fee type setup to carry-forward balances — Novalss handles the full fee cycle so your accountants have complete control and real-time visibility.</p>
+              <ul className="mt-7 space-y-3">
+                {["Fee types, groups and discount management", "Per-student invoicing and collection", "Carry-forward unpaid balances across terms", "Printable receipts with school letterhead", "SMS & email reminders for outstanding fees"].map(item => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-gray-600">
+                    <CheckCircle2 className="h-4 w-4 text-violet-500 mt-0.5 shrink-0" /> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Feature 3 — Exams */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-16">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full mb-5">
+                <ClipboardList className="h-3.5 w-3.5" /> Exams & Results
+              </div>
+              <h3 className="text-3xl font-black text-gray-900 tracking-tight leading-tight">Mark entry, auto-grading and printed marksheets</h3>
+              <p className="mt-4 text-gray-500 leading-relaxed">Configure exam groups, enter marks, let the system calculate grades and rankings — then print admit cards before exams and marksheets after.</p>
+              <ul className="mt-7 space-y-3">
+                {["Configurable mark divisions and grade scales", "Bulk mark entry by subject and class", "Auto-calculated totals, grades and class rank", "Printable admit cards before exams", "Ranked, branded marksheets for parents"].map(item => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-gray-600">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" /> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Results table mock */}
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-7 border border-emerald-100">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="px-5 py-4 border-b border-gray-50">
+                  <p className="text-xs font-black text-gray-900 uppercase tracking-wide">Term 2 Results — Grade 9A</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">End of Term Examination · 2024/2025</p>
+                </div>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="text-left px-5 py-2.5 text-gray-400 font-semibold">Student</th>
+                      <th className="text-center px-3 py-2.5 text-gray-400 font-semibold">Total</th>
+                      <th className="text-center px-3 py-2.5 text-gray-400 font-semibold">Grade</th>
+                      <th className="text-center px-3 py-2.5 text-gray-400 font-semibold">Rank</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {[
+                      { name: "Kwame Asante", total: 456, grade: "A",  rank: 1, g: "bg-emerald-100 text-emerald-700" },
+                      { name: "Ama Boateng",  total: 441, grade: "A",  rank: 2, g: "bg-emerald-100 text-emerald-700" },
+                      { name: "Kofi Mensah",  total: 418, grade: "B+", rank: 3, g: "bg-blue-100 text-blue-700"       },
+                      { name: "Akua Osei",    total: 402, grade: "B",  rank: 4, g: "bg-blue-100 text-blue-700"       },
+                    ].map(r => (
+                      <tr key={r.name}>
+                        <td className="px-5 py-2.5 font-semibold text-gray-800">{r.name}</td>
+                        <td className="text-center px-3 py-2.5 text-gray-700 font-medium">{r.total}</td>
+                        <td className="text-center px-3 py-2.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-black ${r.g}`}>{r.grade}</span>
+                        </td>
+                        <td className="text-center px-3 py-2.5 font-black text-gray-900">#{r.rank}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* All modules pill grid */}
+          <div className="mt-16 bg-gray-50 rounded-3xl p-8 border border-gray-200">
+            <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">
+              And 17 more modules included in every plan
+            </p>
+            <div className="flex flex-wrap justify-center gap-2.5">
+              {["Attendance","Timetable","Library","Transport","Hostel","Inventory","Payroll","Online Exams","Homework","Lesson Plans","Front Office","Notice Board","Internal Chat","Alumni","Leave Management","Reports & Analytics","ID Cards"].map(m => (
+                <span key={m} className="bg-white border border-gray-200 text-gray-600 text-xs font-medium px-3.5 py-1.5 rounded-full hover:border-indigo-300 hover:text-indigo-600 transition-colors">
+                  {m}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
-        <p className="mt-4 text-sm text-gray-400">No credit card required · Cancel anytime</p>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-100 py-10">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <GraduationCap className="h-4 w-4 text-white" />
+      {/* ── HOW IT WORKS ── */}
+      <section id="how-it-works" className="bg-slate-950 py-24">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <p className="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-3">Quick Setup</p>
+            <h2 className="text-4xl font-black text-white tracking-tight">Your school live in 3 steps</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+            {[
+              { step: "01", color: "text-indigo-400", title: "Register your school",   desc: "Enter your school name, logo and admin credentials. Your isolated subdomain is created instantly — no technical setup required." },
+              { step: "02", color: "text-violet-400", title: "Configure classes & staff", desc: "Add your academic year, classes, sections, subjects, teachers and fee structures. Everything guided step by step." },
+              { step: "03", color: "text-purple-400", title: "Enrol students",          desc: "Admit students individually or via bulk import. Parents automatically receive their own login to track their child's progress." },
+            ].map(s => (
+              <div key={s.step}>
+                <p className={`text-7xl font-black ${s.color} opacity-25 leading-none`}>{s.step}</p>
+                <h3 className="text-lg font-bold text-white mt-2">{s.title}</h3>
+                <p className="mt-2 text-sm text-slate-400 leading-relaxed">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section className="py-24 bg-white border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <p className="text-indigo-600 text-xs font-bold uppercase tracking-widest mb-3">From schools like yours</p>
+            <h2 className="text-4xl font-black text-gray-900 tracking-tight">Administrators love it</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Mrs. Adjoa Mensah", role: "Principal, GoldCoast Academy", initial: "AM", color: "bg-blue-600",
+                quote: "Before Novalss, we used spreadsheets for everything. Now our accountant processes a full term's fees in one afternoon. The time saving alone pays for the subscription.",
+              },
+              {
+                name: "Mr. Kojo Amponsah", role: "IT Admin, Adinkra College", initial: "KA", color: "bg-violet-600",
+                quote: "The multi-tenant architecture is exactly what we needed for our group of schools. Each campus is completely isolated but I can oversee all of them from one super-admin account.",
+              },
+              {
+                name: "Mrs. Efua Asante", role: "Headmistress, Sunrise Primary", initial: "EA", color: "bg-emerald-600",
+                quote: "Parents can check their child's attendance and results from their phones. Calls to the school office have dropped by 60%. It has genuinely changed how we relate to parents.",
+              },
+            ].map(t => (
+              <div key={t.name} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 flex flex-col">
+                <div className="flex gap-0.5 mb-5">
+                  {[1,2,3,4,5].map(i => <Star key={i} className="h-4 w-4 text-amber-400 fill-amber-400" />)}
+                </div>
+                <p className="text-sm text-gray-600 leading-relaxed flex-1">"{t.quote}"</p>
+                <div className="mt-6 flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full ${t.color} flex items-center justify-center text-sm font-black text-white flex-shrink-0`}>{t.initial}</div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">{t.name}</p>
+                    <p className="text-xs text-gray-400">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── PRICING ── */}
+      <section id="pricing" className="bg-gray-50 py-24">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <p className="text-indigo-600 text-xs font-bold uppercase tracking-widest mb-3">Pricing</p>
+            <h2 className="text-4xl font-black text-gray-900 tracking-tight">Start free. Grow with us.</h2>
+            <p className="mt-3 text-gray-500 text-lg">All plans include every module. No add-ons, no hidden fees.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-start">
+            {[
+              {
+                name: "Starter", price: "Free", period: "14-day trial", desc: "Try every feature with no commitment", highlight: false,
+                features: ["Up to 100 students", "5 staff accounts", "All 20+ modules included", "Email support"],
+                cta: "Start free trial",
+              },
+              {
+                name: "Growth", price: "$29", period: "/ month", desc: "For schools with up to 500 students", highlight: true, badge: "Most popular",
+                features: ["Up to 500 students", "Unlimited staff accounts", "All modules + full reports", "Priority email & chat support", "CSV & PDF exports", "Custom school branding"],
+                cta: "Get started",
+              },
+              {
+                name: "Enterprise", price: "Custom", period: "", desc: "For large schools and school groups", highlight: false,
+                features: ["Unlimited students", "Multi-school management", "Dedicated support manager", "Custom SLA & uptime guarantee", "API access & full data exports"],
+                cta: "Contact us",
+              },
+            ].map(plan => (
+              <div key={plan.name}
+                   className={`relative rounded-2xl p-7 flex flex-col border ${plan.highlight ? "bg-slate-950 text-white border-indigo-500 shadow-2xl shadow-indigo-900/30 -mt-2" : "bg-white border-gray-200"}`}>
+                {"badge" in plan && plan.badge && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[11px] font-black px-4 py-0.5 rounded-full">
+                    {plan.badge}
+                  </div>
+                )}
+                <p className={`text-xs font-black uppercase tracking-widest ${plan.highlight ? "text-indigo-400" : "text-gray-400"}`}>{plan.name}</p>
+                <div className="mt-2 flex items-baseline gap-1">
+                  <span className="text-4xl font-black">{plan.price}</span>
+                  <span className={`text-sm ${plan.highlight ? "text-slate-400" : "text-gray-400"}`}>{plan.period}</span>
+                </div>
+                <p className={`mt-1 text-sm ${plan.highlight ? "text-slate-400" : "text-gray-500"}`}>{plan.desc}</p>
+                <ul className="mt-7 space-y-3 flex-1">
+                  {plan.features.map(f => (
+                    <li key={f} className="flex items-start gap-2.5 text-sm">
+                      <CheckCircle2 className={`h-4 w-4 shrink-0 mt-0.5 ${plan.highlight ? "text-indigo-400" : "text-emerald-500"}`} />
+                      <span className={plan.highlight ? "text-slate-300" : "text-gray-600"}>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/register"
+                      className={`mt-8 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-colors ${plan.highlight ? "bg-indigo-600 text-white hover:bg-indigo-500" : "bg-gray-900 text-white hover:bg-gray-700"}`}>
+                  {plan.cta} <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section id="faq" className="py-24 bg-white">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <h2 className="text-4xl font-black text-gray-900 tracking-tight">Questions? Answered.</h2>
+          </div>
+          <div className="space-y-3">
+            {[
+              { q: "How quickly can my school get started?",
+                a: "Under 2 minutes. Register with your school name and admin credentials and your school is live at yourschool.novalss.com immediately — no installation, no technical setup." },
+              { q: "Is our data completely isolated from other schools?",
+                a: "Yes. Novalss uses a multi-tenant architecture where every school runs in its own isolated database schema. There is absolutely no data sharing between schools." },
+              { q: "Can students and parents also use the system?",
+                a: "Yes. Students can view their results, timetable, attendance and fee status. Parents can monitor their child's progress and receive notifications about fees, attendance and events." },
+              { q: "What roles does the system support?",
+                a: "Seven built-in roles: Super Admin, Admin, Teacher, Accountant, Librarian, Student and Parent — each with granular, route-level access control. No extra configuration needed." },
+              { q: "Can I export and print reports?",
+                a: "Yes. All reports support CSV export. Fee receipts, ID cards, marksheets and admit cards are print-ready with your school's branding and letterhead." },
+            ].map(({ q, a }) => (
+              <details key={q} className="group bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                <summary className="flex items-center justify-between px-6 py-5 cursor-pointer list-none font-bold text-gray-900 text-sm">
+                  {q}
+                  <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0 ml-4 group-open:rotate-90 transition-transform duration-200" />
+                </summary>
+                <div className="px-6 pb-5 pt-3 text-sm text-gray-500 leading-relaxed border-t border-gray-100">{a}</div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ── */}
+      <section className="bg-slate-950 py-28 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0)", backgroundSize: "28px 28px" }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative max-w-4xl mx-auto px-6 text-center">
+          <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-7">
+            <GraduationCap className="h-7 w-7 text-white" />
+          </div>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+            Ready to modernise<br className="hidden sm:block" /> your school?
+          </h2>
+          <p className="mt-5 text-slate-400 text-lg max-w-xl mx-auto">Join 50+ schools already running on Novalss. No contract, no credit card, no technical setup.</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+            <Link href="/register" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-8 py-4 rounded-xl font-black text-base hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-900/50">
+              Get started free <ArrowRight className="h-5 w-5" />
+            </Link>
+            <Link href="/sign-in" className="inline-flex items-center gap-2 text-slate-300 border border-slate-700 px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition-colors">
+              Sign in to your school
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="bg-gray-900 border-t border-gray-800 pt-16 pb-10">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 mb-12">
+            <div className="col-span-2 sm:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <GraduationCap className="h-4 w-4 text-white" />
+                </div>
+                <span className="text-base font-black text-white">Novalss</span>
+              </div>
+              <p className="text-sm text-gray-500 leading-relaxed">Complete school management for modern educational institutions across Africa.</p>
             </div>
-            <span className="font-bold text-gray-900">Novalss</span>
+            <div>
+              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">Product</p>
+              <ul className="space-y-2.5">
+                {[["Features", "#features"], ["How it works", "#how-it-works"], ["Pricing", "#pricing"], ["FAQ", "#faq"]].map(([l, h]) => (
+                  <li key={l}><a href={h} className="text-sm text-gray-500 hover:text-gray-300 transition-colors">{l}</a></li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">Modules</p>
+              <ul className="space-y-2.5">
+                {["Students", "Fee Management", "Exams & Marks", "Staff & Payroll", "Library"].map(l => (
+                  <li key={l}><a href="#features" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">{l}</a></li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">Account</p>
+              <ul className="space-y-2.5">
+                {[["Get started free", "/register"], ["Sign in", "/sign-in"]].map(([l, h]) => (
+                  <li key={l}><Link href={h} className="text-sm text-gray-500 hover:text-gray-300 transition-colors">{l}</Link></li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <div className="flex items-center gap-6 text-sm text-gray-400">
-            <a href="#features" className="hover:text-gray-600">Features</a>
-            <a href="#pricing"  className="hover:text-gray-600">Pricing</a>
-            <a href="#faq"      className="hover:text-gray-600">FAQ</a>
-            <Link href="/sign-in" className="hover:text-gray-600">Sign in</Link>
+          <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-gray-600">© {new Date().getFullYear()} Novalss. All rights reserved.</p>
+            <div className="flex items-center gap-6">
+              {["Privacy Policy", "Terms of Service"].map(l => (
+                <a key={l} href="#" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">{l}</a>
+              ))}
+            </div>
           </div>
-          <p className="text-xs text-gray-400">© {new Date().getFullYear()} Novalss. All rights reserved.</p>
         </div>
       </footer>
 
