@@ -85,44 +85,72 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            {/* ── Right: full-bleed classroom photo ── */}
-            <div className="hidden lg:block relative self-stretch">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/teacher-students.jpg"
-                alt="African classroom"
-                className="absolute inset-0 w-full h-full object-cover object-center"
-              />
-              {/* Left fade — blends photo into the dark hero copy side */}
-              <div className="absolute inset-0 pointer-events-none"
-                   style={{ background: "linear-gradient(to right, #020617 0%, rgba(2,6,23,0.7) 25%, rgba(2,6,23,0.1) 60%, transparent 100%)" }} />
-              {/* Bottom fade — anchors photo into section floor */}
-              <div className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
-                   style={{ background: "linear-gradient(to top, #020617 0%, transparent 100%)" }} />
-              {/* Floating UI card — fee */}
-              <div className="absolute top-12 left-8 z-10 bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-4 border border-gray-100 w-52">
+            {/* ── Right: photo in framed card with floating elements ── */}
+            <div className="hidden lg:flex items-center justify-center relative self-stretch py-12">
+
+              {/* Ambient glow behind the frame */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-[420px] h-[420px] bg-indigo-600/15 rounded-full blur-[100px]" />
+              </div>
+
+              {/* ── Photo frame ── */}
+              <div className="relative rounded-3xl overflow-hidden"
+                   style={{
+                     width: 440, height: 340,
+                     boxShadow: "0 0 0 1px rgba(255,255,255,0.08), 0 32px 80px rgba(0,0,0,0.7), 0 8px 24px rgba(99,102,241,0.15)",
+                   }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/teacher-students.jpg"
+                  alt="African classroom"
+                  className="w-full h-full object-cover object-center"
+                />
+                {/* Subtle inner vignette for depth */}
+                <div className="absolute inset-0 pointer-events-none"
+                     style={{ boxShadow: "inset 0 0 60px rgba(0,0,0,0.25)" }} />
+              </div>
+
+              {/* ── Floating decoration — graduation cap ── */}
+              <div className="absolute top-10 right-10 w-14 h-14 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 flex items-center justify-center shadow-2xl">
+                <GraduationCap className="h-7 w-7 text-indigo-300" />
+              </div>
+
+              {/* ── Floating UI card — fees ── */}
+              <div className="absolute top-16 -left-2 z-10 bg-white rounded-2xl shadow-2xl p-4 border border-gray-100 w-52">
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Fees collected</p>
                 <p className="text-2xl font-black text-gray-900">GH₵ 48,200</p>
                 <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full mt-1.5 inline-block">↑ 8% this month</span>
               </div>
-              {/* Floating UI card — attendance */}
-              <div className="absolute top-1/3 right-6 z-10 bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-4 border border-gray-100">
+
+              {/* ── Floating UI card — attendance ── */}
+              <div className="absolute top-1/2 -right-4 -translate-y-1/2 z-10 bg-white rounded-2xl shadow-2xl p-4 border border-gray-100">
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Attendance today</p>
                 <p className="text-2xl font-black text-gray-900">96%</p>
                 <div className="h-1.5 w-28 bg-gray-100 rounded-full mt-2 overflow-hidden">
                   <div className="h-full bg-emerald-500 rounded-full" style={{width:"96%"}} />
                 </div>
               </div>
-              {/* Floating UI card — students */}
-              <div className="absolute bottom-20 right-6 z-10 bg-white/95 backdrop-blur rounded-2xl shadow-xl px-4 py-2.5 border border-gray-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center"><Users className="h-4 w-4 text-blue-600"/></div>
+
+              {/* ── Floating UI card — students ── */}
+              <div className="absolute bottom-14 -left-2 z-10 bg-white rounded-2xl shadow-xl px-4 py-3 border border-gray-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
+                    <Users className="h-4 w-4 text-blue-600"/>
+                  </div>
                   <div>
-                    <p className="text-base font-black text-gray-900 leading-none">842</p>
-                    <p className="text-[10px] text-gray-400">Students enrolled</p>
+                    <p className="text-lg font-black text-gray-900 leading-none">842</p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">Students enrolled</p>
                   </div>
                 </div>
               </div>
+
+              {/* ── Small decorative dot grid accent ── */}
+              <div className="absolute bottom-8 right-8 grid grid-cols-4 gap-1.5 opacity-30 pointer-events-none">
+                {Array.from({length:16}).map((_,i)=>(
+                  <div key={i} className="w-1 h-1 rounded-full bg-indigo-400" />
+                ))}
+              </div>
+
             </div>
           </div>
 
