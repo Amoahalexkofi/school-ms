@@ -389,11 +389,45 @@ This is the multi-tenant hosting layer that wraps the school management system.
 
 ## What's Left (Priority Order)
 
-1. **Phase 14** — Bulk messaging + notification bell (messaging UI done; SMS/email gateway config TODO)
-2. **Phase 5** — Fee Carry Forward + Discounts
-3. **Phase 9** — Pickup Points UI + student assignment
-4. **Phase 2** — Student promote + ID card
-5. **Domain** — connect novalss.com to Vercel
+1. SMS/Email gateway — wire actual sends (Africa's Talking / SMTP)
+2. Domain — connect novalss.com to Vercel (manual Vercel dashboard step)
+
+---
+
+### 🔄 Phase 21 — Production Readiness (TODO)
+**Expert recommendations for go-live**
+
+**🔴 Blockers**
+- [ ] Forgot password / password reset flow — no way for users to recover accounts
+- [ ] Student & parent portal — view results, homework, fees, attendance (student/parent roles exist but have no dedicated views)
+
+**🟠 High Priority**
+- [ ] Leave management UI — staff apply for leave, admin approves/rejects (`LeaveRequest` model + API exists, no UI)
+- [ ] File uploads — profile photos + documents (Vercel Blob or S3; photos are URL fields but no upload UI)
+- [ ] Payslip PDF download — staff should be able to download their payslip as a PDF
+
+**🟡 Medium Priority**
+- [ ] Online fee payment — wire `/fees/pay` to a real gateway (Paystack / Stripe / Flutterwave)
+- [ ] Timetable ↔ SubjectGroup audit — verify timetable slots are properly built on subject groups
+- [ ] Server-side pagination — student/staff/fee lists load all records; will be slow at 500+ rows
+- [ ] Onboarding wizard — guide new schools through session → class → section → subject setup after registration
+
+**🟢 Nice-to-have**
+- [ ] Multi-language support (Smart School supports it)
+- [ ] Dark mode
+- [ ] Mobile PWA / app wrapper
+
+---
+
+### ✅ Phase 22 — Marketing & Landing Page (COMPLETE)
+- [x] Novalss.com landing page — hero, features, pricing, CTA → /register
+- [x] Features section — 12 modules with icons and descriptions
+- [x] Pricing tiers — Starter (free trial) / Growth ($29/mo) / Enterprise (custom)
+- [x] Why Novalss section — multi-tenant, role-based, fast setup highlights
+- [x] FAQ section — 5 common questions
+- [x] Footer with links
+- [x] Authenticated users auto-redirect to /dashboard
+- [x] Root "/" made public in middleware (isPublicRoute exact match)
 
 ---
 
