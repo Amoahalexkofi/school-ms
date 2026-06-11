@@ -302,7 +302,7 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
                             onChange={() => toggleSec(cs.id)}
                             className="rounded border-gray-300 text-green-600"
                           />
-                          <span className="text-gray-800">{cs.section.section}</span>
+                          <span className="text-gray-800">{cs.section.name}</span>
                         </label>
                       ))}
                     </div>
