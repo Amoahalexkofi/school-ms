@@ -113,16 +113,13 @@ export default async function LandingPage() {
                   </div>
                 </div>
               </div>
-              {/* The girl — transparent PNG, floats on dark. Wrapper clips the AfroVerse watermark at the bottom. */}
-              <div className="relative z-0 overflow-hidden flex items-end justify-center" style={{ height: 580, maxWidth: "100%" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/school-girl-books.png"
-                  alt="School girl with books"
-                  className="object-contain object-top select-none"
-                  style={{ height: 620, maxWidth: "100%", filter: "drop-shadow(0 0 60px rgba(99,102,241,0.35)) drop-shadow(0 40px 80px rgba(99,102,241,0.15))" }}
-                />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/school-girl-books.png"
+                alt="School girl with books"
+                className="relative z-0 object-contain object-bottom select-none"
+                style={{ height: 560, maxWidth: "100%", filter: "drop-shadow(0 0 60px rgba(99,102,241,0.35)) drop-shadow(0 40px 80px rgba(99,102,241,0.15))" }}
+              />
             </div>
           </div>
 
