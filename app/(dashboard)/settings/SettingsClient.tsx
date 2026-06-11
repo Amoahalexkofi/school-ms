@@ -32,7 +32,10 @@ async function postData(url: string, body: object) {
 
 export function SettingsClient({ sessions, classes, sections, subjects, profile, staff }: Props) {
   const router = useRouter();
-  const [addingType, setAddingType] = useState<"session" | "class" | "section" | "subject" | null>(null);
+  const [addingType,     setAddingType]     = useState<"session" | "class" | "section" | "subject" | null>(null);
+  const [linkingClassId, setLinkingClassId] = useState<string | null>(null);
+  const [linkSectionId,  setLinkSectionId]  = useState("");
+  const [linkTeacherId,  setLinkTeacherId]  = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -53,6 +56,27 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
     classForm.reset();
     sectionForm.reset();
     subjectForm.reset();
+  }
+
+  async function linkSection(classId: string) {
+    if (!linkSectionId) { setError("Select a section"); return; }
+    setLoading(true); setError("");
+    try {
+      await postData("/api/class-sections", { classId, sectionId: linkSectionId, teacherId: linkTeacherId || null });
+      setLinkingClassId(null);
+      setLinkSectionId("");
+      setLinkTeacherId("");
+      router.refresh();
+    } catch (e: any) { setError(e.message); }
+    finally { setLoading(false); }
+  }
+
+  async function removeSection(id: string) {
+    if (!confirm("Remove this section from the class?")) return;
+    const res = await fetch(`/api/class-sections/${id}`, { method: "DELETE" });
+    const d = await res.json();
+    if (!res.ok) { alert(d.error); return; }
+    router.refresh();
   }
 
   async function submit(url: string, body: object) {
@@ -219,23 +243,90 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
             ) : (
               <div className="space-y-3">
                 {classes.map((cls: any) => {
-                  const linkedSections = cls.classSections ?? [];
+                  const linkedSections: any[] = cls.classSections ?? [];
+                  // Sections not yet linked to this class
+                  const linkedSectionIds = new Set(linkedSections.map((cs: any) => cs.section?.id));
+                  const availableSections = sections.filter((s: any) => !linkedSectionIds.has(s.id));
+                  const isLinking = linkingClassId === cls.id;
+
                   return (
-                    <div key={cls.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
+                    <div key={cls.id} className="border rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
                         <div>
                           <p className="font-semibold">{cls.name}</p>
-                          <p className="text-xs text-gray-500">{cls._count?.subjects ?? 0} subject{cls._count?.subjects !== 1 ? "s" : ""}</p>
+                          <p className="text-xs text-gray-400">{cls._count?.subjects ?? 0} subject{cls._count?.subjects !== 1 ? "s" : ""} · {linkedSections.length} section{linkedSections.length !== 1 ? "s" : ""}</p>
                         </div>
-                        <span className="text-xs text-gray-500">{linkedSections.length} section{linkedSections.length !== 1 ? "s" : ""}</span>
+                        <Button
+                          size="sm" variant="outline"
+                          onClick={() => { setLinkingClassId(isLinking ? null : cls.id); setLinkSectionId(""); setLinkTeacherId(""); setError(""); }}
+                        >
+                          <Plus className="h-3.5 w-3.5 mr-1" /> Add Section
+                        </Button>
                       </div>
+
+                      {/* Linked sections table */}
                       {linkedSections.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
-                          {linkedSections.map((cs: any) => (
-                            <span key={cs.id} className="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded">
-                              <Layers className="h-3 w-3 inline mr-1" />{cs.section?.name ?? cs.id}
-                            </span>
-                          ))}
+                        <table className="w-full text-sm">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="text-left px-2 py-1.5 text-xs font-medium text-gray-500">Section</th>
+                              <th className="text-left px-2 py-1.5 text-xs font-medium text-gray-500">Class Teacher</th>
+                              <th className="px-2 py-1.5"></th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y">
+                            {linkedSections.map((cs: any) => (
+                              <tr key={cs.id} className="hover:bg-gray-50">
+                                <td className="px-2 py-1.5 font-medium">
+                                  <span className="inline-flex items-center gap-1">
+                                    <Layers className="h-3 w-3 text-purple-500" />
+                                    {cs.section?.name ?? "—"}
+                                  </span>
+                                </td>
+                                <td className="px-2 py-1.5 text-gray-500 text-xs">
+                                  {cs.teacher ? `${cs.teacher.firstName} ${cs.teacher.lastName}` : "—"}
+                                </td>
+                                <td className="px-2 py-1.5 text-right">
+                                  <button onClick={() => removeSection(cs.id)} className="text-red-400 hover:text-red-600 text-xs">Remove</button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+
+                      {/* Inline link-section panel */}
+                      {isLinking && (
+                        <div className="border border-purple-200 rounded-lg bg-purple-50 p-3 space-y-2">
+                          <p className="text-xs font-medium text-purple-800">Link section to {cls.name}</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                              <Label className="text-xs mb-1 block">Section *</Label>
+                              <select className={SEL} value={linkSectionId} onChange={e => setLinkSectionId(e.target.value)}>
+                                <option value="">— select section —</option>
+                                {availableSections.map((s: any) => (
+                                  <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                              </select>
+                              {availableSections.length === 0 && <p className="text-xs text-gray-400 mt-1">All sections already linked.</p>}
+                            </div>
+                            <div>
+                              <Label className="text-xs mb-1 block">Class Teacher (optional)</Label>
+                              <select className={SEL} value={linkTeacherId} onChange={e => setLinkTeacherId(e.target.value)}>
+                                <option value="">— none —</option>
+                                {staff.map((s: any) => (
+                                  <option key={s.id} value={s.id}>{s.firstName} {s.lastName}</option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                          {error && <p className="text-xs text-red-600">{error}</p>}
+                          <div className="flex gap-2 justify-end">
+                            <Button variant="outline" size="sm" onClick={() => setLinkingClassId(null)}>Cancel</Button>
+                            <Button size="sm" disabled={loading || !linkSectionId} onClick={() => linkSection(cls.id)}>
+                              {loading ? "Linking…" : "Link Section"}
+                            </Button>
+                          </div>
                         </div>
                       )}
                     </div>

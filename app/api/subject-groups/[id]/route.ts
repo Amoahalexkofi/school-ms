@@ -8,7 +8,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     where: { id },
     include: {
       subjects: { include: { subject: { select: { id: true, name: true, code: true, type: true } } } },
-      sections: { include: { classSection: { include: { class: { select: { id: true, class: true } }, section: { select: { id: true, section: true } } } } } },
+      sections: { include: { classSection: { include: { class: { select: { id: true, name: true } }, section: { select: { id: true, name: true } } } } } },
     },
   });
   if (!group) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -57,7 +57,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       where: { id },
       include: {
         subjects: { include: { subject: { select: { id: true, name: true, code: true } } } },
-        sections: { include: { classSection: { include: { class: { select: { id: true, class: true } }, section: { select: { id: true, section: true } } } } } },
+        sections: { include: { classSection: { include: { class: { select: { id: true, name: true } }, section: { select: { id: true, name: true } } } } } },
       },
     });
     return NextResponse.json(updated);

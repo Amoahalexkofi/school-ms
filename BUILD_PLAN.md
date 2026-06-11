@@ -93,8 +93,8 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] GradingScale seeded
 - [x] SchoolHouse seeded
 - [x] Departments & Designations seeded
-- [ ] Settings UI needs updating for new ClassSection structure
-- [ ] SubjectGroup management UI
+- [x] Settings UI needs updating for new ClassSection structure
+- [x] SubjectGroup management UI
 
 ---
 

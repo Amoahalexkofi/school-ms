@@ -69,6 +69,10 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/fees/pay",
     roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "STUDENT", "PARENT"],
   },
+  {
+    prefix: "/subject-groups",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
+  },
   // Shared routes
   {
     prefix: "/timetable",

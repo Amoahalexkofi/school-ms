@@ -7,7 +7,15 @@ async function getSettingsData() {
     ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
     ((await getDb()) as any).class.findMany({
       include: {
-        classSections: { include: { section: { select: { id: true, name: true } } } },
+        classSections: {
+          select: {
+            id: true,
+            sectionId: true,
+            section: { select: { id: true, name: true } },
+            teacher: { select: { id: true, firstName: true, lastName: true } },
+          },
+          orderBy: { section: { name: "asc" } },
+        },
         _count: { select: { subjects: true } },
       },
       orderBy: { name: "asc" },

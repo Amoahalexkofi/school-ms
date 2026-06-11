@@ -31,6 +31,7 @@ import {
   Megaphone,
   Send,
   MessageCircle,
+  Layers,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -44,6 +45,7 @@ const navItems = [
   { href: "/results", label: "Results", icon: TrendingUp },
   { href: "/fees", label: "Fees", icon: DollarSign },
   { href: "/staff", label: "Staff", icon: UserCog },
+  { href: "/subject-groups", label: "Subject Groups", icon: Layers },
   { href: "/timetable", label: "Timetable", icon: Calendar },
   { href: "/homework", label: "Homework", icon: FileText },
   { href: "/finance", label: "Finance", icon: Banknote },

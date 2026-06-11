@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     where,
     include: {
       subjects: { include: { subject: { select: { id: true, name: true, code: true } } } },
-      sections: { include: { classSection: { include: { class: { select: { id: true, class: true } }, section: { select: { id: true, section: true } } } } } },
+      sections: { include: { classSection: { include: { class: { select: { id: true, name: true } }, section: { select: { id: true, name: true } } } } } },
     },
     orderBy: { name: "asc" },
   });
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       },
       include: {
         subjects: { include: { subject: { select: { id: true, name: true, code: true } } } },
-        sections: { include: { classSection: { include: { class: { select: { id: true, class: true } }, section: { select: { id: true, section: true } } } } } },
+        sections: { include: { classSection: { include: { class: { select: { id: true, name: true } }, section: { select: { id: true, name: true } } } } } },
       },
     });
     return NextResponse.json(group, { status: 201 });
