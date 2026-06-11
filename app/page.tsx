@@ -122,6 +122,8 @@ export default async function LandingPage() {
                   height: 680,
                   maxWidth: "100%",
                   filter: "drop-shadow(0 0 60px rgba(99,102,241,0.35)) drop-shadow(0 40px 80px rgba(99,102,241,0.15))",
+                  maskImage: "linear-gradient(to bottom, black 55%, transparent 88%)",
+                  WebkitMaskImage: "linear-gradient(to bottom, black 55%, transparent 88%)",
                 }}
               />
             </div>
