@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { auth } from "@/lib/auth";
 import {
   Users, ClipboardList, DollarSign, GraduationCap,
@@ -88,13 +87,11 @@ export default async function LandingPage() {
             {/* Right — real photo */}
             <div className="hidden lg:block relative">
               <div className="relative rounded-2xl overflow-hidden" style={{ height: 480 }}>
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/images/teacher-students.jpg"
                   alt="Teacher with students at Community Secondary School, Port Harcourt"
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(max-width: 1280px) 50vw, 640px"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent" />
                 {/* Floating stats overlay */}
@@ -314,12 +311,11 @@ export default async function LandingPage() {
             </div>
             {/* Real photo — happy students */}
             <div className="relative rounded-3xl overflow-hidden" style={{ height: 440 }}>
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src="/images/happy-students.jpg"
                 alt="Happy students in an African school"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="absolute inset-0 w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-blue-900/75 via-blue-900/20 to-transparent" />
               {/* Floating stats */}
@@ -451,12 +447,11 @@ export default async function LandingPage() {
       {/* ── HOW IT WORKS — real photo background ── */}
       <section id="how-it-works" className="relative py-28 overflow-hidden">
         <div className="absolute inset-0">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/images/students-laptops.jpg"
             alt="Students working on laptops"
-            fill
-            className="object-cover"
-            sizes="100vw"
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-slate-950/88" />
         </div>
@@ -604,12 +599,11 @@ export default async function LandingPage() {
       {/* ── FINAL CTA — real photo background ── */}
       <section className="relative py-32 overflow-hidden">
         <div className="absolute inset-0">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/images/school-window.jpg"
             alt="Children at school in Uganda"
-            fill
-            className="object-cover"
-            sizes="100vw"
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-slate-950/85" />
         </div>
