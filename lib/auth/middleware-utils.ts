@@ -11,7 +11,8 @@ export type UserRole =
 const PUBLIC_PREFIXES = [
   "/api/auth", "/sign-in", "/apply", "/_next", "/favicon",
   "/novalss-admin", "/register", "/api/admin",
-  "/images",   // static public assets
+  "/images",    // static public assets
+  "/features",  // public marketing page
 ];
 
 export function isPublicRoute(pathname: string): boolean {

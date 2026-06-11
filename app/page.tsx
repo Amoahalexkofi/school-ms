@@ -24,7 +24,7 @@ export default async function LandingPage() {
               <span className="font-black text-gray-900 text-base tracking-tight">Novalss</span>
             </Link>
             <div className="hidden lg:flex items-center gap-7">
-              {[["Features","#features"],["Pricing","#pricing"],["FAQ","#faq"]].map(([l,h])=>(
+              {[["Features","/features"],["Pricing","#pricing"],["FAQ","#faq"]].map(([l,h])=>(
                 <a key={l} href={h} className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">{l}</a>
               ))}
             </div>
