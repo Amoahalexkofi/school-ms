@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import {
   Users, ClipboardList, DollarSign, GraduationCap,
@@ -11,7 +12,7 @@ export default async function LandingPage() {
   if (session?.user) redirect("/dashboard");
 
   return (
-    <div className="min-h-screen bg-white antialiased" style={{ scrollBehavior: "smooth" }}>
+    <div className="min-h-screen bg-white antialiased">
 
       {/* ── NAV ── */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur-xl">
@@ -40,55 +41,94 @@ export default async function LandingPage() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="relative bg-slate-950 pt-32 pb-0 overflow-hidden">
-        {/* Grid pattern */}
+      <section className="relative bg-slate-950 pt-24 pb-0 overflow-hidden">
+        {/* Dot grid */}
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0)", backgroundSize: "28px 28px" }} />
-        {/* Glow orbs */}
-        <div className="absolute top-24 left-1/3 w-[700px] h-[400px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute top-40 right-1/4 w-[500px] h-[300px] bg-purple-600/15 rounded-full blur-[100px] pointer-events-none" />
+        {/* Glow */}
+        <div className="absolute top-0 left-0 w-[600px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-20 right-0 w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-6">
-          {/* Badge */}
-          <div className="flex justify-center mb-7">
-            <div className="inline-flex items-center gap-2 border border-white/10 bg-white/5 text-white/60 text-xs px-3.5 py-1.5 rounded-full font-medium">
-              <span className="w-2 h-2 bg-emerald-400 rounded-full" />
-              Now live — 50+ schools onboarded across West Africa
+          {/* ── Two-column hero ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center pt-8 pb-12 lg:pb-0">
+
+            {/* Left — copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 border border-white/10 bg-white/5 text-white/60 text-xs px-3.5 py-1.5 rounded-full font-medium mb-6">
+                <span className="w-2 h-2 bg-emerald-400 rounded-full" />
+                Now live — 50+ schools onboarded
+              </div>
+              <h1 className="text-5xl sm:text-6xl font-black text-white tracking-tight leading-[1.05]">
+                The operating<br />system for<br />
+                <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
+                  modern schools
+                </span>
+              </h1>
+              <p className="mt-6 text-slate-400 text-lg leading-relaxed max-w-lg">
+                Students, staff, fees, exams, attendance — and 17 more modules — in one platform.
+                Every school gets its own subdomain in under 2 minutes.
+              </p>
+              <div className="flex flex-col sm:flex-row items-start gap-3 mt-8">
+                <Link href="/register" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-indigo-500 transition-colors shadow-xl shadow-indigo-900/50">
+                  Start free — no card needed <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link href="/sign-in" className="inline-flex items-center gap-2 text-slate-300 border border-slate-700 px-6 py-3.5 rounded-xl font-semibold hover:bg-slate-800 transition-colors">
+                  Sign in to your school
+                </Link>
+              </div>
+              <div className="flex flex-wrap gap-4 mt-6">
+                {["No credit card", "14-day free trial", "2-minute setup"].map(t => (
+                  <div key={t} className="flex items-center gap-1.5 text-sm text-slate-500">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> {t}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — real photo */}
+            <div className="hidden lg:block relative">
+              <div className="relative rounded-2xl overflow-hidden" style={{ height: 480 }}>
+                <Image
+                  src="/images/teacher-students.jpg"
+                  alt="Teacher with students at Community Secondary School, Port Harcourt"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 1280px) 50vw, 640px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent" />
+                {/* Floating stats overlay */}
+                <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2.5">
+                  <p className="text-white text-xs font-bold">842 students enrolled</p>
+                  <p className="text-white/60 text-[10px]">2024/2025 session</p>
+                </div>
+                <div className="absolute bottom-4 left-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-white text-sm font-bold">St. Mary's Academy, Accra</p>
+                      <p className="text-white/60 text-xs mt-0.5">Running on Novalss since 2023</p>
+                    </div>
+                    <div className="flex gap-0.5">
+                      {[1,2,3,4,5].map(i => <Star key={i} className="h-3 w-3 text-amber-400 fill-amber-400" />)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Floating card bottom-left */}
+              <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-xl p-3.5 border border-gray-100 z-10">
+                <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide">Attendance today</p>
+                <p className="text-2xl font-black text-gray-900 mt-0.5">96%</p>
+                <div className="flex items-center gap-1 mt-1">
+                  <div className="h-1.5 flex-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full w-[96%] bg-emerald-500 rounded-full" />
+                  </div>
+                  <span className="text-[10px] text-emerald-600 font-semibold">+2%</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Headline */}
-          <h1 className="text-center text-5xl sm:text-6xl lg:text-[72px] font-black text-white tracking-tight leading-[1.04] max-w-4xl mx-auto">
-            The operating system<br />
-            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-              for modern schools
-            </span>
-          </h1>
-
-          <p className="text-center mt-6 text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
-            Students, staff, fees, exams, attendance — and 17 more modules — unified in one platform.
-            Every school gets its own isolated subdomain in under 2 minutes.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10">
-            <Link href="/register" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-7 py-3.5 rounded-xl font-bold hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-900/60">
-              Start free — no card needed <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link href="/sign-in" className="inline-flex items-center gap-2 text-slate-300 border border-slate-700 px-7 py-3.5 rounded-xl font-semibold hover:bg-slate-800 transition-colors">
-              Sign in to your school
-            </Link>
-          </div>
-
-          {/* Trust pills */}
-          <div className="flex flex-wrap items-center justify-center gap-5 mt-8">
-            {["No credit card required", "14-day free trial", "Setup in 2 minutes"].map(t => (
-              <div key={t} className="flex items-center gap-1.5 text-sm text-slate-500">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" /> {t}
-              </div>
-            ))}
-          </div>
-
-          {/* ── DASHBOARD MOCKUP ── */}
+          {/* ── Dashboard mockup (full-width, below the split) ── */}
           <div className="mt-16 rounded-t-2xl border border-white/10 overflow-hidden"
                style={{ boxShadow: "0 -20px 80px rgba(99,102,241,0.18), 0 0 0 1px rgba(255,255,255,0.05)" }}>
             {/* Browser chrome */}
@@ -103,9 +143,8 @@ export default async function LandingPage() {
                 <span className="text-[11px] text-slate-400 font-mono">stmarys.novalss.com/dashboard</span>
               </div>
             </div>
-
             {/* App shell */}
-            <div className="flex" style={{ height: 460 }}>
+            <div className="flex" style={{ height: 440 }}>
               {/* Sidebar */}
               <div className="w-52 bg-slate-900 border-r border-white/5 flex-shrink-0 flex flex-col">
                 <div className="p-4 border-b border-white/5">
@@ -119,18 +158,13 @@ export default async function LandingPage() {
                 </div>
                 <nav className="p-2 flex-1 space-y-0.5 overflow-hidden">
                   {[
-                    { label: "Dashboard",     active: true },
-                    { label: "Students" },
-                    { label: "Attendance" },
-                    { label: "Exams & Marks" },
-                    { label: "Fee Management" },
-                    { label: "Staff & Payroll" },
-                    { label: "Library" },
-                    { label: "Reports" },
-                    { label: "Settings" },
+                    { label: "Dashboard", active: true },
+                    { label: "Students" }, { label: "Attendance" },
+                    { label: "Exams & Marks" }, { label: "Fee Management" },
+                    { label: "Staff & Payroll" }, { label: "Library" },
+                    { label: "Reports" }, { label: "Settings" },
                   ].map(item => (
-                    <div key={item.label}
-                         className={`px-3 py-1.5 rounded-md text-[11px] font-medium ${item.active ? "bg-indigo-600 text-white" : "text-slate-400"}`}>
+                    <div key={item.label} className={`px-3 py-1.5 rounded-md text-[11px] font-medium ${item.active ? "bg-indigo-600 text-white" : "text-slate-400"}`}>
                       {item.label}
                     </div>
                   ))}
@@ -145,10 +179,8 @@ export default async function LandingPage() {
                   </div>
                 </div>
               </div>
-
               {/* Main content */}
               <div className="flex-1 bg-gray-50 overflow-hidden flex flex-col">
-                {/* Top bar */}
                 <div className="bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-between flex-shrink-0">
                   <div>
                     <h2 className="text-sm font-bold text-gray-900">Dashboard</h2>
@@ -159,15 +191,13 @@ export default async function LandingPage() {
                     <div className="w-7 h-7 rounded-full bg-gray-100" />
                   </div>
                 </div>
-
                 <div className="p-4 flex-1 overflow-hidden">
-                  {/* Stats row */}
                   <div className="grid grid-cols-4 gap-3 mb-4">
                     {[
-                      { label: "Total Students", value: "842",    change: "+12 this week",   color: "text-blue-600",   dot: "bg-blue-500"   },
-                      { label: "Present Today",  value: "96%",    change: "+2% vs yesterday", color: "text-emerald-600",dot: "bg-emerald-500"},
-                      { label: "Fees This Month",value: "₵48.2K", change: "+8% vs last month",color: "text-violet-600", dot: "bg-violet-500" },
-                      { label: "Staff Members",  value: "64",     change: "All active",       color: "text-amber-600",  dot: "bg-amber-500"  },
+                      { label: "Total Students", value: "842",    change: "+12 this week",    color: "text-blue-600",    dot: "bg-blue-500"    },
+                      { label: "Present Today",  value: "96%",    change: "+2% vs yesterday", color: "text-emerald-600", dot: "bg-emerald-500" },
+                      { label: "Fees This Month",value: "₵48.2K", change: "+8% vs last month",color: "text-violet-600",  dot: "bg-violet-500"  },
+                      { label: "Staff Members",  value: "64",     change: "All active",       color: "text-amber-600",   dot: "bg-amber-500"   },
                     ].map(s => (
                       <div key={s.label} className="bg-white rounded-xl border border-gray-100 p-3">
                         <div className={`w-1.5 h-1.5 rounded-full ${s.dot} mb-2`} />
@@ -177,10 +207,7 @@ export default async function LandingPage() {
                       </div>
                     ))}
                   </div>
-
-                  {/* Charts row */}
                   <div className="grid grid-cols-5 gap-3">
-                    {/* Fee bar chart */}
                     <div className="col-span-3 bg-white rounded-xl border border-gray-100 p-3.5">
                       <div className="flex items-center justify-between mb-3">
                         <p className="text-[11px] font-bold text-gray-800">Monthly Fee Collection</p>
@@ -188,44 +215,31 @@ export default async function LandingPage() {
                       </div>
                       <div className="flex items-end gap-1.5 h-20">
                         {[
-                          { month: "Jan", pct: 60, highlight: false },
-                          { month: "Feb", pct: 45, highlight: false },
-                          { month: "Mar", pct: 82, highlight: false },
-                          { month: "Apr", pct: 71, highlight: false },
-                          { month: "May", pct: 93, highlight: false },
-                          { month: "Jun", pct: 56, highlight: true  },
-                          { month: "Jul", pct: 30, highlight: false },
+                          { month: "Jan", pct: 60 }, { month: "Feb", pct: 45 },
+                          { month: "Mar", pct: 82 }, { month: "Apr", pct: 71 },
+                          { month: "May", pct: 93 }, { month: "Jun", pct: 56, hl: true },
+                          { month: "Jul", pct: 30 },
                         ].map(b => (
                           <div key={b.month} className="flex-1 flex flex-col items-center gap-1">
-                            <div
-                              className={`w-full rounded-t-sm ${b.highlight ? "bg-indigo-600" : "bg-indigo-200"}`}
-                              style={{ height: `${b.pct}%` }}
-                            />
+                            <div className={`w-full rounded-t-sm ${"hl" in b && b.hl ? "bg-indigo-600" : "bg-indigo-200"}`} style={{ height: `${b.pct}%` }} />
                             <span className="text-[8px] text-gray-400">{b.month}</span>
                           </div>
                         ))}
                       </div>
                     </div>
-
-                    {/* Recent students */}
                     <div className="col-span-2 bg-white rounded-xl border border-gray-100 p-3.5">
                       <p className="text-[11px] font-bold text-gray-800 mb-3">Recent Enrollments</p>
                       <div className="space-y-2.5">
                         {[
-                          { name: "Kwame Asante", cls: "Grade 9A", status: "bg-emerald-100 text-emerald-700" },
-                          { name: "Ama Boateng",  cls: "Grade 7B", status: "bg-emerald-100 text-emerald-700" },
-                          { name: "Kofi Mensah",  cls: "Grade 11A",status: "bg-amber-100 text-amber-700"   },
-                          { name: "Akua Osei",    cls: "Grade 8C", status: "bg-emerald-100 text-emerald-700" },
+                          { name: "Kwame Asante", cls: "Grade 9A" }, { name: "Ama Boateng",  cls: "Grade 7B" },
+                          { name: "Kofi Mensah",  cls: "Grade 11A"},{ name: "Akua Osei",    cls: "Grade 8C" },
                         ].map(s => (
                           <div key={s.name} className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center text-[8px] font-black text-indigo-600 flex-shrink-0">
-                              {s.name[0]}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-[10px] font-semibold text-gray-800 truncate">{s.name}</p>
+                            <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center text-[8px] font-black text-indigo-600 flex-shrink-0">{s.name[0]}</div>
+                            <div>
+                              <p className="text-[10px] font-semibold text-gray-800">{s.name}</p>
                               <p className="text-[9px] text-gray-400">{s.cls}</p>
                             </div>
-                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${s.status}`}>Active</span>
                           </div>
                         ))}
                       </div>
@@ -255,10 +269,10 @@ export default async function LandingPage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 text-center">
             {[
-              { value: "2,500+", label: "Students managed",   sub: "Across all schools on the platform" },
-              { value: "50+",    label: "Schools onboarded",  sub: "From primary to senior high"        },
-              { value: "20+",    label: "Built-in modules",   sub: "One platform, every feature"        },
-              { value: "99.9%",  label: "Uptime guarantee",   sub: "Reliable, always-on infrastructure" },
+              { value: "2,500+", label: "Students managed",  sub: "Across all schools on the platform" },
+              { value: "50+",    label: "Schools onboarded", sub: "From primary to senior high"        },
+              { value: "20+",    label: "Built-in modules",  sub: "One platform, every feature"        },
+              { value: "99.9%",  label: "Uptime guarantee",  sub: "Reliable, always-on infrastructure" },
             ].map(s => (
               <div key={s.label}>
                 <p className="text-4xl font-black text-gray-900 tracking-tight">{s.value}</p>
@@ -276,10 +290,10 @@ export default async function LandingPage() {
           <div className="text-center mb-20">
             <p className="text-indigo-600 text-xs font-bold uppercase tracking-widest mb-3">Platform Features</p>
             <h2 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">Built for real schools</h2>
-            <p className="mt-4 text-gray-500 text-lg max-w-xl mx-auto">Not a generic ERP dressed up. Every feature is purpose-built for how academic institutions actually work.</p>
+            <p className="mt-4 text-gray-500 text-lg max-w-xl mx-auto">Purpose-built for how academic institutions actually work — not a generic ERP in disguise.</p>
           </div>
 
-          {/* Feature 1 — Students */}
+          {/* Feature 1 — Students (real photo) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-28">
             <div>
               <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full mb-5">
@@ -294,45 +308,34 @@ export default async function LandingPage() {
                   </li>
                 ))}
               </ul>
+              <Link href="/register" className="inline-flex items-center gap-2 mt-8 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                See student management in action <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
-            {/* Student profile card mock */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-7 border border-blue-100">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 h-20 relative">
-                  <div className="absolute -bottom-8 left-5">
-                    <div className="w-16 h-16 rounded-2xl bg-white border-4 border-white shadow-md flex items-center justify-center text-2xl font-black text-blue-600">KA</div>
+            {/* Real photo — happy students */}
+            <div className="relative rounded-3xl overflow-hidden" style={{ height: 440 }}>
+              <Image
+                src="/images/happy-students.jpg"
+                alt="Happy students in an African school"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-blue-900/75 via-blue-900/20 to-transparent" />
+              {/* Floating stats */}
+              <div className="absolute bottom-5 left-5 right-5 grid grid-cols-3 gap-2">
+                {[{ v: "842", l: "Students" }, { v: "96%", l: "Attendance" }, { v: "78%", l: "Avg Score" }].map(s => (
+                  <div key={s.l} className="bg-white/15 backdrop-blur-md border border-white/20 rounded-xl p-2.5 text-center">
+                    <p className="text-white text-base font-black">{s.v}</p>
+                    <p className="text-white/70 text-[10px] mt-0.5">{s.l}</p>
                   </div>
-                  <div className="absolute top-3 right-3">
-                    <span className="text-xs bg-white/20 text-white px-2.5 py-0.5 rounded-full font-semibold">Active</span>
-                  </div>
-                </div>
-                <div className="pt-10 px-5 pb-5">
-                  <p className="font-black text-gray-900 text-lg">Kwame Asante</p>
-                  <p className="text-sm text-gray-500">Grade 9A · Roll #2024-0042</p>
-                  <div className="mt-4 grid grid-cols-3 gap-3">
-                    {[{ label: "Attendance", value: "96%" }, { label: "Avg Score", value: "78%" }, { label: "Fees", value: "Paid" }].map(s => (
-                      <div key={s.label} className="text-center bg-gray-50 rounded-xl p-2.5">
-                        <p className="text-sm font-black text-gray-900">{s.value}</p>
-                        <p className="text-[10px] text-gray-400 mt-0.5">{s.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-4 space-y-2">
-                    {[["Guardian", "Mr. Asante Kofi"], ["House", "Nelson Mandela House"], ["Session", "2024/2025"]].map(([l, v]) => (
-                      <div key={l} className="flex items-center justify-between text-xs">
-                        <span className="text-gray-400">{l}</span>
-                        <span className="font-semibold text-gray-700">{v}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Feature 2 — Fees */}
+          {/* Feature 2 — Fees (CSS mockup) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-28">
-            {/* Fee receipt mock */}
             <div className="order-2 lg:order-1 bg-gradient-to-br from-violet-50 to-purple-50 rounded-3xl p-7 border border-violet-100">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <div className="flex items-start justify-between mb-5">
@@ -344,10 +347,10 @@ export default async function LandingPage() {
                 </div>
                 <div className="space-y-2.5 mb-5">
                   {[
-                    { fee: "Tuition Fee",       amount: "GH₵ 1,200.00", neg: false },
-                    { fee: "ICT Levy",           amount: "GH₵ 80.00",    neg: false },
-                    { fee: "Sports Fee",         amount: "GH₵ 50.00",    neg: false },
-                    { fee: "Discount (10%)",     amount: "– GH₵ 133.00", neg: true  },
+                    { fee: "Tuition Fee",   amount: "GH₵ 1,200.00", neg: false },
+                    { fee: "ICT Levy",      amount: "GH₵ 80.00",    neg: false },
+                    { fee: "Sports Fee",    amount: "GH₵ 50.00",    neg: false },
+                    { fee: "Discount (10%)",amount: "– GH₵ 133.00", neg: true  },
                   ].map(f => (
                     <div key={f.fee} className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">{f.fee}</span>
@@ -378,7 +381,7 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          {/* Feature 3 — Exams */}
+          {/* Feature 3 — Exams (CSS mockup) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-16">
             <div>
               <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full mb-5">
@@ -394,7 +397,6 @@ export default async function LandingPage() {
                 ))}
               </ul>
             </div>
-            {/* Results table mock */}
             <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-7 border border-emerald-100">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-5 py-4 border-b border-gray-50">
@@ -434,9 +436,7 @@ export default async function LandingPage() {
 
           {/* All modules pill grid */}
           <div className="mt-16 bg-gray-50 rounded-3xl p-8 border border-gray-200">
-            <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">
-              And 17 more modules included in every plan
-            </p>
+            <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">And 17 more modules included in every plan</p>
             <div className="flex flex-wrap justify-center gap-2.5">
               {["Attendance","Timetable","Library","Transport","Hostel","Inventory","Payroll","Online Exams","Homework","Lesson Plans","Front Office","Notice Board","Internal Chat","Alumni","Leave Management","Reports & Analytics","ID Cards"].map(m => (
                 <span key={m} className="bg-white border border-gray-200 text-gray-600 text-xs font-medium px-3.5 py-1.5 rounded-full hover:border-indigo-300 hover:text-indigo-600 transition-colors">
@@ -448,21 +448,32 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
-      <section id="how-it-works" className="bg-slate-950 py-24">
-        <div className="max-w-5xl mx-auto px-6">
+      {/* ── HOW IT WORKS — real photo background ── */}
+      <section id="how-it-works" className="relative py-28 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/students-laptops.jpg"
+            alt="Students working on laptops"
+            fill
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-slate-950/88" />
+        </div>
+        <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-16">
             <p className="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-3">Quick Setup</p>
             <h2 className="text-4xl font-black text-white tracking-tight">Your school live in 3 steps</h2>
+            <p className="mt-3 text-slate-400">No technical knowledge needed. No installation. Just sign up and go.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
             {[
-              { step: "01", color: "text-indigo-400", title: "Register your school",   desc: "Enter your school name, logo and admin credentials. Your isolated subdomain is created instantly — no technical setup required." },
-              { step: "02", color: "text-violet-400", title: "Configure classes & staff", desc: "Add your academic year, classes, sections, subjects, teachers and fee structures. Everything guided step by step." },
-              { step: "03", color: "text-purple-400", title: "Enrol students",          desc: "Admit students individually or via bulk import. Parents automatically receive their own login to track their child's progress." },
+              { step: "01", color: "text-indigo-400", title: "Register your school",      desc: "Enter your school name, logo and admin credentials. Your isolated subdomain is created instantly." },
+              { step: "02", color: "text-violet-400", title: "Configure classes & staff", desc: "Add your academic year, classes, sections, subjects, teachers and fee structures — guided step by step." },
+              { step: "03", color: "text-purple-400", title: "Enrol students",            desc: "Admit students individually or via bulk import. Parents automatically receive their own login." },
             ].map(s => (
               <div key={s.step}>
-                <p className={`text-7xl font-black ${s.color} opacity-25 leading-none`}>{s.step}</p>
+                <p className={`text-7xl font-black ${s.color} opacity-20 leading-none`}>{s.step}</p>
                 <h3 className="text-lg font-bold text-white mt-2">{s.title}</h3>
                 <p className="mt-2 text-sm text-slate-400 leading-relaxed">{s.desc}</p>
               </div>
@@ -480,18 +491,12 @@ export default async function LandingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              {
-                name: "Mrs. Adjoa Mensah", role: "Principal, GoldCoast Academy", initial: "AM", color: "bg-blue-600",
-                quote: "Before Novalss, we used spreadsheets for everything. Now our accountant processes a full term's fees in one afternoon. The time saving alone pays for the subscription.",
-              },
-              {
-                name: "Mr. Kojo Amponsah", role: "IT Admin, Adinkra College", initial: "KA", color: "bg-violet-600",
-                quote: "The multi-tenant architecture is exactly what we needed for our group of schools. Each campus is completely isolated but I can oversee all of them from one super-admin account.",
-              },
-              {
-                name: "Mrs. Efua Asante", role: "Headmistress, Sunrise Primary", initial: "EA", color: "bg-emerald-600",
-                quote: "Parents can check their child's attendance and results from their phones. Calls to the school office have dropped by 60%. It has genuinely changed how we relate to parents.",
-              },
+              { name: "Mrs. Adjoa Mensah", role: "Principal, GoldCoast Academy",  initial: "AM", color: "bg-blue-600",
+                quote: "Before Novalss, we used spreadsheets for everything. Now our accountant processes a full term's fees in one afternoon. The time saving alone pays for the subscription." },
+              { name: "Mr. Kojo Amponsah", role: "IT Admin, Adinkra College",     initial: "KA", color: "bg-violet-600",
+                quote: "The multi-tenant architecture is exactly what we needed for our group of schools. Each campus is isolated but I can oversee all of them from one super-admin account." },
+              { name: "Mrs. Efua Asante",  role: "Headmistress, Sunrise Primary", initial: "EA", color: "bg-emerald-600",
+                quote: "Parents can check their child's attendance and results from their phones. Calls to the school office dropped by 60%. It's changed how we relate to parents." },
             ].map(t => (
               <div key={t.name} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 flex flex-col">
                 <div className="flex gap-0.5 mb-5">
@@ -540,9 +545,7 @@ export default async function LandingPage() {
               <div key={plan.name}
                    className={`relative rounded-2xl p-7 flex flex-col border ${plan.highlight ? "bg-slate-950 text-white border-indigo-500 shadow-2xl shadow-indigo-900/30 -mt-2" : "bg-white border-gray-200"}`}>
                 {"badge" in plan && plan.badge && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[11px] font-black px-4 py-0.5 rounded-full">
-                    {plan.badge}
-                  </div>
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[11px] font-black px-4 py-0.5 rounded-full whitespace-nowrap">{plan.badge}</div>
                 )}
                 <p className={`text-xs font-black uppercase tracking-widest ${plan.highlight ? "text-indigo-400" : "text-gray-400"}`}>{plan.name}</p>
                 <div className="mt-2 flex items-baseline gap-1">
@@ -558,8 +561,7 @@ export default async function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/register"
-                      className={`mt-8 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-colors ${plan.highlight ? "bg-indigo-600 text-white hover:bg-indigo-500" : "bg-gray-900 text-white hover:bg-gray-700"}`}>
+                <Link href="/register" className={`mt-8 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-colors ${plan.highlight ? "bg-indigo-600 text-white hover:bg-indigo-500" : "bg-gray-900 text-white hover:bg-gray-700"}`}>
                   {plan.cta} <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
@@ -579,11 +581,11 @@ export default async function LandingPage() {
               { q: "How quickly can my school get started?",
                 a: "Under 2 minutes. Register with your school name and admin credentials and your school is live at yourschool.novalss.com immediately — no installation, no technical setup." },
               { q: "Is our data completely isolated from other schools?",
-                a: "Yes. Novalss uses a multi-tenant architecture where every school runs in its own isolated database schema. There is absolutely no data sharing between schools." },
+                a: "Yes. Novalss uses a multi-tenant architecture where every school runs in its own isolated database schema. There is absolutely no data sharing between schools on the platform." },
               { q: "Can students and parents also use the system?",
                 a: "Yes. Students can view their results, timetable, attendance and fee status. Parents can monitor their child's progress and receive notifications about fees, attendance and events." },
               { q: "What roles does the system support?",
-                a: "Seven built-in roles: Super Admin, Admin, Teacher, Accountant, Librarian, Student and Parent — each with granular, route-level access control. No extra configuration needed." },
+                a: "Seven built-in roles: Super Admin, Admin, Teacher, Accountant, Librarian, Student and Parent — each with granular route-level access control. No extra configuration required." },
               { q: "Can I export and print reports?",
                 a: "Yes. All reports support CSV export. Fee receipts, ID cards, marksheets and admit cards are print-ready with your school's branding and letterhead." },
             ].map(({ q, a }) => (
@@ -599,10 +601,18 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ── FINAL CTA ── */}
-      <section className="bg-slate-950 py-28 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0)", backgroundSize: "28px 28px" }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none" />
+      {/* ── FINAL CTA — real photo background ── */}
+      <section className="relative py-32 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/school-window.jpg"
+            alt="Children at school in Uganda"
+            fill
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-slate-950/85" />
+        </div>
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-7">
             <GraduationCap className="h-7 w-7 text-white" />
@@ -619,6 +629,7 @@ export default async function LandingPage() {
               Sign in to your school
             </Link>
           </div>
+          <p className="mt-5 text-slate-500 text-sm">Photo: Bill Wegener & Emmanuel Ikwuegbu / Unsplash</p>
         </div>
       </section>
 
@@ -638,7 +649,7 @@ export default async function LandingPage() {
             <div>
               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">Product</p>
               <ul className="space-y-2.5">
-                {[["Features", "#features"], ["How it works", "#how-it-works"], ["Pricing", "#pricing"], ["FAQ", "#faq"]].map(([l, h]) => (
+                {[["Features","#features"],["How it works","#how-it-works"],["Pricing","#pricing"],["FAQ","#faq"]].map(([l,h]) => (
                   <li key={l}><a href={h} className="text-sm text-gray-500 hover:text-gray-300 transition-colors">{l}</a></li>
                 ))}
               </ul>
@@ -646,7 +657,7 @@ export default async function LandingPage() {
             <div>
               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">Modules</p>
               <ul className="space-y-2.5">
-                {["Students", "Fee Management", "Exams & Marks", "Staff & Payroll", "Library"].map(l => (
+                {["Students","Fee Management","Exams & Marks","Staff & Payroll","Library"].map(l => (
                   <li key={l}><a href="#features" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">{l}</a></li>
                 ))}
               </ul>
@@ -654,7 +665,7 @@ export default async function LandingPage() {
             <div>
               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">Account</p>
               <ul className="space-y-2.5">
-                {[["Get started free", "/register"], ["Sign in", "/sign-in"]].map(([l, h]) => (
+                {[["Get started free","/register"],["Sign in","/sign-in"]].map(([l,h]) => (
                   <li key={l}><Link href={h} className="text-sm text-gray-500 hover:text-gray-300 transition-colors">{l}</Link></li>
                 ))}
               </ul>
@@ -663,7 +674,7 @@ export default async function LandingPage() {
           <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-gray-600">© {new Date().getFullYear()} Novalss. All rights reserved.</p>
             <div className="flex items-center gap-6">
-              {["Privacy Policy", "Terms of Service"].map(l => (
+              {["Privacy Policy","Terms of Service"].map(l => (
                 <a key={l} href="#" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">{l}</a>
               ))}
             </div>
