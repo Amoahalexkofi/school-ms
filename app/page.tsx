@@ -115,7 +115,7 @@ export default async function LandingPage() {
               </div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/school-girl-books.png"
+                src="/images/school-girl.png"
                 alt="School girl with books"
                 className="relative z-0 object-contain object-bottom select-none"
                 style={{
