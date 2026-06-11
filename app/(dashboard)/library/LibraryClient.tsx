@@ -18,7 +18,10 @@ export function LibraryClient({ books, issues, students, staff, members: initial
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("catalog");
   const [search, setSearch] = useState("");
-  const [returning, setReturning] = useState<string | null>(null);
+  const [returning,     setReturning]     = useState<string | null>(null);
+  const [issueFromDate, setIssueFromDate] = useState("");
+  const [issueToDate,   setIssueToDate]   = useState("");
+  const [issueStatus,   setIssueStatus]   = useState<"" | "ISSUED" | "RETURNED">("");
 
   // Members state
   const [members,       setMembers]       = useState(initialMembers);
@@ -38,6 +41,14 @@ export function LibraryClient({ books, issues, students, staff, members: initial
   }
 
   const filtered = books.filter(b => !search || [b.title, b.author, b.bookNo].some(v => v?.toLowerCase().includes(search.toLowerCase())));
+
+  const filteredIssues = issues.filter((i: any) => {
+    if (issueStatus && i.status !== issueStatus) return false;
+    const issuedAt = new Date(i.issuedAt);
+    if (issueFromDate && issuedAt < new Date(issueFromDate)) return false;
+    if (issueToDate   && issuedAt > new Date(issueToDate + "T23:59:59")) return false;
+    return true;
+  });
 
   // Already-registered person IDs for the selected type
   const registeredIds = new Set(members.filter((m: any) => m.memberType === memType).map((m: any) => m.memberId));
@@ -221,14 +232,44 @@ export function LibraryClient({ books, issues, students, staff, members: initial
       )}
 
       {tab === "issues" && (
+        <div className="space-y-3">
+          {/* Date-range / status filter bar */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-3 flex flex-wrap items-end gap-3">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">From</label>
+              <Input type="date" value={issueFromDate} onChange={e => setIssueFromDate(e.target.value)} className="h-8 text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">To</label>
+              <Input type="date" value={issueToDate} onChange={e => setIssueToDate(e.target.value)} className="h-8 text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Status</label>
+              <select
+                value={issueStatus} onChange={e => setIssueStatus(e.target.value as any)}
+                className="h-8 text-sm border rounded-lg px-2 bg-white focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="">All</option>
+                <option value="ISSUED">Issued</option>
+                <option value="RETURNED">Returned</option>
+              </select>
+            </div>
+            {(issueFromDate || issueToDate || issueStatus) && (
+              <Button size="sm" variant="outline" onClick={() => { setIssueFromDate(""); setIssueToDate(""); setIssueStatus(""); }}>
+                <X className="h-3.5 w-3.5 mr-1" /> Clear
+              </Button>
+            )}
+            <span className="text-xs text-gray-400 ml-auto self-end">{filteredIssues.length} record{filteredIssues.length !== 1 ? "s" : ""}</span>
+          </div>
+
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>{["Book","Issued To","Issued","Due","Status","Fine",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
             </thead>
             <tbody className="divide-y">
-              {issues.length === 0 ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-400">No issues yet.</td></tr>
-              : issues.map((i: any) => {
+              {filteredIssues.length === 0 ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-400">No records match the filter.</td></tr>
+              : filteredIssues.map((i: any) => {
                 const overdue = i.status === "ISSUED" && new Date(i.dueDate) < new Date();
                 return (
                   <tr key={i.id} className={`hover:bg-gray-50 ${overdue ? "bg-red-50/30" : ""}`}>
@@ -244,6 +285,7 @@ export function LibraryClient({ books, issues, students, staff, members: initial
               })}
             </tbody>
           </table>
+        </div>
         </div>
       )}
     </main>

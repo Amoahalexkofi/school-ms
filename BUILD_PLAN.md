@@ -190,7 +190,7 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Mark as paid (payment mode + date)
 - [x] Payslip print view
 - [x] API: GET/POST `/api/payroll`, GET/PATCH/DELETE `/api/payroll/[id]`
-- [ ] Bulk payroll generation for all staff in a month
+- [x] Bulk payroll generation for all staff in a month
 
 ---
 
@@ -240,7 +240,7 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Return book — calculate fine (overdue days × rate)
 - [x] API: CRUD `/api/library/{books,issues}`
 - [x] Library member management — Members tab in `/library`, register student/staff as members with card no
-- [ ] Issue log report (date-range filter on issues tab — low priority)
+- [x] Issue log report (date-range filter on issues tab — low priority)
 
 ---
 

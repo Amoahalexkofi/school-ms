@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { UserCog, Eye, AlertCircle, Loader2 } from "lucide-react";
+import { UserCog, Eye, AlertCircle, Loader2, Zap } from "lucide-react";
 
 type Props = { departments: any[] };
 
@@ -37,6 +37,8 @@ export function PayrollClient({ departments }: Props) {
   const [loaded,       setLoaded]       = useState(false);
   const [loading,      setLoading]      = useState(false);
   const [generating,   setGenerating]   = useState<string | null>(null);
+  const [bulkLoading,  setBulkLoading]  = useState(false);
+  const [bulkResult,   setBulkResult]   = useState<{ created: number; skipped: number } | null>(null);
   const [error,        setError]        = useState("");
 
   const years = Array.from({ length: 5 }, (_, i) => String(now.getFullYear() - i));
@@ -54,6 +56,22 @@ export function PayrollClient({ departments }: Props) {
     finally { setLoading(false); }
   }
 
+  async function generateAll() {
+    setBulkLoading(true); setBulkResult(null); setError("");
+    try {
+      const body: any = { month, year };
+      if (departmentId) body.departmentId = departmentId;
+      const res  = await fetch("/api/payroll/bulk", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setBulkResult(data);
+      await loadPayroll();
+    } catch (e: any) { setError(e.message); }
+    finally { setBulkLoading(false); }
+  }
+
   async function generatePayslip(staffId: string) {
     setGenerating(staffId); setError("");
     try {
@@ -67,9 +85,10 @@ export function PayrollClient({ departments }: Props) {
     } catch (e: any) { setError(e.message); setGenerating(null); }
   }
 
-  const totalNetSalary = rows.reduce((s, r) => s + (r.payslip ? Number(r.payslip.netSalary) : 0), 0);
-  const paidCount      = rows.filter(r => r.payslip?.status === "PAID").length;
-  const pendingCount   = rows.filter(r => !r.payslip || r.payslip.status !== "PAID").length;
+  const totalNetSalary  = rows.reduce((s, r) => s + (r.payslip ? Number(r.payslip.netSalary) : 0), 0);
+  const paidCount       = rows.filter(r => r.payslip?.status === "PAID").length;
+  const pendingCount    = rows.filter(r => !r.payslip || r.payslip.status !== "PAID").length;
+  const noPayslipCount  = rows.filter(r => !r.payslip && r.staff.basicSalary).length;
 
   return (
     <main className="flex-1 p-6 space-y-5 bg-gray-50">
@@ -102,12 +121,28 @@ export function PayrollClient({ departments }: Props) {
           <Button onClick={loadPayroll} disabled={loading}>
             {loading ? <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" />Loading…</> : "Load Payroll"}
           </Button>
+          {loaded && noPayslipCount > 0 && (
+            <Button variant="outline" onClick={generateAll} disabled={bulkLoading} className="border-green-300 text-green-700 hover:bg-green-50">
+              {bulkLoading
+                ? <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" />Generating…</>
+                : <><Zap className="h-4 w-4 mr-1.5" />Generate All ({noPayslipCount})</>
+              }
+            </Button>
+          )}
         </div>
       </div>
 
       {error && (
         <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
           <AlertCircle className="h-4 w-4 shrink-0" /> {error}
+        </div>
+      )}
+
+      {bulkResult && (
+        <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+          <Zap className="h-4 w-4 shrink-0" />
+          Generated {bulkResult.created} payslip{bulkResult.created !== 1 ? "s" : ""}.
+          {bulkResult.skipped > 0 && ` ${bulkResult.skipped} already had payslips or had no salary set.`}
         </div>
       )}
 
