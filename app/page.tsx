@@ -391,43 +391,47 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ── SOCIAL PROOF — school-girl-books photo ── */}
-      <section className="bg-amber-50 border-y border-amber-100 py-0 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            {/* Left — stats + copy */}
-            <div className="px-12 py-20 flex flex-col justify-center">
-              <p className="text-xs font-bold text-amber-700 uppercase tracking-widest mb-4">Why school owners choose Novalss</p>
-              <h2 className="text-4xl font-black text-gray-900 tracking-tight leading-tight">
-                "We saved 3 days of admin work every single term."
-              </h2>
-              <p className="mt-5 text-gray-600 leading-relaxed">
-                That's what principals tell us when they switch from spreadsheets to Novalss. Fewer errors. Happier staff. Parents who actually trust the numbers.
-              </p>
-              <div className="mt-8 grid grid-cols-2 gap-6">
-                {[{v:"80%",l:"Reduction in fee-collection time"},{v:"3 days",l:"Saved per term on result processing"},{v:"60%",l:"Fewer parent enquiry calls"},{v:"100%",l:"Of schools stay beyond the free trial"}].map(s=>(
-                  <div key={s.l}>
-                    <p className="text-3xl font-black text-indigo-600">{s.v}</p>
-                    <p className="text-sm text-gray-600 mt-0.5 leading-snug">{s.l}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-10">
-                <Link href="/register" className="inline-flex items-center gap-2 bg-gray-900 text-white px-7 py-3.5 rounded-xl font-bold hover:bg-gray-700 transition-colors">
-                  Start free today <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
+      {/* ── SOCIAL PROOF ── */}
+      <section className="overflow-hidden border-y border-gray-100">
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          {/* Left — dark, stats */}
+          <div className="bg-slate-950 px-10 lg:px-16 py-20 flex flex-col justify-center">
+            <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-5">Why school owners choose Novalss</p>
+            <h2 className="text-4xl font-black text-white tracking-tight leading-tight">
+              "We saved 3 days of admin work every single term."
+            </h2>
+            <p className="mt-5 text-slate-400 leading-relaxed">
+              That's what principals tell us when they switch from spreadsheets to Novalss. Fewer errors. Happier staff. Parents who actually trust the numbers.
+            </p>
+            <div className="mt-10 grid grid-cols-2 gap-8">
+              {[
+                {v:"80%",   l:"Reduction in fee-collection time"},
+                {v:"3 days",l:"Saved per term on result processing"},
+                {v:"60%",   l:"Fewer parent enquiry calls"},
+                {v:"100%",  l:"Of schools stay beyond the free trial"},
+              ].map(s=>(
+                <div key={s.l}>
+                  <p className="text-4xl font-black text-indigo-400">{s.v}</p>
+                  <p className="text-sm text-slate-400 mt-1 leading-snug">{s.l}</p>
+                </div>
+              ))}
             </div>
-            {/* Right — school girl photo, background-blended */}
-            <div className="relative flex items-end justify-center bg-amber-50 pt-12 lg:pt-0" style={{ minHeight: 480 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/school-girl-books.jpg"
-                alt="Happy African school girl holding books"
-                className="h-full object-contain object-bottom"
-                style={{ maxHeight: 520 }}
-              />
+            <div className="mt-12">
+              <Link href="/register" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-7 py-3.5 rounded-xl font-bold hover:bg-indigo-500 transition-colors">
+                Start free today <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
+          </div>
+
+          {/* Right — white, girl floats cleanly on transparent PNG */}
+          <div className="bg-white flex items-end justify-center pt-12 lg:pt-0" style={{ minHeight: 520 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/school-girl-books.png"
+              alt="Happy African school girl holding books"
+              className="object-contain object-bottom w-auto"
+              style={{ maxHeight: 520 }}
+            />
           </div>
         </div>
       </section>
