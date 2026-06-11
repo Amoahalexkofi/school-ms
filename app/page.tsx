@@ -89,9 +89,9 @@ export default async function LandingPage() {
               <div className="relative rounded-2xl overflow-hidden" style={{ height: 480 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/images/teacher-students.jpg"
-                  alt="Teacher with students at Community Secondary School, Port Harcourt"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  src="/images/classroom-girl.jpg"
+                  alt="Student in classroom"
+                  className="absolute inset-0 w-full h-full object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent" />
                 {/* Floating stats overlay */}
@@ -313,9 +313,9 @@ export default async function LandingPage() {
             <div className="relative rounded-3xl overflow-hidden" style={{ height: 440 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/happy-students.jpg"
-                alt="Happy students in an African school"
-                className="absolute inset-0 w-full h-full object-cover"
+                src="/images/student-writing.jpg"
+                alt="African student writing in classroom"
+                className="absolute inset-0 w-full h-full object-cover object-top"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-blue-900/75 via-blue-900/20 to-transparent" />
               {/* Floating stats */}
@@ -480,9 +480,29 @@ export default async function LandingPage() {
       {/* ── TESTIMONIALS ── */}
       <section className="py-24 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <p className="text-indigo-600 text-xs font-bold uppercase tracking-widest mb-3">From schools like yours</p>
-            <h2 className="text-4xl font-black text-gray-900 tracking-tight">Administrators love it</h2>
+          <div className="flex flex-col lg:flex-row items-center gap-12 mb-14">
+            {/* Left — photo accent */}
+            <div className="flex-shrink-0 w-full lg:w-64">
+              <div className="relative rounded-3xl overflow-hidden shadow-xl" style={{ height: 340 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/school-boy.jpg"
+                  alt="African school boy with backpack"
+                  className="w-full h-full object-cover object-top"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 text-center">
+                  <p className="text-white text-sm font-bold">Built for every student</p>
+                  <p className="text-white/70 text-xs mt-0.5">From primary to senior high</p>
+                </div>
+              </div>
+            </div>
+            {/* Right — heading */}
+            <div>
+              <p className="text-indigo-600 text-xs font-bold uppercase tracking-widest mb-3">From schools like yours</p>
+              <h2 className="text-4xl font-black text-gray-900 tracking-tight">Administrators love it</h2>
+              <p className="mt-4 text-gray-500 text-lg max-w-xl">Real feedback from principals and admins running their schools on Novalss every day.</p>
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
@@ -601,9 +621,9 @@ export default async function LandingPage() {
         <div className="absolute inset-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/school-window.jpg"
-            alt="Children at school in Uganda"
-            className="w-full h-full object-cover"
+            src="/images/school-girl-books.jpg"
+            alt="Smiling African school girl holding books"
+            className="w-full h-full object-cover object-top"
           />
           <div className="absolute inset-0 bg-slate-950/85" />
         </div>
