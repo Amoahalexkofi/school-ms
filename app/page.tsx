@@ -45,10 +45,10 @@ export default async function LandingPage() {
         {/* ambient glow — top-right corner */}
         <div className="absolute -top-40 right-0 w-[700px] h-[700px] bg-indigo-600/15 rounded-full blur-[130px] pointer-events-none" />
         {/* glow directly behind the girl */}
-        <div className="absolute right-[12%] bottom-0 w-[340px] h-[520px] bg-indigo-500/20 rounded-full blur-[90px] pointer-events-none" />
+        <div className="absolute right-[12%] bottom-0 w-[380px] h-[640px] bg-indigo-500/20 rounded-full blur-[90px] pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[620px] items-center gap-8 py-16 lg:py-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[700px] items-center gap-8 py-16 lg:py-0">
 
             {/* ── Left copy ── */}
             <div className="lg:py-24">
@@ -118,7 +118,7 @@ export default async function LandingPage() {
                 src="/images/school-girl-books.png"
                 alt="School girl with books"
                 className="relative z-0 object-contain object-bottom select-none"
-                style={{ height: 560, maxWidth: "100%", filter: "drop-shadow(0 0 60px rgba(99,102,241,0.35)) drop-shadow(0 40px 80px rgba(99,102,241,0.15))" }}
+                style={{ height: 680, maxWidth: "100%", filter: "drop-shadow(0 0 60px rgba(99,102,241,0.35)) drop-shadow(0 40px 80px rgba(99,102,241,0.15))" }}
               />
             </div>
           </div>
