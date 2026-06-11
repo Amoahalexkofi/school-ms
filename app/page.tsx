@@ -118,7 +118,13 @@ export default async function LandingPage() {
                 src="/images/school-girl-books.png"
                 alt="School girl with books"
                 className="relative z-0 object-contain object-bottom select-none"
-                style={{ height: 680, maxWidth: "100%", filter: "drop-shadow(0 0 60px rgba(99,102,241,0.35)) drop-shadow(0 40px 80px rgba(99,102,241,0.15))" }}
+                style={{
+                  height: 680,
+                  maxWidth: "100%",
+                  filter: "drop-shadow(0 0 60px rgba(99,102,241,0.35)) drop-shadow(0 40px 80px rgba(99,102,241,0.15))",
+                  maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
+                  WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
+                }}
               />
             </div>
           </div>
