@@ -39,9 +39,13 @@ export default async function LandingPage() {
       </nav>
 
       {/* ───────────── HERO ───────────── */}
-      <section className="bg-slate-950 overflow-hidden" style={{ paddingTop: 64 }}>
-        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:"radial-gradient(circle at 1px 1px,rgba(255,255,255,0.03) 1px,transparent 0)", backgroundSize:"30px 30px" }} />
-        <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <section className="relative bg-slate-950 overflow-hidden" style={{ paddingTop: 64 }}>
+        {/* dot grid */}
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:"radial-gradient(circle at 1px 1px,rgba(255,255,255,0.04) 1px,transparent 0)", backgroundSize:"32px 32px" }} />
+        {/* ambient glow — top-right corner */}
+        <div className="absolute -top-40 right-0 w-[700px] h-[700px] bg-indigo-600/15 rounded-full blur-[130px] pointer-events-none" />
+        {/* glow directly behind the girl */}
+        <div className="absolute right-[12%] bottom-0 w-[340px] h-[520px] bg-indigo-500/20 rounded-full blur-[90px] pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[620px] items-center gap-8 py-16 lg:py-0">
@@ -100,7 +104,7 @@ export default async function LandingPage() {
                 </div>
               </div>
               {/* Floating UI card — students */}
-              <div className="absolute bottom-28 right-2 z-10 bg-white rounded-2xl shadow-xl px-4 py-2.5 border border-gray-100">
+              <div className="absolute bottom-36 right-2 z-10 bg-white rounded-2xl shadow-xl px-4 py-2.5 border border-gray-100">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center"><Users className="h-4 w-4 text-blue-600"/></div>
                   <div>
@@ -109,14 +113,16 @@ export default async function LandingPage() {
                   </div>
                 </div>
               </div>
-              {/* The girl — transparent PNG, floats on dark */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/school-girl-books.png"
-                alt="School girl with books"
-                className="relative z-0 object-contain object-bottom select-none"
-                style={{ height: 580, maxWidth: "100%", filter: "drop-shadow(0 40px 80px rgba(99,102,241,0.2))" }}
-              />
+              {/* The girl — transparent PNG, floats on dark. Wrapper clips the AfroVerse watermark at the bottom. */}
+              <div className="relative z-0 overflow-hidden flex items-end justify-center" style={{ height: 580, maxWidth: "100%" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/school-girl-books.png"
+                  alt="School girl with books"
+                  className="object-contain object-top select-none"
+                  style={{ height: 620, maxWidth: "100%", filter: "drop-shadow(0 0 60px rgba(99,102,241,0.35)) drop-shadow(0 40px 80px rgba(99,102,241,0.15))" }}
+                />
+              </div>
             </div>
           </div>
 
