@@ -111,8 +111,8 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Enrollment history table
 - [x] Guardian info section
 - [x] API: GET/POST/PATCH/DELETE `/api/students`, `/api/students/[id]`
-- [ ] Promote students — move to next class for new session
-- [ ] Student ID card (printable)
+- [x] Promote students — `/students/promote`, select from/to session+class, checkbox student list, bulk promote
+- [x] Student ID card (printable)
 
 ---
 
@@ -130,7 +130,7 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] API: GET/POST `/api/staff`, GET/PATCH/DELETE `/api/staff/[id]`
 - [x] API: CRUD `/api/departments`, `/api/designations`
 - [x] Teacher subject assignment UI — interactive checklist in staff profile `/staff/[id]`, saves via PUT `/api/staff/[id]/subjects`
-- [ ] Staff ID card (printable)
+- [x] Staff ID card (printable)
 
 ---
 

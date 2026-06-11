@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UserCog, Plus, Search, Eye } from "lucide-react";
+import { UserCog, Plus, Search, Eye, CreditCard } from "lucide-react";
 
 type Props = { staff: any[]; departments: any[]; designations: any[] };
 
@@ -56,11 +56,18 @@ export function StaffClient({ staff, departments, designations }: Props) {
             {filtered.length} member{filtered.length !== 1 ? "s" : ""}
           </span>
         </div>
-        <Link href="/staff/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-1.5" /> Add Staff
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/staff/id-card">
+            <Button variant="outline">
+              <CreditCard className="h-4 w-4 mr-1.5" /> ID Card Setup
+            </Button>
+          </Link>
+          <Link href="/staff/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-1.5" /> Add Staff
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Table */}
