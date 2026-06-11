@@ -85,18 +85,28 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            {/* ── Right: transparent PNG girl, floating against dark ── */}
-            <div className="hidden lg:flex items-end justify-center relative self-stretch overflow-hidden">
+            {/* ── Right: full-bleed classroom photo ── */}
+            <div className="hidden lg:block relative self-stretch">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/teacher-students.jpg"
+                alt="African classroom"
+                className="absolute inset-0 w-full h-full object-cover object-center"
+              />
+              {/* Left fade — blends photo into the dark hero copy side */}
+              <div className="absolute inset-0 pointer-events-none"
+                   style={{ background: "linear-gradient(to right, #020617 0%, rgba(2,6,23,0.7) 25%, rgba(2,6,23,0.1) 60%, transparent 100%)" }} />
+              {/* Bottom fade — anchors photo into section floor */}
+              <div className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
+                   style={{ background: "linear-gradient(to top, #020617 0%, transparent 100%)" }} />
               {/* Floating UI card — fee */}
-              <div className="absolute top-16 left-0 z-20 bg-white rounded-2xl shadow-2xl p-4 border border-gray-100 w-52">
+              <div className="absolute top-12 left-8 z-10 bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-4 border border-gray-100 w-52">
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Fees collected</p>
                 <p className="text-2xl font-black text-gray-900">GH₵ 48,200</p>
-                <div className="flex items-center gap-1.5 mt-1.5">
-                  <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">↑ 8% this month</span>
-                </div>
+                <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full mt-1.5 inline-block">↑ 8% this month</span>
               </div>
               {/* Floating UI card — attendance */}
-              <div className="absolute top-1/3 right-4 z-20 bg-white rounded-2xl shadow-2xl p-4 border border-gray-100">
+              <div className="absolute top-1/3 right-6 z-10 bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-4 border border-gray-100">
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Attendance today</p>
                 <p className="text-2xl font-black text-gray-900">96%</p>
                 <div className="h-1.5 w-28 bg-gray-100 rounded-full mt-2 overflow-hidden">
@@ -104,7 +114,7 @@ export default async function LandingPage() {
                 </div>
               </div>
               {/* Floating UI card — students */}
-              <div className="absolute bottom-36 right-2 z-20 bg-white rounded-2xl shadow-xl px-4 py-2.5 border border-gray-100">
+              <div className="absolute bottom-20 right-6 z-10 bg-white/95 backdrop-blur rounded-2xl shadow-xl px-4 py-2.5 border border-gray-100">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center"><Users className="h-4 w-4 text-blue-600"/></div>
                   <div>
@@ -113,20 +123,6 @@ export default async function LandingPage() {
                   </div>
                 </div>
               </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/school-girl.png"
-                alt="School girl with books"
-                className="relative z-10 object-contain object-bottom select-none"
-                style={{
-                  height: 720,
-                  maxWidth: "100%",
-                  filter: "drop-shadow(0 0 80px rgba(99,102,241,0.4)) drop-shadow(0 20px 40px rgba(99,102,241,0.2))",
-                }}
-              />
-              {/* Ground fade — slate-950 gradient rises from the floor, hides the crop line */}
-              <div className="absolute bottom-0 left-0 right-0 h-44 z-10 pointer-events-none"
-                   style={{ background: "linear-gradient(to top, #020617 0%, #020617 15%, transparent 100%)" }} />
             </div>
           </div>
 
