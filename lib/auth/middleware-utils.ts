@@ -63,11 +63,11 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/parent",
     roles: ["SUPER_ADMIN", "ADMIN", "PARENT"],
   },
-  // Student-facing routes
-  {
-    prefix: "/my-results",
-    roles: ["SUPER_ADMIN", "ADMIN", "STUDENT"],
-  },
+  // ── Student portal ──
+  { prefix: "/my-results",    roles: ["SUPER_ADMIN", "ADMIN", "STUDENT"] },
+  { prefix: "/my-attendance", roles: ["SUPER_ADMIN", "ADMIN", "STUDENT"] },
+  { prefix: "/my-fees",       roles: ["SUPER_ADMIN", "ADMIN", "STUDENT"] },
+  { prefix: "/my-homework",   roles: ["SUPER_ADMIN", "ADMIN", "STUDENT"] },
   {
     prefix: "/fees/pay",
     roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "STUDENT", "PARENT"],

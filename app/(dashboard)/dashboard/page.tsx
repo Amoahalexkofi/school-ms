@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { getDashboardStats } from "@/lib/services/dashboard";
 import { Topbar } from "@/components/Topbar";
 import {
@@ -37,6 +38,11 @@ function StatCard({ label, value, icon: Icon, color, href }: {
 export default async function DashboardPage() {
   const session = await auth();
   const role = (session?.user as any)?.role;
+
+  // Students and parents have dedicated portals
+  if (role === "STUDENT") redirect("/my-results");
+  if (role === "PARENT")  redirect("/parent/results");
+
   const stats = await getDashboardStats();
 
   const teacherCount  = stats?.staffByRole?.["TEACHER"]    ?? 0;
