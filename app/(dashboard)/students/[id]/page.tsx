@@ -4,7 +4,7 @@ import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ClipboardList, DollarSign, BookOpen, Calendar, User, GraduationCap } from "lucide-react";
-import { StudentProfileActions } from "./StudentProfileActions";
+import { StudentProfileActions, StudentAvatar } from "./StudentProfileActions";
 
 async function getStudent(id: string) {
   return ((await getDb()) as any).student.findUnique({
@@ -120,9 +120,11 @@ export default async function StudentProfilePage({
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-start gap-5">
-              <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-bold shrink-0">
-                {student.firstName[0]}{(student.lastName ?? "?")[0]}
-              </div>
+              <StudentAvatar
+                studentId={student.id}
+                image={student.image}
+                initials={`${student.firstName[0]}${(student.lastName ?? "?")[0]}`}
+              />
               <div className="flex-1">
                 <div className="flex items-start justify-between">
                   <div>

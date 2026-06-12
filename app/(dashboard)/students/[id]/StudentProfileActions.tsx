@@ -7,6 +7,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Pencil, Ban, CheckCircle } from "lucide-react";
+import { AvatarUpload } from "@/components/AvatarUpload";
+
+export function StudentAvatar({ studentId, image, initials }: { studentId: string; image?: string | null; initials: string }) {
+  const router = useRouter();
+
+  async function handleUploaded(url: string) {
+    await fetch(`/api/students/${studentId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: url }),
+    });
+    router.refresh();
+  }
+
+  return (
+    <AvatarUpload
+      currentUrl={image}
+      initials={initials}
+      onUploaded={handleUploaded}
+      size={64}
+      color="#2563eb"
+    />
+  );
+}
 
 const BLOOD_GROUPS = ["A+","A-","B+","B-","AB+","AB-","O+","O-"];
 const GENDERS = ["Male","Female","Other"];

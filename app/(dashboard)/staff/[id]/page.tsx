@@ -4,7 +4,7 @@ import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, User, Briefcase, DollarSign, BookOpen, Share2, CreditCard } from "lucide-react";
-import { StaffProfileActions } from "./StaffProfileActions";
+import { StaffProfileActions, StaffAvatar } from "./StaffProfileActions";
 import { StaffSubjectsManager } from "./StaffSubjectsManager";
 
 async function getData(id: string) {
@@ -53,9 +53,11 @@ export default async function StaffProfilePage({
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-start gap-5">
-              <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl font-bold shrink-0">
-                {staff.firstName[0]}{staff.lastName[0]}
-              </div>
+              <StaffAvatar
+                staffId={staff.id}
+                image={staff.image}
+                initials={`${staff.firstName[0]}${staff.lastName[0]}`}
+              />
               <div className="flex-1">
                 <div className="flex items-start justify-between">
                   <div>

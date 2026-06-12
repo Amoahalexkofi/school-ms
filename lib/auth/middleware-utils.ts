@@ -22,6 +22,8 @@ export function isPublicRoute(pathname: string): boolean {
 
 // Route prefix → minimum roles that can access it
 const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
+  // File upload (any authenticated user)
+  { prefix: "/api/upload", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT"] },
   { prefix: "/admin/system", roles: ["SUPER_ADMIN"] },
   {
     prefix: "/admin",

@@ -7,6 +7,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Pencil, Ban, CheckCircle } from "lucide-react";
+import { AvatarUpload } from "@/components/AvatarUpload";
+
+export function StaffAvatar({ staffId, image, initials }: { staffId: string; image?: string | null; initials: string }) {
+  const router = useRouter();
+
+  async function handleUploaded(url: string) {
+    await fetch(`/api/staff/${staffId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: url }),
+    });
+    router.refresh();
+  }
+
+  return (
+    <AvatarUpload
+      currentUrl={image}
+      initials={initials}
+      onUploaded={handleUploaded}
+      size={64}
+      color="#4f46e5"
+    />
+  );
+}
 
 const GENDERS   = ["Male", "Female", "Other"];
 const MARITAL   = ["SINGLE", "MARRIED", "DIVORCED", "WIDOWED"];
