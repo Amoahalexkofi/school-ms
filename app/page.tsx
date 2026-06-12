@@ -21,7 +21,7 @@ export default async function LandingPage() {
               <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
-              <span className="font-black text-gray-900 text-base tracking-tight">Novalss</span>
+              <span className="font-black text-gray-900 text-base tracking-tight">Skula</span>
             </Link>
             <div className="hidden lg:flex items-center gap-7">
               {[["Features","/features"],["Pricing","#pricing"],["FAQ","#faq"]].map(([l,h])=>(
@@ -64,7 +64,7 @@ export default async function LandingPage() {
               </h1>
 
               <p className="mt-6 text-slate-400 text-lg leading-relaxed max-w-md">
-                Stop running your school on spreadsheets and WhatsApp groups. Novalss gives you students, fees, exams, attendance and staff — all in one place, live in 2 minutes.
+                Stop running your school on spreadsheets and WhatsApp groups. Skula gives you students, fees, exams, attendance and staff — all in one place, live in 2 minutes.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 mt-10">
@@ -165,7 +165,7 @@ export default async function LandingPage() {
                 </div>
                 <div className="flex-1 max-w-xs mx-auto bg-slate-900 rounded px-3 py-1 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span className="text-[11px] text-slate-400 font-mono">stmarys.novalss.com</span>
+                  <span className="text-[11px] text-slate-400 font-mono">stmarys.getskula.com</span>
                 </div>
               </div>
               {/* App shell */}
@@ -374,7 +374,7 @@ export default async function LandingPage() {
             <div className="space-y-2">
               <p className="text-xs font-bold text-emerald-600 uppercase tracking-widest">Exams & Results</p>
               <h3 className="text-3xl font-black text-gray-900 tracking-tight">Marks in. Ranked marksheets out.<br/>No Excel required.</h3>
-              <p className="text-gray-500 leading-relaxed pt-2">Enter marks by subject, let Novalss calculate totals, grades and class rankings instantly. Print admit cards before exams. Print branded marksheets after. Done.</p>
+              <p className="text-gray-500 leading-relaxed pt-2">Enter marks by subject, let Skula calculate totals, grades and class rankings instantly. Print admit cards before exams. Print branded marksheets after. Done.</p>
               <ul className="pt-3 space-y-2.5">
                 {["Configurable grade scales and mark divisions","Bulk mark entry by subject and class","Auto-calculated totals, grades and class rankings","Printable admit cards with student details","Branded ranked marksheets, ready for parents"].map(item=>(
                   <li key={item} className="flex items-start gap-2.5 text-sm text-gray-600">
@@ -412,7 +412,7 @@ export default async function LandingPage() {
                 </table>
               </div>
               <p className="text-xs text-center text-gray-400 mt-4 flex items-center justify-center gap-1.5">
-                <XCircle className="h-3.5 w-3.5 text-rose-400"/> Before Novalss: 3 days of manual Excel work to produce this table
+                <XCircle className="h-3.5 w-3.5 text-rose-400"/> Before Skula: 3 days of manual Excel work to produce this table
               </p>
             </div>
           </div>
@@ -439,7 +439,7 @@ export default async function LandingPage() {
               "We saved 3 days of admin work every single term."
             </blockquote>
             <p className="mt-4 text-slate-400 text-sm leading-relaxed">
-              Principals across West Africa switched from spreadsheets to Novalss. Here's what changed.
+              Principals across West Africa switched from spreadsheets to Skula. Here's what changed.
             </p>
             <div className="mt-10 grid grid-cols-2 gap-8">
               {[{v:"80%",l:"Less time on fee collection"},{v:"3 days",l:"Saved per term on results"},{v:"60%",l:"Fewer parent office calls"},{v:"100%",l:"Stay after the free trial"}].map(s=>(
@@ -487,7 +487,7 @@ export default async function LandingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 lg:gap-16">
             {[
-              {n:"01",col:"text-indigo-400",t:"Register",d:"Create your account. Your school gets its own subdomain — yourschool.novalss.com — instantly."},
+              {n:"01",col:"text-indigo-400",t:"Register",d:"Create your account. Your school gets its own subdomain — yourschool.getskula.com — instantly."},
               {n:"02",col:"text-violet-400",t:"Set up classes & fees",d:"Add your sessions, classes, subjects, staff and fee types. The setup wizard guides you through each step."},
               {n:"03",col:"text-purple-400",t:"Enrol students",d:"Add students individually or import from a spreadsheet. Parents receive login access automatically."},
             ].map(s=>(
@@ -511,7 +511,7 @@ export default async function LandingPage() {
               <img src="/images/school-boy.jpg" alt="School boy ready to learn" className="w-full rounded-3xl object-contain" style={{maxHeight:380}}/>
               <div className="mt-6">
                 <h2 className="text-3xl font-black text-gray-900 tracking-tight">Principals.<br/>Admins.<br/>Teachers.<br/>They all love it.</h2>
-                <p className="mt-3 text-sm text-gray-500 leading-relaxed">Real feedback from people running their schools on Novalss every day.</p>
+                <p className="mt-3 text-sm text-gray-500 leading-relaxed">Real feedback from people running their schools on Skula every day.</p>
               </div>
             </div>
             <div className="lg:col-span-3 space-y-4 lg:pt-4">
@@ -644,7 +644,7 @@ export default async function LandingPage() {
             <div className="col-span-2 sm:col-span-1">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center"><GraduationCap className="h-4 w-4 text-white"/></div>
-                <span className="font-black text-white">Novalss</span>
+                <span className="font-black text-white">Skula</span>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">Complete school management for educational institutions across Africa.</p>
             </div>
@@ -664,7 +664,7 @@ export default async function LandingPage() {
             ))}
           </div>
           <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-gray-700">© {new Date().getFullYear()} Novalss. All rights reserved.</p>
+            <p className="text-xs text-gray-700">© {new Date().getFullYear()} Skula · a Novalss product. All rights reserved.</p>
             <div className="flex gap-6">
               {["Privacy Policy","Terms of Service"].map(l=>(
                 <a key={l} href="#" className="text-xs text-gray-700 hover:text-gray-400 transition-colors">{l}</a>
