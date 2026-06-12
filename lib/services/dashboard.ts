@@ -17,6 +17,7 @@ export interface DashboardStats {
   todayPayments: { studentName: string; createdAt: string; amount: number }[];
   currentSession: string;
   currentSessionId: string | null;
+  sparklines: { fees: number[]; expenses: number[] };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -139,6 +140,35 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const studTotal  = studPresent + studAbsent + studLate + studHalf;
   const totalBooks = Number(totalBooksAgg._sum?.quantity ?? 0);
 
+  // ── 7-day sparklines ──────────────────────────────────────────────────────
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 6);
+
+  const [weekFeeDeposits, weekExpenses] = await Promise.all([
+    safe(() => (prisma as any).feeDeposit.findMany({
+      where: { createdAt: { gte: sevenDaysAgo }, isActive: true },
+      select: { createdAt: true, amount: true },
+    }), []),
+    safe(() => (prisma as any).transaction.findMany({
+      where: { type: "EXPENSE", date: { gte: sevenDaysAgo } },
+      select: { date: true, amount: true },
+    }), []),
+  ]);
+
+  const dayKey = (d: Date) => d.toISOString().slice(0, 10);
+  const feesByDay = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today); d.setDate(today.getDate() - (6 - i));
+    const k = dayKey(d);
+    return weekFeeDeposits.filter((r: any) => dayKey(new Date(r.createdAt)) === k)
+      .reduce((s: number, r: any) => s + Number(r.amount ?? 0), 0);
+  });
+  const expensesByDay = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today); d.setDate(today.getDate() - (6 - i));
+    const k = dayKey(d);
+    return weekExpenses.filter((r: any) => dayKey(new Date(r.date)) === k)
+      .reduce((s: number, r: any) => s + Number(r.amount ?? 0), 0);
+  });
+
   return {
     totalStudents,
     staffByRole,
@@ -160,5 +190,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     })),
     currentSession: currentSession?.session ?? "No active session",
     currentSessionId: sid,
+    sparklines: { fees: feesByDay, expenses: expensesByDay },
   };
 }

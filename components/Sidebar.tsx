@@ -169,15 +169,18 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
                   href={href}
                   onClick={onNavigate}
                   className={cn(
-                    "flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm transition-colors duration-100 group",
+                    "flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm transition-colors duration-100 group relative",
                     active
-                      ? "bg-gray-100 text-gray-900 font-medium"
+                      ? "bg-blue-50 text-blue-700 font-medium"
                       : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
                   )}
                 >
+                  {active && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 bg-blue-600 rounded-r-full" />
+                  )}
                   <Icon className={cn(
                     "h-3.5 w-3.5 shrink-0 transition-colors",
-                    active ? "text-gray-900" : "text-gray-400 group-hover:text-gray-600"
+                    active ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
                   )} />
                   <span className="truncate">{label}</span>
                 </Link>
