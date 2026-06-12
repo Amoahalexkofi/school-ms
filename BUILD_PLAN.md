@@ -284,7 +284,7 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Lesson Plans (`/lesson-plans`) — basic implementation
 - [x] Bulk messaging — UI at `/messaging`, API at `/api/messaging` (schedule, group/class/individual targeting)
 - [x] Notification bell — polling on load in Topbar, mark read/all-read, badge count
-- [ ] SMS gateway integration — actual send via Africa's Talking / Twilio (config exists, send not wired)
+- [x] SMS gateway integration — Africa's Talking + Twilio wired; fires on bulk message sends + fee receipt; test-SMS from settings
 - [ ] Email gateway integration — actual send via SMTP/SendGrid (config exists, send not wired)
 
 ---
@@ -407,10 +407,10 @@ This is the multi-tenant hosting layer that wraps the school management system.
 - [x] Payslip PDF download — `/payroll/[id]/print` page with A4 layout, auto-triggers browser print/save-PDF
 
 **🟡 Medium Priority**
-- [ ] Online fee payment — wire `/fees/pay` to a real gateway (Paystack / Stripe / Flutterwave)
+- [x] Online fee payment — Paystack + Flutterwave wired; `/api/fees/pay/initiate` + `/api/fees/pay/verify`; "Pay Online" button on fee collect
 - [ ] Timetable ↔ SubjectGroup audit — verify timetable slots are properly built on subject groups
 - [ ] Server-side pagination — student/staff/fee lists load all records; will be slow at 500+ rows
-- [ ] Onboarding wizard — guide new schools through session → class → section → subject setup after registration
+- [x] Onboarding wizard — 4-step wizard (profile → session → classes → subjects); fires on first login; `onboardingCompleted` flag
 
 **🟢 Nice-to-have**
 - [ ] Multi-language support (Smart School supports it)

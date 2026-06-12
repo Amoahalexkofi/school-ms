@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { sendSms } from "@/lib/services/sms";
 
 export async function listMessageLogs() {
   const prisma = await getDb();
@@ -41,6 +42,31 @@ export async function sendBulkMessage(input: {
         message: input.message,
       })),
     });
+  }
+
+  if (input.channel === "SMS") {
+    // Gather phone numbers for the target group
+    let phones: string[] = [];
+    if (input.recipientType === "ALL_STUDENTS" || input.recipientType === "ALL") {
+      const students = await (prisma as any).student.findMany({ select: { phone: true } });
+      phones.push(...students.map((s: any) => s.phone).filter(Boolean));
+    }
+    if (input.recipientType === "ALL_PARENTS" || input.recipientType === "ALL") {
+      const parents = await (prisma as any).user.findMany({
+        where: { role: "PARENT" },
+        select: { phone: true },
+      });
+      phones.push(...parents.map((p: any) => p.phone).filter(Boolean));
+    }
+    if (input.recipientType === "ALL_STAFF" || input.recipientType === "ALL") {
+      const staff = await (prisma as any).staff.findMany({ select: { phone: true } });
+      phones.push(...staff.map((s: any) => s.phone).filter(Boolean));
+    }
+    // Dedupe and send in batches of 100 (Africa's Talking limit)
+    const unique = [...new Set(phones)];
+    for (let i = 0; i < unique.length; i += 100) {
+      await sendSms(unique.slice(i, i + 100), input.message).catch(() => null);
+    }
   }
 
   return (prisma as any).messageLog.create({

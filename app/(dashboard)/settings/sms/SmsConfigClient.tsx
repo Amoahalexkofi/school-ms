@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, MessageSquare, Save, Eye, EyeOff, Check } from "lucide-react";
+import { ArrowLeft, MessageSquare, Save, Eye, EyeOff, Check, Send } from "lucide-react";
 
 const PROVIDERS = [
   { value: "twilio",         label: "Twilio",         fields: ["apiKey", "senderId"] },
@@ -20,6 +20,9 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [showPass, setShowPass] = useState<Record<string, boolean>>({});
+  const [testPhone, setTestPhone] = useState("");
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; msg: string } | null>(null);
 
   function getConfig(provider: string) {
     return configs.find((c) => c.provider === provider) ?? { provider, apiKey: "", senderId: "", username: "", password: "", isActive: false };
@@ -54,6 +57,25 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
     finally { setSaving(null); }
   }
 
+  async function sendTest() {
+    if (!testPhone.trim()) return;
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const res = await fetch("/api/sms-config/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: testPhone.trim() }),
+      });
+      const data = await res.json();
+      setTestResult(res.ok ? { ok: true, msg: `Sent via ${data.provider}` } : { ok: false, msg: data.error ?? "Failed" });
+    } catch {
+      setTestResult({ ok: false, msg: "Network error" });
+    } finally {
+      setTesting(false);
+    }
+  }
+
   async function setActive(provider: string) {
     // Deactivate all, then activate selected
     for (const p of PROVIDERS) {
@@ -81,6 +103,29 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
         <h2 className="text-lg font-bold">SMS Configuration</h2>
         <p className="text-sm text-gray-500 mt-0.5">Configure one SMS gateway to send attendance alerts, fee reminders, and notifications.</p>
       </div>
+
+      {/* Test SMS widget */}
+      <Card className="border-blue-200 bg-blue-50/30">
+        <CardContent className="pt-4">
+          <p className="text-sm font-medium text-gray-700 mb-2">Send Test SMS</p>
+          <div className="flex gap-2">
+            <Input
+              value={testPhone}
+              onChange={(e) => setTestPhone(e.target.value)}
+              placeholder="+233XXXXXXXXX"
+              className="max-w-xs"
+            />
+            <Button size="sm" onClick={sendTest} disabled={testing || !testPhone.trim()} className="gap-1">
+              <Send className="h-3.5 w-3.5" />{testing ? "Sending…" : "Send Test"}
+            </Button>
+          </div>
+          {testResult && (
+            <p className={`mt-2 text-sm font-medium ${testResult.ok ? "text-green-600" : "text-red-500"}`}>
+              {testResult.ok ? "✓" : "✗"} {testResult.msg}
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 gap-6">
         {PROVIDERS.map((prov) => {

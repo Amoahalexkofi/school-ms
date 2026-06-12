@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { sendSms, feeReceiptSms } from "@/lib/services/sms";
 
 // Mirrors Smart School's fee_deposit() / fee_deposit_bulk():
 // ONE deposit row per (studentFeesMasterId, feeGroupItemId).
@@ -42,10 +43,18 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Fetch master to get studentId for StudentAppliedDiscount
+    // Fetch master to get studentId + contact info for SMS receipt
     const master = await (db as any).studentFeesMaster.findUnique({
       where: { id: studentFeesMasterId },
-      select: { studentSessionId: true, studentSession: { select: { studentId: true } } },
+      select: {
+        studentSessionId: true,
+        studentSession: {
+          select: {
+            studentId: true,
+            student: { select: { firstName: true, lastName: true, phone: true, parentMobile: true } },
+          },
+        },
+      },
     });
 
     const newEntry = {
@@ -105,6 +114,21 @@ export async function POST(req: NextRequest) {
 
       return { id: deposit.id, subInvoiceId };
     });
+
+    // Fire-and-forget SMS receipt to student/parent
+    const student = master?.studentSession?.student;
+    if (student) {
+      const profile = await (db as any).schoolProfile.findFirst({ select: { name: true, currency: true } });
+      const msg = feeReceiptSms({
+        studentName: `${student.firstName} ${student.lastName}`,
+        amount: Number(amount).toFixed(2),
+        currency: profile?.currency ?? "",
+        receiptNo: `${result.id.slice(-6).toUpperCase()}-${result.subInvoiceId}`,
+        schoolName: profile?.name ?? "School",
+      });
+      const phones = [student.phone, student.parentMobile].filter(Boolean) as string[];
+      if (phones.length) sendSms(phones, msg).catch(() => null);
+    }
 
     return NextResponse.json(result, { status: 201 });
   } catch (err: any) {
