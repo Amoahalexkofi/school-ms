@@ -10,7 +10,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Skola",
+  title: "Skula",
   description: "Smart school management for African institutions",
 };
 

@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   }
 
   const schoolProfile = await (db as any).schoolProfile.findFirst();
-  const schoolName    = schoolProfile?.name ?? "Skola";
+  const schoolName    = schoolProfile?.name ?? "Skula";
 
   // Determine reset URL — use x-forwarded-host (tenant subdomain) if available
   const host     = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "localhost:3000";

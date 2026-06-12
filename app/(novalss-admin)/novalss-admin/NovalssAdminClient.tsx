@@ -235,7 +235,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">Novalss Admin</h1>
-            <p className="text-xs text-gray-400">Skola Platform Admin</p>
+            <p className="text-xs text-gray-400">Skula Platform Admin</p>
           </div>
         </div>
         <Button onClick={() => { setShowProv(true); setProvErr(""); setForm(emptyProvision); }}>

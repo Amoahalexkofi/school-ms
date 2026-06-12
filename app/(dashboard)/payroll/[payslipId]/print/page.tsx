@@ -88,7 +88,7 @@ export default async function PayslipPrintPage({ params }: { params: Promise<{ p
             {/* School header */}
             <div className="header">
               {school?.logo && <img src={school.logo} alt="logo" style={{ height: 50, marginBottom: 6 }} />}
-              <div className="school-name">{school?.name ?? "Skola"}</div>
+              <div className="school-name">{school?.name ?? "Skula"}</div>
               <div className="school-sub">
                 {[school?.address, school?.phone, school?.email].filter(Boolean).join("  ·  ")}
               </div>

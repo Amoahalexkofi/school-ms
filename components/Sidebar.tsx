@@ -77,7 +77,7 @@ function getNav(role: Role) {
 function getRoleLabel(role: Role) {
   if (role === "STUDENT") return { label: "Student Portal", color: "text-blue-600" };
   if (role === "PARENT")  return { label: "Parent Portal",  color: "text-violet-600" };
-  return { label: "Skola", color: "text-blue-600" };
+  return { label: "Skula", color: "text-blue-600" };
 }
 
 export function Sidebar({ role = "ADMIN" }: { role?: Role }) {
