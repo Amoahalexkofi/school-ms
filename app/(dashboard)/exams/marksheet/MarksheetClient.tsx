@@ -47,7 +47,7 @@ export function MarksheetClient({ examGroups, classes, school }: {
   const selectedExam  = examGroups.find(e => e.id === examGroupId);
   const selectedClass = classes.find(c => c.id === classId);
   const sections      = selectedClass?.classSections ?? [];
-  const schoolName    = school?.name ?? "School Management System";
+  const schoolName    = school?.name ?? "Skola";
   const sessionLabel  = selectedExam?.schedules?.[0]?.session?.session ?? "";
 
   // Build per-student marksheets from the exam schedules + mark entries

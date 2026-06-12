@@ -53,7 +53,7 @@ export function AdmitCardClient({ examGroups, classes, school }: {
   }
 
   const schedules = selectedExam?.schedules ?? [];
-  const schoolName = school?.name ?? "School Management System";
+  const schoolName = school?.name ?? "Skola";
 
   return (
     <main className="flex-1 p-6 space-y-6">

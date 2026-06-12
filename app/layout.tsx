@@ -10,8 +10,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "School Management System",
-  description: "Manage your school operations",
+  title: "Skola",
+  description: "Smart school management for African institutions",
 };
 
 export default function RootLayout({

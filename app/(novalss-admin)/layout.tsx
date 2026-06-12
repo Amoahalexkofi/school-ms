@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Novalss Admin — School Management Platform",
+  title: "Novalss Admin — Skola Platform",
   description: "Novalss company operations dashboard",
 };
 

@@ -40,7 +40,7 @@ export function ReceiptClient({ deposit, entry, subInvoiceId }: Props) {
       <div className="w-[420px] bg-white shadow-lg rounded-xl overflow-hidden print:shadow-none print:rounded-none print:w-full">
         {/* Header */}
         <div className="bg-blue-700 text-white text-center py-5 px-4">
-          <p className="text-xs font-semibold uppercase tracking-widest opacity-80 mb-1">School Management System</p>
+          <p className="text-xs font-semibold uppercase tracking-widest opacity-80 mb-1">Skola</p>
           <h1 className="text-lg font-bold">Fee Payment Receipt</h1>
         </div>
 

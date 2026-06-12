@@ -13,12 +13,15 @@ export default async function SignInRoute() {
           <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 rounded-2xl mb-4 shadow-lg">
             <GraduationCap className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">School Management System</h1>
-          <p className="text-gray-500 mt-1 text-sm">Sign in to continue</p>
+          <h1 className="text-2xl font-bold text-gray-900">Skola</h1>
+          <p className="text-gray-500 mt-1 text-sm">Sign in to your school</p>
         </div>
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
           <SignInPage tenant={tenant} />
         </div>
+        <p className="text-center text-xs text-gray-400 mt-6">
+          Powered by <span className="font-semibold text-gray-500">Skola</span> · a <a href="https://novalss.com" className="hover:underline">Novalss</a> product
+        </p>
       </div>
     </div>
   );
