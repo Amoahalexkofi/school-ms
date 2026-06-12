@@ -795,7 +795,9 @@ model StudentLeaveRequest {
   student    Student     @relation(fields: [studentId], references: [id])
   fromDate   DateTime
   toDate     DateTime
+  leaveDays  Int?
   reason     String?
+  remark     String?
   status     LeaveStatus @default(PENDING)
   approvedBy String?
   approvedAt DateTime?

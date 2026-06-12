@@ -6,7 +6,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const body = await req.json();
 
   const data: any = {};
-  const ALLOWED = ["status","approvedAt","approvedBy","adminNote"];
+  const ALLOWED = ["status","approvedAt","approvedBy","remark"];
   for (const f of ALLOWED) {
     if (f in body) data[f] = body[f];
   }
