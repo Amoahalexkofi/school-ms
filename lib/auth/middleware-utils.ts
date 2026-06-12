@@ -282,6 +282,8 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/api/fees/reminders",     roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   // Payment gateways
   { prefix: "/api/payment-gateways",   roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Online fee payment (initiate + verify accessible to all authenticated roles)
+  { prefix: "/api/fees/pay",           roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "STUDENT", "PARENT"] },
   // Certificate templates
   { prefix: "/api/certificates",       roles: ["SUPER_ADMIN", "ADMIN"] },
   // Marksheet templates

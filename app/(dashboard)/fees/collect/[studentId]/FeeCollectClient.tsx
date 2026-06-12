@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, DollarSign, CheckCircle2, AlertCircle, Receipt } from "lucide-react";
+import { ArrowLeft, DollarSign, CheckCircle2, AlertCircle, Receipt, CreditCard, ExternalLink } from "lucide-react";
 
 const PAYMENT_MODES = ["CASH", "BANK_TRANSFER", "CHEQUE", "MOBILE_MONEY", "ONLINE"];
 
@@ -27,16 +27,21 @@ function computePaid(deposits: any[]) {
   }, 0);
 }
 
-type Props = { student: any; masters: Master[] };
+type Props = {
+  student: any;
+  masters: Master[];
+  gateway: { paymentType: string; isSandbox: boolean } | null;
+};
 
-export function FeeCollectClient({ student, masters }: Props) {
+export function FeeCollectClient({ student, masters, gateway }: Props) {
   const router = useRouter();
-  const [payDialog, setPayDialog] = useState<{ master: Master } | null>(null);
-  const [amount,    setAmount]    = useState("");
-  const [mode,      setMode]      = useState("CASH");
-  const [desc,      setDesc]      = useState("");
-  const [loading,         setLoading]        = useState(false);
-  const [error,           setError]          = useState("");
+  const [payDialog,       setPayDialog]       = useState<{ master: Master } | null>(null);
+  const [amount,          setAmount]          = useState("");
+  const [mode,            setMode]            = useState("CASH");
+  const [desc,            setDesc]            = useState("");
+  const [loading,         setLoading]         = useState(false);
+  const [onlineLoading,   setOnlineLoading]   = useState(false);
+  const [error,           setError]           = useState("");
   const [lastDepositId,   setLastDepositId]   = useState<string | null>(null);
   const [lastSubInvoice,  setLastSubInvoice]  = useState<number | null>(null);
 
@@ -75,6 +80,33 @@ export function FeeCollectClient({ student, masters }: Props) {
     const balance = Number(master.amount) - paid;
     setAmount(balance > 0 ? String(balance.toFixed(2)) : "");
     setMode("CASH"); setDesc(""); setError(""); setPayDialog({ master });
+  }
+
+  async function handlePayOnline(master: Master) {
+    const paid    = computePaid(master.deposits);
+    const balance = Number(master.amount) - paid;
+    if (balance <= 0) return;
+
+    setOnlineLoading(true);
+    try {
+      const res = await fetch("/api/fees/pay/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentFeesMasterId: master.id,
+          feeGroupItemId:      master.feeSessionGroup.items[0]?.id ?? null,
+          amount:              balance,
+          studentEmail:        student.email ?? undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      window.location.href = data.checkoutUrl;
+    } catch (e: any) {
+      alert(`Online payment error: ${e.message}`);
+    } finally {
+      setOnlineLoading(false);
+    }
   }
 
   return (
@@ -149,14 +181,24 @@ export function FeeCollectClient({ student, masters }: Props) {
                     </CardTitle>
                     <p className="text-xs text-gray-400 mt-0.5">{master.feeSessionGroup.session.session}</p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${isPaid ? "bg-green-100 text-green-700" : balance === Number(master.amount) ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>
                       {isPaid ? "PAID" : paid > 0 ? "PARTIAL" : "UNPAID"}
                     </span>
                     {!isPaid && (
-                      <Button size="sm" onClick={() => openPay(master)}>
-                        <Receipt className="h-3.5 w-3.5 mr-1" /> Collect
-                      </Button>
+                      <>
+                        <Button size="sm" onClick={() => openPay(master)}>
+                          <Receipt className="h-3.5 w-3.5 mr-1" /> Collect
+                        </Button>
+                        {gateway && (
+                          <Button size="sm" variant="outline" disabled={onlineLoading}
+                            onClick={() => handlePayOnline(master)}
+                            title={`Pay online via ${gateway.paymentType}${gateway.isSandbox ? " (test)" : ""}`}>
+                            <CreditCard className="h-3.5 w-3.5 mr-1" />
+                            {onlineLoading ? "…" : "Pay Online"}
+                          </Button>
+                        )}
+                      </>
                     )}
                   </div>
                 </CardHeader>

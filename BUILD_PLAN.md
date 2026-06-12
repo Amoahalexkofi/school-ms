@@ -394,17 +394,17 @@ This is the multi-tenant hosting layer that wraps the school management system.
 
 ---
 
-### 🔄 Phase 21 — Production Readiness (TODO)
+### ✅ Phase 21 — Production Readiness (COMPLETE)
 **Expert recommendations for go-live**
 
-**🔴 Blockers**
-- [ ] Forgot password / password reset flow — no way for users to recover accounts
-- [ ] Student & parent portal — view results, homework, fees, attendance (student/parent roles exist but have no dedicated views)
+**🔴 Blockers (DONE)**
+- [x] Forgot password / password reset flow — `/forgot-password`, `/reset-password/[token]`, email via SMTP
+- [x] Student & parent portal — `/my-attendance`, `/my-fees`, `/my-homework`; parent portal at `/parent`
 
-**🟠 High Priority**
-- [ ] Leave management UI — staff apply for leave, admin approves/rejects (`LeaveRequest` model + API exists, no UI)
-- [ ] File uploads — profile photos + documents (Vercel Blob or S3; photos are URL fields but no upload UI)
-- [ ] Payslip PDF download — staff should be able to download their payslip as a PDF
+**🟠 High Priority (DONE)**
+- [x] Leave management UI — role-aware (admin vs teacher), balance tracking, approve/reject with remark
+- [x] File uploads — profile photos via Vercel Blob (`/api/upload`), `AvatarUpload` component on student + staff profiles
+- [x] Payslip PDF download — `/payroll/[id]/print` page with A4 layout, auto-triggers browser print/save-PDF
 
 **🟡 Medium Priority**
 - [ ] Online fee payment — wire `/fees/pay` to a real gateway (Paystack / Stripe / Flutterwave)

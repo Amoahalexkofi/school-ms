@@ -1959,7 +1959,7 @@ model DisableReason {
 
 model PaymentGateway {
   id                 String   @id @default(cuid())
-  paymentType        String   @unique // "stripe" | "paypal" | "razorpay" | "paytm" etc.
+  paymentType        String   @unique // "paystack" | "flutterwave" | "stripe"
   apiUsername        String?
   apiSecretKey       String?
   apiPublishableKey  String?
@@ -1967,12 +1967,29 @@ model PaymentGateway {
   apiSignature       String?
   apiEmail           String?
   accountNo          String?
-  isSandbox          Boolean  @default(true)  // true=testing, false=live
+  isSandbox          Boolean  @default(true)
   isActive           Boolean  @default(false)
   chargeType         String?  // "percent" | "fixed"
   chargeValue        String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+}
+
+// Mirrors Smart School's gateway_ins table — one row per payment initiation
+model GatewayTransaction {
+  id                  String   @id @default(cuid())
+  reference           String   @unique
+  gateway             String   // "paystack" | "flutterwave"
+  status              String   @default("PENDING") // PENDING | SUCCESS | FAILED
+  amount              Float
+  studentFeesMasterId String
+  feeGroupItemId      String?
+  studentEmail        String?
+  metadata            Json?
+  depositId           String?  // filled on success
+  subInvoiceId        Int?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 // ─── Audit Log ────────────────────────────────────────────────────────────────
