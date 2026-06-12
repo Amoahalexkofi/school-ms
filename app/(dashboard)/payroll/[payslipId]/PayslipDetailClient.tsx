@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowLeft, Plus, Trash2, CheckCircle2, CreditCard,
-  Printer, AlertCircle, TrendingUp, TrendingDown,
+  Printer, AlertCircle, TrendingUp, TrendingDown, Download,
 } from "lucide-react";
 
 const MONTHS = ["","January","February","March","April","May","June",
@@ -136,6 +136,9 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
           {isApproved && <Button size="sm" onClick={() => setPayOpen(true)}><CreditCard className="h-3.5 w-3.5 mr-1.5" />Mark as Paid</Button>}
           <Button size="sm" variant="outline" onClick={() => window.print()}>
             <Printer className="h-3.5 w-3.5 mr-1.5" />Print
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => window.open(`/payroll/${payslip.id}/print`, "_blank")}>
+            <Download className="h-3.5 w-3.5 mr-1.5" />Download PDF
           </Button>
         </div>
       </div>
