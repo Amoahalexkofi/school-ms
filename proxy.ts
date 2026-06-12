@@ -54,6 +54,8 @@ export async function proxy(request: NextRequest) {
 
   // Build forwarded request headers
   const requestHeaders = new Headers(request.headers);
+  // Expose pathname for server components (used by dashboard layout for onboarding check)
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
 
   // Resolve tenant schema from subdomain
   if (subdomain) {

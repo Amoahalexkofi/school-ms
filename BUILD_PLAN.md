@@ -348,7 +348,7 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Error boundaries — `error.tsx` (dashboard) + `global-error.tsx` (root)
 - [x] Print stylesheet — globals.css: hides nav/buttons, formats tables, page-break utilities
 - [x] Topbar — truncating title + responsive padding
-- [ ] Connect domain (novalss.com → Vercel) — manual step via Vercel dashboard
+- [ ] Connect subdomain (e.g. sms.novalss.com → Vercel) — manual step via Vercel dashboard. novalss.com itself is the company's main website, not this app.
 - [ ] Performance optimisation — deferred
 
 ---
@@ -390,7 +390,7 @@ This is the multi-tenant hosting layer that wraps the school management system.
 ## What's Left (Priority Order)
 
 1. SMS/Email gateway — wire actual sends (Africa's Talking / SMTP)
-2. Domain — connect novalss.com to Vercel (manual Vercel dashboard step)
+2. Domain — connect a subdomain (e.g. sms.novalss.com) to this Vercel deployment — manual Vercel dashboard step. NOTE: novalss.com is the company's main website, NOT this app.
 
 ---
 

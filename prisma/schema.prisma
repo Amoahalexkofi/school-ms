@@ -1907,6 +1907,7 @@ model SchoolProfile {
   lowAttendanceLimit Int   @default(75)
   classTeacher     Boolean @default(true)
   studentTimeline  Boolean @default(true)
+  onboardingCompleted Boolean @default(false)
 }
 
 // ─── Custom Fields ────────────────────────────────────────────────────────────

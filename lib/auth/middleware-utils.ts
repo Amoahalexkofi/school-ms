@@ -68,6 +68,7 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     roles: ["SUPER_ADMIN", "ADMIN", "PARENT"],
   },
   // ── Student portal ──
+  { prefix: "/onboarding",    roles: ["SUPER_ADMIN", "ADMIN"] },
   { prefix: "/my-results",    roles: ["SUPER_ADMIN", "ADMIN", "STUDENT"] },
   { prefix: "/my-attendance", roles: ["SUPER_ADMIN", "ADMIN", "STUDENT"] },
   { prefix: "/my-fees",       roles: ["SUPER_ADMIN", "ADMIN", "STUDENT"] },
