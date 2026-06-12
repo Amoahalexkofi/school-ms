@@ -14,7 +14,7 @@ export interface DashboardStats {
   enquiries: { total: number; contacted: number; converted: number };
   studentLeave: { total: number; approved: number };
   staffLeave: { total: number; approved: number };
-  todayPayments: { studentName: string; createdAt: string }[];
+  todayPayments: { studentName: string; createdAt: string; amount: number }[];
   currentSession: string;
   currentSessionId: string | null;
 }
@@ -156,6 +156,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     todayPayments: todayDeposits.map((d: any) => ({
       studentName: `${d.studentFeesMaster?.student?.firstName ?? ""} ${d.studentFeesMaster?.student?.lastName ?? ""}`.trim(),
       createdAt: d.createdAt,
+      amount: Number(d.amount ?? 0),
     })),
     currentSession: currentSession?.session ?? "No active session",
     currentSessionId: sid,
