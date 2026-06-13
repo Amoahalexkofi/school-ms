@@ -45,17 +45,17 @@ function KpiCard({
   sparkData?: number[]; sparkColor?: string;
 }) {
   const inner = (
-    <div className="relative bg-slate-900 rounded-2xl p-6 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-shadow duration-200 group h-full flex flex-col justify-between gap-5">
+    <div className="relative bg-slate-900 rounded-2xl p-4 md:p-6 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-shadow duration-200 group h-full flex flex-col justify-between gap-4">
       {/* Ghost icon watermark */}
-      <Icon className="absolute -right-4 -bottom-4 h-28 w-28 text-white opacity-[0.04] pointer-events-none" />
+      <Icon className="absolute -right-4 -bottom-4 h-24 w-24 text-white opacity-[0.04] pointer-events-none" />
 
       <div>
-        <div className="flex items-center gap-2 mb-3">
-          <span className={`w-1.5 h-1.5 rounded-full ${accent.replace("text-", "bg-")}`} />
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">{label}</p>
+        <div className="flex items-center gap-1.5 mb-2.5">
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${accent.replace("text-", "bg-")}`} />
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 truncate">{label}</p>
         </div>
-        <p className="text-[42px] font-bold text-white leading-none tabular-nums tracking-tight">{value}</p>
-        {sub && <p className="text-xs text-slate-500 mt-2">{sub}</p>}
+        <p className="text-3xl md:text-[40px] font-bold text-white leading-none tabular-nums tracking-tight truncate">{value}</p>
+        {sub && <p className="text-[11px] text-slate-500 mt-1.5">{sub}</p>}
       </div>
 
       <div className="flex items-end justify-between gap-2">
@@ -72,8 +72,8 @@ function KpiCard({
 }
 
 // ─── Arc Gauge ────────────────────────────────────────────────────────────────
-function ArcGauge({ pct, size = 148 }: { pct: number; size?: number }) {
-  const stroke = 13, r = (size - stroke) / 2, cx = size / 2, cy = size / 2;
+function ArcGauge({ pct, size = 140, empty = false }: { pct: number; size?: number; empty?: boolean }) {
+  const stroke = 12, r = (size - stroke) / 2, cx = size / 2, cy = size / 2;
   const toRad = (d: number) => (d * Math.PI) / 180;
   const startDeg = 135, totalDeg = 270;
 
@@ -85,20 +85,28 @@ function ArcGauge({ pct, size = 148 }: { pct: number; size?: number }) {
 
   const trackEnd = startDeg + totalDeg;
   const fillEnd  = startDeg + Math.max((pct / 100) * totalDeg, pct > 0 ? 5 : 0);
-
   const color = pct >= 90 ? "#16a34a" : pct >= 75 ? "#2563eb" : pct >= 50 ? "#d97706" : "#dc2626";
 
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size}>
         <path d={arcPath(startDeg, trackEnd)} fill="none" stroke="#f1f5f9" strokeWidth={stroke} strokeLinecap="round" />
-        {pct > 0 && (
+        {!empty && pct > 0 && (
           <path d={arcPath(startDeg, fillEnd)} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" />
         )}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center pb-3">
-        <span className="text-[34px] font-bold leading-none tabular-nums" style={{ color }}>{pct}%</span>
-        <span className="text-[11px] text-gray-400 mt-1 font-medium">present</span>
+        {empty ? (
+          <>
+            <span className="text-2xl font-bold leading-none text-gray-200">—</span>
+            <span className="text-[10px] text-gray-300 mt-1">no data</span>
+          </>
+        ) : (
+          <>
+            <span className="text-[32px] font-bold leading-none tabular-nums" style={{ color }}>{pct}%</span>
+            <span className="text-[10px] text-gray-400 mt-1 font-medium">present</span>
+          </>
+        )}
       </div>
     </div>
   );
@@ -135,7 +143,7 @@ export default async function DashboardPage() {
     <div className="flex flex-col flex-1 bg-[#f4f6fb] min-h-screen">
       <Topbar title="Dashboard" />
 
-      <main className="flex-1 p-6 max-w-[1400px] mx-auto w-full space-y-5">
+      <main className="flex-1 px-4 py-5 md:p-6 max-w-[1400px] mx-auto w-full space-y-4 md:space-y-5">
 
         {/* ── Header ── */}
         <div className="flex items-start justify-between">
@@ -168,7 +176,7 @@ export default async function DashboardPage() {
         ) : (
           <>
             {/* ── KPI Strip ── */}
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
               <KpiCard
                 label="Students enrolled" value={stats.totalStudents}
                 sub="current session" href="/students"
@@ -197,8 +205,8 @@ export default async function DashboardPage() {
             <div className="grid grid-cols-12 gap-4">
 
               {/* Attendance */}
-              <div className="col-span-12 lg:col-span-7 bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-6">
-                <div className="flex items-start justify-between mb-6">
+              <div className="col-span-12 lg:col-span-7 bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-4 md:p-6">
+                <div className="flex items-start justify-between mb-5">
                   <div>
                     <h2 className="text-base font-bold text-gray-900">Student Attendance</h2>
                     <p className="text-xs text-gray-400 mt-0.5">Today's summary</p>
@@ -209,56 +217,38 @@ export default async function DashboardPage() {
                 </div>
 
                 {attTotal === 0 ? (
-                  <div className="flex items-center gap-8">
-                    {/* Show an empty gauge so the layout doesn't collapse */}
-                    <div className="relative shrink-0" style={{ width: 148, height: 148 }}>
-                      <svg width={148} height={148}>
-                        {(() => {
-                          const s=148,st=13,r=(s-st)/2,cx=s/2,cy=s/2;
-                          const toR=(d:number)=>d*Math.PI/180;
-                          const sd=135,td=270,te=sd+td;
-                          const sx=cx+r*Math.cos(toR(sd)),sy=cy+r*Math.sin(toR(sd));
-                          const ex=cx+r*Math.cos(toR(te)),ey=cy+r*Math.sin(toR(te));
-                          return <path d={`M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${r} ${r} 0 1 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`} fill="none" stroke="#f1f5f9" strokeWidth={st} strokeLinecap="round" />;
-                        })()}
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center pb-3">
-                        <span className="text-[34px] font-bold leading-none text-gray-200">—</span>
-                        <span className="text-[11px] text-gray-300 mt-1 font-medium">not marked</span>
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-gray-700 mb-1">Attendance not marked today</p>
-                      <p className="text-xs text-gray-400 mb-4">Mark today's attendance to see the breakdown here.</p>
+                  <div className="flex flex-col sm:flex-row items-center gap-6">
+                    <ArcGauge pct={0} empty />
+                    <div className="text-center sm:text-left">
+                      <p className="text-sm font-semibold text-gray-700 mb-1">Not marked today</p>
+                      <p className="text-xs text-gray-400 mb-4">Take attendance to see the breakdown.</p>
                       <Link href="/attendance" className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors">
-                        <ClipboardList className="h-3.5 w-3.5" /> Mark attendance now
+                        <ClipboardList className="h-3.5 w-3.5" /> Mark now
                       </Link>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-8">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-6">
                     <ArcGauge pct={presentPct} />
-                    <div className="flex-1 space-y-1">
+                    <div className="flex-1 space-y-1 min-w-0">
                       {[
                         { label: "Present",  v: stats.studentAttendance.present,  p: attPct(stats.studentAttendance.present),  bar: "bg-green-500" },
                         { label: "Absent",   v: stats.studentAttendance.absent,   p: attPct(stats.studentAttendance.absent),   bar: "bg-red-400" },
                         { label: "Late",     v: stats.studentAttendance.late,     p: attPct(stats.studentAttendance.late),     bar: "bg-amber-400" },
                         { label: "Half day", v: stats.studentAttendance.halfDay,  p: attPct(stats.studentAttendance.halfDay),  bar: "bg-blue-400" },
                       ].map(({ label, v, p, bar }) => (
-                        <div key={label} className="flex items-center gap-3 py-1.5">
-                          <span className="text-sm text-gray-500 w-16 shrink-0">{label}</span>
-                          <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div key={label} className="flex items-center gap-2 py-1.5">
+                          <span className="text-sm text-gray-500 w-14 shrink-0">{label}</span>
+                          <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden min-w-0">
                             <div className={`h-full rounded-full ${bar}`} style={{ width: `${p}%` }} />
                           </div>
-                          <span className="text-sm font-semibold text-gray-900 tabular-nums w-8 text-right">{v}</span>
-                          <span className="text-[11px] text-gray-400 tabular-nums w-8 text-right">{p}%</span>
+                          <span className="text-sm font-semibold text-gray-900 tabular-nums w-7 text-right shrink-0">{v}</span>
+                          <span className="text-[11px] text-gray-400 tabular-nums w-7 text-right shrink-0">{p}%</span>
                         </div>
                       ))}
-                      <div className="pt-3 border-t border-gray-50 mt-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-400">Total students</span>
-                          <span className="text-sm font-bold text-gray-900 tabular-nums">{attTotal}</span>
-                        </div>
+                      <div className="pt-2.5 border-t border-gray-50 mt-1 flex items-center justify-between">
+                        <span className="text-xs text-gray-400">Total</span>
+                        <span className="text-sm font-bold text-gray-900 tabular-nums">{attTotal}</span>
                       </div>
                     </div>
                   </div>
@@ -266,7 +256,7 @@ export default async function DashboardPage() {
               </div>
 
               {/* Fee Collection */}
-              <div className="col-span-12 lg:col-span-5 bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-6">
+              <div className="col-span-12 lg:col-span-5 bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-4 md:p-6">
                 <div className="flex items-start justify-between mb-6">
                   <div>
                     <h2 className="text-base font-bold text-gray-900">Fee Collection</h2>
@@ -310,7 +300,7 @@ export default async function DashboardPage() {
             <div className="grid grid-cols-12 gap-4">
 
               {/* Payments table */}
-              <div className="col-span-12 lg:col-span-8 bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-6">
+              <div className="col-span-12 lg:col-span-8 bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-4 md:p-6">
                 <div className="flex items-start justify-between mb-5">
                   <div>
                     <h2 className="text-base font-bold text-gray-900">Today's Payments</h2>

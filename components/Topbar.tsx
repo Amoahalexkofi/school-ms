@@ -69,7 +69,7 @@ export function Topbar({ title }: { title: string }) {
   };
 
   return (
-    <header className="bg-white border-b border-gray-100 px-6 py-0 flex items-center justify-between gap-4 h-16 shrink-0">
+    <header className="bg-white border-b border-gray-100 px-4 md:px-6 py-0 flex items-center justify-between gap-3 h-14 md:h-16 shrink-0">
       {/* Left: greeting + title */}
       <div className="flex flex-col justify-center min-w-0">
         <h1 className="text-base font-bold text-gray-900 leading-tight truncate">{title}</h1>
@@ -101,7 +101,7 @@ export function Topbar({ title }: { title: string }) {
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+            <div className="absolute right-0 top-full mt-2 w-[min(320px,calc(100vw-2rem))] bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Notifications</p>
