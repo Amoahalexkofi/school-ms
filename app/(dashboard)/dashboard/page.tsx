@@ -34,33 +34,36 @@ function Sparkline({ data, color }: { data: number[]; color: string }) {
   );
 }
 
-// ─── KPI Card ─────────────────────────────────────────────────────────────────
+// ─── KPI Card (dark) ──────────────────────────────────────────────────────────
 function KpiCard({
   label, value, sub, href,
-  icon: Icon, bgIcon,
+  icon: Icon, accent,
   sparkData, sparkColor,
 }: {
   label: string; value: string | number; sub?: string; href?: string;
-  icon: React.ElementType; bgIcon: string;
+  icon: React.ElementType; accent: string; // tailwind text color for dot + icon
   sparkData?: number[]; sparkColor?: string;
 }) {
   const inner = (
-    <div className="relative bg-white rounded-2xl p-6 overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.07)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.09)] transition-shadow duration-200 group h-full flex flex-col justify-between gap-4">
-      {/* Ghost icon */}
-      <Icon className={`absolute -right-3 -top-3 h-24 w-24 ${bgIcon} opacity-[0.07] pointer-events-none`} />
+    <div className="relative bg-slate-900 rounded-2xl p-6 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-shadow duration-200 group h-full flex flex-col justify-between gap-5">
+      {/* Ghost icon watermark */}
+      <Icon className="absolute -right-4 -bottom-4 h-28 w-28 text-white opacity-[0.04] pointer-events-none" />
 
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">{label}</p>
-        <p className="text-[40px] font-bold text-gray-900 leading-none mt-2.5 tabular-nums tracking-tight">{value}</p>
-        {sub && <p className="text-xs text-gray-400 mt-1.5">{sub}</p>}
+        <div className="flex items-center gap-2 mb-3">
+          <span className={`w-1.5 h-1.5 rounded-full ${accent.replace("text-", "bg-")}`} />
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">{label}</p>
+        </div>
+        <p className="text-[42px] font-bold text-white leading-none tabular-nums tracking-tight">{value}</p>
+        {sub && <p className="text-xs text-slate-500 mt-2">{sub}</p>}
       </div>
 
-      <div className="flex items-end justify-between">
-        {sparkData && sparkColor ? (
-          <Sparkline data={sparkData} color={sparkColor} />
-        ) : <span />}
+      <div className="flex items-end justify-between gap-2">
+        {sparkData && sparkColor
+          ? <Sparkline data={sparkData} color={sparkColor} />
+          : <span />}
         {href && (
-          <ArrowRight className="h-4 w-4 text-gray-200 group-hover:text-gray-400 transition-colors shrink-0" />
+          <ArrowRight className="h-4 w-4 text-slate-700 group-hover:text-slate-400 transition-colors shrink-0 mb-1" />
         )}
       </div>
     </div>
@@ -135,17 +138,22 @@ export default async function DashboardPage() {
       <main className="flex-1 p-6 max-w-[1400px] mx-auto w-full space-y-5">
 
         {/* ── Header ── */}
-        <div className="flex items-end justify-between">
+        <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs text-gray-400 font-medium">{greeting}</p>
-            <h1 className="text-2xl font-bold text-gray-900 mt-0.5 tracking-tight">{schoolName}</h1>
-            {stats?.currentSession && (
-              <span className="inline-block mt-1.5 text-[11px] font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
-                {stats.currentSession}
-              </span>
-            )}
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{schoolName}</h1>
+            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+              <p className="text-sm text-gray-400">{greeting}</p>
+              {stats?.currentSession && (
+                <>
+                  <span className="text-gray-300">·</span>
+                  <span className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
+                    {stats.currentSession}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
-          <p className="text-sm text-gray-400 hidden md:block">{dayLabel}</p>
+          <p className="text-sm text-gray-400 hidden md:block shrink-0">{dayLabel}</p>
         </div>
 
         {!stats ? (
@@ -164,24 +172,24 @@ export default async function DashboardPage() {
               <KpiCard
                 label="Students enrolled" value={stats.totalStudents}
                 sub="current session" href="/students"
-                icon={Users} bgIcon="text-blue-600"
+                icon={Users} accent="text-blue-400"
               />
               <KpiCard
                 label="Teachers / Staff" value={`${teacherCount} / ${totalStaff}`}
                 sub="active employees" href="/staff"
-                icon={UserCog} bgIcon="text-violet-600"
+                icon={UserCog} accent="text-violet-400"
               />
               <KpiCard
                 label="Fees collected" value={`${currency}${(stats.monthCollection ?? 0).toLocaleString()}`}
                 sub="this month" href="/fees/collect"
-                icon={Banknote} bgIcon="text-emerald-600"
-                sparkData={stats.sparklines.fees} sparkColor="#10b981"
+                icon={Banknote} accent="text-emerald-400"
+                sparkData={stats.sparklines.fees} sparkColor="#34d399"
               />
               <KpiCard
                 label="Expenses" value={`${currency}${(stats.monthExpense ?? 0).toLocaleString()}`}
                 sub="this month" href="/finance"
-                icon={TrendingDown} bgIcon="text-rose-500"
-                sparkData={stats.sparklines.expenses} sparkColor="#f43f5e"
+                icon={TrendingDown} accent="text-rose-400"
+                sparkData={stats.sparklines.expenses} sparkColor="#fb7185"
               />
             </div>
 
@@ -201,10 +209,31 @@ export default async function DashboardPage() {
                 </div>
 
                 {attTotal === 0 ? (
-                  <div className="flex flex-col items-center py-10 text-center">
-                    <ClipboardList className="h-10 w-10 text-gray-200 mb-3" />
-                    <p className="text-sm font-medium text-gray-400">Attendance not marked yet</p>
-                    <Link href="/attendance" className="mt-3 text-xs text-blue-600 hover:underline font-semibold">Mark now →</Link>
+                  <div className="flex items-center gap-8">
+                    {/* Show an empty gauge so the layout doesn't collapse */}
+                    <div className="relative shrink-0" style={{ width: 148, height: 148 }}>
+                      <svg width={148} height={148}>
+                        {(() => {
+                          const s=148,st=13,r=(s-st)/2,cx=s/2,cy=s/2;
+                          const toR=(d:number)=>d*Math.PI/180;
+                          const sd=135,td=270,te=sd+td;
+                          const sx=cx+r*Math.cos(toR(sd)),sy=cy+r*Math.sin(toR(sd));
+                          const ex=cx+r*Math.cos(toR(te)),ey=cy+r*Math.sin(toR(te));
+                          return <path d={`M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${r} ${r} 0 1 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`} fill="none" stroke="#f1f5f9" strokeWidth={st} strokeLinecap="round" />;
+                        })()}
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center pb-3">
+                        <span className="text-[34px] font-bold leading-none text-gray-200">—</span>
+                        <span className="text-[11px] text-gray-300 mt-1 font-medium">not marked</span>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-gray-700 mb-1">Attendance not marked today</p>
+                      <p className="text-xs text-gray-400 mb-4">Mark today's attendance to see the breakdown here.</p>
+                      <Link href="/attendance" className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors">
+                        <ClipboardList className="h-3.5 w-3.5" /> Mark attendance now
+                      </Link>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex items-center gap-8">
