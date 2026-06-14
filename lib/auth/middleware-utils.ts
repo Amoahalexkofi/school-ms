@@ -10,7 +10,7 @@ export type UserRole =
 // Routes accessible without authentication
 const PUBLIC_PREFIXES = [
   "/api/auth", "/sign-in", "/apply", "/_next", "/favicon",
-  "/novalss-admin", "/register", "/api/admin",
+  "/novalss-admin", "/api/admin",
   "/images",           // static public assets
   "/features",         // public marketing page
   "/forgot-password",  // password reset flow

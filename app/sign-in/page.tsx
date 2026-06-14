@@ -122,7 +122,7 @@ export default async function SignInRoute() {
             <div className="mt-8 pt-8 border-t border-gray-100 text-center">
               <p className="text-sm text-gray-500">
                 New school?{" "}
-                <Link href="/register" className="text-indigo-600 font-semibold hover:text-indigo-700 inline-flex items-center gap-1">
+                <Link href="/sign-in" className="text-indigo-600 font-semibold hover:text-indigo-700 inline-flex items-center gap-1">
                   Register for free <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </p>

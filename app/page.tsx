@@ -31,7 +31,7 @@ export default async function LandingPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/sign-in" className="hidden sm:block text-sm font-semibold text-gray-500 hover:text-gray-900 px-3 py-2 transition-colors">Sign in</Link>
-            <Link href="/register" className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/25">
+            <Link href="/sign-in" className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/25">
               Get started free <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -68,7 +68,7 @@ export default async function LandingPage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 mt-10">
-                <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-7 py-4 rounded-xl font-bold text-base hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-600/30">
+                <Link href="/sign-in" className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-7 py-4 rounded-xl font-bold text-base hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-600/30">
                   Create your school free <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link href="/sign-in" className="inline-flex items-center justify-center gap-2 border border-white/10 text-slate-300 px-7 py-4 rounded-xl font-semibold hover:bg-white/5 transition-colors">
@@ -450,7 +450,7 @@ export default async function LandingPage() {
               ))}
             </div>
             <div className="mt-12">
-              <Link href="/register" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-7 py-3.5 rounded-xl font-bold hover:bg-indigo-500 transition-colors">
+              <Link href="/sign-in" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-7 py-3.5 rounded-xl font-bold hover:bg-indigo-500 transition-colors">
                 Start free today <ArrowRight className="h-4 w-4"/>
               </Link>
             </div>
@@ -572,7 +572,7 @@ export default async function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/register" className={`mt-8 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-colors ${plan.hl?"bg-indigo-600 text-white hover:bg-indigo-500":"bg-gray-900 text-white hover:bg-gray-700"}`}>
+                <Link href="/sign-in" className={`mt-8 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-colors ${plan.hl?"bg-indigo-600 text-white hover:bg-indigo-500":"bg-gray-900 text-white hover:bg-gray-700"}`}>
                   {plan.cta} <ArrowRight className="h-3.5 w-3.5"/>
                 </Link>
               </div>
@@ -620,7 +620,7 @@ export default async function LandingPage() {
             Join 50+ schools that stopped managing education in spreadsheets and WhatsApp groups.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-            <Link href="/register" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-9 py-4 rounded-xl font-black text-base hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-600/30">
+            <Link href="/sign-in" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-9 py-4 rounded-xl font-black text-base hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-600/30">
               Create your school now <ArrowRight className="h-5 w-5"/>
             </Link>
             <Link href="/sign-in" className="inline-flex items-center gap-2 border border-slate-700 text-slate-400 px-9 py-4 rounded-xl font-semibold hover:bg-slate-800 hover:text-white transition-colors">

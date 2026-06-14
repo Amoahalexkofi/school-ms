@@ -730,7 +730,7 @@ export default function FeaturesPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/sign-in" className="hidden sm:block text-sm font-semibold text-gray-500 hover:text-gray-900 px-3 py-2 transition-colors">Sign in</Link>
-            <Link href="/register" className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/25">
+            <Link href="/sign-in" className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/25">
               Get started free <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -834,7 +834,7 @@ export default function FeaturesPage() {
           </h2>
           <p className="mt-5 text-slate-400 text-lg">No feature is locked behind a higher plan. Everything you read on this page is available from day one.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">
-            <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-4 rounded-xl font-black hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-600/30">
+            <Link href="/sign-in" className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-4 rounded-xl font-black hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-600/30">
               Create your school free <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/" className="inline-flex items-center justify-center gap-2 border border-slate-700 text-slate-400 px-8 py-4 rounded-xl font-semibold hover:bg-slate-800 hover:text-white transition-colors">
