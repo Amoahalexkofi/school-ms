@@ -7,7 +7,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 
-const WHATSAPP_NUMBER = "PLACEHOLDER";
+const WHATSAPP_NUMBER = "233595111461";
 const WHATSAPP_URL    = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'd like to learn more about Skula.")}`;
 
 export default async function LandingPage() {

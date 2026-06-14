@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { GraduationCap, ArrowLeft, MessageCircle, Mail } from "lucide-react";
 
-const WHATSAPP_NUMBER = "PLACEHOLDER"; // replace with real number e.g. "233XXXXXXXXX"
+const WHATSAPP_NUMBER = "233595111461";
 const CONTACT_EMAIL   = "hello@getskula.com";
 
 export default function ContactPage() {
