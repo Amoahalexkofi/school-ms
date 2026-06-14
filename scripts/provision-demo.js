@@ -2,16 +2,22 @@ const { neon } = require('@neondatabase/serverless');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
-const DATABASE_URL = 'postgresql://neondb_owner:npg_HvzCTw4m6FDd@ep-mute-bonus-aprnasgs.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require';
+// Load from environment — never hardcode credentials here
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error('ERROR: DATABASE_URL env var is required');
+  process.exit(1);
+}
+
 const sql = neon(DATABASE_URL);
 const uid = () => crypto.randomUUID();
 
 async function provision() {
-  const subdomain = 'demo';
-  const schema = 'school_demo';
-  const adminEmail = 'admin@demo.getskula.com';
-  const adminPassword = 'Skula@2026';
-  const schoolName = 'Skula Demo School';
+  const subdomain = process.env.SUBDOMAIN || 'demo';
+  const schema = `school_${subdomain}`;
+  const adminEmail = process.env.ADMIN_EMAIL || `admin@${subdomain}.getskula.com`;
+  const adminPassword = process.env.ADMIN_PASSWORD || 'ChangeMe@2026';
+  const schoolName = process.env.SCHOOL_NAME || 'Skula Demo School';
 
   const tables = await sql`SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename NOT IN ('SchoolTenant','_prisma_migrations') ORDER BY tablename`;
   console.log('Tables to clone:', tables.length);
@@ -35,9 +41,8 @@ async function provision() {
   await sql.query(`INSERT INTO "SchoolTenant" (id, name, subdomain, "schemaName", plan, status, "adminEmail", "createdAt", "updatedAt") VALUES ('${tenantId}', '${schoolName}', '${subdomain}', '${schema}', 'trial', 'active', '${adminEmail}', NOW(), NOW()) ON CONFLICT (subdomain) DO UPDATE SET status = 'active'`);
 
   console.log('\n✅ School provisioned!');
-  console.log('URL     : https://demo.getskula.com/sign-in');
+  console.log('URL     : https://' + subdomain + '.getskula.com/sign-in');
   console.log('Email   :', adminEmail);
-  console.log('Password:', adminPassword);
 }
 
 provision().catch(e => console.error('ERROR:', e.message));
