@@ -162,7 +162,7 @@ const MODULES = [
     name: "Exams & Results",
     tagline: "Marks in. Ranked marksheets out. No Excel.",
     description:
-      "The module that saves teachers three days of work every term. Enter marks by subject, and Novalss calculates totals, grades, positions, and generates print-ready marksheets — automatically.",
+      "The module that saves teachers three days of work every term. Enter marks by subject, and Skula calculates totals, grades, positions, and generates print-ready marksheets — automatically.",
     who: "Teacher, Admin",
     features: [
       "Exam groups and exam scheduling with configurable subjects per class",
@@ -721,7 +721,7 @@ export default function FeaturesPage() {
               <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
-              <span className="font-black text-gray-900 text-base tracking-tight">Novalss</span>
+              <span className="font-black text-gray-900 text-base tracking-tight">Skula</span>
             </Link>
             <div className="hidden lg:flex items-center gap-7">
               <Link href="/#pricing" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Pricing</Link>
@@ -730,7 +730,7 @@ export default function FeaturesPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/sign-in" className="hidden sm:block text-sm font-semibold text-gray-500 hover:text-gray-900 px-3 py-2 transition-colors">Sign in</Link>
-            <Link href="/sign-in" className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/25">
+            <Link href="/contact" className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/25">
               Get started free <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -751,7 +751,7 @@ export default function FeaturesPage() {
             <span className="text-indigo-400">school will ever need.</span>
           </h1>
           <p className="mt-6 text-slate-400 text-xl leading-relaxed max-w-2xl mx-auto">
-            Novalss is not a collection of bolt-on modules. Every feature below is included in every plan, fully connected, sharing one database — so data entered once flows everywhere.
+            Skula is not a collection of bolt-on modules. Every feature below is included in every plan, fully connected, sharing one database — so data entered once flows everywhere.
           </p>
           {/* Category quick-links */}
           <div className="flex flex-wrap justify-center gap-2 mt-10">
@@ -834,8 +834,8 @@ export default function FeaturesPage() {
           </h2>
           <p className="mt-5 text-slate-400 text-lg">No feature is locked behind a higher plan. Everything you read on this page is available from day one.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">
-            <Link href="/sign-in" className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-4 rounded-xl font-black hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-600/30">
-              Create your school free <ArrowRight className="h-4 w-4" />
+            <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-4 rounded-xl font-black hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-600/30">
+              Get started free <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/" className="inline-flex items-center justify-center gap-2 border border-slate-700 text-slate-400 px-8 py-4 rounded-xl font-semibold hover:bg-slate-800 hover:text-white transition-colors">
               Back to home
@@ -849,7 +849,7 @@ export default function FeaturesPage() {
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center"><GraduationCap className="h-4 w-4 text-white"/></div>
-            <span className="font-black text-white text-sm">Novalss</span>
+            <span className="font-black text-white text-sm">Skula</span>
           </div>
           <p className="text-xs text-gray-700">© {new Date().getFullYear()} Novalss. All rights reserved.</p>
           <div className="flex gap-5">

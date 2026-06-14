@@ -22,6 +22,20 @@ async function main() {
   });
   console.log("✓ Super admin:", adminUser.email);
 
+  // ─── Demo Account ─────────────────────────────────────────────────────────
+  const demoPassword = await bcrypt.hash("Demo@Skula2026", 12);
+  await (prisma as any).user.upsert({
+    where: { email: "demo@getskula.com" },
+    update: {},
+    create: {
+      email: "demo@getskula.com",
+      username: "demo",
+      password: demoPassword,
+      role: "SUPER_ADMIN",
+    },
+  });
+  console.log("✓ Demo account: demo@getskula.com");
+
   // ─── School Profile ───────────────────────────────────────────────────────
   const existingProfile = await (prisma as any).schoolProfile.findFirst();
   if (!existingProfile) {

@@ -15,6 +15,8 @@ const PUBLIC_PREFIXES = [
   "/features",         // public marketing page
   "/forgot-password",  // password reset flow
   "/reset-password",   // password reset flow
+  "/contact",          // contact form
+  "/demo",             // demo auto-login
 ];
 
 export function isPublicRoute(pathname: string): boolean {
