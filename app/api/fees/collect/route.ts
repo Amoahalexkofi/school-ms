@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { sendSms, feeReceiptSms } from "@/lib/services/sms";
+import { sendEmail, feeReceiptEmail } from "@/lib/email";
 
 // Mirrors Smart School's fee_deposit() / fee_deposit_bulk():
 // ONE deposit row per (studentFeesMasterId, feeGroupItemId).
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Fetch master to get studentId + contact info for SMS receipt
+    // Fetch master to get studentId + contact info for SMS/email receipt
     const master = await (db as any).studentFeesMaster.findUnique({
       where: { id: studentFeesMasterId },
       select: {
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
         studentSession: {
           select: {
             studentId: true,
-            student: { select: { firstName: true, lastName: true, phone: true, parentMobile: true } },
+            student: { select: { firstName: true, lastName: true, phone: true, parentMobile: true, email: true, guardianEmail: true } },
           },
         },
       },
@@ -115,19 +116,39 @@ export async function POST(req: NextRequest) {
       return { id: deposit.id, subInvoiceId };
     });
 
-    // Fire-and-forget SMS receipt to student/parent
+    // Fire-and-forget SMS + email receipt
     const student = master?.studentSession?.student;
     if (student) {
       const profile = await (db as any).schoolProfile.findFirst({ select: { name: true, currency: true } });
-      const msg = feeReceiptSms({
-        studentName: `${student.firstName} ${student.lastName}`,
-        amount: Number(amount).toFixed(2),
-        currency: profile?.currency ?? "",
-        receiptNo: `${result.id.slice(-6).toUpperCase()}-${result.subInvoiceId}`,
-        schoolName: profile?.name ?? "School",
-      });
+      const studentName = `${student.firstName} ${student.lastName}`;
+      const receiptNo   = `${result.id.slice(-6).toUpperCase()}-${result.subInvoiceId}`;
+      const amountStr   = Number(amount).toFixed(2);
+      const currency    = profile?.currency ?? "";
+      const schoolName  = profile?.name ?? "School";
+
+      // SMS
       const phones = [student.phone, student.parentMobile].filter(Boolean) as string[];
-      if (phones.length) sendSms(phones, msg).catch(() => null);
+      if (phones.length) {
+        sendSms(phones, feeReceiptSms({ studentName, amount: amountStr, currency, receiptNo, schoolName })).catch(() => null);
+      }
+
+      // Email
+      const emails = [student.email, student.guardianEmail].filter(Boolean) as string[];
+      if (emails.length) {
+        sendEmail(db, {
+          to: emails,
+          subject: `Fee Receipt ${receiptNo} — ${schoolName}`,
+          html: feeReceiptEmail({
+            studentName,
+            amount: amountStr,
+            currency,
+            receiptNo,
+            schoolName,
+            paymentMode: paymentMode || "CASH",
+            date: date,
+          }),
+        }).catch(() => null);
+      }
     }
 
     return NextResponse.json(result, { status: 201 });
