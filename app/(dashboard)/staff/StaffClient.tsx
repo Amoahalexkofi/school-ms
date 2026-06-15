@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserCog, Plus, Search, Eye, CreditCard } from "lucide-react";
+import { usePermission } from "@/components/PermissionsProvider";
 
 type Props = { staff: any[]; departments: any[]; designations: any[] };
 
@@ -20,6 +21,7 @@ const ROLE_STYLE: Record<string, string> = {
 export function StaffClient({ staff, departments, designations }: Props) {
   const [search, setSearch]       = useState("");
   const [filterDept, setFilterDept] = useState("");
+  const perm = usePermission("human_resource");
 
   const filtered = staff.filter(s => {
     const q = search.toLowerCase();
@@ -62,11 +64,13 @@ export function StaffClient({ staff, departments, designations }: Props) {
               <CreditCard className="h-4 w-4 mr-1.5" /> ID Card Setup
             </Button>
           </Link>
-          <Link href="/staff/new">
-            <Button>
-              <Plus className="h-4 w-4 mr-1.5" /> Add Staff
-            </Button>
-          </Link>
+          {perm.canAdd && (
+            <Link href="/staff/new">
+              <Button>
+                <Plus className="h-4 w-4 mr-1.5" /> Add Staff
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 

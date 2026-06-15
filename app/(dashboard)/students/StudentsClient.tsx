@@ -6,11 +6,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Users, Plus, Search, Eye, GraduationCap, CreditCard } from "lucide-react";
+import { usePermission } from "@/components/PermissionsProvider";
 
 type Props = { students: any[]; sessions: any[]; classSections: any[]; schoolHouses: any[] };
 
 export function StudentsClient({ students }: Props) {
   const [search, setSearch] = useState("");
+  const perm = usePermission("student_information");
 
   const filtered = students.filter(s => {
     if (!search) return true;
@@ -45,11 +47,13 @@ export function StudentsClient({ students }: Props) {
               <GraduationCap className="h-4 w-4 mr-1" /> Promote
             </Button>
           </Link>
-          <Link href="/students/new">
-            <Button>
-              <Plus className="h-4 w-4 mr-1" /> Add Student
-            </Button>
-          </Link>
+          {perm.canAdd && (
+            <Link href="/students/new">
+              <Button>
+                <Plus className="h-4 w-4 mr-1" /> Add Student
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 
