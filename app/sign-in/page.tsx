@@ -11,7 +11,7 @@ export default async function SignInRoute() {
     <div className="min-h-screen flex">
 
       {/* ── Left panel — dark brand side ── */}
-      <div className="hidden lg:flex lg:w-[55%] relative bg-slate-950 flex-col overflow-hidden">
+      <div className="hidden lg:flex lg:w-[55%] relative bg-slate-950 flex-col overflow-hidden border-r border-white/[0.07]">
 
         {/* Background texture */}
         <div className="absolute inset-0 pointer-events-none"
