@@ -256,7 +256,7 @@ export function HomepageClient() {
               </motion.div>
 
               <motion.div variants={fadeUp}>
-                <h1 className="text-[52px] sm:text-[60px] lg:text-[68px] font-black leading-[1.02] tracking-[-0.03em] text-slate-900">
+                <h1 className="text-[36px] sm:text-[52px] lg:text-[68px] font-black leading-[1.02] tracking-[-0.03em] text-slate-900">
                   Run Your Entire<br />
                   School From One{" "}
                   <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
@@ -298,7 +298,13 @@ export function HomepageClient() {
               </motion.div>
             </motion.div>
 
-            {/* Right — dashboard + floating cards */}
+            {/* Mobile hero image — hidden on lg */}
+            <motion.div variants={fadeUp} className="lg:hidden flex justify-center -mt-2">
+              <img src="/images/hero image1.png" alt="Student using Skula"
+                className="h-56 sm:h-72 object-contain drop-shadow-xl" />
+            </motion.div>
+
+            {/* Right — student image + floating cards (desktop only) */}
             <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
               className="relative hidden lg:flex items-center justify-center h-[520px]">
@@ -492,7 +498,8 @@ export function HomepageClient() {
           </motion.div>
 
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeIn}>
-            <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+            <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
+            <div className="min-w-[600px] rounded-2xl overflow-hidden bg-white">
               {/* Header */}
               <div className="grid grid-cols-3 bg-slate-50 border-b border-slate-200">
                 <div className="px-6 py-4 text-[12px] font-bold text-slate-400 uppercase tracking-wide">Capability</div>
@@ -518,6 +525,7 @@ export function HomepageClient() {
                   </div>
                 </div>
               ))}
+            </div>
             </div>
           </motion.div>
         </div>
