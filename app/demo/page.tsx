@@ -121,7 +121,8 @@ export default function DemoPage() {
     <div className="min-h-screen flex">
 
       {/* ── Left: dark brand panel ── */}
-      <div className="hidden lg:flex lg:w-[42%] relative bg-slate-950 flex-col overflow-hidden">
+      <div className="hidden lg:flex lg:w-[42%] relative bg-slate-950 flex-col overflow-hidden"
+        style={{ boxShadow: "8px 0 40px rgba(0,0,0,0.35)" }}>
 
         {/* Dot grid texture */}
         <div className="absolute inset-0 pointer-events-none"
@@ -196,7 +197,14 @@ export default function DemoPage() {
       </div>
 
       {/* ── Right: role selection panel ── */}
-      <div className="flex-1 flex flex-col bg-white overflow-y-auto">
+      <div className="flex-1 flex flex-col bg-white overflow-y-auto relative">
+
+        {/* Subtle background overlay image */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <img src="/images/students-laptops.jpg" alt=""
+            className="w-full h-full object-cover object-center opacity-[0.05]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-white/60" />
+        </div>
 
         {/* Mobile nav */}
         <div className="lg:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-slate-100">
