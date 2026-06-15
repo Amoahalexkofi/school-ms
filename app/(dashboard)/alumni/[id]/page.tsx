@@ -39,14 +39,14 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
     <div className="flex flex-col flex-1">
       <Topbar title={`${s.firstName} ${s.lastName}`} />
       <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-        <Link href="/alumni" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+        <Link href="/alumni" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Alumni
         </Link>
 
         {/* Header */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+            <div className="w-16 h-16 bg-[#111318]/20 rounded-full flex items-center justify-center shrink-0">
               <User className="h-8 w-8 text-white" />
             </div>
             <div>
@@ -55,7 +55,7 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
               {alumni.occupation && <p className="text-indigo-100 mt-1">{alumni.occupation}</p>}
             </div>
             <div className="ml-auto">
-              <Badge className="bg-white/20 text-white border-white/30">Alumni</Badge>
+              <Badge className="bg-[#111318]/20 text-white border-white/30">Alumni</Badge>
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Current Contact Info */}
           <Card>
-            <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Mail className="h-4 w-4 text-blue-600" /> Current Contact</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Mail className="h-4 w-4 text-blue-400" /> Current Contact</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {[
                 { icon: Mail,     label: "Email",      value: alumni.currentEmail },
@@ -72,17 +72,17 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                 { icon: MapPin,   label: "Address",    value: alumni.address },
               ].map(({ icon: Icon, label, value }) => (
                 <div key={label} className="flex items-start gap-3">
-                  <Icon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+                  <Icon className="h-4 w-4 text-white/30 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-xs text-gray-400">{label}</p>
+                    <p className="text-xs text-white/30">{label}</p>
                     <p className="text-sm font-medium">{value || "—"}</p>
                   </div>
                 </div>
               ))}
               {alumni.note && (
                 <div>
-                  <p className="text-xs text-gray-400 mb-1">Note</p>
-                  <p className="text-sm text-gray-600">{alumni.note}</p>
+                  <p className="text-xs text-white/30 mb-1">Note</p>
+                  <p className="text-sm text-white/50">{alumni.note}</p>
                 </div>
               )}
             </CardContent>
@@ -90,7 +90,7 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
 
           {/* School Info */}
           <Card>
-            <CardHeader><CardTitle className="text-sm flex items-center gap-2"><GraduationCap className="h-4 w-4 text-purple-600" /> School History</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm flex items-center gap-2"><GraduationCap className="h-4 w-4 text-violet-400" /> School History</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {[
                 { label: "Full Name",     value: `${s.firstName} ${s.middleName ?? ""} ${s.lastName}`.trim() },
@@ -99,7 +99,7 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                 { label: "Date of Birth", value: s.dob ? new Date(s.dob).toLocaleDateString() : null },
               ].map(({ label, value }) => value ? (
                 <div key={label}>
-                  <p className="text-xs text-gray-400">{label}</p>
+                  <p className="text-xs text-white/30">{label}</p>
                   <p className="text-sm font-medium">{value}</p>
                 </div>
               ) : null)}
@@ -113,21 +113,21 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
             <CardHeader><CardTitle className="text-sm">Academic Sessions</CardTitle></CardHeader>
             <CardContent className="p-0">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-[#0f1015] border-b">
                   <tr>
-                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Session</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Class</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Section</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Roll No</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-white/50">Session</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-white/50">Class</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-white/50">Section</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-white/50">Roll No</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {s.sessions.map((sess: any) => (
-                    <tr key={sess.id} className="hover:bg-gray-50">
+                    <tr key={sess.id} className="hover:bg-[#0f1015]">
                       <td className="px-4 py-2.5">{sess.session?.session}</td>
                       <td className="px-4 py-2.5">{sess.classSection?.class?.name ?? "—"}</td>
                       <td className="px-4 py-2.5">{sess.classSection?.section?.name ?? "—"}</td>
-                      <td className="px-4 py-2.5 text-gray-500">{sess.rollNo ?? "—"}</td>
+                      <td className="px-4 py-2.5 text-white/40">{sess.rollNo ?? "—"}</td>
                     </tr>
                   ))}
                 </tbody>

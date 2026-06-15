@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Bell, CheckCheck } from "lucide-react";
 
 const TYPE_STYLES: Record<string, string> = {
-  FEE_DUE: "bg-red-100 text-red-700",
-  RESULT_PUBLISHED: "bg-green-100 text-green-700",
-  HOMEWORK_ASSIGNED: "bg-blue-100 text-blue-700",
-  EXAM_SCHEDULED: "bg-purple-100 text-purple-700",
-  ABSENCE_MARKED: "bg-orange-100 text-orange-700",
-  GENERAL: "bg-gray-100 text-gray-700",
+  FEE_DUE: "bg-red-500/10 text-red-400",
+  RESULT_PUBLISHED: "bg-emerald-500/10 text-emerald-400",
+  HOMEWORK_ASSIGNED: "bg-blue-500/10 text-blue-400",
+  EXAM_SCHEDULED: "bg-violet-500/10 text-violet-400",
+  ABSENCE_MARKED: "bg-orange-500/10 text-orange-400",
+  GENERAL: "bg-white/[0.04] text-white/60",
 };
 
 export default function NotificationsPage() {
@@ -60,7 +60,7 @@ export default function NotificationsPage() {
       <Topbar title="Notifications" />
       <main className="flex-1 p-6 space-y-4 max-w-2xl">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-white/40">
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </p>
           {unreadCount > 0 && (
@@ -71,9 +71,9 @@ export default function NotificationsPage() {
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-gray-400">Loading…</div>
+          <div className="text-center py-12 text-white/30">Loading…</div>
         ) : notifications.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-white/30">
             <Bell className="h-10 w-10 mx-auto mb-3 opacity-40" />
             <p>No notifications yet.</p>
           </div>
@@ -83,19 +83,19 @@ export default function NotificationsPage() {
               <div
                 key={n.id}
                 className={`flex items-start gap-3 p-4 rounded-xl border transition-all ${
-                  n.isRead ? "bg-white border-gray-100" : "bg-blue-50 border-blue-200"
+                  n.isRead ? "bg-[#111318] border-white/[0.04]" : "bg-blue-500/10 border-blue-500/20"
                 }`}
               >
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium mt-0.5 shrink-0 ${TYPE_STYLES[n.type] ?? "bg-gray-100 text-gray-700"}`}>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium mt-0.5 shrink-0 ${TYPE_STYLES[n.type] ?? "bg-white/[0.04] text-white/60"}`}>
                   {n.type.replace(/_/g, " ")}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm text-gray-900">{n.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{n.message}</p>
-                  <p className="text-xs text-gray-400 mt-1">{new Date(n.createdAt).toLocaleString()}</p>
+                  <p className="font-medium text-sm text-white/80">{n.title}</p>
+                  <p className="text-xs text-white/40 mt-0.5">{n.message}</p>
+                  <p className="text-xs text-white/30 mt-1">{new Date(n.createdAt).toLocaleString()}</p>
                 </div>
                 {!n.isRead && (
-                  <button onClick={() => markRead(n.id)} className="text-xs text-blue-600 hover:underline shrink-0">
+                  <button onClick={() => markRead(n.id)} className="text-xs text-blue-400 hover:underline shrink-0">
                     Mark read
                   </button>
                 )}

@@ -15,9 +15,9 @@ async function getLessonPlans() {
 }
 
 const statusConfig: Record<string, { color: string; icon: React.ReactNode }> = {
-  DRAFT:     { color: "bg-gray-100 text-gray-600",   icon: null },
-  SUBMITTED: { color: "bg-blue-100 text-blue-700",   icon: null },
-  APPROVED:  { color: "bg-green-100 text-green-700", icon: null },
+  DRAFT:     { color: "bg-white/[0.04] text-white/50",   icon: null },
+  SUBMITTED: { color: "bg-blue-500/10 text-blue-400",   icon: null },
+  APPROVED:  { color: "bg-emerald-500/10 text-emerald-400", icon: null },
 };
 
 export default async function LessonPlansPage() {
@@ -36,26 +36,26 @@ export default async function LessonPlansPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-gray-500 mb-1">Total Plans</p>
+              <p className="text-xs text-white/40 mb-1">Total Plans</p>
               <p className="text-3xl font-bold">{plans.length}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-gray-500 mb-1">Drafts</p>
-              <p className="text-3xl font-bold text-gray-500">{drafts}</p>
+              <p className="text-xs text-white/40 mb-1">Drafts</p>
+              <p className="text-3xl font-bold text-white/40">{drafts}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-gray-500 mb-1">Submitted</p>
-              <p className={`text-3xl font-bold ${submitted > 0 ? "text-blue-600" : "text-gray-800"}`}>{submitted}</p>
+              <p className="text-xs text-white/40 mb-1">Submitted</p>
+              <p className={`text-3xl font-bold ${submitted > 0 ? "text-blue-400" : "text-white/70"}`}>{submitted}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-gray-500 mb-1">Approved</p>
-              <p className="text-3xl font-bold text-green-600">{approved}</p>
+              <p className="text-xs text-white/40 mb-1">Approved</p>
+              <p className="text-3xl font-bold text-emerald-400">{approved}</p>
             </CardContent>
           </Card>
         </div>
@@ -64,16 +64,16 @@ export default async function LessonPlansPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <FileText className="h-4 w-4 text-blue-600" /> Lesson Plans
+              <FileText className="h-4 w-4 text-blue-400" /> Lesson Plans
             </CardTitle>
           </CardHeader>
           <CardContent>
             {plans.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-8">No lesson plans submitted yet.</p>
+              <p className="text-sm text-white/40 text-center py-8">No lesson plans submitted yet.</p>
             ) : (
               <div className="space-y-3">
                 {plans.map((p: any) => (
-                  <div key={p.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                  <div key={p.id} className="border rounded-lg p-4 hover:bg-[#0f1015]">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-0.5">
@@ -82,14 +82,14 @@ export default async function LessonPlansPage() {
                             {p.status}
                           </span>
                         </div>
-                        <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500">
+                        <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-white/40">
                           <span>{p.subject.name} ({p.subject.code})</span>
                           <span>{p.classSection?.class?.name} – {p.classSection?.section?.name}</span>
                           <span>By: {p.staff.firstName} {p.staff.lastName}</span>
                           <span>{new Date(p.date).toLocaleDateString()}</span>
                         </div>
                         {p.description && (
-                          <p className="text-sm text-gray-600 mt-1.5">{p.description}</p>
+                          <p className="text-sm text-white/50 mt-1.5">{p.description}</p>
                         )}
                       </div>
                       <div className="shrink-0">
@@ -98,7 +98,7 @@ export default async function LessonPlansPage() {
                         ) : p.status === "SUBMITTED" ? (
                           <Clock className="h-5 w-5 text-blue-400" />
                         ) : (
-                          <AlertCircle className="h-5 w-5 text-gray-300" />
+                          <AlertCircle className="h-5 w-5 text-white/30" />
                         )}
                       </div>
                     </div>

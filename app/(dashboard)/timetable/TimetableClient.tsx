@@ -13,17 +13,17 @@ const DAY_LABEL: Record<string, string> = {
   THURSDAY: "Thu", FRIDAY: "Fri", SATURDAY: "Sat",
 };
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 const SUBJECT_COLORS = [
-  "bg-blue-100 text-blue-800 border-blue-200",
-  "bg-green-100 text-green-800 border-green-200",
-  "bg-purple-100 text-purple-800 border-purple-200",
-  "bg-yellow-100 text-yellow-800 border-yellow-200",
-  "bg-pink-100 text-pink-800 border-pink-200",
-  "bg-orange-100 text-orange-800 border-orange-200",
-  "bg-teal-100 text-teal-800 border-teal-200",
-  "bg-rose-100 text-rose-800 border-rose-200",
+  "bg-blue-500/10 text-blue-300 border-blue-500/20",
+  "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
+  "bg-violet-500/10 text-violet-400 border-violet-500/20",
+  "bg-amber-500/10 text-yellow-800 border-yellow-200",
+  "bg-pink-500/10 text-pink-800 border-pink-200",
+  "bg-orange-500/10 text-orange-300 border-orange-500/20",
+  "bg-teal-500/10 text-teal-800 border-teal-200",
+  "bg-rose-500/10 text-rose-400 border-rose-500/20",
 ];
 
 type Slot = {
@@ -127,7 +127,7 @@ export function TimetableClient({ classes, staff, session }: {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-blue-600" /> Select Class &amp; Section
+            <Calendar className="h-4 w-4 text-blue-400" /> Select Class &amp; Section
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-4 items-end">
@@ -154,37 +154,37 @@ export function TimetableClient({ classes, staff, session }: {
       </Card>
 
       {!classSectionId && (
-        <div className="text-center py-16 text-gray-400 border-2 border-dashed rounded-xl">
+        <div className="text-center py-16 text-white/30 border-2 border-dashed rounded-xl">
           <Calendar className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p className="font-medium">Select a class and section to view or edit the timetable</p>
         </div>
       )}
 
-      {loading && <p className="text-sm text-gray-400 text-center py-8">Loading timetable…</p>}
+      {loading && <p className="text-sm text-white/30 text-center py-8">Loading timetable…</p>}
 
       {/* Timetable Grid — rows = days, columns = subjects (matches Smart School layout) */}
       {hasData && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-gray-800">
+            <h2 className="font-semibold text-white/70">
               Timetable — {className} / {sectionName}
-              {session && <span className="text-sm font-normal text-gray-500 ml-2">({session.session})</span>}
+              {session && <span className="text-sm font-normal text-white/40 ml-2">({session.session})</span>}
             </h2>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm print:text-xs">
               <thead>
-                <tr className="bg-gray-50">
-                  <th className="border px-3 py-2.5 text-left font-semibold text-gray-600 w-24">Day</th>
+                <tr className="bg-[#0f1015]">
+                  <th className="border px-3 py-2.5 text-left font-semibold text-white/50 w-24">Day</th>
                   {subjects.map(sub => (
-                    <th key={sub.id} className="border px-3 py-2.5 text-left font-semibold text-gray-600 min-w-[140px]">
+                    <th key={sub.id} className="border px-3 py-2.5 text-left font-semibold text-white/50 min-w-[140px]">
                       {sub.name}
-                      <span className="text-xs font-normal text-gray-400 ml-1">({sub.code})</span>
+                      <span className="text-xs font-normal text-white/30 ml-1">({sub.code})</span>
                     </th>
                   ))}
                   {subjects.length === 0 && (
-                    <th className="border px-3 py-2.5 text-left text-gray-400 font-normal">
+                    <th className="border px-3 py-2.5 text-left text-white/30 font-normal">
                       No subjects found for this class
                     </th>
                   )}
@@ -195,8 +195,8 @@ export function TimetableClient({ classes, staff, session }: {
                 {DAYS.map(day => {
                   const daySlots = getSlotsForDay(day);
                   return (
-                    <tr key={day} className="hover:bg-gray-50/50">
-                      <td className="border px-3 py-2.5 font-semibold text-gray-700">{DAY_LABEL[day]}</td>
+                    <tr key={day} className="hover:bg-[#0f1015]/50">
+                      <td className="border px-3 py-2.5 font-semibold text-white/60">{DAY_LABEL[day]}</td>
                       {subjects.map(sub => {
                         const slot = daySlots.find(s => s.subject.id === sub.id);
                         return (
@@ -208,7 +208,7 @@ export function TimetableClient({ classes, staff, session }: {
                                 {slot.roomNo && <p className="opacity-60">Room: {slot.roomNo}</p>}
                                 <button
                                   onClick={() => deleteSlot(slot.id)}
-                                  className="text-red-400 hover:text-red-600 mt-0.5 no-print"
+                                  className="text-red-400 hover:text-red-400 mt-0.5 no-print"
                                 >
                                   <Trash2 className="h-3 w-3" />
                                 </button>
@@ -216,7 +216,7 @@ export function TimetableClient({ classes, staff, session }: {
                             ) : (
                               <button
                                 onClick={() => { setAddingDay(day); setForm({ ...emptyForm, subjectId: sub.id }); setError(""); }}
-                                className="w-full h-12 text-gray-300 hover:text-blue-400 hover:bg-blue-50 rounded-lg border border-dashed border-gray-200 hover:border-blue-300 transition-colors flex items-center justify-center no-print"
+                                className="w-full h-12 text-white/30 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg border border-dashed border-white/[0.06] hover:border-blue-300 transition-colors flex items-center justify-center no-print"
                               >
                                 <Plus className="h-4 w-4" />
                               </button>
@@ -224,13 +224,13 @@ export function TimetableClient({ classes, staff, session }: {
                           </td>
                         );
                       })}
-                      {subjects.length === 0 && <td className="border px-3 py-2.5 text-gray-300 text-xs">—</td>}
+                      {subjects.length === 0 && <td className="border px-3 py-2.5 text-white/30 text-xs">—</td>}
                       {/* Per-day add button */}
                       <td className="border px-2 py-2 text-center no-print">
                         <button
                           onClick={() => { setAddingDay(day); setForm(emptyForm); setError(""); }}
                           title={`Add slot for ${DAY_LABEL[day]}`}
-                          className="p-1 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded"
+                          className="p-1 text-white/30 hover:text-blue-500 hover:bg-blue-500/10 rounded"
                         >
                           <Plus className="h-4 w-4" />
                         </button>
@@ -244,13 +244,13 @@ export function TimetableClient({ classes, staff, session }: {
 
           {/* Add Slot Form */}
           {addingDay && (
-            <Card className="border-blue-200 bg-blue-50/30 no-print">
+            <Card className="border-blue-500/20 bg-blue-500/10/30 no-print">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm text-blue-800">
+                  <CardTitle className="text-sm text-blue-300">
                     Add Slot — {DAY_LABEL[addingDay]}
                   </CardTitle>
-                  <button onClick={() => setAddingDay(null)}><X className="h-4 w-4 text-gray-400" /></button>
+                  <button onClick={() => setAddingDay(null)}><X className="h-4 w-4 text-white/30" /></button>
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -286,7 +286,7 @@ export function TimetableClient({ classes, staff, session }: {
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => { setAddingDay(null); setError(""); }}>Cancel</Button>
                 </div>
-                {error && <p className="sm:col-span-2 md:col-span-3 text-xs text-red-600">{error}</p>}
+                {error && <p className="sm:col-span-2 md:col-span-3 text-xs text-red-400">{error}</p>}
               </CardContent>
             </Card>
           )}

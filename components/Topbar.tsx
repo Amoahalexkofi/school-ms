@@ -2,37 +2,38 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
-import { Bell, Search, ChevronDown, Settings, LogOut } from "lucide-react";
+import { Bell, Search, Settings, LogOut, X } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
 type Notif = { id: string; title: string; message: string; isRead: boolean; createdAt: string };
 
-function greeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
-}
-
-function formatDate() {
-  return new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-}
+const ROLE_BADGE: Record<string, string> = {
+  SUPER_ADMIN: "bg-violet-500/10 text-violet-400 ring-violet-500/20",
+  ADMIN:       "bg-blue-500/10 text-blue-400 ring-blue-500/20",
+  TEACHER:     "bg-emerald-500/10 text-emerald-400 ring-emerald-500/20",
+  ACCOUNTANT:  "bg-amber-500/10 text-amber-400 ring-amber-500/20",
+  STUDENT:     "bg-sky-500/10 text-sky-400 ring-sky-500/20",
+  PARENT:      "bg-orange-500/10 text-orange-400 ring-orange-500/20",
+  LIBRARIAN:   "bg-pink-500/10 text-pink-400 ring-pink-500/20",
+};
 
 export function Topbar({ title }: { title: string }) {
   const { data: session } = useSession();
-  const role = (session?.user as any)?.role ?? "";
-  const userId = (session?.user as any)?.id ?? "";
-  const email = session?.user?.email ?? "";
-  const name = (session?.user as any)?.name || email.split("@")[0] || "User";
-  const initials = name.slice(0, 2).toUpperCase();
+  const role    = (session?.user as any)?.role ?? "";
+  const userId  = (session?.user as any)?.id ?? "";
+  const email   = session?.user?.email ?? "";
+  const name    = (session?.user as any)?.name || email.split("@")[0] || "User";
+  const initials = name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
 
-  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifOpen,   setNotifOpen]   = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [notifs, setNotifs] = useState<Notif[]>([]);
-  const [unread, setUnread] = useState(0);
-  const notifRef = useRef<HTMLDivElement>(null);
+  const [searchOpen,  setSearchOpen]  = useState(false);
+  const [notifs,  setNotifs]  = useState<Notif[]>([]);
+  const [unread,  setUnread]  = useState(0);
+  const notifRef   = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+  const searchRef  = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -44,8 +45,9 @@ export function Topbar({ title }: { title: string }) {
 
   useEffect(() => {
     function handle(e: MouseEvent) {
-      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+      if (notifRef.current   && !notifRef.current.contains(e.target as Node))   setNotifOpen(false);
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+      if (searchRef.current  && !searchRef.current.contains(e.target as Node))  setSearchOpen(false);
     }
     document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
@@ -53,129 +55,142 @@ export function Topbar({ title }: { title: string }) {
 
   async function markAllRead() {
     if (!userId) return;
-    await fetch("/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ markAll: true, userId }) });
+    await fetch("/api/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ markAll: true, userId }),
+    });
     setNotifs(n => n.map(x => ({ ...x, isRead: true })));
     setUnread(0);
   }
 
-  const roleColors: Record<string, string> = {
-    SUPER_ADMIN: "bg-purple-100 text-purple-700",
-    ADMIN: "bg-blue-100 text-blue-700",
-    TEACHER: "bg-emerald-100 text-emerald-700",
-    ACCOUNTANT: "bg-amber-100 text-amber-700",
-    STUDENT: "bg-sky-100 text-sky-700",
-    PARENT: "bg-orange-100 text-orange-700",
-    LIBRARIAN: "bg-pink-100 text-pink-700",
-  };
+  const badgeCls = ROLE_BADGE[role] ?? "bg-white/5 text-white/30 ring-white/10";
 
   return (
-    <header className="bg-white border-b border-gray-100 px-4 md:px-6 py-0 flex items-center justify-between gap-3 h-14 md:h-16 shrink-0">
-      {/* Left: greeting + title */}
-      <div className="flex flex-col justify-center min-w-0">
-        <h1 className="text-base font-bold text-gray-900 leading-tight truncate">{title}</h1>
-        <p className="text-xs text-gray-400 hidden sm:block">{formatDate()}</p>
-      </div>
+    <header className="h-14 flex items-center justify-between px-5 md:px-6 border-b border-white/[0.06] bg-[#0d0e14] shrink-0">
 
-      {/* Right: search + notif + profile */}
-      <div className="flex items-center gap-2 shrink-0">
-        {/* Search */}
-        <div className="hidden md:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 w-52 hover:border-blue-300 transition-colors">
-          <Search className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-          <input
-            type="text"
-            placeholder="Search…"
-            className="bg-transparent text-xs text-gray-600 placeholder-gray-400 outline-none w-full"
-          />
+      {/* Left: page title */}
+      <h1 className="text-[15px] font-semibold text-white/80 tracking-tight">{title}</h1>
+
+      {/* Right controls */}
+      <div className="flex items-center gap-1.5">
+
+        {/* Search — expands inline */}
+        <div ref={searchRef} className="relative">
+          {searchOpen ? (
+            <div className="flex items-center gap-2 bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 h-8 w-52 ring-1 ring-emerald-500/30">
+              <Search className="h-3.5 w-3.5 text-white/30 shrink-0" />
+              <input
+                autoFocus
+                type="text"
+                placeholder="Search…"
+                className="bg-transparent text-[13px] text-white/70 placeholder-white/20 outline-none w-full"
+              />
+              <button onClick={() => setSearchOpen(false)}>
+                <X className="h-3.5 w-3.5 text-white/20 hover:text-white/50 transition-colors" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-white/30 hover:text-white/60 hover:bg-white/[0.05] transition-colors"
+            >
+              <Search className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => { setNotifOpen(o => !o); setProfileOpen(false); }}
-            className="relative w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+            className="relative w-8 h-8 flex items-center justify-center rounded-lg text-white/30 hover:text-white/60 hover:bg-white/[0.05] transition-colors"
           >
-            <Bell className="h-4.5 w-4.5 h-[18px] w-[18px]" />
+            <Bell className="h-4 w-4" />
             {unread > 0 && (
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full ring-2 ring-white" />
+              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 bg-emerald-400 rounded-full" />
             )}
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 top-full mt-2 w-[min(320px,calc(100vw-2rem))] bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">Notifications</p>
-                  {unread > 0 && <p className="text-xs text-gray-400">{unread} unread</p>}
-                </div>
+            <div className="absolute right-0 top-full mt-2 w-80 bg-[#13141f] border border-white/[0.08] rounded-xl shadow-2xl z-50 overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+                <p className="text-[13px] font-semibold text-white/80">Notifications</p>
                 {unread > 0 && (
-                  <button onClick={markAllRead} className="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                  <button onClick={markAllRead} className="text-[11px] text-emerald-400 hover:text-emerald-300 font-medium">
                     Mark all read
                   </button>
                 )}
               </div>
-              <div className="max-h-72 overflow-y-auto divide-y divide-gray-50">
+              <div className="max-h-72 overflow-y-auto divide-y divide-white/[0.04]">
                 {notifs.length === 0 ? (
                   <div className="py-10 text-center">
-                    <Bell className="h-6 w-6 text-gray-200 mx-auto mb-2" />
-                    <p className="text-sm text-gray-400">All caught up!</p>
+                    <Bell className="h-5 w-5 text-white/10 mx-auto mb-2" />
+                    <p className="text-[12px] text-white/25">No notifications</p>
                   </div>
                 ) : (
                   notifs.map(n => (
-                    <div key={n.id} className={`px-4 py-3 hover:bg-gray-50 transition-colors ${!n.isRead ? "bg-blue-50/40" : ""}`}>
+                    <div key={n.id} className={`px-4 py-3 hover:bg-white/[0.03] transition-colors ${!n.isRead ? "bg-emerald-500/[0.04]" : ""}`}>
                       <div className="flex gap-2.5">
-                        {!n.isRead && <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />}
-                        <div className={!n.isRead ? "" : "ml-[14px]"}>
-                          <p className="text-xs font-semibold text-gray-800">{n.title}</p>
-                          <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.message}</p>
-                          <p className="text-[10px] text-gray-400 mt-1">{new Date(n.createdAt).toLocaleString()}</p>
+                        {!n.isRead && <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />}
+                        <div className={!n.isRead ? "" : "ml-4"}>
+                          <p className="text-[12px] font-semibold text-white/70">{n.title}</p>
+                          <p className="text-[11px] text-white/35 mt-0.5 line-clamp-2">{n.message}</p>
+                          <p className="text-[10px] text-white/20 mt-1">{new Date(n.createdAt).toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
                   ))
                 )}
               </div>
-              <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50/50">
-                <Link href="/notifications" className="text-xs text-blue-600 hover:text-blue-700 font-medium">
-                  View all notifications →
+              <div className="px-4 py-2.5 border-t border-white/[0.06]">
+                <Link href="/notifications" className="text-[11px] text-emerald-400 hover:text-emerald-300 font-medium">
+                  View all →
                 </Link>
               </div>
             </div>
           )}
         </div>
 
+        {/* Divider */}
+        <div className="w-px h-5 bg-white/[0.08] mx-1" />
+
         {/* Profile */}
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => { setProfileOpen(o => !o); setNotifOpen(false); }}
-            className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors"
           >
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-[11px] font-bold text-emerald-400 shrink-0">
               {initials}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-semibold text-gray-800 leading-tight">{name}</p>
-              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${roleColors[role] ?? "bg-gray-100 text-gray-600"}`}>
+              <p className="text-[12px] font-semibold text-white/70 leading-none">{name}</p>
+              <span className={`inline-block mt-0.5 text-[9px] font-semibold px-1.5 py-px rounded ring-1 uppercase tracking-wide ${badgeCls}`}>
                 {role.replace("_", " ")}
               </span>
             </div>
-            <ChevronDown className="h-3.5 w-3.5 text-gray-400 hidden sm:block" />
           </button>
 
           {profileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
-              <div className="px-4 py-3 border-b border-gray-100">
-                <p className="text-sm font-semibold text-gray-900">{name}</p>
-                <p className="text-xs text-gray-400 truncate">{email}</p>
+            <div className="absolute right-0 top-full mt-2 w-52 bg-[#13141f] border border-white/[0.08] rounded-xl shadow-2xl z-50 overflow-hidden">
+              <div className="px-4 py-3 border-b border-white/[0.06]">
+                <p className="text-[13px] font-semibold text-white/70">{name}</p>
+                <p className="text-[11px] text-white/30 truncate mt-0.5">{email}</p>
               </div>
-              <div className="p-1.5">
-                <Link href="/settings" onClick={() => setProfileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <Settings className="h-3.5 w-3.5 text-gray-400" /> Settings
+              <div className="p-1.5 space-y-0.5">
+                <Link
+                  href="/settings"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] text-white/50 hover:text-white/80 hover:bg-white/[0.05] transition-colors"
+                >
+                  <Settings className="h-3.5 w-3.5" /> Settings
                 </Link>
                 <button
                   onClick={() => signOut({ callbackUrl: "/sign-in" })}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 w-full transition-colors"
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] text-red-400/70 hover:text-red-400 hover:bg-red-500/10 w-full transition-colors"
                 >
-                  <LogOut className="h-3.5 w-3.5" /> Sign Out
+                  <LogOut className="h-3.5 w-3.5" /> Sign out
                 </button>
               </div>
             </div>

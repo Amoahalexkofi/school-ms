@@ -174,52 +174,52 @@ export function TakeExamClient({
   // === INTRO SCREEN ===
   if (phase === "intro") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f1015] p-6">
         <Card className="w-full max-w-lg">
           <CardContent className="pt-6 space-y-4">
             <h1 className="text-2xl font-bold">{exam.title}</h1>
-            {exam.class && <p className="text-sm text-gray-500">Class: {exam.class.name}</p>}
+            {exam.class && <p className="text-sm text-white/40">Class: {exam.class.name}</p>}
 
             {examNotPublished && (
-              <div className="flex items-center gap-2 text-amber-600 bg-amber-50 border border-amber-200 rounded p-3 text-sm">
+              <div className="flex items-center gap-2 text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded p-3 text-sm">
                 <AlertTriangle className="h-4 w-4 shrink-0" /> Exam not published yet.
               </div>
             )}
             {examNotStarted && !examNotPublished && (
-              <div className="flex items-center gap-2 text-blue-600 bg-blue-50 border border-blue-200 rounded p-3 text-sm">
+              <div className="flex items-center gap-2 text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded p-3 text-sm">
                 <Clock className="h-4 w-4 shrink-0" />
                 Exam starts: {new Date(exam.startTime).toLocaleString()}
               </div>
             )}
             {examEnded && (
-              <div className="flex items-center gap-2 text-gray-600 bg-gray-50 border rounded p-3 text-sm">
+              <div className="flex items-center gap-2 text-white/50 bg-[#0f1015] border rounded p-3 text-sm">
                 <AlertTriangle className="h-4 w-4 shrink-0" /> This exam has ended.
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="bg-gray-50 rounded p-3">
-                <p className="text-xs text-gray-500">Duration</p>
+              <div className="bg-[#0f1015] rounded p-3">
+                <p className="text-xs text-white/40">Duration</p>
                 <p className="font-semibold">{exam.duration} minutes</p>
               </div>
-              <div className="bg-gray-50 rounded p-3">
-                <p className="text-xs text-gray-500">Questions</p>
+              <div className="bg-[#0f1015] rounded p-3">
+                <p className="text-xs text-white/40">Questions</p>
                 <p className="font-semibold">{questions.length}</p>
               </div>
               {exam.passingPercentage && (
-                <div className="bg-gray-50 rounded p-3">
-                  <p className="text-xs text-gray-500">Passing Mark</p>
+                <div className="bg-[#0f1015] rounded p-3">
+                  <p className="text-xs text-white/40">Passing Mark</p>
                   <p className="font-semibold">{String(exam.passingPercentage)}%</p>
                 </div>
               )}
-              <div className="bg-gray-50 rounded p-3">
-                <p className="text-xs text-gray-500">Ends</p>
+              <div className="bg-[#0f1015] rounded p-3">
+                <p className="text-xs text-white/40">Ends</p>
                 <p className="font-semibold text-xs">{new Date(exam.endTime).toLocaleString()}</p>
               </div>
             </div>
 
             {exam.instructions && (
-              <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-800">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded p-3 text-sm text-blue-300">
                 <p className="font-medium mb-1">Instructions</p>
                 <p>{exam.instructions}</p>
               </div>
@@ -266,31 +266,31 @@ export function TakeExamClient({
     const currentAnswer = answers[q.id];
 
     return (
-      <div className="flex flex-col min-h-screen bg-gray-50">
+      <div className="flex flex-col min-h-screen bg-[#0f1015]">
         {/* Top bar */}
         <div
           className={`sticky top-0 z-10 flex items-center justify-between px-6 py-3 border-b shadow-sm ${
-            timerRed ? "bg-red-50" : "bg-white"
+            timerRed ? "bg-red-500/10" : "bg-[#111318]"
           }`}
         >
-          <div className="text-sm font-medium text-gray-700">{exam.title}</div>
+          <div className="text-sm font-medium text-white/60">{exam.title}</div>
           <div
             className={`flex items-center gap-2 font-mono text-lg font-bold ${
-              timerRed ? "text-red-600" : "text-gray-800"
+              timerRed ? "text-red-400" : "text-white/70"
             }`}
           >
             <Clock className="h-4 w-4" />
             {formatTime(timeLeft)}
           </div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-white/40">
             {answered}/{questions.length} answered
           </div>
         </div>
 
         <div className="flex-1 flex flex-col lg:flex-row gap-0">
           {/* Question navigator sidebar */}
-          <div className="lg:w-48 p-4 bg-white border-r shrink-0">
-            <p className="text-xs font-medium text-gray-500 mb-2">Questions</p>
+          <div className="lg:w-48 p-4 bg-[#111318] border-r shrink-0">
+            <p className="text-xs font-medium text-white/40 mb-2">Questions</p>
             <div className="flex flex-wrap gap-1.5 lg:flex-col">
               {questions.map((eq, i) => {
                 const ans = answers[eq.questionId];
@@ -303,8 +303,8 @@ export function TakeExamClient({
                       i === current
                         ? "bg-blue-600 text-white"
                         : done
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-600"
+                        ? "bg-emerald-500/10 text-emerald-400"
+                        : "bg-white/[0.04] text-white/50"
                     }`}
                   >
                     {i + 1}
@@ -318,14 +318,14 @@ export function TakeExamClient({
           <div className="flex-1 p-6">
             <div className="max-w-2xl mx-auto">
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-xs font-medium text-gray-400">
+                <span className="text-xs font-medium text-white/30">
                   Question {current + 1} of {questions.length}
                 </span>
                 <Badge variant="outline" className="text-xs">{TYPE_LABELS[q.questionType]}</Badge>
-                <span className="text-xs text-gray-400">{eq.marks} mark{eq.marks !== 1 ? "s" : ""}</span>
+                <span className="text-xs text-white/30">{eq.marks} mark{eq.marks !== 1 ? "s" : ""}</span>
               </div>
 
-              <p className="text-base font-medium text-gray-900 mb-6 leading-relaxed">{q.question}</p>
+              <p className="text-base font-medium text-white/80 mb-6 leading-relaxed">{q.question}</p>
 
               {isMCQ && (
                 <div className="space-y-2">
@@ -337,8 +337,8 @@ export function TakeExamClient({
                         onClick={() => setAnswer(q.id, String(idx))}
                         className={`w-full text-left p-3 rounded-lg border-2 transition-all text-sm ${
                           selected
-                            ? "border-blue-500 bg-blue-50 text-blue-800"
-                            : "border-gray-200 bg-white hover:border-gray-300"
+                            ? "border-blue-500 bg-blue-500/10 text-blue-300"
+                            : "border-white/[0.06] bg-[#111318] hover:border-white/[0.08]"
                         }`}
                       >
                         <span className="font-medium">{label}.</span> {text}
@@ -358,11 +358,11 @@ export function TakeExamClient({
                       ? "Enter your short answer…"
                       : "Write your answer here…"
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full rounded-lg border border-white/[0.08] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
               )}
               {isText && q.wordLimit && (
-                <p className="text-xs text-gray-400 mt-1">Word limit: {q.wordLimit}</p>
+                <p className="text-xs text-white/30 mt-1">Word limit: {q.wordLimit}</p>
               )}
 
               {/* Nav buttons */}
@@ -405,16 +405,16 @@ export function TakeExamClient({
   const passed = pct != null && pct >= passing;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f1015] p-6">
       <Card className="w-full max-w-md text-center">
         <CardContent className="pt-8 pb-8 space-y-6">
           <div
             className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center ${
-              passed ? "bg-green-100" : "bg-red-100"
+              passed ? "bg-emerald-500/10" : "bg-red-500/10"
             }`}
           >
             {passed ? (
-              <CheckCircle className="h-10 w-10 text-green-600" />
+              <CheckCircle className="h-10 w-10 text-emerald-400" />
             ) : (
               <AlertTriangle className="h-10 w-10 text-red-500" />
             )}
@@ -424,24 +424,24 @@ export function TakeExamClient({
             <h2 className="text-2xl font-bold mb-1">
               {passed ? "Congratulations!" : "Better luck next time"}
             </h2>
-            <p className="text-gray-500 text-sm">{exam.title}</p>
+            <p className="text-white/40 text-sm">{exam.title}</p>
           </div>
 
           {result && (
             <div className="space-y-2">
-              <p className="text-5xl font-bold text-gray-900">{pct}%</p>
-              <p className="text-gray-500">
+              <p className="text-5xl font-bold text-white/80">{pct}%</p>
+              <p className="text-white/40">
                 Score: {result.score} / {result.total}
               </p>
               <span
                 className={`inline-block text-sm px-4 py-1 rounded-full font-medium ${
-                  passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                  passed ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
                 }`}
               >
                 {passed ? "PASSED" : "FAILED"}
               </span>
               {exam.passingPercentage && (
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-white/30">
                   Passing mark: {String(exam.passingPercentage)}%
                 </p>
               )}
@@ -451,7 +451,7 @@ export function TakeExamClient({
           {exam.questions.some((eq) =>
             ["DESCRIPTIVE", "SHORT_ANSWER"].includes(eq.question.questionType)
           ) && (
-            <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
+            <p className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded p-2">
               Descriptive / short-answer questions require manual grading. Your final score may change.
             </p>
           )}

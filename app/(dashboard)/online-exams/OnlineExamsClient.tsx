@@ -25,14 +25,14 @@ type Exam = {
   attempts: { score: number; total: number }[];
 };
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 function statusLabel(exam: Exam) {
   const now = new Date();
-  if (!exam.isPublished) return { label: "Draft", color: "bg-gray-100 text-gray-600" };
-  if (now < new Date(exam.startTime)) return { label: "Upcoming", color: "bg-blue-100 text-blue-700" };
-  if (now > new Date(exam.endTime)) return { label: "Ended", color: "bg-gray-100 text-gray-600" };
-  return { label: "Live", color: "bg-green-100 text-green-700" };
+  if (!exam.isPublished) return { label: "Draft", color: "bg-white/[0.04] text-white/50" };
+  if (now < new Date(exam.startTime)) return { label: "Upcoming", color: "bg-blue-500/10 text-blue-400" };
+  if (now > new Date(exam.endTime)) return { label: "Ended", color: "bg-white/[0.04] text-white/50" };
+  return { label: "Live", color: "bg-emerald-500/10 text-emerald-400" };
 }
 
 const emptyEditForm = {
@@ -148,13 +148,13 @@ export function OnlineExamsClient({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Total Exams", value: exams.length, extra: "" },
-          { label: "Live Now", value: live, extra: live > 0 ? "text-green-600" : "" },
+          { label: "Live Now", value: live, extra: live > 0 ? "text-emerald-400" : "" },
           { label: "Published", value: exams.filter((e) => e.isPublished).length, extra: "" },
           { label: "Total Attempts", value: exams.reduce((s, e) => s + e._count.attempts, 0), extra: "" },
         ].map((stat) => (
           <Card key={stat.label}>
             <CardContent className="pt-4">
-              <p className="text-xs text-gray-500 mb-1">{stat.label}</p>
+              <p className="text-xs text-white/40 mb-1">{stat.label}</p>
               <p className={`text-3xl font-bold ${stat.extra}`}>{stat.value}</p>
             </CardContent>
           </Card>
@@ -178,7 +178,7 @@ export function OnlineExamsClient({
       {/* Exam cards */}
       {exams.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-sm text-gray-500">
+          <CardContent className="py-12 text-center text-sm text-white/40">
             No online exams yet. Click "Create Exam" to get started.
           </CardContent>
         </Card>
@@ -200,15 +200,15 @@ export function OnlineExamsClient({
                   <div className="flex items-start gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <Monitor className="h-4 w-4 text-blue-600 shrink-0" />
+                        <Monitor className="h-4 w-4 text-blue-400 shrink-0" />
                         <p className="font-semibold">{exam.title}</p>
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${color}`}>{label}</span>
-                        {exam.class && <span className="text-xs text-gray-500">· {exam.class.name}</span>}
+                        {exam.class && <span className="text-xs text-white/40">· {exam.class.name}</span>}
                       </div>
                       {exam.instructions && (
-                        <p className="text-sm text-gray-500 mb-2 line-clamp-1">{exam.instructions}</p>
+                        <p className="text-sm text-white/40 mb-2 line-clamp-1">{exam.instructions}</p>
                       )}
-                      <div className="flex flex-wrap gap-4 text-xs text-gray-500">
+                      <div className="flex flex-wrap gap-4 text-xs text-white/40">
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" /> {exam.duration} min
                         </span>
@@ -224,8 +224,8 @@ export function OnlineExamsClient({
                     </div>
                     {avgScore !== null && (
                       <div className="text-right shrink-0">
-                        <p className="text-2xl font-bold text-blue-600">{avgScore}%</p>
-                        <p className="text-xs text-gray-400">{submitted} submitted</p>
+                        <p className="text-2xl font-bold text-blue-400">{avgScore}%</p>
+                        <p className="text-xs text-white/30">{submitted} submitted</p>
                       </div>
                     )}
                   </div>
@@ -251,7 +251,7 @@ export function OnlineExamsClient({
                       size="sm"
                       variant="ghost"
                       onClick={() => del(exam.id)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500 hover:text-red-400"
                     >
                       <Trash2 className="h-3 w-3 mr-1" /> Delete
                     </Button>

@@ -26,7 +26,7 @@ export function ReceiptClient({ deposit, entry, subInvoiceId }: Props) {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gray-100 flex items-start justify-center py-8 print:bg-white print:p-0">
+    <main className="min-h-screen bg-[#0a0b0f] flex items-start justify-center py-8 print:bg-[#111318] print:p-0">
       {/* Controls — hidden when printing */}
       <div className="print:hidden fixed top-4 right-4 flex gap-2 z-50">
         <Button onClick={() => window.print()} size="sm">
@@ -37,7 +37,7 @@ export function ReceiptClient({ deposit, entry, subInvoiceId }: Props) {
         </Button>
       </div>
 
-      <div className="w-[420px] bg-white shadow-lg rounded-xl overflow-hidden print:shadow-none print:rounded-none print:w-full">
+      <div className="w-[420px] bg-[#111318] shadow-lg rounded-xl overflow-hidden print:shadow-none print:rounded-none print:w-full">
         {/* Header */}
         <div className="bg-blue-700 text-white text-center py-5 px-4">
           <p className="text-xs font-semibold uppercase tracking-widest opacity-80 mb-1">Skula</p>
@@ -45,9 +45,9 @@ export function ReceiptClient({ deposit, entry, subInvoiceId }: Props) {
         </div>
 
         {/* Receipt number + date */}
-        <div className="flex justify-between items-center px-6 py-3 bg-blue-50 border-b text-xs text-gray-600">
-          <span>Receipt No: <span className="font-mono font-semibold text-gray-800">{receiptNo}</span></span>
-          <span>Date: <span className="font-semibold text-gray-800">
+        <div className="flex justify-between items-center px-6 py-3 bg-blue-500/10 border-b text-xs text-white/50">
+          <span>Receipt No: <span className="font-mono font-semibold text-white/70">{receiptNo}</span></span>
+          <span>Date: <span className="font-semibold text-white/70">
             {new Date(dateStr).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
           </span></span>
         </div>
@@ -68,15 +68,15 @@ export function ReceiptClient({ deposit, entry, subInvoiceId }: Props) {
         </div>
 
         {/* Amount */}
-        <div className="px-6 py-5 bg-green-50 text-center">
-          <p className="text-xs text-gray-500 mb-1">Amount Paid</p>
-          <p className="text-3xl font-bold text-green-700">
+        <div className="px-6 py-5 bg-emerald-500/10 text-center">
+          <p className="text-xs text-white/40 mb-1">Amount Paid</p>
+          <p className="text-3xl font-bold text-emerald-400">
             ₵{amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 text-center text-xs text-gray-400 border-t">
+        <div className="px-6 py-3 text-center text-xs text-white/30 border-t">
           This is a computer-generated receipt and requires no signature.
         </div>
       </div>
@@ -93,8 +93,8 @@ export function ReceiptClient({ deposit, entry, subInvoiceId }: Props) {
 function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex justify-between gap-4">
-      <span className="text-xs text-gray-500 shrink-0">{label}</span>
-      <span className={`text-xs font-medium text-gray-900 text-right ${mono ? "font-mono" : ""}`}>{value}</span>
+      <span className="text-xs text-white/40 shrink-0">{label}</span>
+      <span className={`text-xs font-medium text-white/80 text-right ${mono ? "font-mono" : ""}`}>{value}</span>
     </div>
   );
 }

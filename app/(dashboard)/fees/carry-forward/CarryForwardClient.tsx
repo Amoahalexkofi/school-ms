@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type Props = { sessions: any[]; classSections: any[] };
 type Row  = { student: { id: string; firstName: string; lastName: string; admissionNo: string }; balance: number };
@@ -64,17 +64,17 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/fees" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/fees" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Fees
       </Link>
 
       {result && (
-        <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-700">
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-sm text-emerald-400">
           ✓ Carried forward <strong>{result.carried}</strong> balance{result.carried !== 1 ? "s" : ""}.
           {result.skipped > 0 && ` ${result.skipped} skipped (already exists or student not in target session).`}
         </div>
       )}
-      {error && <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-400">{error}</div>}
 
       {/* Step 1 — Source */}
       <Card>
@@ -82,14 +82,14 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1 block">From Session</label>
+              <label className="text-xs font-medium text-white/50 mb-1 block">From Session</label>
               <select className={SEL} value={fromSessionId} onChange={e => { setFromSessionId(e.target.value); setRows([]); }}>
                 <option value="">— Select —</option>
                 {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}{s.isActive ? " (Active)" : ""}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1 block">From Class / Section</label>
+              <label className="text-xs font-medium text-white/50 mb-1 block">From Class / Section</label>
               <select className={SEL} value={fromClassSectionId} onChange={e => { setFromClassSectionId(e.target.value); setRows([]); }}>
                 <option value="">— Select —</option>
                 {classSections.map((cs: any) => <option key={cs.id} value={cs.id}>{cs.class.name} – {cs.section.name}</option>)}
@@ -112,26 +112,26 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
               <CardTitle className="text-base">
                 {rows.length} student{rows.length !== 1 ? "s" : ""} with outstanding balances
               </CardTitle>
-              <span className="text-sm font-semibold text-red-600">
+              <span className="text-sm font-semibold text-red-400">
                 Total: GHS {total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
             </div>
           </CardHeader>
           <CardContent className="p-0">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-t">
+              <thead className="bg-[#0f1015] border-b border-t">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Adm No.</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600">Balance (GHS)</th>
+                  <th className="text-left px-4 py-3 font-medium text-white/50">Student</th>
+                  <th className="text-left px-4 py-3 font-medium text-white/50">Adm No.</th>
+                  <th className="text-right px-4 py-3 font-medium text-white/50">Balance (GHS)</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {rows.map(r => (
-                  <tr key={r.student.id} className="hover:bg-gray-50">
+                  <tr key={r.student.id} className="hover:bg-[#0f1015]">
                     <td className="px-4 py-3 font-medium">{r.student.firstName} {r.student.lastName}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{r.student.admissionNo}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-red-600">
+                    <td className="px-4 py-3 font-mono text-xs text-white/40">{r.student.admissionNo}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-red-400">
                       {r.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
                   </tr>
@@ -143,7 +143,7 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
       )}
 
       {rows.length === 0 && fromSessionId && fromClassSectionId && !previewing && !result && (
-        <p className="text-center text-sm text-gray-400 py-4">No outstanding balances found for this class in the selected session.</p>
+        <p className="text-center text-sm text-white/30 py-4">No outstanding balances found for this class in the selected session.</p>
       )}
 
       {/* Step 2 — Destination */}
@@ -153,20 +153,20 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-gray-600 mb-1 block">Target Session</label>
+                <label className="text-xs font-medium text-white/50 mb-1 block">Target Session</label>
                 <select className={SEL} value={toSessionId} onChange={e => setToSessionId(e.target.value)}>
                   <option value="">— Select —</option>
                   {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}{s.isActive ? " (Active)" : ""}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 mb-1 block">Due Date (optional)</label>
+                <label className="text-xs font-medium text-white/50 mb-1 block">Due Date (optional)</label>
                 <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
               </div>
             </div>
 
             {fromCS && fromSession && toSession && (
-              <div className="mt-4 flex items-center gap-3 text-sm bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-amber-800">
+              <div className="mt-4 flex items-center gap-3 text-sm bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 text-amber-300">
                 <span>Carrying forward balances from <strong>{fromSession.session} · {fromCS.class.name} – {fromCS.section.name}</strong></span>
                 <ArrowRight className="h-4 w-4 flex-shrink-0" />
                 <span><strong>{toSession.session}</strong></span>

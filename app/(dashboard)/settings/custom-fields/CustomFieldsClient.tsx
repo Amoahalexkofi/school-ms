@@ -23,7 +23,7 @@ const FIELD_TYPES = ["TEXT", "NUMBER", "DATE", "SELECT", "TEXTAREA"];
 const TYPE_LABELS: Record<string, string> = {
   TEXT: "Text", NUMBER: "Number", DATE: "Date", SELECT: "Dropdown", TEXTAREA: "Textarea",
 };
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 const emptyForm = {
   tableName: "students",
@@ -123,8 +123,8 @@ export function CustomFieldsClient({ fields: initial }: { fields: CustomField[] 
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             {tableName === "students"
-              ? <Users className="h-4 w-4 text-blue-600" />
-              : <UserCheck className="h-4 w-4 text-purple-600" />}
+              ? <Users className="h-4 w-4 text-blue-400" />
+              : <UserCheck className="h-4 w-4 text-violet-400" />}
             <h3 className="font-semibold text-sm">
               {tableName === "students" ? "Student Fields" : "Staff Fields"}
             </h3>
@@ -137,46 +137,46 @@ export function CustomFieldsClient({ fields: initial }: { fields: CustomField[] 
         </div>
 
         {items.length === 0 ? (
-          <p className="text-sm text-gray-400 py-4 text-center border border-dashed rounded-lg">
+          <p className="text-sm text-white/30 py-4 text-center border border-dashed rounded-lg">
             No custom fields yet. Click "Add Field" to create one.
           </p>
         ) : (
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
                   <th className="w-8 px-3 py-2.5" />
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Field Label</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Type</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Options</th>
-                  <th className="text-center px-4 py-2.5 font-medium text-gray-600">Required</th>
-                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">Actions</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Field Label</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Type</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Options</th>
+                  <th className="text-center px-4 py-2.5 font-medium text-white/50">Required</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-white/50">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {items.map((field) => (
-                  <tr key={field.id} className="hover:bg-gray-50">
-                    <td className="px-3 py-2.5 text-gray-300">
+                  <tr key={field.id} className="hover:bg-[#0f1015]">
+                    <td className="px-3 py-2.5 text-white/30">
                       <GripVertical className="h-4 w-4" />
                     </td>
                     <td className="px-4 py-2.5 font-medium">{field.fieldLabel}</td>
                     <td className="px-4 py-2.5">
                       <Badge variant="outline" className="text-xs">{TYPE_LABELS[field.fieldType]}</Badge>
                     </td>
-                    <td className="px-4 py-2.5 text-gray-500 text-xs max-w-[200px] truncate">
+                    <td className="px-4 py-2.5 text-white/40 text-xs max-w-[200px] truncate">
                       {field.fieldType === "SELECT" ? (field.options ?? "—") : "—"}
                     </td>
                     <td className="px-4 py-2.5 text-center">
                       {field.isRequired
-                        ? <span className="text-xs text-red-600 font-medium">Yes</span>
-                        : <span className="text-xs text-gray-400">No</span>}
+                        ? <span className="text-xs text-red-400 font-medium">Yes</span>
+                        : <span className="text-xs text-white/30">No</span>}
                     </td>
                     <td className="px-4 py-2.5 text-right">
                       <div className="flex gap-1 justify-end">
                         <Button size="sm" variant="ghost" onClick={() => openEdit(field)}>
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
-                        <Button size="sm" variant="ghost" onClick={() => del(field.id)} className="text-red-400 hover:text-red-600">
+                        <Button size="sm" variant="ghost" onClick={() => del(field.id)} className="text-red-400 hover:text-red-400">
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
@@ -193,14 +193,14 @@ export function CustomFieldsClient({ fields: initial }: { fields: CustomField[] 
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
 
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-lg font-bold">Custom Fields</h2>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-white/40 mt-0.5">
             Add extra data fields to student and staff profiles. Fields appear in the "Other" section of each profile.
           </p>
         </div>
@@ -208,9 +208,9 @@ export function CustomFieldsClient({ fields: initial }: { fields: CustomField[] 
 
       {/* Add / Edit panel */}
       {showAdd && (
-        <Card className="border-blue-200 bg-blue-50/30">
+        <Card className="border-blue-500/20 bg-blue-500/10/30">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-blue-700">
+            <CardTitle className="text-sm text-blue-400">
               {editing ? "Edit Custom Field" : "Add Custom Field"}
             </CardTitle>
           </CardHeader>
@@ -252,9 +252,9 @@ export function CustomFieldsClient({ fields: initial }: { fields: CustomField[] 
                 id="isRequired"
                 checked={form.isRequired}
                 onChange={(e) => set("isRequired", e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-white/[0.08]"
               />
-              <label htmlFor="isRequired" className="text-sm text-gray-700">Required field</label>
+              <label htmlFor="isRequired" className="text-sm text-white/60">Required field</label>
             </div>
             <div className="flex gap-2 md:col-span-2">
               <Button onClick={save} disabled={saving} size="sm">
@@ -282,8 +282,8 @@ export function CustomFieldsClient({ fields: initial }: { fields: CustomField[] 
         </CardContent>
       </Card>
 
-      <div className="bg-gray-50 border rounded-lg p-4 text-sm text-gray-500">
-        <p className="font-medium text-gray-700 mb-1">How custom fields work</p>
+      <div className="bg-[#0f1015] border rounded-lg p-4 text-sm text-white/40">
+        <p className="font-medium text-white/60 mb-1">How custom fields work</p>
         <ul className="space-y-1 list-disc list-inside">
           <li>Fields added here appear in student and staff profiles under the "Other" section.</li>
           <li>For <strong>Dropdown</strong> type, enter options separated by commas.</li>

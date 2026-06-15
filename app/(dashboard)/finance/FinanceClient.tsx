@@ -40,16 +40,16 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
     <main className="flex-1 p-6 space-y-8">
       {/* Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Total Income</p><p className="text-2xl font-bold text-green-600">₵{totalIncome.toLocaleString()}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Total Expenses</p><p className="text-2xl font-bold text-red-600">₵{totalExpense.toLocaleString()}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Balance</p><p className={`text-2xl font-bold ${totalIncome - totalExpense >= 0 ? "text-green-600" : "text-red-600"}`}>₵{(totalIncome - totalExpense).toLocaleString()}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Transactions</p><p className="text-2xl font-bold">{transactions.length}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-white/40 mb-1">Total Income</p><p className="text-2xl font-bold text-emerald-400">₵{totalIncome.toLocaleString()}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-white/40 mb-1">Total Expenses</p><p className="text-2xl font-bold text-red-400">₵{totalExpense.toLocaleString()}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-white/40 mb-1">Balance</p><p className={`text-2xl font-bold ${totalIncome - totalExpense >= 0 ? "text-emerald-400" : "text-red-400"}`}>₵{(totalIncome - totalExpense).toLocaleString()}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-white/40 mb-1">Transactions</p><p className="text-2xl font-bold">{transactions.length}</p></CardContent></Card>
       </div>
 
       {/* Transactions */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base flex items-center gap-2"><Wallet className="h-4 w-4 text-blue-600" /> Transactions</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2"><Wallet className="h-4 w-4 text-blue-400" /> Transactions</CardTitle>
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={() => { setError(""); setOpen("head"); }}>+ Head</Button>
             <Link href="/finance/new">
@@ -58,24 +58,24 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
           </div>
         </CardHeader>
         <CardContent>
-          {transactions.length === 0 ? <p className="text-sm text-gray-500 text-center py-8">No transactions yet.</p> : (
+          {transactions.length === 0 ? <p className="text-sm text-white/40 text-center py-8">No transactions yet.</p> : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50"><tr>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Date</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Type</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Head</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Note</th>
-                  <th className="text-right px-3 py-2 font-medium text-gray-600">Amount</th>
+                <thead className="bg-[#0f1015]"><tr>
+                  <th className="text-left px-3 py-2 font-medium text-white/50">Date</th>
+                  <th className="text-left px-3 py-2 font-medium text-white/50">Type</th>
+                  <th className="text-left px-3 py-2 font-medium text-white/50">Head</th>
+                  <th className="text-left px-3 py-2 font-medium text-white/50">Note</th>
+                  <th className="text-right px-3 py-2 font-medium text-white/50">Amount</th>
                 </tr></thead>
                 <tbody className="divide-y">
                   {transactions.map((t: any) => (
-                    <tr key={t.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-2.5 text-gray-500 text-xs">{new Date(t.date).toLocaleDateString()}</td>
-                      <td className="px-3 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${t.type === "INCOME" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{t.type}</span></td>
-                      <td className="px-3 py-2.5 text-gray-700">{t.incomeHead?.name ?? t.expenseHead?.name ?? "—"}</td>
-                      <td className="px-3 py-2.5 text-gray-500">{t.note ?? "—"}</td>
-                      <td className={`px-3 py-2.5 text-right font-semibold ${t.type === "INCOME" ? "text-green-600" : "text-red-600"}`}>{t.type === "INCOME" ? "+" : "-"}₵{Number(t.amount).toLocaleString()}</td>
+                    <tr key={t.id} className="hover:bg-[#0f1015]">
+                      <td className="px-3 py-2.5 text-white/40 text-xs">{new Date(t.date).toLocaleDateString()}</td>
+                      <td className="px-3 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${t.type === "INCOME" ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>{t.type}</span></td>
+                      <td className="px-3 py-2.5 text-white/60">{t.incomeHead?.name ?? t.expenseHead?.name ?? "—"}</td>
+                      <td className="px-3 py-2.5 text-white/40">{t.note ?? "—"}</td>
+                      <td className={`px-3 py-2.5 text-right font-semibold ${t.type === "INCOME" ? "text-emerald-400" : "text-red-400"}`}>{t.type === "INCOME" ? "+" : "-"}₵{Number(t.amount).toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -88,13 +88,13 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
       {/* Payroll */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base flex items-center gap-2"><Users className="h-4 w-4 text-purple-600" /> Payroll</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2"><Users className="h-4 w-4 text-violet-400" /> Payroll</CardTitle>
           <Button size="sm" onClick={() => { setError(""); setOpen("payroll"); }}>
             <Plus className="h-4 w-4 mr-1" /> Generate
           </Button>
         </CardHeader>
         <CardContent>
-          {payrolls.length === 0 ? <p className="text-sm text-gray-500 text-center py-8">No payroll generated yet.</p> : (
+          {payrolls.length === 0 ? <p className="text-sm text-white/40 text-center py-8">No payroll generated yet.</p> : (
             <div className="space-y-4">
               {payrolls.map((p: any) => {
                 const totalNet = p.entries.reduce((s: number, e: any) => s + Number(e.netSalary), 0);
@@ -103,10 +103,10 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
                     <div className="flex items-center justify-between mb-3">
                       <div>
                         <p className="font-semibold">{MONTHS[p.month - 1]} {p.year}</p>
-                        <p className="text-xs text-gray-500">{p.entries.length} staff · ₵{totalNet.toLocaleString()} total</p>
+                        <p className="text-xs text-white/40">{p.entries.length} staff · ₵{totalNet.toLocaleString()} total</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${p.status === "PAID" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>{p.status}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${p.status === "PAID" ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-400"}`}>{p.status}</span>
                         {p.status === "PENDING" && (
                           <Button size="sm" variant="outline" onClick={() => submit("/api/finance/payroll", { action: "markPaid", payrollId: p.id })}>Mark Paid</Button>
                         )}
@@ -133,7 +133,7 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
                 <option value="EXPENSE">Expense</option>
               </select>
             </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && <p className="text-sm text-red-400">{error}</p>}
             <Button className="w-full" disabled={loading} onClick={() => submit("/api/finance/heads", headForm)}>
               {loading ? "Creating…" : "Create Head"}
             </Button>
@@ -155,7 +155,7 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
               </div>
               <div><Label>Year</Label><Input className="mt-1" type="number" value={payrollForm.year} onChange={e => setPayrollForm(f => ({ ...f, year: e.target.value }))} /></div>
             </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && <p className="text-sm text-red-400">{error}</p>}
             <Button className="w-full" disabled={loading} onClick={() => submit("/api/finance/payroll", payrollForm)}>
               {loading ? "Generating…" : "Generate Payroll"}
             </Button>

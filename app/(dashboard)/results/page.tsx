@@ -83,11 +83,11 @@ export default async function ResultsPage() {
       <Topbar title="Results" />
       <main className="flex-1 p-6 space-y-6">
         {role === "STUDENT" && studentName && (
-          <p className="text-sm text-gray-500">Showing results for <strong>{studentName}</strong></p>
+          <p className="text-sm text-white/40">Showing results for <strong>{studentName}</strong></p>
         )}
 
         {groups.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-white/30">
             <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-40" />
             <p>No published results yet.</p>
           </div>
@@ -105,21 +105,21 @@ export default async function ResultsPage() {
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-base">{g.name}</CardTitle>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-gray-500">{pct}% overall</span>
-                      <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                      <span className="text-sm text-white/40">{pct}% overall</span>
+                      <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${passed ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
                         {passed ? "PASSED" : "FAILED"}
                       </span>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#0f1015]">
                         <tr>
-                          <th className="text-left px-3 py-2 font-medium text-gray-600">Subject</th>
-                          <th className="text-left px-3 py-2 font-medium text-gray-600">Marks</th>
-                          <th className="text-left px-3 py-2 font-medium text-gray-600">%</th>
-                          <th className="text-left px-3 py-2 font-medium text-gray-600">Grade</th>
-                          <th className="text-left px-3 py-2 font-medium text-gray-600">Result</th>
+                          <th className="text-left px-3 py-2 font-medium text-white/50">Subject</th>
+                          <th className="text-left px-3 py-2 font-medium text-white/50">Marks</th>
+                          <th className="text-left px-3 py-2 font-medium text-white/50">%</th>
+                          <th className="text-left px-3 py-2 font-medium text-white/50">Grade</th>
+                          <th className="text-left px-3 py-2 font-medium text-white/50">Result</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y">
@@ -128,26 +128,26 @@ export default async function ResultsPage() {
                             ? Math.round((Number(e.marksObtained) / e.examSchedule.fullMarks) * 100)
                             : 0;
                           return (
-                            <tr key={e.id} className="hover:bg-gray-50">
+                            <tr key={e.id} className="hover:bg-[#0f1015]">
                               <td className="px-3 py-2.5 font-medium">{e.subject?.name}</td>
                               <td className="px-3 py-2.5">
                                 <span className="font-semibold">{Number(e.marksObtained)}</span>
-                                <span className="text-gray-400"> / {e.examSchedule?.fullMarks}</span>
+                                <span className="text-white/30"> / {e.examSchedule?.fullMarks}</span>
                               </td>
-                              <td className="px-3 py-2.5 text-gray-600">{subjectPct}%</td>
+                              <td className="px-3 py-2.5 text-white/50">{subjectPct}%</td>
                               <td className="px-3 py-2.5">
-                                <span className="font-bold text-blue-700 text-base">{e.grade ?? "—"}</span>
+                                <span className="font-bold text-blue-400 text-base">{e.grade ?? "—"}</span>
                               </td>
                               <td className="px-3 py-2.5">
-                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${e.isPassing ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${e.isPassing ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
                                   {e.isPassing ? "PASS" : "FAIL"}
                                 </span>
                               </td>
                             </tr>
                           );
                         })}
-                        <tr className="bg-gray-50 font-semibold">
-                          <td className="px-3 py-2.5 text-gray-700">Total</td>
+                        <tr className="bg-[#0f1015] font-semibold">
+                          <td className="px-3 py-2.5 text-white/60">Total</td>
                           <td className="px-3 py-2.5">{total} / {maxTotal}</td>
                           <td className="px-3 py-2.5">{pct}%</td>
                           <td />
@@ -167,33 +167,33 @@ export default async function ResultsPage() {
               <Card key={g.id ?? g.name}>
                 <CardHeader>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-indigo-600" />
+                    <TrendingUp className="h-4 w-4 text-indigo-400" />
                     {g.name}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {g.schedules?.map((s: any) => (
                     <div key={s.id} className="mb-4">
-                      <p className="text-sm font-medium text-gray-700 mb-2">{s.subject?.name ?? s.subjectId}</p>
+                      <p className="text-sm font-medium text-white/60 mb-2">{s.subject?.name ?? s.subjectId}</p>
                       <table className="w-full text-sm">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-[#0f1015]">
                           <tr>
-                            <th className="text-left px-3 py-2 font-medium text-gray-600">Student</th>
-                            <th className="text-left px-3 py-2 font-medium text-gray-600">Admission</th>
-                            <th className="text-left px-3 py-2 font-medium text-gray-600">Marks</th>
-                            <th className="text-left px-3 py-2 font-medium text-gray-600">Grade</th>
-                            <th className="text-left px-3 py-2 font-medium text-gray-600">Result</th>
+                            <th className="text-left px-3 py-2 font-medium text-white/50">Student</th>
+                            <th className="text-left px-3 py-2 font-medium text-white/50">Admission</th>
+                            <th className="text-left px-3 py-2 font-medium text-white/50">Marks</th>
+                            <th className="text-left px-3 py-2 font-medium text-white/50">Grade</th>
+                            <th className="text-left px-3 py-2 font-medium text-white/50">Result</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y">
                           {s.markEntries?.map((m: any) => (
-                            <tr key={m.id} className="hover:bg-gray-50">
+                            <tr key={m.id} className="hover:bg-[#0f1015]">
                               <td className="px-3 py-2">{m.student?.firstName} {m.student?.lastName}</td>
-                              <td className="px-3 py-2 font-mono text-xs text-gray-500">{m.student?.admissionNo}</td>
+                              <td className="px-3 py-2 font-mono text-xs text-white/40">{m.student?.admissionNo}</td>
                               <td className="px-3 py-2">{Number(m.marksObtained)} / {s.fullMarks}</td>
-                              <td className="px-3 py-2 font-bold text-blue-700">{m.grade ?? "—"}</td>
+                              <td className="px-3 py-2 font-bold text-blue-400">{m.grade ?? "—"}</td>
                               <td className="px-3 py-2">
-                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.isPassing ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.isPassing ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
                                   {m.isPassing ? "PASS" : "FAIL"}
                                 </span>
                               </td>

@@ -29,9 +29,9 @@ type Question = {
 const TYPES = ["MCQ", "TRUE_FALSE", "SHORT_ANSWER", "DESCRIPTIVE"];
 const LEVELS = ["EASY", "MEDIUM", "HARD"];
 const LEVEL_COLORS: Record<string, string> = {
-  EASY: "bg-green-100 text-green-700",
-  MEDIUM: "bg-yellow-100 text-yellow-700",
-  HARD: "bg-red-100 text-red-700",
+  EASY: "bg-emerald-500/10 text-emerald-400",
+  MEDIUM: "bg-amber-500/10 text-amber-400",
+  HARD: "bg-red-500/10 text-red-400",
 };
 const TYPE_LABELS: Record<string, string> = {
   MCQ: "MCQ",
@@ -40,7 +40,7 @@ const TYPE_LABELS: Record<string, string> = {
   DESCRIPTIVE: "Descriptive",
 };
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 const emptyEdit = {
   questionType: "MCQ",
@@ -165,7 +165,7 @@ export function QuestionsClient({
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
         <div className="flex flex-wrap gap-2">
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/30" />
             <Input
               placeholder="Search questions…"
               value={search}
@@ -189,23 +189,23 @@ export function QuestionsClient({
         </Link>
       </div>
 
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-white/40">
         {filtered.length} question{filtered.length !== 1 ? "s" : ""} (total: {questions.length})
       </p>
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-white/30">
           <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-40" />
           <p>No questions yet. Click "Add Question" to start building your bank.</p>
         </div>
       ) : (
         <div className="space-y-3">
           {filtered.map((q, i) => (
-            <div key={q.id} className="bg-white rounded-lg border p-4 flex gap-4 items-start">
-              <span className="text-xs font-medium text-gray-400 mt-1 w-6 shrink-0">{i + 1}</span>
+            <div key={q.id} className="bg-[#111318] rounded-lg border p-4 flex gap-4 items-start">
+              <span className="text-xs font-medium text-white/30 mt-1 w-6 shrink-0">{i + 1}</span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 leading-snug">{q.question}</p>
+                <p className="text-sm font-medium text-white/80 leading-snug">{q.question}</p>
                 {["MCQ", "TRUE_FALSE"].includes(q.questionType) && (
                   <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-0.5">
                     {[
@@ -219,7 +219,7 @@ export function QuestionsClient({
                       .map(([label, val]) => (
                         <p
                           key={label as string}
-                          className={`text-xs ${q.correctAnswer?.toUpperCase() === label ? "text-green-700 font-semibold" : "text-gray-500"}`}
+                          className={`text-xs ${q.correctAnswer?.toUpperCase() === label ? "text-emerald-400 font-semibold" : "text-white/40"}`}
                         >
                           {label}. {val}
                           {q.correctAnswer?.toUpperCase() === label && " ✓"}
@@ -230,15 +230,15 @@ export function QuestionsClient({
                 <div className="flex flex-wrap gap-2 mt-2">
                   <Badge variant="outline" className="text-xs">{TYPE_LABELS[q.questionType]}</Badge>
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${LEVEL_COLORS[q.level]}`}>{q.level}</span>
-                  {q.subject && <span className="text-xs text-gray-400">{q.subject.name}</span>}
-                  {q.class && <span className="text-xs text-gray-400">· {q.class.name}</span>}
+                  {q.subject && <span className="text-xs text-white/30">{q.subject.name}</span>}
+                  {q.class && <span className="text-xs text-white/30">· {q.class.name}</span>}
                 </div>
               </div>
               <div className="flex gap-1 shrink-0">
                 <Button size="sm" variant="ghost" onClick={() => openEdit(q)}>
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => del(q.id)} className="text-red-500 hover:text-red-700">
+                <Button size="sm" variant="ghost" onClick={() => del(q.id)} className="text-red-500 hover:text-red-400">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -290,7 +290,7 @@ export function QuestionsClient({
               onChange={(e) => set("question", e.target.value)}
               rows={3}
               placeholder="Enter the question…"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full rounded-lg border border-white/[0.08] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
 
@@ -313,7 +313,7 @@ export function QuestionsClient({
           )}
 
           {isTF && (
-            <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
+            <div className="grid grid-cols-2 gap-2 text-sm text-white/40">
               <p className="border rounded p-2">A. True</p>
               <p className="border rounded p-2">B. False</p>
             </div>

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Clock, Users, GraduationCap, Save } from "lucide-react";
 
 const STAFF_ROLES = ["TEACHER", "ACCOUNTANT", "LIBRARIAN", "ADMIN", "SUPER_ADMIN"];
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 export function AttendanceSettingsClient({
   classSections, attendanceTypes, staffAttendanceTypes,
@@ -84,20 +84,20 @@ export function AttendanceSettingsClient({
 
   return (
     <main className="flex-1 p-6 max-w-5xl mx-auto space-y-6">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
 
       <div>
         <h2 className="text-lg font-bold">Attendance Settings</h2>
-        <p className="text-sm text-gray-500 mt-0.5">Configure attendance time windows per class-section (students) and per role (staff). The system uses these times to auto-detect attendance type when marking.</p>
+        <p className="text-sm text-white/40 mt-0.5">Configure attendance time windows per class-section (students) and per role (staff). The system uses these times to auto-detect attendance type when marking.</p>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 border-b">
         {([["student", "Student Attendance", GraduationCap], ["staff", "Staff Attendance", Users]] as const).map(([id, label, Icon]) => (
           <button key={id} onClick={() => { setTab(id); setSaved(false); }}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${tab === id ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${tab === id ? "border-blue-600 text-blue-400" : "border-transparent text-white/40 hover:text-white/60"}`}>
             <Icon className="h-4 w-4" />{label}
           </button>
         ))}
@@ -107,17 +107,17 @@ export function AttendanceSettingsClient({
         <Card>
           <CardHeader>
             <CardTitle className="text-sm flex items-center gap-2">
-              <Clock className="h-4 w-4 text-blue-600" /> Class-Section Time Windows
+              <Clock className="h-4 w-4 text-blue-400" /> Class-Section Time Windows
             </CardTitle>
-            <p className="text-xs text-gray-400">Set the entry time range for each attendance type per class-section. Leave blank to skip.</p>
+            <p className="text-xs text-white/30">Set the entry time range for each attendance type per class-section. Leave blank to skip.</p>
           </CardHeader>
           <CardContent className="overflow-x-auto p-0">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 min-w-[160px]">Class – Section</th>
+                  <th className="text-left px-4 py-3 font-medium text-white/50 min-w-[160px]">Class – Section</th>
                   {attendanceTypes.map((t: any) => (
-                    <th key={t.id} className="text-center px-3 py-3 font-medium text-gray-600 min-w-[220px]">
+                    <th key={t.id} className="text-center px-3 py-3 font-medium text-white/50 min-w-[220px]">
                       {t.type} ({t.keyValue})
                     </th>
                   ))}
@@ -125,7 +125,7 @@ export function AttendanceSettingsClient({
               </thead>
               <tbody className="divide-y">
                 {classSections.map((cs: any) => (
-                  <tr key={cs.id} className="hover:bg-gray-50">
+                  <tr key={cs.id} className="hover:bg-[#0f1015]">
                     <td className="px-4 py-2.5 font-medium whitespace-nowrap">
                       {cs.class?.name} – {cs.section?.name}
                     </td>
@@ -136,7 +136,7 @@ export function AttendanceSettingsClient({
                         <td key={t.id} className="px-3 py-2">
                           <div className="flex gap-1 items-center">
                             <Input type="time" value={row.entryTimeFrom ?? ""} onChange={(e) => updateStudent(cs.id, t.id, "entryTimeFrom", e.target.value)} className="h-7 text-xs w-24" />
-                            <span className="text-gray-400 text-xs">–</span>
+                            <span className="text-white/30 text-xs">–</span>
                             <Input type="time" value={row.entryTimeTo ?? ""} onChange={(e) => updateStudent(cs.id, t.id, "entryTimeTo", e.target.value)} className="h-7 text-xs w-24" />
                           </div>
                         </td>
@@ -154,17 +154,17 @@ export function AttendanceSettingsClient({
         <Card>
           <CardHeader>
             <CardTitle className="text-sm flex items-center gap-2">
-              <Clock className="h-4 w-4 text-purple-600" /> Role-wise Time Windows
+              <Clock className="h-4 w-4 text-violet-400" /> Role-wise Time Windows
             </CardTitle>
-            <p className="text-xs text-gray-400">Set entry time range per staff role and attendance type.</p>
+            <p className="text-xs text-white/30">Set entry time range per staff role and attendance type.</p>
           </CardHeader>
           <CardContent className="overflow-x-auto p-0">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Role</th>
+                  <th className="text-left px-4 py-3 font-medium text-white/50">Role</th>
                   {staffAttendanceTypes.map((t: any) => (
-                    <th key={t.id} className="text-center px-3 py-3 font-medium text-gray-600 min-w-[220px]">
+                    <th key={t.id} className="text-center px-3 py-3 font-medium text-white/50 min-w-[220px]">
                       {t.type} ({t.keyValue})
                     </th>
                   ))}
@@ -172,7 +172,7 @@ export function AttendanceSettingsClient({
               </thead>
               <tbody className="divide-y">
                 {STAFF_ROLES.map((role) => (
-                  <tr key={role} className="hover:bg-gray-50">
+                  <tr key={role} className="hover:bg-[#0f1015]">
                     <td className="px-4 py-2.5 font-medium">{role}</td>
                     {staffAttendanceTypes.map((t: any) => {
                       const key = `${role}_${t.id}`;
@@ -181,7 +181,7 @@ export function AttendanceSettingsClient({
                         <td key={t.id} className="px-3 py-2">
                           <div className="flex gap-1 items-center">
                             <Input type="time" value={row.entryTimeFrom ?? ""} onChange={(e) => updateStaff(role, t.id, "entryTimeFrom", e.target.value)} className="h-7 text-xs w-24" />
-                            <span className="text-gray-400 text-xs">–</span>
+                            <span className="text-white/30 text-xs">–</span>
                             <Input type="time" value={row.entryTimeTo ?? ""} onChange={(e) => updateStaff(role, t.id, "entryTimeTo", e.target.value)} className="h-7 text-xs w-24" />
                           </div>
                         </td>
@@ -199,7 +199,7 @@ export function AttendanceSettingsClient({
         <Button onClick={save} disabled={saving} className="gap-2">
           <Save className="h-4 w-4" />{saving ? "Saving…" : "Save Settings"}
         </Button>
-        {saved && <span className="text-sm text-green-600 font-medium">Settings saved</span>}
+        {saved && <span className="text-sm text-emerald-400 font-medium">Settings saved</span>}
       </div>
     </main>
   );

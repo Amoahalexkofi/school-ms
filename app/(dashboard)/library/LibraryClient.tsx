@@ -11,7 +11,7 @@ type Props = { books: any[]; issues: any[]; students: any[]; staff: any[]; membe
 type Tab = "catalog" | "issues" | "members";
 
 const STATUS_STYLE: Record<string, string> = {
-  ISSUED: "bg-blue-100 text-blue-700", RETURNED: "bg-green-100 text-green-700", OVERDUE: "bg-red-100 text-red-700",
+  ISSUED: "bg-blue-500/10 text-blue-400", RETURNED: "bg-emerald-500/10 text-emerald-400", OVERDUE: "bg-red-500/10 text-red-400",
 };
 
 export function LibraryClient({ books, issues, students, staff, members: initialMembers }: Props) {
@@ -83,15 +83,15 @@ export function LibraryClient({ books, issues, students, staff, members: initial
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-gray-50">
-      <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
+    <main className="flex-1 p-6 space-y-5 bg-[#0f1015]">
+      <div className="flex gap-1 bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-1 w-fit">
         {[
           { key: "catalog" as Tab, label: "Book Catalog" },
           { key: "issues"  as Tab, label: `Issue Log (${issues.filter(i => i.status === "ISSUED").length} active)` },
           { key: "members" as Tab, label: `Members (${members.length})` },
         ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-white/50 hover:bg-white/[0.04]"}`}>
             {t.label}
           </button>
         ))}
@@ -110,23 +110,23 @@ export function LibraryClient({ books, issues, students, staff, members: initial
               </Link>
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>{["Title","Author","Book No.","Subject","Rack","Total","Available",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+              <thead className="bg-[#0f1015] border-b">
+                <tr>{["Title","Author","Book No.","Subject","Rack","Total","Available",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y">
-                {filtered.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-400">No books found.</td></tr>
+                {filtered.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-white/30">No books found.</td></tr>
                 : filtered.map((b: any) => (
-                  <tr key={b.id} className="hover:bg-gray-50">
+                  <tr key={b.id} className="hover:bg-[#0f1015]">
                     <td className="px-4 py-3 font-medium max-w-[180px] truncate">{b.title}</td>
-                    <td className="px-4 py-3 text-gray-600">{b.author}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{b.bookNo ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-500">{b.subject ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-500">{b.rackNo ?? "—"}</td>
+                    <td className="px-4 py-3 text-white/50">{b.author}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-white/40">{b.bookNo ?? "—"}</td>
+                    <td className="px-4 py-3 text-white/40">{b.subject ?? "—"}</td>
+                    <td className="px-4 py-3 text-white/40">{b.rackNo ?? "—"}</td>
                     <td className="px-4 py-3 text-center">{b.quantity}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${b.available > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{b.available}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${b.available > 0 ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>{b.available}</span>
                     </td>
                     <td className="px-4 py-3">
                       {b.available > 0 ? (
@@ -148,30 +148,30 @@ export function LibraryClient({ books, issues, students, staff, members: initial
       {tab === "members" && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-gray-500">{members.length} member{members.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-white/40">{members.length} member{members.length !== 1 ? "s" : ""}</p>
             <Button onClick={() => { setMemPanel(true); setMemPersonId(""); setMemCardNo(""); setMemErr(""); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Add Member
             </Button>
           </div>
 
           {memPanel && (
-            <div className="bg-white rounded-xl border border-blue-200 p-4 space-y-3 shadow-sm">
+            <div className="bg-[#111318] rounded-xl border border-blue-500/20 p-4 space-y-3 shadow-sm">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-blue-800">Register Library Member</p>
-                <button onClick={() => setMemPanel(false)}><X className="h-4 w-4 text-gray-400" /></button>
+                <p className="text-sm font-semibold text-blue-300">Register Library Member</p>
+                <button onClick={() => setMemPanel(false)}><X className="h-4 w-4 text-white/30" /></button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Member Type *</label>
-                  <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <label className="block text-xs font-medium text-white/60 mb-1">Member Type *</label>
+                  <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={memType} onChange={e => { setMemType(e.target.value); setMemPersonId(""); }}>
                     <option value="student">Student</option>
                     <option value="teacher">Staff</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">{memType === "student" ? "Student" : "Staff"} *</label>
-                  <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <label className="block text-xs font-medium text-white/60 mb-1">{memType === "student" ? "Student" : "Staff"} *</label>
+                  <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={memPersonId} onChange={e => setMemPersonId(e.target.value)}>
                     <option value="">— Select —</option>
                     {personOptions.map((p: any) => (
@@ -180,14 +180,14 @@ export function LibraryClient({ books, issues, students, staff, members: initial
                       </option>
                     ))}
                   </select>
-                  {personOptions.length === 0 && <p className="text-xs text-gray-400 mt-1">All {memType === "student" ? "students" : "staff"} are already registered.</p>}
+                  {personOptions.length === 0 && <p className="text-xs text-white/30 mt-1">All {memType === "student" ? "students" : "staff"} are already registered.</p>}
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Library Card No (optional)</label>
+                  <label className="block text-xs font-medium text-white/60 mb-1">Library Card No (optional)</label>
                   <Input value={memCardNo} onChange={e => setMemCardNo(e.target.value)} placeholder="Auto-generated if blank" />
                 </div>
               </div>
-              {memErr && <p className="text-sm text-red-600">{memErr}</p>}
+              {memErr && <p className="text-sm text-red-400">{memErr}</p>}
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setMemPanel(false)}>Cancel</Button>
                 <Button disabled={memLoad} onClick={saveMember}>{memLoad ? "Saving…" : "Register"}</Button>
@@ -195,31 +195,31 @@ export function LibraryClient({ books, issues, students, staff, members: initial
             </div>
           )}
 
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>{["Card No.","Name","ID / Adm No.","Type","Joined",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+              <thead className="bg-[#0f1015] border-b">
+                <tr>{["Card No.","Name","ID / Adm No.","Type","Joined",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y">
-                {members.length === 0 ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No library members registered.</td></tr>
+                {members.length === 0 ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-white/30">No library members registered.</td></tr>
                 : members.map((m: any) => (
-                  <tr key={m.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{m.libraryCardNo ?? "—"}</td>
-                    <td className="px-4 py-3 font-medium text-gray-900">
+                  <tr key={m.id} className="hover:bg-[#0f1015]">
+                    <td className="px-4 py-3 font-mono text-xs text-white/40">{m.libraryCardNo ?? "—"}</td>
+                    <td className="px-4 py-3 font-medium text-white/80">
                       {m.person ? `${m.person.firstName} ${m.person.lastName}` : `[${m.memberId.slice(0, 8)}…]`}
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">
+                    <td className="px-4 py-3 font-mono text-xs text-white/40">
                       {m.memberType === "student" ? m.person?.admissionNo : m.person?.employeeId ?? "—"}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.memberType === "student" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.memberType === "student" ? "bg-blue-500/10 text-blue-400" : "bg-emerald-500/10 text-emerald-400"}`}>
                         {m.memberType === "student" ? "Student" : "Staff"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-400">{new Date(m.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-xs text-white/30">{new Date(m.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
                       <button onClick={() => removeMember(m.id)} disabled={removingMem === m.id}
-                        className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50">
+                        className="text-white/30 hover:text-red-500 transition-colors disabled:opacity-50">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </td>
@@ -234,20 +234,20 @@ export function LibraryClient({ books, issues, students, staff, members: initial
       {tab === "issues" && (
         <div className="space-y-3">
           {/* Date-range / status filter bar */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-3 flex flex-wrap items-end gap-3">
+          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-3 flex flex-wrap items-end gap-3">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">From</label>
+              <label className="block text-xs text-white/40 mb-1">From</label>
               <Input type="date" value={issueFromDate} onChange={e => setIssueFromDate(e.target.value)} className="h-8 text-sm" />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">To</label>
+              <label className="block text-xs text-white/40 mb-1">To</label>
               <Input type="date" value={issueToDate} onChange={e => setIssueToDate(e.target.value)} className="h-8 text-sm" />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Status</label>
+              <label className="block text-xs text-white/40 mb-1">Status</label>
               <select
                 value={issueStatus} onChange={e => setIssueStatus(e.target.value as any)}
-                className="h-8 text-sm border rounded-lg px-2 bg-white focus:ring-2 focus:ring-indigo-500"
+                className="h-8 text-sm border rounded-lg px-2 bg-[#111318] focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">All</option>
                 <option value="ISSUED">Issued</option>
@@ -259,26 +259,26 @@ export function LibraryClient({ books, issues, students, staff, members: initial
                 <X className="h-3.5 w-3.5 mr-1" /> Clear
               </Button>
             )}
-            <span className="text-xs text-gray-400 ml-auto self-end">{filteredIssues.length} record{filteredIssues.length !== 1 ? "s" : ""}</span>
+            <span className="text-xs text-white/30 ml-auto self-end">{filteredIssues.length} record{filteredIssues.length !== 1 ? "s" : ""}</span>
           </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b">
-              <tr>{["Book","Issued To","Issued","Due","Status","Fine",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+            <thead className="bg-[#0f1015] border-b">
+              <tr>{["Book","Issued To","Issued","Due","Status","Fine",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>)}</tr>
             </thead>
             <tbody className="divide-y">
-              {filteredIssues.length === 0 ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-400">No records match the filter.</td></tr>
+              {filteredIssues.length === 0 ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-white/30">No records match the filter.</td></tr>
               : filteredIssues.map((i: any) => {
                 const overdue = i.status === "ISSUED" && new Date(i.dueDate) < new Date();
                 return (
-                  <tr key={i.id} className={`hover:bg-gray-50 ${overdue ? "bg-red-50/30" : ""}`}>
-                    <td className="px-4 py-3"><div className="font-medium truncate max-w-[160px]">{i.book.title}</div><div className="text-xs text-gray-400">{i.book.bookNo}</div></td>
-                    <td className="px-4 py-3 text-gray-700">{i.student ? `${i.student.firstName} ${i.student.lastName}` : i.staff ? `${i.staff.firstName} ${i.staff.lastName}` : "—"}</td>
-                    <td className="px-4 py-3 text-xs text-gray-500">{new Date(i.issuedAt).toLocaleDateString()}</td>
-                    <td className={`px-4 py-3 text-xs ${overdue ? "text-red-600 font-medium" : "text-gray-500"}`}>{new Date(i.dueDate).toLocaleDateString()}</td>
-                    <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${overdue ? "bg-red-100 text-red-700" : STATUS_STYLE[i.status]}`}>{overdue ? "OVERDUE" : i.status}</span></td>
-                    <td className="px-4 py-3 text-gray-600">{i.fine ? `₵${Number(i.fine).toFixed(2)}` : "—"}</td>
+                  <tr key={i.id} className={`hover:bg-[#0f1015] ${overdue ? "bg-red-500/10/30" : ""}`}>
+                    <td className="px-4 py-3"><div className="font-medium truncate max-w-[160px]">{i.book.title}</div><div className="text-xs text-white/30">{i.book.bookNo}</div></td>
+                    <td className="px-4 py-3 text-white/60">{i.student ? `${i.student.firstName} ${i.student.lastName}` : i.staff ? `${i.staff.firstName} ${i.staff.lastName}` : "—"}</td>
+                    <td className="px-4 py-3 text-xs text-white/40">{new Date(i.issuedAt).toLocaleDateString()}</td>
+                    <td className={`px-4 py-3 text-xs ${overdue ? "text-red-400 font-medium" : "text-white/40"}`}>{new Date(i.dueDate).toLocaleDateString()}</td>
+                    <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${overdue ? "bg-red-500/10 text-red-400" : STATUS_STYLE[i.status]}`}>{overdue ? "OVERDUE" : i.status}</span></td>
+                    <td className="px-4 py-3 text-white/50">{i.fine ? `₵${Number(i.fine).toFixed(2)}` : "—"}</td>
                     <td className="px-4 py-3">{i.status === "ISSUED" && <Button size="sm" variant="outline" disabled={returning === i.id} onClick={() => returnBook(i.id)}><RotateCcw className="h-3.5 w-3.5 mr-1" />{returning === i.id ? "…" : "Return"}</Button>}</td>
                   </tr>
                 );

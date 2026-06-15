@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Plus, X, Trash2, Calendar } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type ClassData = { id: string; name: string; classSections: { id: string; section: { id: string; name: string } }[] };
 
@@ -115,7 +115,7 @@ export function HomeworkClient({ classes, staff, session }: {
                 {sections.map(s => <option key={s.id} value={s.id}>{s.section.name}</option>)}
               </select>
             </div>
-            {session && <p className="text-xs text-gray-400 self-end pb-2">Session: {session.session}</p>}
+            {session && <p className="text-xs text-white/30 self-end pb-2">Session: {session.session}</p>}
           </div>
         </CardContent>
       </Card>
@@ -124,7 +124,7 @@ export function HomeworkClient({ classes, staff, session }: {
       {classSectionId && (
         <>
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-gray-800">
+            <h2 className="font-semibold text-white/70">
               Homework — {selectedClass?.name} / {sections.find(s => s.id === classSectionId)?.section.name}
             </h2>
             {canCreate && (
@@ -136,11 +136,11 @@ export function HomeworkClient({ classes, staff, session }: {
 
           {/* Add form */}
           {showForm && (
-            <Card className="border-blue-200 bg-blue-50/30">
+            <Card className="border-blue-500/20 bg-blue-500/10/30">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm text-blue-800">Assign Homework</CardTitle>
-                  <button onClick={() => setShowForm(false)}><X className="h-4 w-4 text-gray-400" /></button>
+                  <CardTitle className="text-sm text-blue-300">Assign Homework</CardTitle>
+                  <button onClick={() => setShowForm(false)}><X className="h-4 w-4 text-white/30" /></button>
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -169,14 +169,14 @@ export function HomeworkClient({ classes, staff, session }: {
                 <div className="sm:col-span-2">
                   <Label>Description</Label>
                   <textarea
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-white/[0.08] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     rows={3}
                     value={form.description}
                     onChange={e => set("description", e.target.value)}
                     placeholder="Instructions, details…"
                   />
                 </div>
-                {error && <p className="sm:col-span-2 text-sm text-red-600">{error}</p>}
+                {error && <p className="sm:col-span-2 text-sm text-red-400">{error}</p>}
                 <div className="sm:col-span-2 flex gap-2">
                   <Button size="sm" onClick={save} disabled={saving}>{saving ? "Saving…" : "Assign"}</Button>
                   <Button variant="outline" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
@@ -185,10 +185,10 @@ export function HomeworkClient({ classes, staff, session }: {
             </Card>
           )}
 
-          {loading && <p className="text-sm text-gray-400 text-center py-8">Loading…</p>}
+          {loading && <p className="text-sm text-white/30 text-center py-8">Loading…</p>}
 
           {!loading && homework.length === 0 && (
-            <div className="text-center py-16 text-gray-400 border-2 border-dashed rounded-xl">
+            <div className="text-center py-16 text-white/30 border-2 border-dashed rounded-xl">
               <FileText className="h-10 w-10 mx-auto mb-3 opacity-30" />
               <p className="font-medium">No homework assigned yet for this class</p>
             </div>
@@ -200,23 +200,23 @@ export function HomeworkClient({ classes, staff, session }: {
                 const overdue = new Date(hw.dueDate) < new Date() && !hw.isActive;
                 const daysLeft = Math.ceil((new Date(hw.dueDate).getTime() - Date.now()) / 86400000);
                 return (
-                  <Card key={hw.id} className={overdue ? "border-red-200" : ""}>
+                  <Card key={hw.id} className={overdue ? "border-red-500/20" : ""}>
                     <CardContent className="pt-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-gray-800">{hw.title}</h3>
-                            <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">
+                            <h3 className="font-semibold text-white/70">{hw.title}</h3>
+                            <span className="text-xs px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-full font-medium">
                               {hw.subject?.name ?? "—"}
                             </span>
                           </div>
-                          {hw.description && <p className="text-sm text-gray-600 mb-2">{hw.description}</p>}
-                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
+                          {hw.description && <p className="text-sm text-white/50 mb-2">{hw.description}</p>}
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/30">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
                               Due: {new Date(hw.dueDate).toLocaleDateString()}
-                              {daysLeft > 0 ? <span className="text-amber-600 ml-1">({daysLeft}d left)</span>
-                               : daysLeft === 0 ? <span className="text-red-600 ml-1">(today)</span>
+                              {daysLeft > 0 ? <span className="text-amber-400 ml-1">({daysLeft}d left)</span>
+                               : daysLeft === 0 ? <span className="text-red-400 ml-1">(today)</span>
                                : <span className="text-red-500 ml-1">(overdue)</span>}
                             </span>
                             {hw.staff && <span>By: {hw.staff.firstName} {hw.staff.lastName}</span>}
@@ -226,7 +226,7 @@ export function HomeworkClient({ classes, staff, session }: {
                           </div>
                         </div>
                         {canCreate && (
-                          <Button size="sm" variant="ghost" onClick={() => deleteHw(hw.id)} className="text-red-400 hover:text-red-600">
+                          <Button size="sm" variant="ghost" onClick={() => deleteHw(hw.id)} className="text-red-400 hover:text-red-400">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
@@ -241,7 +241,7 @@ export function HomeworkClient({ classes, staff, session }: {
       )}
 
       {!classSectionId && (
-        <div className="text-center py-16 text-gray-400 border-2 border-dashed rounded-xl">
+        <div className="text-center py-16 text-white/30 border-2 border-dashed rounded-xl">
           <FileText className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p className="font-medium">Select a class and section to view homework</p>
         </div>

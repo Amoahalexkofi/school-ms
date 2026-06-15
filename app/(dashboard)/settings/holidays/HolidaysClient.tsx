@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, Pencil, Trash2, CalendarDays, Tag, X, Check } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type HolidayType = { id: string; name: string; isDefault: boolean; _count?: { holidays: number } };
 type Holiday = {
@@ -142,7 +142,7 @@ export function HolidaysClient({
 
   return (
     <main className="flex-1 p-6 max-w-5xl mx-auto space-y-6">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
 
@@ -150,7 +150,7 @@ export function HolidaysClient({
       <div className="flex gap-1 border-b">
         {([["holidays", "Holidays", CalendarDays], ["types", "Holiday Types", Tag]] as const).map(([id, label, Icon]) => (
           <button key={id} onClick={() => setTab(id)}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${tab === id ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${tab === id ? "border-blue-600 text-blue-400" : "border-transparent text-white/40 hover:text-white/60"}`}>
             <Icon className="h-4 w-4" />{label}
           </button>
         ))}
@@ -182,11 +182,11 @@ export function HolidaysClient({
 
           {/* Add/Edit form */}
           {showHolidayForm && (
-            <Card className="border-blue-200 bg-blue-50/30">
+            <Card className="border-blue-500/20 bg-blue-500/10/30">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm text-blue-800">{editingHoliday ? "Edit Holiday" : "Add Holiday"}</CardTitle>
-                  <button onClick={() => setShowHolidayForm(false)}><X className="h-4 w-4 text-gray-400" /></button>
+                  <CardTitle className="text-sm text-blue-300">{editingHoliday ? "Edit Holiday" : "Add Holiday"}</CardTitle>
+                  <button onClick={() => setShowHolidayForm(false)}><X className="h-4 w-4 text-white/30" /></button>
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -218,8 +218,8 @@ export function HolidaysClient({
                 </div>
                 <div className="md:col-span-2 flex items-center gap-2">
                   <input type="checkbox" id="frontSite" checked={hForm.frontSite}
-                    onChange={(e) => setHForm(f => ({ ...f, frontSite: e.target.checked }))} className="h-4 w-4 rounded border-gray-300" />
-                  <label htmlFor="frontSite" className="text-sm text-gray-700">Show on front site / calendar</label>
+                    onChange={(e) => setHForm(f => ({ ...f, frontSite: e.target.checked }))} className="h-4 w-4 rounded border-white/[0.08]" />
+                  <label htmlFor="frontSite" className="text-sm text-white/60">Show on front site / calendar</label>
                 </div>
                 <div className="md:col-span-2 flex gap-2">
                   <Button onClick={saveHoliday} disabled={saving} size="sm">{saving ? "Saving…" : editingHoliday ? "Update" : "Add Holiday"}</Button>
@@ -231,7 +231,7 @@ export function HolidaysClient({
 
           {/* Holidays table */}
           {filtered.length === 0 ? (
-            <div className="text-center py-16 text-gray-400 border-2 border-dashed rounded-lg">
+            <div className="text-center py-16 text-white/30 border-2 border-dashed rounded-lg">
               <CalendarDays className="h-10 w-10 mx-auto mb-3 opacity-30" />
               <p className="font-medium">No holidays found</p>
               <p className="text-sm mt-1">Click "Add Holiday" to create the first holiday</p>
@@ -240,34 +240,34 @@ export function HolidaysClient({
             <Card>
               <CardContent className="p-0">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-[#0f1015] border-b">
                     <tr>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Description</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Type</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">From</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">To</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Duration</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Session</th>
-                      <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
+                      <th className="text-left px-4 py-3 font-medium text-white/50">#</th>
+                      <th className="text-left px-4 py-3 font-medium text-white/50">Description</th>
+                      <th className="text-left px-4 py-3 font-medium text-white/50">Type</th>
+                      <th className="text-left px-4 py-3 font-medium text-white/50">From</th>
+                      <th className="text-left px-4 py-3 font-medium text-white/50">To</th>
+                      <th className="text-left px-4 py-3 font-medium text-white/50">Duration</th>
+                      <th className="text-left px-4 py-3 font-medium text-white/50">Session</th>
+                      <th className="text-right px-4 py-3 font-medium text-white/50">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {filtered.map((h, i) => (
-                      <tr key={h.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-gray-400">{i + 1}</td>
+                      <tr key={h.id} className="hover:bg-[#0f1015]">
+                        <td className="px-4 py-3 text-white/30">{i + 1}</td>
                         <td className="px-4 py-3 font-medium">{h.description || "—"}</td>
                         <td className="px-4 py-3">
                           <Badge variant="outline" className="text-xs">{h.holidayType?.name}</Badge>
                         </td>
-                        <td className="px-4 py-3 text-gray-600">{new Date(h.fromDate).toLocaleDateString()}</td>
-                        <td className="px-4 py-3 text-gray-600">{new Date(h.toDate).toLocaleDateString()}</td>
-                        <td className="px-4 py-3 text-gray-500 text-xs">{dayCount(h.fromDate, h.toDate)}</td>
-                        <td className="px-4 py-3 text-gray-400 text-xs">{h.session?.session ?? "All"}</td>
+                        <td className="px-4 py-3 text-white/50">{new Date(h.fromDate).toLocaleDateString()}</td>
+                        <td className="px-4 py-3 text-white/50">{new Date(h.toDate).toLocaleDateString()}</td>
+                        <td className="px-4 py-3 text-white/40 text-xs">{dayCount(h.fromDate, h.toDate)}</td>
+                        <td className="px-4 py-3 text-white/30 text-xs">{h.session?.session ?? "All"}</td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex gap-1 justify-end">
                             <Button size="sm" variant="ghost" onClick={() => openEditHoliday(h)}><Pencil className="h-3.5 w-3.5" /></Button>
-                            <Button size="sm" variant="ghost" onClick={() => deleteHoliday(h.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>
+                            <Button size="sm" variant="ghost" onClick={() => deleteHoliday(h.id)} className="text-red-400 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></Button>
                           </div>
                         </td>
                       </tr>
@@ -288,11 +288,11 @@ export function HolidaysClient({
           </div>
 
           {showTypeForm && (
-            <Card className="border-orange-200 bg-orange-50/30">
+            <Card className="border-orange-500/20 bg-orange-500/10/30">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm text-orange-800">{editingType ? "Edit Holiday Type" : "Add Holiday Type"}</CardTitle>
-                  <button onClick={() => setShowTypeForm(false)}><X className="h-4 w-4 text-gray-400" /></button>
+                  <CardTitle className="text-sm text-orange-300">{editingType ? "Edit Holiday Type" : "Add Holiday Type"}</CardTitle>
+                  <button onClick={() => setShowTypeForm(false)}><X className="h-4 w-4 text-white/30" /></button>
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -302,8 +302,8 @@ export function HolidaysClient({
                 </div>
                 <div className="flex items-end gap-2">
                   <div className="flex items-center gap-2 h-9">
-                    <input type="checkbox" id="isDefault" checked={typeDefault} onChange={(e) => setTypeDefault(e.target.checked)} className="h-4 w-4 rounded border-gray-300" />
-                    <label htmlFor="isDefault" className="text-sm text-gray-700">Set as default type</label>
+                    <input type="checkbox" id="isDefault" checked={typeDefault} onChange={(e) => setTypeDefault(e.target.checked)} className="h-4 w-4 rounded border-white/[0.08]" />
+                    <label htmlFor="isDefault" className="text-sm text-white/60">Set as default type</label>
                   </div>
                 </div>
                 <div className="md:col-span-2 flex gap-2">
@@ -315,7 +315,7 @@ export function HolidaysClient({
           )}
 
           {types.length === 0 ? (
-            <div className="text-center py-12 text-gray-400 border-2 border-dashed rounded-lg">
+            <div className="text-center py-12 text-white/30 border-2 border-dashed rounded-lg">
               <Tag className="h-8 w-8 mx-auto mb-2 opacity-30" />
               <p>No holiday types. Add one above.</p>
             </div>
@@ -323,28 +323,28 @@ export function HolidaysClient({
             <Card>
               <CardContent className="p-0">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-[#0f1015] border-b">
                     <tr>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Type Name</th>
-                      <th className="text-center px-4 py-3 font-medium text-gray-600">Default</th>
-                      <th className="text-center px-4 py-3 font-medium text-gray-600">Holidays</th>
-                      <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
+                      <th className="text-left px-4 py-3 font-medium text-white/50">#</th>
+                      <th className="text-left px-4 py-3 font-medium text-white/50">Type Name</th>
+                      <th className="text-center px-4 py-3 font-medium text-white/50">Default</th>
+                      <th className="text-center px-4 py-3 font-medium text-white/50">Holidays</th>
+                      <th className="text-right px-4 py-3 font-medium text-white/50">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {types.map((t, i) => (
-                      <tr key={t.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-gray-400">{i + 1}</td>
+                      <tr key={t.id} className="hover:bg-[#0f1015]">
+                        <td className="px-4 py-3 text-white/30">{i + 1}</td>
                         <td className="px-4 py-3 font-medium">{t.name}</td>
                         <td className="px-4 py-3 text-center">
-                          {t.isDefault ? <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Default</span> : "—"}
+                          {t.isDefault ? <span className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-medium">Default</span> : "—"}
                         </td>
-                        <td className="px-4 py-3 text-center text-gray-500">{t._count?.holidays ?? 0}</td>
+                        <td className="px-4 py-3 text-center text-white/40">{t._count?.holidays ?? 0}</td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex gap-1 justify-end">
                             <Button size="sm" variant="ghost" onClick={() => openEditType(t)}><Pencil className="h-3.5 w-3.5" /></Button>
-                            <Button size="sm" variant="ghost" onClick={() => deleteType(t.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>
+                            <Button size="sm" variant="ghost" onClick={() => deleteType(t.id)} className="text-red-400 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></Button>
                           </div>
                         </td>
                       </tr>

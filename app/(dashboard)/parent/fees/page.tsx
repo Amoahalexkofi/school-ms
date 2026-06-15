@@ -20,8 +20,8 @@ export default async function ParentFeesPage() {
         <Topbar title="Fee Statement" />
         <main className="flex-1 p-6 flex items-center justify-center">
           <div className="text-center">
-            <Users className="h-10 w-10 mx-auto text-gray-300 mb-3" />
-            <p className="text-gray-500">No children linked to your account.</p>
+            <Users className="h-10 w-10 mx-auto text-white/30 mb-3" />
+            <p className="text-white/40">No children linked to your account.</p>
           </div>
         </main>
       </div>
@@ -58,22 +58,22 @@ export default async function ParentFeesPage() {
             <div key={childIds[idx]}>
               <div className="bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-5 text-white mb-4">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center font-black text-sm">{student.firstName[0]}{student.lastName?.[0]}</div>
+                  <div className="w-10 h-10 bg-[#111318]/20 rounded-xl flex items-center justify-center font-black text-sm">{student.firstName[0]}{student.lastName?.[0]}</div>
                   <div>
                     <p className="font-black text-lg">{student.firstName} {student.lastName}</p>
                     <p className="text-violet-200 text-sm">Adm: {student.admissionNo}</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-white/15 rounded-xl p-3 text-center">
+                  <div className="bg-[#111318]/15 rounded-xl p-3 text-center">
                     <p className="text-xl font-black">₵{totalInv.toLocaleString()}</p>
                     <p className="text-xs text-white/70 mt-0.5">Invoiced</p>
                   </div>
-                  <div className="bg-white/15 rounded-xl p-3 text-center">
+                  <div className="bg-[#111318]/15 rounded-xl p-3 text-center">
                     <p className="text-xl font-black text-emerald-300">₵{totalPaid.toLocaleString()}</p>
                     <p className="text-xs text-white/70 mt-0.5">Paid</p>
                   </div>
-                  <div className="bg-white/15 rounded-xl p-3 text-center">
+                  <div className="bg-[#111318]/15 rounded-xl p-3 text-center">
                     <p className={`text-xl font-black ${totalDue > 0 ? "text-rose-300" : "text-emerald-300"}`}>₵{totalDue.toLocaleString()}</p>
                     <p className="text-xs text-white/70 mt-0.5">Outstanding</p>
                   </div>
@@ -85,35 +85,35 @@ export default async function ParentFeesPage() {
                   const due  = (fm.amount ?? 0) - paid;
                   const full = due <= 0;
                   return (
-                    <div key={fm.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                    <div key={fm.id} className="bg-[#111318] rounded-2xl border border-white/[0.04] overflow-hidden">
                       <div className="flex items-center justify-between px-5 py-3.5 gap-4">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${full ? "bg-emerald-50" : "bg-rose-50"}`}>
-                            {full ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : <AlertCircle className="h-4 w-4 text-rose-500" />}
+                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${full ? "bg-emerald-500/10" : "bg-rose-500/10"}`}>
+                            {full ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <AlertCircle className="h-4 w-4 text-rose-500" />}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-bold text-gray-900 text-sm truncate">{fm.feeGroupItem?.feeType?.name ?? "Fee Invoice"}</p>
-                            <p className="text-xs text-gray-400">{fm.feeGroupItem?.feeSessionGroup?.session?.session ?? "—"}</p>
+                            <p className="font-bold text-white/80 text-sm truncate">{fm.feeGroupItem?.feeType?.name ?? "Fee Invoice"}</p>
+                            <p className="text-xs text-white/30">{fm.feeGroupItem?.feeSessionGroup?.session?.session ?? "—"}</p>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="font-black text-gray-900">₵{(fm.amount ?? 0).toLocaleString()}</p>
-                          {full ? <p className="text-xs text-emerald-600 font-bold">Paid</p> : <p className="text-xs text-rose-600 font-bold">Due ₵{due.toLocaleString()}</p>}
+                          <p className="font-black text-white/80">₵{(fm.amount ?? 0).toLocaleString()}</p>
+                          {full ? <p className="text-xs text-emerald-400 font-bold">Paid</p> : <p className="text-xs text-rose-400 font-bold">Due ₵{due.toLocaleString()}</p>}
                         </div>
                       </div>
                       {fm.feeDeposits.length > 0 && (
-                        <div className="border-t bg-gray-50 divide-y">
+                        <div className="border-t bg-[#0f1015] divide-y">
                           {fm.feeDeposits.map((dep: any) => {
                             const detail = Array.isArray(dep.amountDetail) ? dep.amountDetail : [{ amount: dep.amount, subId: 0 }];
                             return detail.map((d: any, i: number) => (
                               <div key={`${dep.id}-${i}`} className="flex items-center justify-between px-5 py-2 text-xs">
-                                <span className="text-gray-500 flex items-center gap-1.5">
+                                <span className="text-white/40 flex items-center gap-1.5">
                                   <Receipt className="h-3 w-3" />
                                   {new Date(dep.createdAt).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })}
                                 </span>
                                 <div className="flex items-center gap-2">
-                                  <span className="font-bold text-emerald-700">₵{(d.amount ?? dep.amount ?? 0).toLocaleString()}</span>
-                                  <Link href={`/fees/receipt/${dep.id}/${d.subId ?? i}`} className="text-blue-600 hover:underline text-[10px] font-semibold">Receipt</Link>
+                                  <span className="font-bold text-emerald-400">₵{(d.amount ?? dep.amount ?? 0).toLocaleString()}</span>
+                                  <Link href={`/fees/receipt/${dep.id}/${d.subId ?? i}`} className="text-blue-400 hover:underline text-[10px] font-semibold">Receipt</Link>
                                 </div>
                               </div>
                             ));
@@ -123,7 +123,7 @@ export default async function ParentFeesPage() {
                     </div>
                   );
                 })}
-                {feeMasters.length === 0 && <p className="text-center py-6 text-sm text-gray-400">No fee records found.</p>}
+                {feeMasters.length === 0 && <p className="text-center py-6 text-sm text-white/30">No fee records found.</p>}
               </div>
             </div>
           );

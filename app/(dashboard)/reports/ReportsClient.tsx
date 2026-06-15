@@ -18,7 +18,7 @@ type Props = {
   examGroups: { id: string; name: string }[];
 };
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type ReportTab =
   | "students"
@@ -81,8 +81,8 @@ export function ReportsClient({ sessions, classes, sections, classSections, depa
             onClick={() => setTab(t.id)}
             className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               tab === t.id
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                ? "border-blue-600 text-blue-400"
+                : "border-transparent text-white/40 hover:text-white/60"
             }`}
           >
             {t.label}
@@ -125,7 +125,7 @@ export function ReportsClient({ sessions, classes, sections, classSections, depa
 function ReportActions({ onPrint, onCSV, count }: { onPrint: () => void; onCSV: () => void; count: number }) {
   return (
     <div className="flex items-center gap-2 print:hidden">
-      <span className="text-sm text-gray-500">{count} record{count !== 1 ? "s" : ""}</span>
+      <span className="text-sm text-white/40">{count} record{count !== 1 ? "s" : ""}</span>
       <Button size="sm" variant="outline" onClick={onCSV}>
         <Download className="h-3.5 w-3.5 mr-1" /> CSV
       </Button>
@@ -138,7 +138,7 @@ function ReportActions({ onPrint, onCSV, count }: { onPrint: () => void; onCSV: 
 
 function EmptyState() {
   return (
-    <div className="text-center py-16 text-gray-400">
+    <div className="text-center py-16 text-white/30">
       <FileText className="h-10 w-10 mx-auto mb-3 opacity-30" />
       <p>Apply filters and click "Generate" to view the report.</p>
     </div>
@@ -146,7 +146,7 @@ function EmptyState() {
 }
 
 function LoadingState() {
-  return <div className="text-center py-12 text-gray-400 text-sm">Loading…</div>;
+  return <div className="text-center py-12 text-white/30 text-sm">Loading…</div>;
 }
 
 // ─── 1. Student List Report ───────────────────────────────────────────────────
@@ -196,7 +196,7 @@ function StudentReport({ sessions, classes, sections, classSections, onPrint }: 
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border rounded-lg p-4 print:hidden">
+      <div className="bg-[#111318] border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Student List Report</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           <div>
@@ -247,46 +247,46 @@ function StudentReport({ sessions, classes, sections, classSections, onPrint }: 
       </div>
 
       {loading ? <LoadingState /> : rows === null ? <EmptyState /> : rows.length === 0 ? (
-        <div className="text-center py-10 text-gray-400 text-sm">No students found.</div>
+        <div className="text-center py-10 text-white/30 text-sm">No students found.</div>
       ) : (
-        <div className="bg-white border rounded-lg overflow-hidden">
+        <div className="bg-[#111318] border rounded-lg overflow-hidden">
           <div className="px-4 py-2 border-b print:block hidden">
             <h2 className="text-lg font-bold">Student List Report</h2>
-            <p className="text-xs text-gray-500">Generated: {new Date().toLocaleString()}</p>
+            <p className="text-xs text-white/40">Generated: {new Date().toLocaleString()}</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">#</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Admission No</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Name</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Gender</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Class</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Section</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Session</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Status</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Mobile</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">#</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Admission No</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Name</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Gender</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Class</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Section</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Session</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Status</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Mobile</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {rows.map((s, i) => {
                   const sess = s.sessions?.[0];
                   return (
-                    <tr key={s.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-2.5 text-gray-400">{i + 1}</td>
+                    <tr key={s.id} className="hover:bg-[#0f1015]">
+                      <td className="px-4 py-2.5 text-white/30">{i + 1}</td>
                       <td className="px-4 py-2.5 font-mono text-xs">{s.admissionNo}</td>
                       <td className="px-4 py-2.5 font-medium">{s.firstName} {s.lastName}</td>
-                      <td className="px-4 py-2.5 text-gray-500">{s.gender ?? "—"}</td>
+                      <td className="px-4 py-2.5 text-white/40">{s.gender ?? "—"}</td>
                       <td className="px-4 py-2.5">{sess?.classSection?.class?.name ?? "—"}</td>
                       <td className="px-4 py-2.5">{sess?.classSection?.section?.name ?? "—"}</td>
-                      <td className="px-4 py-2.5 text-gray-500">{sess?.session?.name ?? "—"}</td>
+                      <td className="px-4 py-2.5 text-white/40">{sess?.session?.name ?? "—"}</td>
                       <td className="px-4 py-2.5">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.isActive ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
                           {s.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5 text-gray-500">{s.mobile ?? "—"}</td>
+                      <td className="px-4 py-2.5 text-white/40">{s.mobile ?? "—"}</td>
                     </tr>
                   );
                 })}
@@ -337,7 +337,7 @@ function AttendanceReport({ sessions, classSections, onPrint }: {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border rounded-lg p-4 print:hidden">
+      <div className="bg-[#111318] border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Student Attendance Report</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div>
@@ -374,51 +374,51 @@ function AttendanceReport({ sessions, classSections, onPrint }: {
       </div>
 
       {loading ? <LoadingState /> : !data ? <EmptyState /> : data.rows.length === 0 ? (
-        <div className="text-center py-10 text-gray-400 text-sm">No attendance records found.</div>
+        <div className="text-center py-10 text-white/30 text-sm">No attendance records found.</div>
       ) : (
-        <div className="bg-white border rounded-lg overflow-hidden">
+        <div className="bg-[#111318] border rounded-lg overflow-hidden">
           <div className="px-4 py-2 border-b flex items-center justify-between">
             <div>
               <h2 className="font-semibold text-sm">Attendance Report</h2>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-white/30">
                 {from} to {to} · {data.totalDays} school day{data.totalDays !== 1 ? "s" : ""}
               </p>
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">#</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Student</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Admission</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Class</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-green-600">P</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-red-600">A</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-yellow-600">L</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-blue-600">H</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-purple-600">F</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-gray-600">Total</th>
-                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">%</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">#</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Student</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Admission</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Class</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-emerald-400">P</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-red-400">A</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-yellow-400">L</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-blue-400">H</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-violet-400">F</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-white/50">Total</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-white/50">%</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {data.rows.map((r, i) => (
-                  <tr key={r.student.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2.5 text-gray-400">{i + 1}</td>
+                  <tr key={r.student.id} className="hover:bg-[#0f1015]">
+                    <td className="px-4 py-2.5 text-white/30">{i + 1}</td>
                     <td className="px-4 py-2.5 font-medium">{r.student.firstName} {r.student.lastName}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{r.student.admissionNo}</td>
-                    <td className="px-4 py-2.5 text-gray-500">
+                    <td className="px-4 py-2.5 font-mono text-xs text-white/40">{r.student.admissionNo}</td>
+                    <td className="px-4 py-2.5 text-white/40">
                       {r.classSection?.class?.name ?? ""} {r.classSection?.section?.name ?? ""}
                     </td>
-                    <td className="text-center px-3 py-2.5 text-green-600 font-medium">{r.P}</td>
-                    <td className="text-center px-3 py-2.5 text-red-600 font-medium">{r.A}</td>
-                    <td className="text-center px-3 py-2.5 text-yellow-600 font-medium">{r.L}</td>
-                    <td className="text-center px-3 py-2.5 text-blue-600 font-medium">{r.H}</td>
-                    <td className="text-center px-3 py-2.5 text-purple-600 font-medium">{r.F}</td>
+                    <td className="text-center px-3 py-2.5 text-emerald-400 font-medium">{r.P}</td>
+                    <td className="text-center px-3 py-2.5 text-red-400 font-medium">{r.A}</td>
+                    <td className="text-center px-3 py-2.5 text-yellow-400 font-medium">{r.L}</td>
+                    <td className="text-center px-3 py-2.5 text-blue-400 font-medium">{r.H}</td>
+                    <td className="text-center px-3 py-2.5 text-violet-400 font-medium">{r.F}</td>
                     <td className="text-center px-3 py-2.5">{r.total}</td>
                     <td className="text-right px-4 py-2.5">
-                      <span className={`font-semibold ${r.pct < 75 ? "text-red-600" : r.pct >= 90 ? "text-green-600" : "text-gray-800"}`}>
+                      <span className={`font-semibold ${r.pct < 75 ? "text-red-400" : r.pct >= 90 ? "text-emerald-400" : "text-white/70"}`}>
                         {r.pct}%
                       </span>
                     </td>
@@ -468,7 +468,7 @@ function StaffAttendanceReport({ departments, onPrint }: { departments: Props["d
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border rounded-lg p-4 print:hidden">
+      <div className="bg-[#111318] border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Staff Attendance Report</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
@@ -496,41 +496,41 @@ function StaffAttendanceReport({ departments, onPrint }: { departments: Props["d
       </div>
 
       {loading ? <LoadingState /> : rows === null ? <EmptyState /> : rows.length === 0 ? (
-        <div className="text-center py-10 text-gray-400 text-sm">No records found.</div>
+        <div className="text-center py-10 text-white/30 text-sm">No records found.</div>
       ) : (
-        <div className="bg-white border rounded-lg overflow-hidden">
+        <div className="bg-[#111318] border rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">#</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Employee ID</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Name</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Department</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-green-600">P</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-red-600">A</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-yellow-600">L</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-blue-600">H</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-purple-600">F</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-gray-600">Total</th>
-                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">%</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">#</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Employee ID</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Name</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Department</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-emerald-400">P</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-red-400">A</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-yellow-400">L</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-blue-400">H</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-violet-400">F</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-white/50">Total</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-white/50">%</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {rows.map((r, i) => (
-                  <tr key={r.staff.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2.5 text-gray-400">{i + 1}</td>
+                  <tr key={r.staff.id} className="hover:bg-[#0f1015]">
+                    <td className="px-4 py-2.5 text-white/30">{i + 1}</td>
                     <td className="px-4 py-2.5 font-mono text-xs">{r.staff.employeeId ?? "—"}</td>
                     <td className="px-4 py-2.5 font-medium">{r.staff.firstName} {r.staff.lastName}</td>
-                    <td className="px-4 py-2.5 text-gray-500">{r.staff.department?.name ?? "—"}</td>
-                    <td className="text-center px-3 py-2.5 text-green-600 font-medium">{r.P}</td>
-                    <td className="text-center px-3 py-2.5 text-red-600 font-medium">{r.A}</td>
-                    <td className="text-center px-3 py-2.5 text-yellow-600 font-medium">{r.L}</td>
-                    <td className="text-center px-3 py-2.5 text-blue-600 font-medium">{r.H}</td>
-                    <td className="text-center px-3 py-2.5 text-purple-600 font-medium">{r.F}</td>
+                    <td className="px-4 py-2.5 text-white/40">{r.staff.department?.name ?? "—"}</td>
+                    <td className="text-center px-3 py-2.5 text-emerald-400 font-medium">{r.P}</td>
+                    <td className="text-center px-3 py-2.5 text-red-400 font-medium">{r.A}</td>
+                    <td className="text-center px-3 py-2.5 text-yellow-400 font-medium">{r.L}</td>
+                    <td className="text-center px-3 py-2.5 text-blue-400 font-medium">{r.H}</td>
+                    <td className="text-center px-3 py-2.5 text-violet-400 font-medium">{r.F}</td>
                     <td className="text-center px-3 py-2.5">{r.total}</td>
                     <td className="text-right px-4 py-2.5">
-                      <span className={`font-semibold ${r.pct < 75 ? "text-red-600" : "text-gray-800"}`}>
+                      <span className={`font-semibold ${r.pct < 75 ? "text-red-400" : "text-white/70"}`}>
                         {r.pct}%
                       </span>
                     </td>
@@ -580,7 +580,7 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border rounded-lg p-4 print:hidden">
+      <div className="bg-[#111318] border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Fee Collection Report</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
@@ -608,53 +608,53 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
       </div>
 
       {loading ? <LoadingState /> : !data ? <EmptyState /> : data.rows.length === 0 ? (
-        <div className="text-center py-10 text-gray-400 text-sm">No payments found in this period.</div>
+        <div className="text-center py-10 text-white/30 text-sm">No payments found in this period.</div>
       ) : (
-        <div className="bg-white border rounded-lg overflow-hidden">
-          <div className="px-4 py-3 border-b bg-gray-50 flex items-center justify-between">
+        <div className="bg-[#111318] border rounded-lg overflow-hidden">
+          <div className="px-4 py-3 border-b bg-[#0f1015] flex items-center justify-between">
             <span className="text-sm font-medium">
-              Total Collected: <span className="text-green-600 font-bold">₵{data.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+              Total Collected: <span className="text-emerald-400 font-bold">₵{data.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
             </span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">#</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Student</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Class</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Fee Group</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Fee Type</th>
-                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">Amount</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Mode</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Date</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">#</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Student</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Class</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Fee Group</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Fee Type</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-white/50">Amount</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Mode</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Date</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {data.rows.map((r, i) => (
-                  <tr key={r.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2.5 text-gray-400">{i + 1}</td>
+                  <tr key={r.id} className="hover:bg-[#0f1015]">
+                    <td className="px-4 py-2.5 text-white/30">{i + 1}</td>
                     <td className="px-4 py-2.5">
                       <p className="font-medium">{r.student.firstName} {r.student.lastName}</p>
-                      <p className="text-xs text-gray-400">{r.student.admissionNo}</p>
+                      <p className="text-xs text-white/30">{r.student.admissionNo}</p>
                     </td>
-                    <td className="px-4 py-2.5 text-gray-500">{r.class} {r.section}</td>
-                    <td className="px-4 py-2.5 text-gray-500">{r.feeGroup || "—"}</td>
-                    <td className="px-4 py-2.5 text-gray-500">{r.feeType}</td>
-                    <td className="px-4 py-2.5 text-right font-semibold text-green-700">
+                    <td className="px-4 py-2.5 text-white/40">{r.class} {r.section}</td>
+                    <td className="px-4 py-2.5 text-white/40">{r.feeGroup || "—"}</td>
+                    <td className="px-4 py-2.5 text-white/40">{r.feeType}</td>
+                    <td className="px-4 py-2.5 text-right font-semibold text-emerald-400">
                       ₵{Number(r.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-500">{r.paymentMode || "—"}</td>
-                    <td className="px-4 py-2.5 text-gray-500 text-xs">
+                    <td className="px-4 py-2.5 text-white/40">{r.paymentMode || "—"}</td>
+                    <td className="px-4 py-2.5 text-white/40 text-xs">
                       {r.payDate ? new Date(r.payDate).toLocaleDateString() : "—"}
                     </td>
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="border-t bg-gray-50">
+              <tfoot className="border-t bg-[#0f1015]">
                 <tr>
                   <td colSpan={5} className="px-4 py-2.5 text-right font-semibold text-sm">Total:</td>
-                  <td className="px-4 py-2.5 text-right font-bold text-green-700">
+                  <td className="px-4 py-2.5 text-right font-bold text-emerald-400">
                     ₵{data.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </td>
                   <td colSpan={2} />
@@ -703,7 +703,7 @@ function DueFeesReport({ sessions, onPrint }: { sessions: Props["sessions"]; onP
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border rounded-lg p-4 print:hidden">
+      <div className="bg-[#111318] border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Due Fees Report (Defaulters)</h3>
         <div className="flex items-end gap-3">
           <div className="w-60">
@@ -721,52 +721,52 @@ function DueFeesReport({ sessions, onPrint }: { sessions: Props["sessions"]; onP
       </div>
 
       {loading ? <LoadingState /> : rows === null ? <EmptyState /> : rows.length === 0 ? (
-        <div className="text-center py-10 text-gray-400 text-sm">No outstanding fees found.</div>
+        <div className="text-center py-10 text-white/30 text-sm">No outstanding fees found.</div>
       ) : (
-        <div className="bg-white border rounded-lg overflow-hidden">
-          <div className="px-4 py-3 border-b bg-red-50 flex items-center justify-between">
-            <span className="text-sm font-medium text-red-700">
+        <div className="bg-[#111318] border rounded-lg overflow-hidden">
+          <div className="px-4 py-3 border-b bg-red-500/10 flex items-center justify-between">
+            <span className="text-sm font-medium text-red-400">
               Total Outstanding: <span className="font-bold">₵{totalDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
             </span>
             <span className="text-xs text-red-500">{rows.length} defaulter{rows.length !== 1 ? "s" : ""}</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">#</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Student</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Class</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Session</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Fee Group</th>
-                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">Total</th>
-                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">Paid</th>
-                  <th className="text-right px-4 py-2.5 font-medium text-red-600">Due</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">#</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Student</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Class</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Session</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Fee Group</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-white/50">Total</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-white/50">Paid</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-red-400">Due</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {rows.map((r, i) => (
-                  <tr key={`${r.student.id}-${i}`} className="hover:bg-gray-50">
-                    <td className="px-4 py-2.5 text-gray-400">{i + 1}</td>
+                  <tr key={`${r.student.id}-${i}`} className="hover:bg-[#0f1015]">
+                    <td className="px-4 py-2.5 text-white/30">{i + 1}</td>
                     <td className="px-4 py-2.5">
                       <p className="font-medium">{r.student.firstName} {r.student.lastName}</p>
-                      <p className="text-xs text-gray-400">{r.student.admissionNo}</p>
+                      <p className="text-xs text-white/30">{r.student.admissionNo}</p>
                     </td>
-                    <td className="px-4 py-2.5 text-gray-500">{r.class} {r.section}</td>
-                    <td className="px-4 py-2.5 text-gray-500">{r.session}</td>
-                    <td className="px-4 py-2.5 text-gray-500">{r.feeGroup || "—"}</td>
+                    <td className="px-4 py-2.5 text-white/40">{r.class} {r.section}</td>
+                    <td className="px-4 py-2.5 text-white/40">{r.session}</td>
+                    <td className="px-4 py-2.5 text-white/40">{r.feeGroup || "—"}</td>
                     <td className="px-4 py-2.5 text-right">₵{Number(r.totalFee).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                    <td className="px-4 py-2.5 text-right text-green-600">₵{Number(r.paid).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                    <td className="px-4 py-2.5 text-right font-bold text-red-600">
+                    <td className="px-4 py-2.5 text-right text-emerald-400">₵{Number(r.paid).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                    <td className="px-4 py-2.5 text-right font-bold text-red-400">
                       ₵{Number(r.due).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="border-t bg-gray-50">
+              <tfoot className="border-t bg-[#0f1015]">
                 <tr>
                   <td colSpan={7} className="px-4 py-2.5 text-right font-semibold text-sm">Total Outstanding:</td>
-                  <td className="px-4 py-2.5 text-right font-bold text-red-600">
+                  <td className="px-4 py-2.5 text-right font-bold text-red-400">
                     ₵{totalDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </td>
                 </tr>
@@ -825,7 +825,7 @@ function ExamResultsReport({ examGroups, sessions, classSections, onPrint }: {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border rounded-lg p-4 print:hidden">
+      <div className="bg-[#111318] border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Exam Results Report</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
@@ -861,30 +861,30 @@ function ExamResultsReport({ examGroups, sessions, classSections, onPrint }: {
       </div>
 
       {loading ? <LoadingState /> : !data ? <EmptyState /> : data.rows.length === 0 ? (
-        <div className="text-center py-10 text-gray-400 text-sm">No results found. Ensure marks have been entered for this exam group.</div>
+        <div className="text-center py-10 text-white/30 text-sm">No results found. Ensure marks have been entered for this exam group.</div>
       ) : (
-        <div className="bg-white border rounded-lg overflow-hidden">
+        <div className="bg-[#111318] border rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
-                  <th className="text-left px-3 py-2.5 font-medium text-gray-600">Rank</th>
-                  <th className="text-left px-3 py-2.5 font-medium text-gray-600">Student</th>
+                  <th className="text-left px-3 py-2.5 font-medium text-white/50">Rank</th>
+                  <th className="text-left px-3 py-2.5 font-medium text-white/50">Student</th>
                   {data.subjectNames.map((sub) => (
-                    <th key={sub} className="text-center px-2 py-2.5 font-medium text-gray-600 whitespace-nowrap">{sub}</th>
+                    <th key={sub} className="text-center px-2 py-2.5 font-medium text-white/50 whitespace-nowrap">{sub}</th>
                   ))}
-                  <th className="text-right px-3 py-2.5 font-medium text-gray-600">Total</th>
-                  <th className="text-right px-3 py-2.5 font-medium text-gray-600">%</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-gray-600">Result</th>
+                  <th className="text-right px-3 py-2.5 font-medium text-white/50">Total</th>
+                  <th className="text-right px-3 py-2.5 font-medium text-white/50">%</th>
+                  <th className="text-center px-3 py-2.5 font-medium text-white/50">Result</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {data.rows.map((r) => (
-                  <tr key={r.student.id} className="hover:bg-gray-50">
-                    <td className="px-3 py-2.5 text-center font-bold text-gray-400">#{r.rank}</td>
+                  <tr key={r.student.id} className="hover:bg-[#0f1015]">
+                    <td className="px-3 py-2.5 text-center font-bold text-white/30">#{r.rank}</td>
                     <td className="px-3 py-2.5">
                       <p className="font-medium">{r.student.firstName} {r.student.lastName}</p>
-                      <p className="text-xs text-gray-400">{r.student.admissionNo}</p>
+                      <p className="text-xs text-white/30">{r.student.admissionNo}</p>
                     </td>
                     {data.subjectNames.map((sub) => {
                       const s = r.subjects[sub];
@@ -892,11 +892,11 @@ function ExamResultsReport({ examGroups, sessions, classSections, onPrint }: {
                         <td key={sub} className="text-center px-2 py-2.5">
                           {s ? (
                             s.attendance !== "P" ? (
-                              <span className="text-xs text-gray-400">AB</span>
+                              <span className="text-xs text-white/30">AB</span>
                             ) : (
-                              <span className={s.isPassing ? "text-green-700" : "text-red-600"}>
+                              <span className={s.isPassing ? "text-emerald-400" : "text-red-400"}>
                                 {s.obtained}
-                                <span className="text-xs text-gray-400">/{s.full}</span>
+                                <span className="text-xs text-white/30">/{s.full}</span>
                               </span>
                             )
                           ) : "—"}
@@ -908,7 +908,7 @@ function ExamResultsReport({ examGroups, sessions, classSections, onPrint }: {
                     </td>
                     <td className="text-right px-3 py-2.5 font-semibold">{r.percentage}%</td>
                     <td className="text-center px-3 py-2.5">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.passed ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
                         {r.passed ? "Pass" : "Fail"}
                       </span>
                     </td>
@@ -962,7 +962,7 @@ function TransportReport({ onPrint }: { onPrint: () => void }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border rounded-lg p-4 print:hidden">
+      <div className="bg-[#111318] border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Transport Route Report</h3>
         <div className="flex items-center gap-3">
           <Button onClick={generate} disabled={loading} size="sm">
@@ -973,44 +973,44 @@ function TransportReport({ onPrint }: { onPrint: () => void }) {
       </div>
 
       {loading ? <LoadingState /> : routes === null ? <EmptyState /> : routes.length === 0 ? (
-        <div className="text-center py-10 text-gray-400 text-sm">No routes configured.</div>
+        <div className="text-center py-10 text-white/30 text-sm">No routes configured.</div>
       ) : (
         <div className="space-y-4">
           {routes.map((route) => (
-            <div key={route.id} className="bg-white border rounded-lg overflow-hidden">
-              <div className="px-4 py-3 border-b bg-gray-50 flex items-center justify-between">
+            <div key={route.id} className="bg-[#111318] border rounded-lg overflow-hidden">
+              <div className="px-4 py-3 border-b bg-[#0f1015] flex items-center justify-between">
                 <div>
                   <p className="font-semibold">{route.title}</p>
                   {route.vehicle && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-white/40">
                       {route.vehicle.vehicleNo} · {route.vehicle.vehicleModel ?? ""} · Driver: {route.vehicle.driverName ?? "—"}
                     </p>
                   )}
                 </div>
-                <span className="text-sm text-gray-500">{route.studentRoutes.length} student{route.studentRoutes.length !== 1 ? "s" : ""}</span>
+                <span className="text-sm text-white/40">{route.studentRoutes.length} student{route.studentRoutes.length !== 1 ? "s" : ""}</span>
               </div>
               {route.studentRoutes.length > 0 && (
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-[#0f1015] border-b">
                     <tr>
-                      <th className="text-left px-4 py-2 font-medium text-gray-600">#</th>
-                      <th className="text-left px-4 py-2 font-medium text-gray-600">Student</th>
-                      <th className="text-left px-4 py-2 font-medium text-gray-600">Admission</th>
-                      <th className="text-left px-4 py-2 font-medium text-gray-600">Class</th>
-                      <th className="text-left px-4 py-2 font-medium text-gray-600">Pickup Point</th>
+                      <th className="text-left px-4 py-2 font-medium text-white/50">#</th>
+                      <th className="text-left px-4 py-2 font-medium text-white/50">Student</th>
+                      <th className="text-left px-4 py-2 font-medium text-white/50">Admission</th>
+                      <th className="text-left px-4 py-2 font-medium text-white/50">Class</th>
+                      <th className="text-left px-4 py-2 font-medium text-white/50">Pickup Point</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {route.studentRoutes.map((sr: any, i: number) => (
-                      <tr key={sr.student.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-2.5 text-gray-400">{i + 1}</td>
+                      <tr key={sr.student.id} className="hover:bg-[#0f1015]">
+                        <td className="px-4 py-2.5 text-white/30">{i + 1}</td>
                         <td className="px-4 py-2.5 font-medium">{sr.student.firstName} {sr.student.lastName}</td>
-                        <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{sr.student.admissionNo}</td>
-                        <td className="px-4 py-2.5 text-gray-500">
+                        <td className="px-4 py-2.5 font-mono text-xs text-white/40">{sr.student.admissionNo}</td>
+                        <td className="px-4 py-2.5 text-white/40">
                           {sr.student.sessions?.[0]?.classSection?.class?.name ?? "—"}
                           {sr.student.sessions?.[0]?.classSection?.section?.name ? ` – ${sr.student.sessions[0].classSection.section.name}` : ""}
                         </td>
-                        <td className="px-4 py-2.5 text-gray-500">{sr.pickupPoint?.name ?? "—"}</td>
+                        <td className="px-4 py-2.5 text-white/40">{sr.pickupPoint?.name ?? "—"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1067,7 +1067,7 @@ function LibraryReport({ onPrint }: { onPrint: () => void }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border rounded-lg p-4 print:hidden">
+      <div className="bg-[#111318] border rounded-lg p-4 print:hidden">
         <h3 className="font-semibold text-sm mb-3">Library Issue Log</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
@@ -1097,27 +1097,27 @@ function LibraryReport({ onPrint }: { onPrint: () => void }) {
       </div>
 
       {loading ? <LoadingState /> : rows === null ? <EmptyState /> : rows.length === 0 ? (
-        <div className="text-center py-10 text-gray-400 text-sm">No issue records found.</div>
+        <div className="text-center py-10 text-white/30 text-sm">No issue records found.</div>
       ) : (
-        <div className="bg-white border rounded-lg overflow-hidden">
+        <div className="bg-[#111318] border rounded-lg overflow-hidden">
           {overdue > 0 && (
-            <div className="px-4 py-2 bg-amber-50 border-b text-sm text-amber-700">
+            <div className="px-4 py-2 bg-amber-500/10 border-b text-sm text-amber-400">
               {overdue} overdue book{overdue !== 1 ? "s" : ""} not yet returned
             </div>
           )}
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">#</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Book</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Borrower</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Type</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Issued</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Due</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Returned</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Status</th>
-                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">Fine</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">#</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Book</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Borrower</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Type</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Issued</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Due</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Returned</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-white/50">Status</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-white/50">Fine</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -1127,33 +1127,33 @@ function LibraryReport({ onPrint }: { onPrint: () => void }) {
                     ? `${r.student.firstName} ${r.student.lastName}`
                     : r.staff ? `${r.staff.firstName} ${r.staff.lastName}` : "—";
                   return (
-                    <tr key={r.id} className={`hover:bg-gray-50 ${overdueSingle ? "bg-amber-50" : ""}`}>
-                      <td className="px-4 py-2.5 text-gray-400">{i + 1}</td>
+                    <tr key={r.id} className={`hover:bg-[#0f1015] ${overdueSingle ? "bg-amber-500/10" : ""}`}>
+                      <td className="px-4 py-2.5 text-white/30">{i + 1}</td>
                       <td className="px-4 py-2.5">
                         <p className="font-medium">{r.book.title}</p>
-                        <p className="text-xs text-gray-400">#{r.book.bookNo} · {r.book.author ?? ""}</p>
+                        <p className="text-xs text-white/30">#{r.book.bookNo} · {r.book.author ?? ""}</p>
                       </td>
                       <td className="px-4 py-2.5">{borrower}</td>
-                      <td className="px-4 py-2.5 text-gray-500">{r.student ? "Student" : "Staff"}</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-500">{new Date(r.issuedAt).toLocaleDateString()}</td>
-                      <td className={`px-4 py-2.5 text-xs ${overdueSingle ? "text-red-600 font-medium" : "text-gray-500"}`}>
+                      <td className="px-4 py-2.5 text-white/40">{r.student ? "Student" : "Staff"}</td>
+                      <td className="px-4 py-2.5 text-xs text-white/40">{new Date(r.issuedAt).toLocaleDateString()}</td>
+                      <td className={`px-4 py-2.5 text-xs ${overdueSingle ? "text-red-400 font-medium" : "text-white/40"}`}>
                         {new Date(r.dueDate).toLocaleDateString()}
                         {overdueSingle && " ⚠"}
                       </td>
-                      <td className="px-4 py-2.5 text-xs text-gray-500">
+                      <td className="px-4 py-2.5 text-xs text-white/40">
                         {r.returnedAt ? new Date(r.returnedAt).toLocaleDateString() : "—"}
                       </td>
                       <td className="px-4 py-2.5">
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                          r.status === "RETURNED" ? "bg-green-100 text-green-700"
-                            : r.status === "LOST" ? "bg-red-100 text-red-700"
-                            : overdueSingle ? "bg-amber-100 text-amber-700"
-                            : "bg-blue-100 text-blue-700"
+                          r.status === "RETURNED" ? "bg-emerald-500/10 text-emerald-400"
+                            : r.status === "LOST" ? "bg-red-500/10 text-red-400"
+                            : overdueSingle ? "bg-amber-500/10 text-amber-400"
+                            : "bg-blue-500/10 text-blue-400"
                         }`}>
                           {overdueSingle ? "Overdue" : r.status}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5 text-right text-red-600">
+                      <td className="px-4 py-2.5 text-right text-red-400">
                         {r.fine ? `₵${Number(r.fine).toFixed(2)}` : "—"}
                       </td>
                     </tr>

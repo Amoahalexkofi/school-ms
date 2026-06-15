@@ -10,11 +10,11 @@ import { UserCog, Plus, Search, Eye, CreditCard } from "lucide-react";
 type Props = { staff: any[]; departments: any[]; designations: any[] };
 
 const ROLE_STYLE: Record<string, string> = {
-  TEACHER:     "bg-green-100 text-green-700",
-  ADMIN:       "bg-blue-100 text-blue-700",
-  ACCOUNTANT:  "bg-yellow-100 text-yellow-700",
-  LIBRARIAN:   "bg-pink-100 text-pink-700",
-  SUPER_ADMIN: "bg-purple-100 text-purple-700",
+  TEACHER:     "bg-emerald-500/10 text-emerald-400",
+  ADMIN:       "bg-blue-500/10 text-blue-400",
+  ACCOUNTANT:  "bg-amber-500/10 text-amber-400",
+  LIBRARIAN:   "bg-pink-500/10 text-pink-400",
+  SUPER_ADMIN: "bg-violet-500/10 text-violet-400",
 };
 
 export function StaffClient({ staff, departments, designations }: Props) {
@@ -34,7 +34,7 @@ export function StaffClient({ staff, departments, designations }: Props) {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
             <Input
               className="pl-9 w-64"
               placeholder="Search staff…"
@@ -43,7 +43,7 @@ export function StaffClient({ staff, departments, designations }: Props) {
             />
           </div>
           <select
-            className="h-9 rounded-md border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="h-9 rounded-md border border-white/[0.06] bg-[#111318] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={filterDept}
             onChange={e => setFilterDept(e.target.value)}
           >
@@ -52,7 +52,7 @@ export function StaffClient({ staff, departments, designations }: Props) {
               <option key={d.id} value={d.id}>{d.name}</option>
             ))}
           </select>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-white/40">
             {filtered.length} member{filtered.length !== 1 ? "s" : ""}
           </span>
         </div>
@@ -74,38 +74,38 @@ export function StaffClient({ staff, departments, designations }: Props) {
       <Card>
         <CardContent className="p-0">
           {filtered.length === 0 ? (
-            <div className="py-16 text-center text-gray-400">
+            <div className="py-16 text-center text-white/30">
               <UserCog className="h-10 w-10 mx-auto mb-2 opacity-30" />
               <p className="text-sm">No staff found.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-[#0f1015] border-b">
                   <tr>
                     {["Employee ID", "Name", "Role", "Department", "Designation", "Contact", "Status", ""].map(h => (
-                      <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {filtered.map((s: any) => (
-                    <tr key={s.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.employeeId}</td>
+                    <tr key={s.id} className="hover:bg-[#0f1015]">
+                      <td className="px-4 py-3 font-mono text-xs text-white/40">{s.employeeId}</td>
                       <td className="px-4 py-3">
                         <div className="font-medium">{s.firstName} {s.lastName}</div>
-                        <div className="text-xs text-gray-400">{s.user?.email}</div>
+                        <div className="text-xs text-white/30">{s.user?.email}</div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ROLE_STYLE[s.user?.role] ?? "bg-gray-100 text-gray-600"}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ROLE_STYLE[s.user?.role] ?? "bg-white/[0.04] text-white/50"}`}>
                           {s.user?.role?.replace(/_/g, " ") ?? "—"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{s.department?.name ?? "—"}</td>
-                      <td className="px-4 py-3 text-gray-600">{s.designation?.name ?? "—"}</td>
-                      <td className="px-4 py-3 text-gray-500">{s.contactNo ?? "—"}</td>
+                      <td className="px-4 py-3 text-white/50">{s.department?.name ?? "—"}</td>
+                      <td className="px-4 py-3 text-white/50">{s.designation?.name ?? "—"}</td>
+                      <td className="px-4 py-3 text-white/40">{s.contactNo ?? "—"}</td>
                       <td className="px-4 py-3">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.isActive ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
                           {s.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>

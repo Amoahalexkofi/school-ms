@@ -67,9 +67,9 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+    <main className="flex-1 p-6 space-y-5 bg-[#0f1015]">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <Link href="/exams" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
+        <Link href="/exams" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors">
           <ArrowLeft className="h-4 w-4" /> All Exam Groups
         </Link>
         <div className="flex gap-2">
@@ -88,20 +88,20 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
       </div>
 
       {/* Group info */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-4">
+      <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-4 flex items-center gap-4">
         <div className="flex-1">
-          <h2 className="text-base font-semibold text-gray-900">{group.name}</h2>
-          {group.examType && <p className="text-xs text-gray-400 mt-0.5">{group.examType.replace(/_/g, " ")}</p>}
-          {group.description && <p className="text-sm text-gray-500 mt-1">{group.description}</p>}
+          <h2 className="text-base font-semibold text-white/80">{group.name}</h2>
+          {group.examType && <p className="text-xs text-white/30 mt-0.5">{group.examType.replace(/_/g, " ")}</p>}
+          {group.description && <p className="text-sm text-white/40 mt-1">{group.description}</p>}
         </div>
-        <span className={`text-xs px-3 py-1 rounded-full font-medium ${group.isPublished ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+        <span className={`text-xs px-3 py-1 rounded-full font-medium ${group.isPublished ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-400"}`}>
           {group.isPublished ? "Published" : "Draft"}
         </span>
       </div>
 
       {/* Schedules */}
       {group.schedules.length === 0 ? (
-        <Card><CardContent className="py-14 text-center text-gray-400">
+        <Card><CardContent className="py-14 text-center text-white/30">
           <p className="text-sm">No schedules yet. Add subjects to this exam group.</p>
         </CardContent></Card>
       ) : (
@@ -113,45 +113,45 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
           return (
             <Card key={csId}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold text-gray-800">{csLabel}</CardTitle>
+                <CardTitle className="text-sm font-semibold text-white/70">{csLabel}</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-t border-b">
+                  <thead className="bg-[#0f1015] border-t border-b">
                     <tr>
                       {["Subject", "Session", "Date", "Time", "Full Marks", "Pass Marks", "Entries", ""].map(h => (
-                        <th key={h} className="text-left px-4 py-2.5 font-medium text-gray-600">{h}</th>
+                        <th key={h} className="text-left px-4 py-2.5 font-medium text-white/50">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {schedules.map((sch: any) => (
-                      <tr key={sch.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 font-medium text-gray-900">
+                      <tr key={sch.id} className="hover:bg-[#0f1015]">
+                        <td className="px-4 py-3 font-medium text-white/80">
                           {sch.subject.name}
-                          <span className="text-xs text-gray-400 ml-1.5 font-mono">({sch.subject.code})</span>
+                          <span className="text-xs text-white/30 ml-1.5 font-mono">({sch.subject.code})</span>
                         </td>
-                        <td className="px-4 py-3 text-gray-500 text-xs">{sch.session.session}</td>
-                        <td className="px-4 py-3 text-gray-600 text-xs">
+                        <td className="px-4 py-3 text-white/40 text-xs">{sch.session.session}</td>
+                        <td className="px-4 py-3 text-white/50 text-xs">
                           {sch.dateOfExam ? new Date(sch.dateOfExam).toLocaleDateString() : "—"}
                         </td>
-                        <td className="px-4 py-3 text-gray-500 text-xs">
+                        <td className="px-4 py-3 text-white/40 text-xs">
                           {sch.startTime ? `${sch.startTime}–${sch.endTime ?? ""}` : "—"}
                         </td>
                         <td className="px-4 py-3 text-center font-medium">{sch.fullMarks}</td>
-                        <td className="px-4 py-3 text-center text-gray-500">{sch.passingMarks}</td>
+                        <td className="px-4 py-3 text-center text-white/40">{sch.passingMarks}</td>
                         <td className="px-4 py-3 text-center">
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${sch._count.markEntries > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${sch._count.markEntries > 0 ? "bg-emerald-500/10 text-emerald-400" : "bg-white/[0.04] text-white/40"}`}>
                             {sch._count.markEntries}
                           </span>
                         </td>
                         <td className="px-4 py-3 flex gap-2 justify-end">
                           <Link href={`/exams/${group.id}/marks/${sch.id}`}>
-                            <Button size="sm" variant="outline" className="text-indigo-600 border-indigo-200 hover:bg-indigo-50">
+                            <Button size="sm" variant="outline" className="text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/10">
                               <ClipboardEdit className="h-3.5 w-3.5 mr-1" /> Marks
                             </Button>
                           </Link>
-                          <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
+                          <Button size="sm" variant="outline" className="text-red-400 border-red-500/20 hover:bg-red-500/10"
                             onClick={() => handleDeleteSchedule(sch.id)}>
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
@@ -172,15 +172,15 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
           <DialogHeader><DialogTitle>Add Exam Schedule</DialogTitle></DialogHeader>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Session *</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-white/60 mb-1">Session *</label>
+              <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.sessionId} onChange={set("sessionId")}>
                 {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Class / Section *</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-white/60 mb-1">Class / Section *</label>
+              <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.classSectionId} onChange={set("classSectionId")}>
                 <option value="">— Select —</option>
                 {classSections.map((cs: any) => (
@@ -189,39 +189,39 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
               </select>
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-white/60 mb-1">Subject *</label>
+              <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.subjectId} onChange={set("subjectId")}>
                 <option value="">— Select subject —</option>
                 {subjects.map((s: any) => <option key={s.id} value={s.id}>{s.name} ({s.code})</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date of Exam</label>
+              <label className="block text-sm font-medium text-white/60 mb-1">Date of Exam</label>
               <Input type="date" value={form.dateOfExam} onChange={set("dateOfExam")} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Room No.</label>
+              <label className="block text-sm font-medium text-white/60 mb-1">Room No.</label>
               <Input value={form.roomNo} onChange={set("roomNo")} placeholder="Optional" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+              <label className="block text-sm font-medium text-white/60 mb-1">Start Time</label>
               <Input type="time" value={form.startTime} onChange={set("startTime")} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+              <label className="block text-sm font-medium text-white/60 mb-1">End Time</label>
               <Input type="time" value={form.endTime} onChange={set("endTime")} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Marks *</label>
+              <label className="block text-sm font-medium text-white/60 mb-1">Full Marks *</label>
               <Input type="number" min="1" value={form.fullMarks} onChange={set("fullMarks")} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Passing Marks *</label>
+              <label className="block text-sm font-medium text-white/60 mb-1">Passing Marks *</label>
               <Input type="number" min="1" value={form.passingMarks} onChange={set("passingMarks")} />
             </div>
           </div>
-          {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
+          {error && <p className="text-sm text-red-400 mt-1">{error}</p>}
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
             <Button disabled={loading} onClick={handleAdd}>{loading ? "Adding…" : "Add Schedule"}</Button>

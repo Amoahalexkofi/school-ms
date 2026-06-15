@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Plus, Pencil, Trash2, GraduationCap, Calendar, X, User, Send, Mail } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type AlumniRecord = {
   id: string;
@@ -143,17 +143,17 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
     <main className="flex-1 p-6 space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Total Alumni</p><p className="text-3xl font-bold">{alumni.length}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">This Year</p><p className="text-3xl font-bold">{alumni.filter(a => new Date(a.createdAt).getFullYear() === new Date().getFullYear()).length}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Male</p><p className="text-3xl font-bold">{alumni.filter(a => a.student.gender === "Male").length}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Female</p><p className="text-3xl font-bold">{alumni.filter(a => a.student.gender === "Female").length}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-white/40 mb-1">Total Alumni</p><p className="text-3xl font-bold">{alumni.length}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-white/40 mb-1">This Year</p><p className="text-3xl font-bold">{alumni.filter(a => new Date(a.createdAt).getFullYear() === new Date().getFullYear()).length}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-white/40 mb-1">Male</p><p className="text-3xl font-bold">{alumni.filter(a => a.student.gender === "Male").length}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-white/40 mb-1">Female</p><p className="text-3xl font-bold">{alumni.filter(a => a.student.gender === "Female").length}</p></CardContent></Card>
       </div>
 
       {/* Toolbar */}
       <div className="flex flex-wrap gap-3 items-end justify-between">
         <div className="flex flex-wrap gap-3 items-end">
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/30" />
             <Input placeholder="Search by name or admission no…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 w-56" />
           </div>
           <div>
@@ -174,7 +174,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
         <div className="flex gap-2">
           <Button variant="outline" onClick={openMail}>
             <Mail className="h-4 w-4 mr-1" /> Mail Alumni
-            {(filterSession || filterClass) && <span className="ml-1.5 text-xs bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">{mailLabel}</span>}
+            {(filterSession || filterClass) && <span className="ml-1.5 text-xs bg-indigo-500/10 text-indigo-400 px-1.5 py-0.5 rounded">{mailLabel}</span>}
           </Button>
           <Link href="/alumni/events">
             <Button variant="outline"><Calendar className="h-4 w-4 mr-1" /> Events</Button>
@@ -185,15 +185,15 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
 
       {/* Mail Alumni compose panel */}
       {showMail && (
-        <Card className="border-indigo-200 bg-indigo-50/30">
+        <Card className="border-indigo-500/20 bg-indigo-500/[0.05]">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm text-indigo-800 flex items-center gap-2">
+              <CardTitle className="text-sm text-indigo-300 flex items-center gap-2">
                 <Send className="h-4 w-4" />
                 Mail Alumni
-                <span className="font-normal text-indigo-500">— {mailLabel} ({filtered.length} recipients)</span>
+                <span className="font-normal text-indigo-400">— {mailLabel} ({filtered.length} recipients)</span>
               </CardTitle>
-              <button onClick={() => setShowMail(false)}><X className="h-4 w-4 text-gray-400" /></button>
+              <button onClick={() => setShowMail(false)}><X className="h-4 w-4 text-white/30" /></button>
             </div>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -204,7 +204,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
             <div className="md:col-span-2">
               <Label>Message *</Label>
               <textarea
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-white/[0.08] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 rows={4}
                 value={mail.message}
                 onChange={e => setM("message", e.target.value)}
@@ -232,11 +232,11 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
 
       {/* Add / Edit form */}
       {showForm && (
-        <Card className="border-blue-200 bg-blue-50/30">
+        <Card className="border-blue-500/20 bg-blue-500/10/30">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm text-blue-800">{editing ? "Edit Alumni Record" : "Add Alumni"}</CardTitle>
-              <button onClick={() => setShowForm(false)}><X className="h-4 w-4 text-gray-400" /></button>
+              <CardTitle className="text-sm text-blue-300">{editing ? "Edit Alumni Record" : "Add Alumni"}</CardTitle>
+              <button onClick={() => setShowForm(false)}><X className="h-4 w-4 text-white/30" /></button>
             </div>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -251,7 +251,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-gray-400 mt-1">Shows inactive students eligible to be promoted to alumni</p>
+                <p className="text-xs text-white/30 mt-1">Shows inactive students eligible to be promoted to alumni</p>
               </div>
             )}
             <div>
@@ -280,7 +280,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
 
       {/* Alumni table */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400 border-2 border-dashed rounded-lg">
+        <div className="text-center py-16 text-white/30 border-2 border-dashed rounded-lg">
           <GraduationCap className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p className="font-medium">No alumni records yet</p>
           <p className="text-sm mt-1">Click "Add Alumni" to mark a student as an alumnus</p>
@@ -290,47 +290,47 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-[#0f1015] border-b">
                   <tr>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Admission No</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Name</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Class</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Session</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Gender</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Current Email</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Current Phone</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Occupation</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
+                    <th className="text-left px-4 py-3 font-medium text-white/50">#</th>
+                    <th className="text-left px-4 py-3 font-medium text-white/50">Admission No</th>
+                    <th className="text-left px-4 py-3 font-medium text-white/50">Name</th>
+                    <th className="text-left px-4 py-3 font-medium text-white/50">Class</th>
+                    <th className="text-left px-4 py-3 font-medium text-white/50">Session</th>
+                    <th className="text-left px-4 py-3 font-medium text-white/50">Gender</th>
+                    <th className="text-left px-4 py-3 font-medium text-white/50">Current Email</th>
+                    <th className="text-left px-4 py-3 font-medium text-white/50">Current Phone</th>
+                    <th className="text-left px-4 py-3 font-medium text-white/50">Occupation</th>
+                    <th className="text-right px-4 py-3 font-medium text-white/50">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {filtered.map((a, i) => {
                     const sess = a.student.sessions?.[0];
                     return (
-                      <tr key={a.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-gray-400">{i + 1}</td>
+                      <tr key={a.id} className="hover:bg-[#0f1015]">
+                        <td className="px-4 py-3 text-white/30">{i + 1}</td>
                         <td className="px-4 py-3 font-mono text-xs">{a.student.admissionNo}</td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
-                              <User className="h-3.5 w-3.5 text-indigo-600" />
+                            <div className="w-7 h-7 bg-indigo-500/10 rounded-full flex items-center justify-center shrink-0">
+                              <User className="h-3.5 w-3.5 text-indigo-400" />
                             </div>
-                            <Link href={`/alumni/${a.id}`} className="font-medium text-blue-600 hover:underline">
+                            <Link href={`/alumni/${a.id}`} className="font-medium text-blue-400 hover:underline">
                               {a.student.firstName} {a.student.lastName}
                             </Link>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-gray-600">{sess?.classSection?.class?.name ?? "—"}</td>
-                        <td className="px-4 py-3 text-gray-500 text-xs">{sess?.session?.session ?? "—"}</td>
-                        <td className="px-4 py-3 text-gray-500">{a.student.gender ?? "—"}</td>
-                        <td className="px-4 py-3 text-gray-600">{a.currentEmail || "—"}</td>
-                        <td className="px-4 py-3 text-gray-600">{a.currentPhone || "—"}</td>
-                        <td className="px-4 py-3 text-gray-500">{a.occupation || "—"}</td>
+                        <td className="px-4 py-3 text-white/50">{sess?.classSection?.class?.name ?? "—"}</td>
+                        <td className="px-4 py-3 text-white/40 text-xs">{sess?.session?.session ?? "—"}</td>
+                        <td className="px-4 py-3 text-white/40">{a.student.gender ?? "—"}</td>
+                        <td className="px-4 py-3 text-white/50">{a.currentEmail || "—"}</td>
+                        <td className="px-4 py-3 text-white/50">{a.currentPhone || "—"}</td>
+                        <td className="px-4 py-3 text-white/40">{a.occupation || "—"}</td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex gap-1 justify-end">
                             <Button size="sm" variant="ghost" onClick={() => openEdit(a)}><Pencil className="h-3.5 w-3.5" /></Button>
-                            <Button size="sm" variant="ghost" onClick={() => del(a.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>
+                            <Button size="sm" variant="ghost" onClick={() => del(a.id)} className="text-red-400 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></Button>
                           </div>
                         </td>
                       </tr>

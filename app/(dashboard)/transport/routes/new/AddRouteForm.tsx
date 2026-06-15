@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type Props = { vehicles: any[] };
 
@@ -45,7 +45,7 @@ export function AddRouteForm({ vehicles }: Props) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto w-full">
-      <Link href="/transport" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-6">
+      <Link href="/transport" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60 mb-6">
         <ArrowLeft className="h-3.5 w-3.5" /> Back
       </Link>
       <form onSubmit={handleSubmit} className="space-y-6">

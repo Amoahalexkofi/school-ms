@@ -95,19 +95,19 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-gray-50">
-      <Link href="/fees" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
+    <main className="flex-1 p-6 space-y-5 bg-[#0f1015]">
+      <Link href="/fees" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors">
         <ArrowLeft className="h-4 w-4" /> Back to Fees
       </Link>
 
       {/* Filter form */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-gray-800">Assign Discount to Students</h2>
+      <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-5 space-y-4">
+        <h2 className="text-sm font-semibold text-white/70">Assign Discount to Students</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Discount *</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <label className="block text-sm font-medium text-white/60 mb-1">Discount *</label>
+            <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={discountId} onChange={e => { setDiscountId(e.target.value); setSearched(false); setRows([]); }}>
               <option value="">— Select discount —</option>
               {discounts.map((d: any) => (
@@ -119,16 +119,16 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Session *</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <label className="block text-sm font-medium text-white/60 mb-1">Session *</label>
+            <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={sessionId} onChange={e => { setSessionId(e.target.value); setSearched(false); setRows([]); }}>
               {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Class / Section *</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <label className="block text-sm font-medium text-white/60 mb-1">Class / Section *</label>
+            <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={classSectionId} onChange={e => { setClassSectionId(e.target.value); setSearched(false); setRows([]); }}>
               <option value="">— Select class —</option>
               {classSections.map((cs: any) => (
@@ -146,7 +146,7 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
         </div>
 
         {selectedDiscount && (
-          <p className="text-xs text-blue-600">
+          <p className="text-xs text-blue-400">
             {selectedDiscount.name} — {selectedDiscount.type === "percentage"
               ? `${selectedDiscount.percentage}% off`
               : `₵${Number(selectedDiscount.amount).toLocaleString()} fixed`}
@@ -157,21 +157,21 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
 
       {/* Feedback */}
       {error && (
-        <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+        <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
           <AlertCircle className="h-4 w-4 shrink-0" /> {error}
         </div>
       )}
       {success && (
-        <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+        <div className="flex items-center gap-2 text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
           <CheckCircle2 className="h-4 w-4 shrink-0" /> {success}
         </div>
       )}
 
       {/* Student table */}
       {searched && (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
-            <p className="text-sm font-medium text-gray-700">
+        <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b bg-[#0f1015]">
+            <p className="text-sm font-medium text-white/60">
               {rows.length} student{rows.length !== 1 ? "s" : ""} found
               {rows.length > 0 && ` · ${checked.size} selected`}
             </p>
@@ -183,17 +183,17 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
           </div>
 
           {rows.length === 0 ? (
-            <p className="px-4 py-10 text-center text-sm text-gray-400">No active students found in this class/session.</p>
+            <p className="px-4 py-10 text-center text-sm text-white/30">No active students found in this class/session.</p>
           ) : (
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-[#0f1015] border-b">
                 <tr>
                   <th className="px-4 py-3 w-10">
                     <input type="checkbox" checked={checked.size === rows.length} onChange={toggleAll}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                      className="rounded border-white/[0.08] text-blue-400 focus:ring-blue-500" />
                   </th>
                   {["Admission No", "Name", "Roll No", "Status"].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -201,24 +201,24 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
                 {rows.map((row) => {
                   const isChecked = checked.has(row.studentSessionId);
                   return (
-                    <tr key={row.studentSessionId} className="hover:bg-gray-50 cursor-pointer"
+                    <tr key={row.studentSessionId} className="hover:bg-[#0f1015] cursor-pointer"
                       onClick={() => toggleRow(row.studentSessionId)}>
                       <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                         <input type="checkbox" checked={isChecked} onChange={() => toggleRow(row.studentSessionId)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                          className="rounded border-white/[0.08] text-blue-400 focus:ring-blue-500" />
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{row.student.admissionNo}</td>
-                      <td className="px-4 py-3 font-medium text-gray-900">
+                      <td className="px-4 py-3 font-mono text-xs text-white/40">{row.student.admissionNo}</td>
+                      <td className="px-4 py-3 font-medium text-white/80">
                         {row.student.firstName} {row.student.lastName}
                       </td>
-                      <td className="px-4 py-3 text-gray-500">{row.rollNo ?? "—"}</td>
+                      <td className="px-4 py-3 text-white/40">{row.rollNo ?? "—"}</td>
                       <td className="px-4 py-3">
                         {row.assigned ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400">
                             Assigned
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-white/[0.04] text-white/40">
                             Not assigned
                           </span>
                         )}

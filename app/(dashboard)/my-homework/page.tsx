@@ -28,7 +28,7 @@ export default async function MyHomeworkPage() {
       <div className="flex flex-col flex-1">
         <Topbar title="My Homework" />
         <main className="flex-1 p-6 flex items-center justify-center">
-          <p className="text-gray-400">No active enrollment found.</p>
+          <p className="text-white/30">No active enrollment found.</p>
         </main>
       </div>
     );
@@ -63,7 +63,7 @@ export default async function MyHomeworkPage() {
         {/* Header */}
         <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-white">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-[#111318]/20 rounded-xl flex items-center justify-center">
               <CheckSquare className="h-6 w-6" />
             </div>
             <div>
@@ -75,7 +75,7 @@ export default async function MyHomeworkPage() {
           </div>
           <div className="grid grid-cols-3 gap-3">
             {[{ l: "Pending", v: pending.length, col: "text-white" }, { l: "Submitted", v: submitted.length, col: "text-emerald-300" }, { l: "Overdue", v: overdue.length, col: overdue.length > 0 ? "text-rose-300" : "text-white" }].map(s => (
-              <div key={s.l} className="bg-white/15 rounded-xl p-3 text-center">
+              <div key={s.l} className="bg-[#111318]/15 rounded-xl p-3 text-center">
                 <p className={`text-2xl font-black ${s.col}`}>{s.v}</p>
                 <p className="text-xs text-white/70 mt-0.5">{s.l}</p>
               </div>
@@ -99,9 +99,9 @@ export default async function MyHomeworkPage() {
         )}
 
         {homework.length === 0 && (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-            <BookOpen className="h-10 w-10 mx-auto text-gray-300 mb-3" />
-            <p className="text-gray-500 font-medium">No homework assigned yet</p>
+          <div className="text-center py-16 bg-[#111318] rounded-2xl border border-white/[0.04]">
+            <BookOpen className="h-10 w-10 mx-auto text-white/30 mb-3" />
+            <p className="text-white/40 font-medium">No homework assigned yet</p>
           </div>
         )}
       </main>
@@ -113,18 +113,18 @@ function HomeworkList({ title, items, variant, studentId }: {
   title: string; items: any[]; variant: "pending" | "submitted" | "overdue"; studentId: string;
 }) {
   const colors = {
-    pending:   { dot: "bg-amber-500",  badge: "bg-amber-50 text-amber-700",  heading: "text-amber-700" },
-    submitted: { dot: "bg-emerald-500",badge: "bg-emerald-50 text-emerald-700", heading: "text-emerald-700" },
-    overdue:   { dot: "bg-rose-500",   badge: "bg-rose-50 text-rose-700",    heading: "text-rose-700" },
+    pending:   { dot: "bg-amber-500",  badge: "bg-amber-500/10 text-amber-400",  heading: "text-amber-400" },
+    submitted: { dot: "bg-emerald-500",badge: "bg-emerald-500/10 text-emerald-400", heading: "text-emerald-400" },
+    overdue:   { dot: "bg-rose-500",   badge: "bg-rose-500/10 text-rose-400",    heading: "text-rose-400" },
   };
   const c = colors[variant];
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b bg-gray-50">
+    <div className="bg-[#111318] rounded-2xl border border-white/[0.04] overflow-hidden">
+      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b bg-[#0f1015]">
         <div className={`w-2 h-2 rounded-full ${c.dot}`} />
         <p className={`font-bold text-sm ${c.heading}`}>{title}</p>
-        <span className="ml-auto text-xs text-gray-400">{items.length} item{items.length !== 1 ? "s" : ""}</span>
+        <span className="ml-auto text-xs text-white/30">{items.length} item{items.length !== 1 ? "s" : ""}</span>
       </div>
       <div className="divide-y">
         {items.map((h: any) => {
@@ -134,13 +134,13 @@ function HomeworkList({ title, items, variant, studentId }: {
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
+                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">
                       {h.subject?.name}
                     </span>
                   </div>
-                  <p className="text-sm font-bold text-gray-900">{h.homeworkTitle ?? h.description?.slice(0, 80)}</p>
-                  {h.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{h.description}</p>}
-                  <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                  <p className="text-sm font-bold text-white/80">{h.homeworkTitle ?? h.description?.slice(0, 80)}</p>
+                  {h.description && <p className="text-xs text-white/40 mt-1 line-clamp-2">{h.description}</p>}
+                  <div className="flex items-center gap-3 mt-2 text-xs text-white/30">
                     <span>Assigned: {new Date(h.homeworkDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
                     <span>·</span>
                     <span className={variant === "overdue" ? "text-rose-500 font-bold" : ""}>
@@ -149,8 +149,8 @@ function HomeworkList({ title, items, variant, studentId }: {
                     {h.staff && <span>· By {h.staff.firstName} {h.staff.lastName}</span>}
                   </div>
                   {sub?.remarks && (
-                    <div className="mt-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-1.5">
-                      <p className="text-xs text-emerald-700"><span className="font-bold">Teacher feedback:</span> {sub.remarks}</p>
+                    <div className="mt-2 bg-emerald-500/10 border border-emerald-500/15 rounded-lg px-3 py-1.5">
+                      <p className="text-xs text-emerald-400"><span className="font-bold">Teacher feedback:</span> {sub.remarks}</p>
                     </div>
                   )}
                 </div>

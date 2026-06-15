@@ -193,8 +193,8 @@ export function OnboardingClient({ profile }: Props) {
           <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-2xl mb-3 shadow-lg">
             <GraduationCap className="h-6 w-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome to Skula</h1>
-          <p className="text-gray-500 text-sm mt-1">Let's get your school set up in 4 quick steps</p>
+          <h1 className="text-2xl font-bold text-white/80">Welcome to Skula</h1>
+          <p className="text-white/40 text-sm mt-1">Let's get your school set up in 4 quick steps</p>
         </div>
 
         {/* Progress */}
@@ -210,15 +210,15 @@ export function OnboardingClient({ profile }: Props) {
                     <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
                       done    ? "bg-blue-600 text-white" :
                       current ? "bg-blue-600 text-white ring-4 ring-blue-100" :
-                                "bg-gray-100 text-gray-400"
+                                "bg-white/[0.04] text-white/30"
                     }`}>
                       {done ? <CheckCircle2 className="h-5 w-5" /> : <Icon className="h-4 w-4" />}
                     </div>
-                    <span className={`text-xs mt-1 font-medium whitespace-nowrap ${current ? "text-blue-600" : done ? "text-gray-600" : "text-gray-400"}`}>
+                    <span className={`text-xs mt-1 font-medium whitespace-nowrap ${current ? "text-blue-400" : done ? "text-white/50" : "text-white/30"}`}>
                       {s.label}
                     </span>
                   </div>
-                  {i < 3 && <div className={`flex-1 h-0.5 mx-2 mb-5 ${i < step ? "bg-blue-600" : "bg-gray-200"}`} />}
+                  {i < 3 && <div className={`flex-1 h-0.5 mx-2 mb-5 ${i < step ? "bg-blue-600" : "bg-white/[0.06]"}`} />}
                 </div>
               );
             })}
@@ -226,35 +226,35 @@ export function OnboardingClient({ profile }: Props) {
         )}
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-7">
+        <div className="bg-[#111318] rounded-2xl shadow-sm border border-white/[0.06] p-7">
 
           {/* ── Step 0: Profile ── */}
           {step === 0 && (
             <div className="space-y-5">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">School Profile</h2>
-                <p className="text-sm text-gray-500 mt-0.5">Basic information about your school</p>
+                <h2 className="text-lg font-semibold text-white/80">School Profile</h2>
+                <p className="text-sm text-white/40 mt-0.5">Basic information about your school</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">School Name *</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">School Name *</label>
                   <Input value={profileForm.name} onChange={e => setProfileForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Lincoln International School" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">Phone</label>
                   <Input value={profileForm.phone} onChange={e => setProfileForm(f => ({ ...f, phone: e.target.value }))} placeholder="+233 XX XXX XXXX" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">Email</label>
                   <Input type="email" value={profileForm.email} onChange={e => setProfileForm(f => ({ ...f, email: e.target.value }))} placeholder="info@school.edu.gh" />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">Address</label>
                   <Input value={profileForm.address} onChange={e => setProfileForm(f => ({ ...f, address: e.target.value }))} placeholder="School street address" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-                  <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <label className="block text-sm font-medium text-white/60 mb-1">Currency</label>
+                  <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={profileForm.currency} onChange={e => setProfileForm(f => ({ ...f, currency: e.target.value }))}>
                     <option value="GHS">GHS — Ghana Cedi</option>
                     <option value="NGN">NGN — Nigerian Naira</option>
@@ -265,7 +265,7 @@ export function OnboardingClient({ profile }: Props) {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">School Motto</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">School Motto</label>
                   <Input value={profileForm.motto} onChange={e => setProfileForm(f => ({ ...f, motto: e.target.value }))} placeholder="Optional" />
                 </div>
               </div>
@@ -276,21 +276,21 @@ export function OnboardingClient({ profile }: Props) {
           {step === 1 && (
             <div className="space-y-5">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Academic Session</h2>
-                <p className="text-sm text-gray-500 mt-0.5">Create your first academic year / term</p>
+                <h2 className="text-lg font-semibold text-white/80">Academic Session</h2>
+                <p className="text-sm text-white/40 mt-0.5">Create your first academic year / term</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Session Name *</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">Session Name *</label>
                   <Input value={sessionForm.session} onChange={e => setSessionForm(f => ({ ...f, session: e.target.value }))} placeholder="e.g. 2025/2026" />
-                  <p className="text-xs text-gray-400 mt-1">This will be set as your current active session</p>
+                  <p className="text-xs text-white/30 mt-1">This will be set as your current active session</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">Start Date</label>
                   <Input type="date" value={sessionForm.startDate} onChange={e => setSessionForm(f => ({ ...f, startDate: e.target.value }))} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">End Date</label>
                   <Input type="date" value={sessionForm.endDate} onChange={e => setSessionForm(f => ({ ...f, endDate: e.target.value }))} />
                 </div>
               </div>
@@ -301,13 +301,13 @@ export function OnboardingClient({ profile }: Props) {
           {step === 2 && (
             <div className="space-y-5">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Classes & Sections</h2>
-                <p className="text-sm text-gray-500 mt-0.5">Pick a template or customise your class structure</p>
+                <h2 className="text-lg font-semibold text-white/80">Classes & Sections</h2>
+                <p className="text-sm text-white/40 mt-0.5">Pick a template or customise your class structure</p>
               </div>
 
               {/* Preset buttons */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">School Type</label>
+                <label className="block text-sm font-medium text-white/60 mb-2">School Type</label>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { key: "primary",     label: "Primary (1–6)" },
@@ -318,7 +318,7 @@ export function OnboardingClient({ profile }: Props) {
                   ].map(p => (
                     <button key={p.key} onClick={() => applyPreset(p.key)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
-                        selectedPreset === p.key ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-300 hover:border-blue-400"
+                        selectedPreset === p.key ? "bg-blue-600 text-white border-blue-600" : "bg-[#111318] text-white/50 border-white/[0.08] hover:border-blue-400"
                       }`}>
                       {p.label}
                     </button>
@@ -328,10 +328,10 @@ export function OnboardingClient({ profile }: Props) {
 
               {/* Classes */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Classes ({classes.length})</label>
+                <label className="block text-sm font-medium text-white/60 mb-2">Classes ({classes.length})</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {classes.map(c => (
-                    <span key={c} className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                    <span key={c} className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-500/10 text-blue-400 rounded-full text-xs font-medium">
                       {c}
                       <button onClick={() => removeItem(classes, setClasses, c)} className="hover:text-red-500"><X className="h-3 w-3" /></button>
                     </span>
@@ -348,10 +348,10 @@ export function OnboardingClient({ profile }: Props) {
 
               {/* Sections */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Sections per class</label>
+                <label className="block text-sm font-medium text-white/60 mb-2">Sections per class</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {sections.map(s => (
-                    <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1 bg-violet-50 text-violet-700 rounded-full text-xs font-medium">
+                    <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1 bg-violet-500/10 text-violet-400 rounded-full text-xs font-medium">
                       {s}
                       <button onClick={() => removeItem(sections, setSections, s)} className="hover:text-red-500"><X className="h-3 w-3" /></button>
                     </span>
@@ -364,7 +364,7 @@ export function OnboardingClient({ profile }: Props) {
                     <Plus className="h-3.5 w-3.5" />
                   </Button>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">Each class above will get all these sections</p>
+                <p className="text-xs text-white/30 mt-1">Each class above will get all these sections</p>
               </div>
             </div>
           )}
@@ -373,16 +373,16 @@ export function OnboardingClient({ profile }: Props) {
           {step === 3 && (
             <div className="space-y-5">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Subjects</h2>
-                <p className="text-sm text-gray-500 mt-0.5">Add your core subjects — you can always add more later</p>
+                <h2 className="text-lg font-semibold text-white/80">Subjects</h2>
+                <p className="text-sm text-white/40 mt-0.5">Add your core subjects — you can always add more later</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Quick add</label>
+                <label className="block text-sm font-medium text-white/60 mb-2">Quick add</label>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {SUBJECT_PRESETS.map(s => (
                     <button key={s} onClick={() => subjects.includes(s) ? removeItem(subjects, setSubjects, s) : setSubjects([...subjects, s])}
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                        subjects.includes(s) ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-300 hover:border-blue-400"
+                        subjects.includes(s) ? "bg-blue-600 text-white border-blue-600" : "bg-[#111318] text-white/50 border-white/[0.08] hover:border-blue-400"
                       }`}>
                       {s}
                     </button>
@@ -390,10 +390,10 @@ export function OnboardingClient({ profile }: Props) {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Selected ({subjects.length})</label>
+                <label className="block text-sm font-medium text-white/60 mb-2">Selected ({subjects.length})</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {subjects.filter(s => !SUBJECT_PRESETS.includes(s)).map(s => (
-                    <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium">
+                    <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-xs font-medium">
                       {s}
                       <button onClick={() => removeItem(subjects, setSubjects, s)} className="hover:text-red-500"><X className="h-3 w-3" /></button>
                     </span>
@@ -413,18 +413,18 @@ export function OnboardingClient({ profile }: Props) {
           {/* ── Step 4: Done ── */}
           {step === 4 && (
             <div className="text-center py-6 space-y-5">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full">
-                <CheckCircle2 className="h-9 w-9 text-green-600" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500/10 rounded-full">
+                <CheckCircle2 className="h-9 w-9 text-emerald-400" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">You're all set!</h2>
-                <p className="text-gray-500 text-sm mt-1">Your school is configured and ready to go.</p>
+                <h2 className="text-xl font-bold text-white/80">You're all set!</h2>
+                <p className="text-white/40 text-sm mt-1">Your school is configured and ready to go.</p>
               </div>
               <div className="grid grid-cols-3 gap-3 text-sm pt-2">
                 {[
-                  { label: "Add Students", href: "/students/new", color: "bg-blue-50 text-blue-700 hover:bg-blue-100" },
-                  { label: "Add Staff", href: "/staff/new", color: "bg-violet-50 text-violet-700 hover:bg-violet-100" },
-                  { label: "Set Up Fees", href: "/fees/setup", color: "bg-green-50 text-green-700 hover:bg-green-100" },
+                  { label: "Add Students", href: "/students/new", color: "bg-blue-500/10 text-blue-400 hover:bg-blue-500/10" },
+                  { label: "Add Staff", href: "/staff/new", color: "bg-violet-500/10 text-violet-400 hover:bg-violet-500/[0.10]" },
+                  { label: "Set Up Fees", href: "/fees/setup", color: "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/10" },
                 ].map(({ label, href, color }) => (
                   <a key={href} href={href}
                     className={`rounded-xl px-4 py-3 font-medium transition-colors text-center ${color}`}>
@@ -440,7 +440,7 @@ export function OnboardingClient({ profile }: Props) {
 
           {/* Error */}
           {error && (
-            <div className="mt-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+            <div className="mt-4 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2.5">
               {error}
             </div>
           )}
@@ -453,7 +453,7 @@ export function OnboardingClient({ profile }: Props) {
               </Button>
               <div className="flex items-center gap-3">
                 {step > 0 && (
-                  <button className="text-sm text-gray-400 hover:text-gray-600" onClick={async () => {
+                  <button className="text-sm text-white/30 hover:text-white/50" onClick={async () => {
                     if (step === 3) { await completeOnboarding(); }
                     setStep(s => s + 1);
                   }}>
@@ -472,7 +472,7 @@ export function OnboardingClient({ profile }: Props) {
 
         {/* Step counter */}
         {step < 4 && (
-          <p className="text-center text-xs text-gray-400 mt-4">Step {step + 1} of 4</p>
+          <p className="text-center text-xs text-white/30 mt-4">Step {step + 1} of 4</p>
         )}
       </div>
     </div>
