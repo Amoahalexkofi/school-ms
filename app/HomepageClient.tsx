@@ -303,9 +303,13 @@ export function HomepageClient() {
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
               className="relative hidden lg:flex items-center justify-center h-[520px]">
 
-              {/* Dashboard — centrepiece */}
-              <div className="relative z-10 w-full max-w-[520px]">
-                <DashboardMockup />
+              {/* Hero student image — centrepiece */}
+              <div className="relative z-10 w-full max-w-[460px] flex items-end justify-center h-full">
+                <img
+                  src="/images/hero image1.png"
+                  alt="Student using Skula"
+                  className="w-full h-full object-contain object-bottom drop-shadow-2xl"
+                />
               </div>
 
               {/* Card — top left, above dashboard */}
