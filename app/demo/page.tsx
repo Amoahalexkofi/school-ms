@@ -197,14 +197,7 @@ export default function DemoPage() {
       </div>
 
       {/* ── Right: role selection panel ── */}
-      <div className="flex-1 flex flex-col bg-white overflow-y-auto relative">
-
-        {/* Subtle background overlay image */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <img src="/images/students-laptops.jpg" alt=""
-            className="w-full h-full object-cover object-center opacity-[0.05]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-white/60" />
-        </div>
+      <div className="flex-1 flex flex-col bg-white overflow-y-auto">
 
         {/* Mobile nav */}
         <div className="lg:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-slate-100">
