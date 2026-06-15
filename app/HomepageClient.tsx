@@ -370,32 +370,6 @@ export function HomepageClient() {
         </div>
       </section>
 
-      {/* ── TRUST BAR ── */}
-      <section className="border-y border-slate-100 bg-slate-50/50 py-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <p className="text-center text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-8">
-            Trusted by educational institutions across Africa
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
-            {[
-              { name: "GoldCoast Academy",  type: "Private School" },
-              { name: "Tema Community JHS", type: "Public School" },
-              { name: "Accra Int'l School", type: "International" },
-              { name: "Sunflower Academy",  type: "Basic School" },
-              { name: "Heritage College",   type: "SHS" },
-              { name: "Korle-Bu Prep",      type: "Preparatory" },
-            ].map(({ name, type }) => (
-              <div key={name} className="flex flex-col items-center gap-1">
-                <div className="h-8 px-4 bg-white border border-slate-200 rounded-lg flex items-center shadow-sm">
-                  <span className="text-[11px] font-black text-slate-700 whitespace-nowrap">{name}</span>
-                </div>
-                <span className="text-[9px] text-slate-400 font-medium">{type}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── FEATURES ── */}
       <section id="features" className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
