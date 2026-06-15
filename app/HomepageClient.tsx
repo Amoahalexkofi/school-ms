@@ -8,7 +8,8 @@ import {
   BookOpen, BarChart2, MessageSquare, CheckCircle2, ChevronDown,
   TrendingUp, Shield, Clock, Smartphone, Bell, FileText,
   Bus, Library, ChevronRight, Star, Menu, X, Zap, Globe,
-  Lock, Check, Minus,
+  Lock, Check, Minus, CreditCard, Mail, Home, CalendarDays,
+  UserCheck, Package, Building2, Award, Banknote,
 } from "lucide-react";
 
 const WHATSAPP_NUMBER = "233595111461";
@@ -604,14 +605,18 @@ export function HomepageClient() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}
             variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { icon: Users,        color: "#6366f1", bg: "#eef2ff", title: "Admissions",           desc: "Online applications, enrollment workflows and student onboarding — all automated." },
-              { icon: ClipboardList,color: "#0ea5e9", bg: "#e0f2fe", title: "Attendance Tracking",  desc: "Mark attendance per class from any device. Absent alerts sent to parents instantly." },
-              { icon: DollarSign,   color: "#10b981", bg: "#dcfce7", title: "Fee Collection",       desc: "Issue GHS receipts, track defaulters, send WhatsApp reminders automatically." },
-              { icon: BookOpen,     color: "#8b5cf6", bg: "#ede9fe", title: "Exams & Marksheets",   desc: "Enter marks, auto-rank students, generate BECE-style report cards to print." },
-              { icon: BarChart2,    color: "#f59e0b", bg: "#fef3c7", title: "Analytics & Reports",  desc: "Fee summaries, student lists, performance reports — PDF or CSV in one click." },
-              { icon: MessageSquare,color: "#ec4899", bg: "#fce7f3", title: "Communication",        desc: "Bulk SMS to parents, homework, notice board and internal staff messaging." },
-              { icon: Bus,          color: "#14b8a6", bg: "#ccfbf1", title: "Transport",            desc: "Routes, vehicles, pickup points and transport fee management." },
-              { icon: Library,      color: "#f97316", bg: "#ffedd5", title: "Library",              desc: "Book catalog, issue/return tracking and library membership management." },
+              { icon: Users,        color: "#6366f1", bg: "#eef2ff", title: "Students & Admissions", desc: "Online enrollment, student profiles, BECE tracking, digital ID cards and bulk promotions." },
+              { icon: ClipboardList,color: "#0ea5e9", bg: "#e0f2fe", title: "Attendance",            desc: "Daily & subject attendance from any device. Absent alerts to parents via SMS instantly." },
+              { icon: DollarSign,   color: "#10b981", bg: "#dcfce7", title: "Fees & Payments",       desc: "Collect fees online or offline. GHS receipts, WhatsApp alerts, defaulter reminders, reports." },
+              { icon: BookOpen,     color: "#8b5cf6", bg: "#ede9fe", title: "Exams & Marksheets",    desc: "Enter marks once — Skula auto-ranks, generates BECE-style report cards, ready to print." },
+              { icon: Banknote,     color: "#059669", bg: "#d1fae5", title: "Payroll",               desc: "Staff salary computation with allowances, deductions, payslips and bulk disbursement." },
+              { icon: MessageSquare,color: "#ec4899", bg: "#fce7f3", title: "Communication",         desc: "Bulk SMS, email alerts, homework, notice board, internal chat and parent portal messaging." },
+              { icon: CalendarDays, color: "#f59e0b", bg: "#fef3c7", title: "Timetable",             desc: "Build and publish class timetables. Teachers and students see live schedules instantly." },
+              { icon: Bus,          color: "#14b8a6", bg: "#ccfbf1", title: "Transport",             desc: "Routes, vehicles, pickup points, student assignment and transport fee management." },
+              { icon: Library,      color: "#f97316", bg: "#ffedd5", title: "Library",               desc: "Book catalog, issue & return tracking, overdue alerts and membership management." },
+              { icon: Home,         color: "#8b5cf6", bg: "#f3e8ff", title: "Hostel",                desc: "Boarding house rooms, allocations, room types and hostel fee management." },
+              { icon: Smartphone,   color: "#0ea5e9", bg: "#e0f2fe", title: "Online Exams",          desc: "Set MCQ/theory exams. Students attempt online. Auto-grading with instant results." },
+              { icon: Building2,    color: "#64748b", bg: "#f1f5f9", title: "Front Office",          desc: "Visitor log, complaints, parent enquiries, dispatch records and reception management." },
             ].map(({ icon: Icon, color, bg, title, desc }, i) => (
               <motion.div key={title} variants={fadeUp}
                 whileHover={{ y: -6 }} transition={{ duration: 0.2 }}
@@ -627,6 +632,46 @@ export function HomepageClient() {
                 </div>
                 <h3 className="text-slate-900 font-bold text-[15px] mb-2">{title}</h3>
                 <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ── */}
+      <section className="py-24 bg-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none"
+          style={{ background: "radial-gradient(ellipse, rgba(99,102,241,0.15) 0%, transparent 70%)" }} />
+        <div className="relative max-w-5xl mx-auto px-6">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
+            <motion.p variants={fadeUp} className="text-indigo-400 text-[11px] font-bold uppercase tracking-[0.15em] mb-4">Getting Started</motion.p>
+            <motion.h2 variants={fadeUp} className="text-[36px] sm:text-[48px] font-black tracking-tight text-white leading-[1.1]">
+              Live in 30 minutes.<br /><span className="text-indigo-400">We set it up with you.</span>
+            </motion.h2>
+          </motion.div>
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+            {/* Connector line */}
+            <div className="hidden md:block absolute top-10 left-[calc(33%-16px)] right-[calc(33%-16px)] h-px bg-gradient-to-r from-indigo-500/40 via-violet-500/40 to-indigo-500/40" />
+            {[
+              { step: "01", icon: UserCheck, title: "Sign up",           desc: "Create your school account. We jump on a 30-minute WhatsApp call and configure everything — classes, sections, fee types, staff accounts.", color: "#6366f1" },
+              { step: "02", icon: Users,     title: "Add your school",   desc: "Import or add your students and staff. Set up fee structures, timetables and the parent portal. All guided, no technical knowledge needed.", color: "#8b5cf6" },
+              { step: "03", icon: Zap,       title: "Go live",           desc: "Start marking attendance, collecting fees with digital receipts, running exams and communicating with parents — all from one dashboard.", color: "#10b981" },
+            ].map(({ step, icon: Icon, title, desc, color }) => (
+              <motion.div key={step} variants={fadeUp}
+                className="relative p-7 rounded-2xl flex flex-col gap-4"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+                    style={{ background: color + "20", border: `1px solid ${color}40` }}>
+                    <Icon className="h-5 w-5" style={{ color }} />
+                  </div>
+                  <span className="text-[11px] font-black tracking-widest" style={{ color: color + "80" }}>STEP {step}</span>
+                </div>
+                <h3 className="text-white font-black text-[18px]">{title}</h3>
+                <p className="text-slate-400 text-[14px] leading-relaxed">{desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -677,6 +722,73 @@ export function HomepageClient() {
               </motion.div>
             </motion.div>
           ))}
+        </div>
+      </section>
+
+      {/* ── INTEGRATIONS ── */}
+      <section className="py-24 bg-white relative">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.04) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        <div className="relative max-w-5xl mx-auto px-6">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-14">
+            <motion.p variants={fadeUp} className="text-indigo-600 text-[11px] font-bold uppercase tracking-[0.15em] mb-4">Integrations</motion.p>
+            <motion.h2 variants={fadeUp} className="text-[36px] sm:text-[46px] font-black tracking-tight text-slate-900 leading-[1.1]">
+              Connected to the tools<br />your school already uses.
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-slate-500 text-[16px] mt-4 max-w-xl mx-auto">
+              Skula plugs into payment gateways, SMS providers and email — no extra setup.
+            </motion.p>
+          </motion.div>
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {[
+              {
+                icon: CreditCard, color: "#10b981", bg: "#dcfce7",
+                title: "Online Payment Gateways",
+                desc: "Accept school fees online via Paystack, Flutterwave and more. Parents pay from their phones — no cash handling, no queues. Automatic receipt on payment.",
+                tags: ["Paystack", "Flutterwave", "Mobile Money"],
+              },
+              {
+                icon: MessageSquare, color: "#25D366", bg: "#dcfce7",
+                title: "WhatsApp Receipts & Alerts",
+                desc: "Every fee payment triggers an instant WhatsApp receipt to the parent. Absent students, exam results, notices — all delivered on WhatsApp automatically.",
+                tags: ["Fee receipts", "Attendance alerts", "Result notifications"],
+              },
+              {
+                icon: Smartphone, color: "#6366f1", bg: "#eef2ff",
+                title: "SMS Notifications",
+                desc: "Bulk SMS to parents and staff via your preferred SMS provider. Configure your sender ID, API key — Skula handles the rest for attendance, fees and announcements.",
+                tags: ["Bulk SMS", "Custom sender ID", "Attendance & fees"],
+              },
+              {
+                icon: Mail, color: "#0ea5e9", bg: "#e0f2fe",
+                title: "Email Notifications",
+                desc: "Connect your SMTP server or use a provider like SendGrid. Send report cards, fee statements, staff payslips and system alerts via email automatically.",
+                tags: ["SMTP / SendGrid", "Report cards", "Payslips & statements"],
+              },
+            ].map(({ icon: Icon, color, bg, title, desc, tags }) => (
+              <motion.div key={title} variants={fadeUp}
+                whileHover={{ y: -4 }} transition={{ duration: 0.2 }}
+                className="p-7 rounded-2xl border border-slate-100 bg-white"
+                style={{ boxShadow: "0 2px 24px rgba(0,0,0,0.05)" }}>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: bg }}>
+                    <Icon className="h-6 w-6" style={{ color }} />
+                  </div>
+                  <div>
+                    <h3 className="text-slate-900 font-black text-[16px] mb-1">{title}</h3>
+                    <div className="flex flex-wrap gap-1.5">
+                      {tags.map(t => (
+                        <span key={t} className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                          style={{ backgroundColor: bg, color }}>{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-slate-500 text-[14px] leading-relaxed">{desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
@@ -865,12 +977,14 @@ export function HomepageClient() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
             className="space-y-3">
             {[
-              { q: "How long does it take to set up?", a: "Most schools are fully live — classes, sections, fee types and staff accounts all configured — in under 30 minutes. We set it up with you on a call." },
-              { q: "Do I need any technical knowledge?", a: "None at all. If you can use WhatsApp, you can use Skula. We also offer free onboarding support for every school, every time." },
-              { q: "Can multiple staff use it simultaneously?", a: "Yes. Each staff member gets their own login with role-based access. Accountant sees fees, teacher sees their classes, admin sees everything — all at the same time." },
-              { q: "Is my school data kept private?", a: "Completely. Every school runs in an isolated database. No other institution can ever access your students, fees, or records." },
-              { q: "What happens when the free trial ends?", a: "We'll reach out before anything changes. Your data is never deleted. You can upgrade anytime, or we'll find a solution — we won't leave you stranded." },
-              { q: "Does it work for Basic, JHS and SHS?", a: "Yes. Skula supports all levels of the Ghanaian school system including BECE candidate tracking, JHS grading scales, and term-based academic calendars." },
+              { q: "How long does it take to set up?",           a: "Most schools are fully live in under 30 minutes. We join a WhatsApp call with you and configure classes, fee types, sections and staff accounts together." },
+              { q: "Can parents pay school fees online?",         a: "Yes. Skula integrates with Paystack, Flutterwave and mobile money. Parents pay from their phone and receive an instant WhatsApp receipt. No cash needed." },
+              { q: "Which payment gateways are supported?",       a: "Paystack, Flutterwave and mobile money are supported out of the box. You configure your own API keys in Settings — Skula handles the rest including receipt generation." },
+              { q: "Does it send SMS and email notifications?",   a: "Yes. Connect your SMS provider (with your own sender ID) and SMTP email server. Skula sends attendance alerts, fee reminders, results and announcements automatically." },
+              { q: "Can multiple staff use it simultaneously?",   a: "Yes. Each staff member gets their own login with role-based access — accountant sees fees, teacher sees classes, admin sees everything — all at the same time." },
+              { q: "Is my school data kept private?",             a: "Completely. Every school runs in a fully isolated database. No other institution can ever access your students, fees, or records." },
+              { q: "Does it work for Basic, JHS and SHS?",        a: "Yes. Skula supports all levels — Basic, JHS and SHS — including BECE candidate tracking, JHS grading scales, and term-based academic calendars." },
+              { q: "What happens when the free trial ends?",      a: "We reach out before anything changes. Your data is never deleted. Upgrade anytime or we'll find a plan that works — we won't leave you stranded." },
             ].map(({ q, a }) => (
               <motion.div key={q} variants={fadeUp}>
                 <FaqItem q={q} a={a} />
