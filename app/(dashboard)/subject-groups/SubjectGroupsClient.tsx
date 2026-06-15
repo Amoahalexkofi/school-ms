@@ -141,13 +141,13 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
           <select
             value={sessionId}
             onChange={e => setSessionId(e.target.value)}
-            className="text-sm border rounded-lg px-3 py-2 bg-[#111318] focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="text-sm border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           >
             {sessions.map(s => (
               <option key={s.id} value={s.id}>{s.session}</option>
             ))}
           </select>
-          <span className="text-sm text-white/40">{filtered.length} group{filtered.length !== 1 ? "s" : ""}</span>
+          <span className="text-sm text-gray-500">{filtered.length} group{filtered.length !== 1 ? "s" : ""}</span>
         </div>
         <Button onClick={openNew}>
           <Plus className="h-4 w-4 mr-1.5" /> New Group
@@ -156,7 +156,7 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
 
       {filtered.length === 0 && (
         <Card>
-          <CardContent className="py-12 text-center text-sm text-white/30">
+          <CardContent className="py-12 text-center text-sm text-gray-400">
             No subject groups for this session. Create one to organise subjects and class sections.
           </CardContent>
         </Card>
@@ -168,7 +168,7 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold flex items-center justify-between">
                 <span className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4 text-indigo-400" />
+                  <BookOpen className="h-4 w-4 text-indigo-600" />
                   {g.name}
                 </span>
                 <div className="flex gap-1">
@@ -176,7 +176,7 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
                   <Button size="sm" variant="outline"
-                    className="text-red-400 border-red-500/20 hover:bg-red-500/10"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
                     onClick={() => remove(g.id)}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -187,13 +187,13 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
             <CardContent className="space-y-3">
               {/* Subjects */}
               <div>
-                <p className="text-xs text-white/30 uppercase tracking-wide mb-1.5">Subjects ({g.subjects.length})</p>
+                <p className="text-xs text-gray-400 uppercase tracking-wide mb-1.5">Subjects ({g.subjects.length})</p>
                 {g.subjects.length === 0
-                  ? <p className="text-xs text-white/30 italic">None assigned</p>
+                  ? <p className="text-xs text-gray-300 italic">None assigned</p>
                   : (
                     <div className="flex flex-wrap gap-1">
                       {g.subjects.map(({ subject: s }) => (
-                        <span key={s.id} className="text-xs px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/15">
+                        <span key={s.id} className="text-xs px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
                           {s.name}{s.code ? ` (${s.code})` : ""}
                         </span>
                       ))}
@@ -203,13 +203,13 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
               </div>
               {/* Class sections */}
               <div>
-                <p className="text-xs text-white/30 uppercase tracking-wide mb-1.5">Class Sections ({g.sections.length})</p>
+                <p className="text-xs text-gray-400 uppercase tracking-wide mb-1.5">Class Sections ({g.sections.length})</p>
                 {g.sections.length === 0
-                  ? <p className="text-xs text-white/30 italic">None assigned</p>
+                  ? <p className="text-xs text-gray-300 italic">None assigned</p>
                   : (
                     <div className="flex flex-wrap gap-1">
                       {g.sections.map(({ classSection: cs }) => (
-                        <span key={cs.id} className="text-xs px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-green-100">
+                        <span key={cs.id} className="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded-full border border-green-100">
                           {cs.class.name} – {cs.section.name}
                         </span>
                       ))}
@@ -231,7 +231,7 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Group Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Group Name *</label>
               <Input
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
@@ -241,11 +241,11 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
 
             {!edit && (
               <div>
-                <label className="block text-sm font-medium text-white/60 mb-1">Session *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Session *</label>
                 <select
                   value={form.sessionId}
                   onChange={e => setForm(f => ({ ...f, sessionId: e.target.value }))}
-                  className="w-full text-sm border rounded-lg px-3 py-2 bg-[#111318] focus:ring-2 focus:ring-indigo-500"
+                  className="w-full text-sm border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-indigo-500"
                 >
                   {sessions.map(s => <option key={s.id} value={s.id}>{s.session}</option>)}
                 </select>
@@ -253,7 +253,7 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
             )}
 
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
               <Input
                 value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
@@ -263,57 +263,57 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
 
             {/* Subjects */}
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">
-                Subjects <span className="text-white/30 font-normal">({selSubjects.size} selected)</span>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Subjects <span className="text-gray-400 font-normal">({selSubjects.size} selected)</span>
               </label>
               <div className="border rounded-lg p-3 max-h-48 overflow-y-auto grid grid-cols-2 gap-1.5">
                 {subjects.map(s => (
-                  <label key={s.id} className={`flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded ${selSubjects.has(s.id) ? "bg-indigo-500/10" : "hover:bg-[#0f1015]"}`}>
+                  <label key={s.id} className={`flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded ${selSubjects.has(s.id) ? "bg-indigo-50" : "hover:bg-gray-50"}`}>
                     <input
                       type="checkbox"
                       checked={selSubjects.has(s.id)}
                       onChange={() => toggleSub(s.id)}
-                      className="rounded border-white/[0.08] text-indigo-400"
+                      className="rounded border-gray-300 text-indigo-600"
                     />
-                    <span className="text-white/70 truncate">{s.name}</span>
-                    {s.code && <span className="text-white/30 text-xs">({s.code})</span>}
+                    <span className="text-gray-800 truncate">{s.name}</span>
+                    {s.code && <span className="text-gray-400 text-xs">({s.code})</span>}
                   </label>
                 ))}
-                {subjects.length === 0 && <p className="text-xs text-white/30 col-span-2">No subjects available.</p>}
+                {subjects.length === 0 && <p className="text-xs text-gray-400 col-span-2">No subjects available.</p>}
               </div>
             </div>
 
             {/* Class sections — grouped by class */}
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">
-                Class Sections <span className="text-white/30 font-normal">({selSections.size} selected)</span>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Class Sections <span className="text-gray-400 font-normal">({selSections.size} selected)</span>
               </label>
-              <p className="text-xs text-white/30 mb-2">Each section can only belong to one group per session.</p>
+              <p className="text-xs text-gray-400 mb-2">Each section can only belong to one group per session.</p>
               <div className="border rounded-lg p-3 max-h-48 overflow-y-auto space-y-3">
                 {classMap.map(({ classId, className, sections }) => (
                   <div key={classId}>
-                    <p className="text-xs font-semibold text-white/40 mb-1">{className}</p>
+                    <p className="text-xs font-semibold text-gray-500 mb-1">{className}</p>
                     <div className="grid grid-cols-2 gap-1">
                       {sections.map(cs => (
-                        <label key={cs.id} className={`flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded ${selSections.has(cs.id) ? "bg-emerald-500/10" : "hover:bg-[#0f1015]"}`}>
+                        <label key={cs.id} className={`flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded ${selSections.has(cs.id) ? "bg-green-50" : "hover:bg-gray-50"}`}>
                           <input
                             type="checkbox"
                             checked={selSections.has(cs.id)}
                             onChange={() => toggleSec(cs.id)}
-                            className="rounded border-white/[0.08] text-emerald-400"
+                            className="rounded border-gray-300 text-green-600"
                           />
-                          <span className="text-white/70">{cs.section.name}</span>
+                          <span className="text-gray-800">{cs.section.name}</span>
                         </label>
                       ))}
                     </div>
                   </div>
                 ))}
-                {classSections.length === 0 && <p className="text-xs text-white/30">No class sections available.</p>}
+                {classSections.length === 0 && <p className="text-xs text-gray-400">No class sections available.</p>}
               </div>
             </div>
           </div>
 
-          {err && <p className="text-sm text-red-400 mt-1">{err}</p>}
+          {err && <p className="text-sm text-red-600 mt-1">{err}</p>}
 
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>

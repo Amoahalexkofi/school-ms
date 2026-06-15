@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type Props = {
   books: any[];
@@ -61,7 +61,7 @@ export function IssueBookForm({ books, students, staff }: Props) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto w-full">
-      <Link href="/library" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60 mb-6">
+      <Link href="/library" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-6">
         <ArrowLeft className="h-3.5 w-3.5" /> Back
       </Link>
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -77,7 +77,7 @@ export function IssueBookForm({ books, students, staff }: Props) {
                 ))}
               </select>
               {availableBooks.length === 0 && (
-                <p className="text-xs text-amber-400 mt-1">No books available for issue right now.</p>
+                <p className="text-xs text-amber-600 mt-1">No books available for issue right now.</p>
               )}
             </div>
 
@@ -92,7 +92,7 @@ export function IssueBookForm({ books, students, staff }: Props) {
                     className={`px-4 py-1.5 rounded-lg text-sm border font-medium transition-colors ${
                       form.issueTo === t
                         ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-[#111318] text-white/50 border-white/[0.06] hover:bg-[#0f1015]"
+                        : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
                     }`}
                   >
                     {t.charAt(0).toUpperCase() + t.slice(1)}

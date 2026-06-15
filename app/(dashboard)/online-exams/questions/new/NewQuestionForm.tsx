@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 const TYPES = ["MCQ", "TRUE_FALSE", "SHORT_ANSWER", "DESCRIPTIVE"] as const;
 type QType = typeof TYPES[number];
@@ -106,13 +106,13 @@ export function NewQuestionForm({ classes, subjects }: Props) {
       <div className="max-w-4xl mx-auto space-y-6">
         <Link
           href="/online-exams/questions"
-          className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60"
+          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Question Bank
         </Link>
 
         {error && (
-          <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
             {error}
           </div>
         )}
@@ -175,7 +175,7 @@ export function NewQuestionForm({ classes, subjects }: Props) {
               <Label className="text-xs mb-1 block">Question Text *</Label>
               <textarea
                 rows={4}
-                className="w-full rounded-lg border border-white/[0.08] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 placeholder="Enter the question text here…"
                 value={form.question}
                 onChange={set("question")}
@@ -189,7 +189,7 @@ export function NewQuestionForm({ classes, subjects }: Props) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {(["A", "B", "C", "D", "E"] as const).map((opt) => (
                     <div key={opt}>
-                      <Label className="text-xs mb-1 block text-white/40">Option {opt}</Label>
+                      <Label className="text-xs mb-1 block text-gray-500">Option {opt}</Label>
                       <Input
                         value={(form as any)[`option${opt}`]}
                         onChange={set(`option${opt}`)}
@@ -206,8 +206,8 @@ export function NewQuestionForm({ classes, subjects }: Props) {
               <div>
                 <Label className="text-xs mb-2 block">Answer Options</Label>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="border rounded-lg px-3 py-2 text-sm bg-[#0f1015] text-white/50">A. True</div>
-                  <div className="border rounded-lg px-3 py-2 text-sm bg-[#0f1015] text-white/50">B. False</div>
+                  <div className="border rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-600">A. True</div>
+                  <div className="border rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-600">B. False</div>
                 </div>
               </div>
             )}

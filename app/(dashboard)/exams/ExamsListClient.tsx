@@ -62,9 +62,9 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-[#0f1015]">
+    <main className="flex-1 p-6 space-y-5 bg-gray-50">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <p className="text-sm text-white/40">{groups.length} exam group{groups.length !== 1 ? "s" : ""}</p>
+        <p className="text-sm text-gray-500">{groups.length} exam group{groups.length !== 1 ? "s" : ""}</p>
         <div className="flex gap-2 flex-wrap">
           <Link href="/exams/admit-card">
             <Button variant="outline"><CreditCard className="h-4 w-4 mr-1.5" /> Admit Cards</Button>
@@ -79,35 +79,35 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
       </div>
 
       {groups.length === 0 ? (
-        <Card><CardContent className="py-16 text-center text-white/30">
+        <Card><CardContent className="py-16 text-center text-gray-400">
           <BookOpen className="h-10 w-10 mx-auto mb-2 opacity-30" />
           <p className="text-sm">No exam groups yet. Create one to get started.</p>
         </CardContent></Card>
       ) : (
         <div className="space-y-3">
           {groups.map(g => (
-            <div key={g.id} className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-4 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0">
-                <BookOpen className="h-5 w-5 text-indigo-400" />
+            <div key={g.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
+                <BookOpen className="h-5 w-5 text-indigo-600" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-white/80 truncate">{g.name}</h3>
+                  <h3 className="font-semibold text-gray-900 truncate">{g.name}</h3>
                   {g.examType && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/[0.04] text-white/40">{g.examType.replace(/_/g, " ")}</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">{g.examType.replace(/_/g, " ")}</span>
                   )}
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${g.isPublished ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-400"}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${g.isPublished ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
                     {g.isPublished ? "Published" : "Draft"}
                   </span>
                 </div>
-                <p className="text-xs text-white/30 mt-0.5">{g._count.schedules} subject schedule{g._count.schedules !== 1 ? "s" : ""}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{g._count.schedules} subject schedule{g._count.schedules !== 1 ? "s" : ""}</p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <Button size="sm" variant="outline" onClick={() => togglePublish(g)} title={g.isPublished ? "Unpublish" : "Publish"}>
                   {g.isPublished ? <Lock className="h-3.5 w-3.5" /> : <Globe className="h-3.5 w-3.5" />}
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => openEdit(g)}><Pencil className="h-3.5 w-3.5" /></Button>
-                <Button size="sm" variant="outline" className="text-red-400 border-red-500/20 hover:bg-red-500/10" onClick={() => handleDelete(g.id)}>
+                <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => handleDelete(g.id)}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
                 <Link href={`/exams/${g.id}`}>
@@ -127,24 +127,24 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
           <DialogHeader><DialogTitle>Edit Exam Group</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
               <Input value={form.name} onChange={set("name")} placeholder="e.g. Term 1 Exams 2026" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Exam Type</label>
-              <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-gray-700 mb-1">Exam Type</label>
+              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.examType} onChange={set("examType")}>
                 <option value="">— Select —</option>
                 {EXAM_TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Description</label>
-              <textarea rows={2} className="w-full rounded-lg border border-white/[0.08] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea rows={2} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 value={form.description} onChange={set("description")} />
             </div>
           </div>
-          {error && <p className="text-sm text-red-400 mt-1">{error}</p>}
+          {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
             <Button disabled={loading} onClick={handleSave}>{loading ? "Saving…" : "Save"}</Button>

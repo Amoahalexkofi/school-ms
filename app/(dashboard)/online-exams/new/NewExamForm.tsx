@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type Props = {
   classes: { id: string; name: string }[];
@@ -77,13 +77,13 @@ export function NewExamForm({ classes, subjects }: Props) {
       <div className="max-w-4xl mx-auto space-y-6">
         <Link
           href="/online-exams"
-          className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60"
+          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Online Exams
         </Link>
 
         {error && (
-          <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
             {error}
           </div>
         )}
@@ -168,7 +168,7 @@ export function NewExamForm({ classes, subjects }: Props) {
                 <Label className="text-xs mb-1 block">Instructions (optional)</Label>
                 <textarea
                   rows={4}
-                  className="w-full rounded-lg border border-white/[0.08] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                   placeholder="Instructions for students taking this exam…"
                   value={form.instructions}
                   onChange={set("instructions")}

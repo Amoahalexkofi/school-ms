@@ -52,14 +52,14 @@ export function SourcesClient({ items: initial, apiPath, title, description }: {
 
   return (
     <main className="flex-1 p-6 max-w-3xl mx-auto space-y-6">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
+      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
 
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-lg font-bold">{title}</h2>
-          <p className="text-sm text-white/40 mt-0.5">{description}</p>
+          <p className="text-sm text-gray-500 mt-0.5">{description}</p>
         </div>
         <Button onClick={() => { setShowForm(true); setForm({ name: "", description: "" }); }}>
           <Plus className="h-4 w-4 mr-1" /> Add
@@ -67,7 +67,7 @@ export function SourcesClient({ items: initial, apiPath, title, description }: {
       </div>
 
       {showForm && (
-        <Card className="border-blue-500/20 bg-blue-500/10/30">
+        <Card className="border-blue-200 bg-blue-50/30">
           <CardContent className="pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>Name *</Label>
@@ -86,31 +86,31 @@ export function SourcesClient({ items: initial, apiPath, title, description }: {
       )}
 
       {items.length === 0 ? (
-        <div className="text-center py-12 text-white/30 border-2 border-dashed rounded-lg">
+        <div className="text-center py-12 text-gray-400 border-2 border-dashed rounded-lg">
           <p>No items yet. Click "Add" to create one.</p>
         </div>
       ) : (
         <Card>
           <CardContent className="p-0">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
+              <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-white/50">#</th>
-                  <th className="text-left px-4 py-3 font-medium text-white/50">Name</th>
-                  <th className="text-left px-4 py-3 font-medium text-white/50">Description</th>
-                  <th className="text-right px-4 py-3 font-medium text-white/50">Actions</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Name</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Description</th>
+                  <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {items.map((item, i) => (
-                  <tr key={item.id} className="hover:bg-[#0f1015]">
-                    <td className="px-4 py-3 text-white/30">{i + 1}</td>
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-gray-400">{i + 1}</td>
                     <td className="px-4 py-3">
                       {editId === item.id ? (
                         <Input value={editForm.name} onChange={(e) => setEditForm(f => ({ ...f, name: e.target.value }))} className="h-8 w-40" autoFocus />
                       ) : <span className="font-medium">{item.name}</span>}
                     </td>
-                    <td className="px-4 py-3 text-white/40">
+                    <td className="px-4 py-3 text-gray-500">
                       {editId === item.id ? (
                         <Input value={editForm.description ?? ""} onChange={(e) => setEditForm(f => ({ ...f, description: e.target.value }))} className="h-8 w-48" />
                       ) : item.description || "—"}
@@ -119,13 +119,13 @@ export function SourcesClient({ items: initial, apiPath, title, description }: {
                       <div className="flex gap-1 justify-end">
                         {editId === item.id ? (
                           <>
-                            <button onClick={() => update(item.id)} className="text-emerald-400 p-1"><Check className="h-4 w-4" /></button>
-                            <button onClick={() => setEditId(null)} className="text-white/30 p-1"><X className="h-4 w-4" /></button>
+                            <button onClick={() => update(item.id)} className="text-green-600 p-1"><Check className="h-4 w-4" /></button>
+                            <button onClick={() => setEditId(null)} className="text-gray-400 p-1"><X className="h-4 w-4" /></button>
                           </>
                         ) : (
                           <>
                             <Button size="sm" variant="ghost" onClick={() => { setEditId(item.id); setEditForm({ name: item.name, description: item.description ?? "" }); }}><Pencil className="h-3.5 w-3.5" /></Button>
-                            <Button size="sm" variant="ghost" onClick={() => del(item.id)} className="text-red-400 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></Button>
+                            <Button size="sm" variant="ghost" onClick={() => del(item.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>
                           </>
                         )}
                       </div>

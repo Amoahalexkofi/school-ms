@@ -48,10 +48,10 @@ type PermState = {
 };
 
 const ACTIONS = [
-  { key: "canView",   label: "View",   color: "text-blue-400"   },
-  { key: "canAdd",    label: "Add",    color: "text-emerald-400"  },
-  { key: "canEdit",   label: "Edit",   color: "text-yellow-400" },
-  { key: "canDelete", label: "Delete", color: "text-red-400"    },
+  { key: "canView",   label: "View",   color: "text-blue-600"   },
+  { key: "canAdd",    label: "Add",    color: "text-green-600"  },
+  { key: "canEdit",   label: "Edit",   color: "text-yellow-600" },
+  { key: "canDelete", label: "Delete", color: "text-red-600"    },
 ] as const;
 
 export function PermissionsMatrix({ role, groups }: { role: Role; groups: Group[] }) {
@@ -136,12 +136,12 @@ export function PermissionsMatrix({ role, groups }: { role: Role; groups: Group[
   return (
     <main className="flex-1 p-6 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center gap-4 flex-wrap">
-        <Link href="/settings/roles" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
+        <Link href="/settings/roles" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Roles
         </Link>
         <div className="flex-1">
           <h2 className="text-lg font-bold">{role.name} — Permissions</h2>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-gray-500">
             {totalEnabled} module{totalEnabled !== 1 ? "s" : ""} with at least one permission enabled.
           </p>
         </div>
@@ -151,7 +151,7 @@ export function PermissionsMatrix({ role, groups }: { role: Role; groups: Group[
           <Button onClick={save} disabled={saving} className="gap-2 min-w-28">
             <Save className="h-4 w-4" />{saving ? "Saving…" : "Save Permissions"}
           </Button>
-          {saved && <span className="text-sm text-emerald-400 font-medium">Saved ✓</span>}
+          {saved && <span className="text-sm text-green-600 font-medium">Saved ✓</span>}
         </div>
       </div>
 
@@ -160,12 +160,12 @@ export function PermissionsMatrix({ role, groups }: { role: Role; groups: Group[
         {ACTIONS.map(({ label, color }) => (
           <span key={label} className="flex items-center gap-1">
             <CheckSquare className={`h-3.5 w-3.5 ${color}`} />
-            <span className="text-white/50">{label}</span>
+            <span className="text-gray-600">{label}</span>
           </span>
         ))}
         <span className="flex items-center gap-1">
-          <Minus className="h-3.5 w-3.5 text-white/30" />
-          <span className="text-white/30">Not applicable for this module</span>
+          <Minus className="h-3.5 w-3.5 text-gray-300" />
+          <span className="text-gray-400">Not applicable for this module</span>
         </span>
       </div>
 
@@ -174,13 +174,13 @@ export function PermissionsMatrix({ role, groups }: { role: Role; groups: Group[
         <Card key={group.id}>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <CardTitle className="text-sm font-semibold text-white/70">
+              <CardTitle className="text-sm font-semibold text-gray-800">
                 {group.name}
                 <Badge variant="outline" className="ml-2 text-xs">{group.categories.length}</Badge>
               </CardTitle>
               {/* Group-level toggle row */}
               <div className="flex items-center gap-1 text-xs">
-                <span className="text-white/30 mr-1">Toggle all:</span>
+                <span className="text-gray-400 mr-1">Toggle all:</span>
                 {ACTIONS.map(({ key, label, color }) => (
                   <button
                     key={key}
@@ -198,9 +198,9 @@ export function PermissionsMatrix({ role, groups }: { role: Role; groups: Group[
           </CardHeader>
           <CardContent className="p-0">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-y">
+              <thead className="bg-gray-50 border-y">
                 <tr>
-                  <th className="text-left px-4 py-2 font-medium text-white/50 w-64">Module</th>
+                  <th className="text-left px-4 py-2 font-medium text-gray-600 w-64">Module</th>
                   {ACTIONS.map(({ label, color }) => (
                     <th key={label} className={`text-center px-4 py-2 font-medium w-20 ${color}`}>{label}</th>
                   ))}
@@ -217,8 +217,8 @@ export function PermissionsMatrix({ role, groups }: { role: Role; groups: Group[
                   };
                   const hasAny = p.canView || p.canAdd || p.canEdit || p.canDelete;
                   return (
-                    <tr key={cat.id} className={`hover:bg-[#0f1015] ${hasAny ? "" : "opacity-60"}`}>
-                      <td className="px-4 py-2.5 font-medium text-white/70">{cat.name}</td>
+                    <tr key={cat.id} className={`hover:bg-gray-50 ${hasAny ? "" : "opacity-60"}`}>
+                      <td className="px-4 py-2.5 font-medium text-gray-800">{cat.name}</td>
                       {ACTIONS.map(({ key, color }) => (
                         <td key={key} className="px-4 py-2.5 text-center">
                           {enabledMap[key] ? (
@@ -227,7 +227,7 @@ export function PermissionsMatrix({ role, groups }: { role: Role; groups: Group[
                               className={`inline-flex items-center justify-center w-6 h-6 rounded transition-colors ${
                                 p[key]
                                   ? `${color} opacity-100`
-                                  : "text-gray-200 hover:text-white/30"
+                                  : "text-gray-200 hover:text-gray-400"
                               }`}
                             >
                               {p[key]
@@ -250,12 +250,12 @@ export function PermissionsMatrix({ role, groups }: { role: Role; groups: Group[
 
       {/* Sticky save bar */}
       <div className="sticky bottom-4 flex justify-end">
-        <div className="bg-[#111318] border shadow-lg rounded-lg px-4 py-2 flex items-center gap-3">
-          <span className="text-sm text-white/40">{totalEnabled} modules enabled</span>
+        <div className="bg-white border shadow-lg rounded-lg px-4 py-2 flex items-center gap-3">
+          <span className="text-sm text-gray-500">{totalEnabled} modules enabled</span>
           <Button onClick={save} disabled={saving} className="gap-2">
             <Save className="h-4 w-4" />{saving ? "Saving…" : "Save Permissions"}
           </Button>
-          {saved && <span className="text-sm text-emerald-400 font-medium">Saved ✓</span>}
+          {saved && <span className="text-sm text-green-600 font-medium">Saved ✓</span>}
         </div>
       </div>
     </main>

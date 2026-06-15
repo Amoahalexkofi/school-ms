@@ -16,12 +16,12 @@ type Props = {
 type Tab = "types" | "staff" | "students" | "balance";
 
 const STATUS_STYLE: Record<string, string> = {
-  PENDING:  "bg-amber-500/10 text-amber-400",
-  APPROVED: "bg-emerald-500/10 text-emerald-400",
-  REJECTED: "bg-red-500/10 text-red-400",
+  PENDING:  "bg-amber-100 text-amber-700",
+  APPROVED: "bg-emerald-100 text-emerald-700",
+  REJECTED: "bg-red-100 text-red-700",
 };
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff, students, leaveBalances, isAdmin, myStaffId }: Props) {
   const router = useRouter();
@@ -176,10 +176,10 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
     const pct   = total > 0 ? Math.min(100, Math.round((used / total) * 100)) : 0;
     return (
       <div className="flex items-center gap-3 flex-1">
-        <div className="flex-1 bg-white/[0.04] rounded-full h-2">
+        <div className="flex-1 bg-gray-100 rounded-full h-2">
           <div className={`h-2 rounded-full ${pct > 80 ? "bg-rose-400" : pct > 50 ? "bg-amber-400" : "bg-emerald-400"}`} style={{ width: `${pct}%` }} />
         </div>
-        <span className={`text-sm font-bold tabular-nums ${avail <= 0 ? "text-rose-400" : avail <= 3 ? "text-amber-400" : "text-emerald-400"}`}>
+        <span className={`text-sm font-bold tabular-nums ${avail <= 0 ? "text-rose-600" : avail <= 3 ? "text-amber-600" : "text-emerald-600"}`}>
           {avail} left
         </span>
       </div>
@@ -187,14 +187,14 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
   }
 
   return (
-    <main className="flex-1 p-4 md:p-6 space-y-5 bg-[#0f1015]">
+    <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50">
 
       {/* Tab bar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1 bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-1">
+        <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1">
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-white/50 hover:bg-white/[0.04]"}`}>
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
               {t.label}
             </button>
           ))}
@@ -202,10 +202,10 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
 
         {/* Status filter — only on request tabs */}
         {(tab === "staff" || tab === "students") && (
-          <div className="flex gap-1 bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-1">
+          <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1">
             {["ALL","PENDING","APPROVED","REJECTED"].map(s => (
               <button key={s} onClick={() => setStatusFilter(s)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${statusFilter === s ? "bg-gray-800 text-white" : "text-white/40 hover:bg-white/[0.04]"}`}>
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${statusFilter === s ? "bg-gray-800 text-white" : "text-gray-500 hover:bg-gray-100"}`}>
                 {s}
               </button>
             ))}
@@ -217,26 +217,26 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
       {tab === "types" && isAdmin && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-white/40">{leaveTypes.length} type{leaveTypes.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{leaveTypes.length} type{leaveTypes.length !== 1 ? "s" : ""}</p>
             <Button onClick={() => { setTypeName(""); setTypeDays("0"); setTypeEdit(null); setTypeErr(""); setTypePanel(true); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Add Type
             </Button>
           </div>
 
           {typePanel && (
-            <div className="bg-[#111318] rounded-xl border border-blue-500/20 shadow-sm p-4 space-y-3">
-              <p className="font-medium text-white/70 text-sm">{typeEdit ? "Edit" : "New"} Leave Type</p>
+            <div className="bg-white rounded-xl border border-blue-200 shadow-sm p-4 space-y-3">
+              <p className="font-medium text-gray-800 text-sm">{typeEdit ? "Edit" : "New"} Leave Type</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Name *</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Name *</label>
                   <Input value={typeName} onChange={e => setTypeName(e.target.value)} placeholder="e.g. Annual Leave" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Days Allowed / Year</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Days Allowed / Year</label>
                   <Input type="number" min="0" value={typeDays} onChange={e => setTypeDays(e.target.value)} />
                 </div>
               </div>
-              {typeErr && <p className="text-sm text-red-400">{typeErr}</p>}
+              {typeErr && <p className="text-sm text-red-600">{typeErr}</p>}
               <div className="flex gap-2">
                 <Button disabled={typeLoad} onClick={saveType}>{typeLoad ? "Saving…" : "Save"}</Button>
                 <Button variant="outline" onClick={() => { setTypePanel(false); setTypeEdit(null); }}>Cancel</Button>
@@ -249,17 +249,17 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
               <Card key={lt.id}>
                 <CardContent className="pt-4 flex items-center justify-between gap-3">
                   <div>
-                    <p className="font-semibold text-white/80">{lt.name}</p>
-                    <p className="text-xs text-white/30 mt-0.5">{lt.daysAllowed} days / year</p>
+                    <p className="font-semibold text-gray-900">{lt.name}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{lt.daysAllowed} days / year</p>
                   </div>
                   <div className="flex gap-1 shrink-0">
                     <Button size="sm" variant="outline" onClick={() => { setTypeName(lt.name); setTypeDays(String(lt.daysAllowed)); setTypeEdit(lt); setTypeErr(""); setTypePanel(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button size="sm" variant="outline" className="text-red-400 border-red-500/20" onClick={() => deleteType(lt.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    <Button size="sm" variant="outline" className="text-red-600 border-red-200" onClick={() => deleteType(lt.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                   </div>
                 </CardContent>
               </Card>
             ))}
-            {leaveTypes.length === 0 && <p className="text-sm text-white/30 col-span-3 py-6 text-center">No leave types yet. Add one above.</p>}
+            {leaveTypes.length === 0 && <p className="text-sm text-gray-400 col-span-3 py-6 text-center">No leave types yet. Add one above.</p>}
           </div>
         </div>
       )}
@@ -268,7 +268,7 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
       {tab === "staff" && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-white/40">{filteredStaff.length} request{filteredStaff.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{filteredStaff.length} request{filteredStaff.length !== 1 ? "s" : ""}</p>
             {isAdmin ? (
               <Button onClick={() => { setAdminApplyType("staff"); setAdminForm({ staffId:"", studentId:"", leaveTypeId:"", fromDate:"", toDate:"", reason:"" }); setAdminErr(""); setAdminApplyOpen(true); }}>
                 <Plus className="h-4 w-4 mr-1.5" /> New Request
@@ -280,42 +280,42 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
             )}
           </div>
 
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
+              <thead className="bg-gray-50 border-b">
                 <tr>
                   {(isAdmin ? ["Staff","Dept","Leave Type","Dates","Days","Status","Remark",""] : ["Leave Type","Dates","Days","Status","Remark"])
-                    .map(h => <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-white/40 uppercase tracking-wide">{h}</th>)}
+                    .map(h => <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>)}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filteredStaff.length === 0 ? (
-                  <tr><td colSpan={8} className="px-4 py-12 text-center text-sm text-white/30">No requests found.</td></tr>
+                  <tr><td colSpan={8} className="px-4 py-12 text-center text-sm text-gray-400">No requests found.</td></tr>
                 ) : filteredStaff.map((r: any) => (
-                  <tr key={r.id} className="hover:bg-[#0f1015]">
+                  <tr key={r.id} className="hover:bg-gray-50">
                     {isAdmin && (
                       <td className="px-4 py-3">
-                        <p className="font-medium text-white/80">{r.staff.firstName} {r.staff.lastName}</p>
-                        <p className="text-xs text-white/30 font-mono">{r.staff.employeeId}</p>
+                        <p className="font-medium text-gray-900">{r.staff.firstName} {r.staff.lastName}</p>
+                        <p className="text-xs text-gray-400 font-mono">{r.staff.employeeId}</p>
                       </td>
                     )}
-                    {isAdmin && <td className="px-4 py-3 text-xs text-white/40">{r.staff.department?.name ?? "—"}</td>}
-                    <td className="px-4 py-3 text-white/60 font-medium">{r.leaveType.name}</td>
-                    <td className="px-4 py-3 text-xs text-white/40">
+                    {isAdmin && <td className="px-4 py-3 text-xs text-gray-500">{r.staff.department?.name ?? "—"}</td>}
+                    <td className="px-4 py-3 text-gray-700 font-medium">{r.leaveType.name}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500">
                       <div className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(r.fromDate).toLocaleDateString("en-GB", { day:"numeric", month:"short" })}</div>
-                      <div className="text-white/30 ml-4">→ {new Date(r.toDate).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })}</div>
+                      <div className="text-gray-400 ml-4">→ {new Date(r.toDate).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })}</div>
                     </td>
                     <td className="px-4 py-3 text-center font-semibold">{r.leaveDays}</td>
                     <td className="px-4 py-3">
                       <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${STATUS_STYLE[r.status]}`}>{r.status}</span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-white/30 max-w-xs truncate">{r.remark ?? r.reason ?? "—"}</td>
+                    <td className="px-4 py-3 text-xs text-gray-400 max-w-xs truncate">{r.remark ?? r.reason ?? "—"}</td>
                     {isAdmin && (
                       <td className="px-4 py-3">
                         {r.status === "PENDING" && (
                           <div className="flex gap-1">
-                            <button title="Approve" onClick={() => openRemark(r.id, "staff", "APPROVED")} className="p-1.5 rounded-lg text-emerald-400 hover:bg-emerald-500/10 transition-colors"><CheckCircle2 className="h-4 w-4" /></button>
-                            <button title="Reject"  onClick={() => openRemark(r.id, "staff", "REJECTED")} className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors"><XCircle className="h-4 w-4" /></button>
+                            <button title="Approve" onClick={() => openRemark(r.id, "staff", "APPROVED")} className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 transition-colors"><CheckCircle2 className="h-4 w-4" /></button>
+                            <button title="Reject"  onClick={() => openRemark(r.id, "staff", "REJECTED")} className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors"><XCircle className="h-4 w-4" /></button>
                           </div>
                         )}
                       </td>
@@ -332,36 +332,36 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
       {tab === "students" && isAdmin && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-white/40">{filteredStudents.length} request{filteredStudents.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{filteredStudents.length} request{filteredStudents.length !== 1 ? "s" : ""}</p>
             <Button onClick={() => { setAdminApplyType("student"); setAdminForm({ staffId:"", studentId:"", leaveTypeId:"", fromDate:"", toDate:"", reason:"" }); setAdminErr(""); setAdminApplyOpen(true); }}>
               <Plus className="h-4 w-4 mr-1.5" /> New Request
             </Button>
           </div>
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
-                <tr>{["Student","Dates","Days","Reason","Status",""].map(h => <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-white/40 uppercase tracking-wide">{h}</th>)}</tr>
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Student","Dates","Days","Reason","Status",""].map(h => <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filteredStudents.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-12 text-center text-sm text-white/30">No requests found.</td></tr>
+                  <tr><td colSpan={6} className="px-4 py-12 text-center text-sm text-gray-400">No requests found.</td></tr>
                 ) : filteredStudents.map((r: any) => (
-                  <tr key={r.id} className="hover:bg-[#0f1015]">
+                  <tr key={r.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
-                      <p className="font-medium text-white/80">{r.student.firstName} {r.student.lastName}</p>
-                      <p className="text-xs text-white/30 font-mono">{r.student.admissionNo}</p>
+                      <p className="font-medium text-gray-900">{r.student.firstName} {r.student.lastName}</p>
+                      <p className="text-xs text-gray-400 font-mono">{r.student.admissionNo}</p>
                     </td>
-                    <td className="px-4 py-3 text-xs text-white/40">
+                    <td className="px-4 py-3 text-xs text-gray-500">
                       {new Date(r.fromDate).toLocaleDateString("en-GB", { day:"numeric", month:"short" })} → {new Date(r.toDate).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })}
                     </td>
                     <td className="px-4 py-3 text-center font-semibold">{r.leaveDays ?? "—"}</td>
-                    <td className="px-4 py-3 text-xs text-white/40 max-w-xs truncate">{r.reason ?? "—"}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500 max-w-xs truncate">{r.reason ?? "—"}</td>
                     <td className="px-4 py-3"><span className={`text-xs px-2.5 py-1 rounded-full font-bold ${STATUS_STYLE[r.status]}`}>{r.status}</span></td>
                     <td className="px-4 py-3">
                       {r.status === "PENDING" && (
                         <div className="flex gap-1">
-                          <button onClick={() => openRemark(r.id, "student", "APPROVED")} className="p-1.5 rounded-lg text-emerald-400 hover:bg-emerald-500/10 transition-colors"><CheckCircle2 className="h-4 w-4" /></button>
-                          <button onClick={() => openRemark(r.id, "student", "REJECTED")} className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors"><XCircle className="h-4 w-4" /></button>
+                          <button onClick={() => openRemark(r.id, "student", "APPROVED")} className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 transition-colors"><CheckCircle2 className="h-4 w-4" /></button>
+                          <button onClick={() => openRemark(r.id, "student", "REJECTED")} className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors"><XCircle className="h-4 w-4" /></button>
                         </div>
                       )}
                     </td>
@@ -377,26 +377,26 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
       {tab === "balance" && (
         <div className="space-y-4">
           {leaveBalances.length === 0 ? (
-            <div className="bg-[#111318] rounded-xl border border-white/[0.06] p-12 text-center">
-              <Clock className="h-8 w-8 mx-auto text-white/30 mb-3" />
-              <p className="text-white/30 text-sm">No leave balances yet. They are created when leave is approved.</p>
+            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+              <Clock className="h-8 w-8 mx-auto text-gray-300 mb-3" />
+              <p className="text-gray-400 text-sm">No leave balances yet. They are created when leave is approved.</p>
             </div>
           ) : isAdmin ? (
-            <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-x-auto">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-[#0f1015] border-b">
-                  <tr>{["Staff","Leave Type","Allocated","Used","Available / Balance"].map(h => <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-white/40 uppercase tracking-wide">{h}</th>)}</tr>
+                <thead className="bg-gray-50 border-b">
+                  <tr>{["Staff","Leave Type","Allocated","Used","Available / Balance"].map(h => <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>)}</tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {leaveBalances.map((b: any) => (
-                    <tr key={b.id} className="hover:bg-[#0f1015]">
+                    <tr key={b.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">
-                        <p className="font-medium text-white/80">{b.staff.firstName} {b.staff.lastName}</p>
-                        <p className="text-xs text-white/30 font-mono">{b.staff.employeeId}</p>
+                        <p className="font-medium text-gray-900">{b.staff.firstName} {b.staff.lastName}</p>
+                        <p className="text-xs text-gray-400 font-mono">{b.staff.employeeId}</p>
                       </td>
-                      <td className="px-4 py-3 text-white/50">{b.leaveType.name}</td>
+                      <td className="px-4 py-3 text-gray-600">{b.leaveType.name}</td>
                       <td className="px-4 py-3 text-center">{b.totalDays}</td>
-                      <td className="px-4 py-3 text-center text-amber-400 font-medium">{b.usedDays}</td>
+                      <td className="px-4 py-3 text-center text-amber-600 font-medium">{b.usedDays}</td>
                       <td className="px-4 py-3 pr-6"><BalanceBar total={b.totalDays} used={b.usedDays} /></td>
                     </tr>
                   ))}
@@ -411,16 +411,16 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
                 if (!bal) return null;
                 const pct = bal.total > 0 ? Math.min(100, Math.round((bal.used / bal.total) * 100)) : 0;
                 return (
-                  <div key={lt.id} className="bg-[#111318] rounded-2xl border border-white/[0.04] p-5 shadow-sm">
-                    <p className="font-bold text-white/80 mb-1">{lt.name}</p>
+                  <div key={lt.id} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                    <p className="font-bold text-gray-900 mb-1">{lt.name}</p>
                     <div className="flex items-end gap-1 mb-3">
-                      <span className={`text-3xl font-black ${bal.available <= 0 ? "text-rose-400" : "text-emerald-400"}`}>{bal.available}</span>
-                      <span className="text-sm text-white/30 mb-1">/ {bal.total} days</span>
+                      <span className={`text-3xl font-black ${bal.available <= 0 ? "text-rose-600" : "text-emerald-600"}`}>{bal.available}</span>
+                      <span className="text-sm text-gray-400 mb-1">/ {bal.total} days</span>
                     </div>
-                    <div className="w-full bg-white/[0.04] rounded-full h-2 mb-1">
+                    <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
                       <div className={`h-2 rounded-full ${pct > 80 ? "bg-rose-400" : pct > 50 ? "bg-amber-400" : "bg-emerald-400"}`} style={{ width: `${pct}%` }} />
                     </div>
-                    <p className="text-xs text-white/30">{bal.used} used · {pct}%</p>
+                    <p className="text-xs text-gray-400">{bal.used} used · {pct}%</p>
                   </div>
                 );
               })}
@@ -435,7 +435,7 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
           <DialogHeader><DialogTitle>Apply for Leave</DialogTitle></DialogHeader>
           <div className="space-y-4 mt-2">
             <div>
-              <label className="block text-xs font-medium text-white/60 mb-1">Leave Type *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Leave Type *</label>
               <select className={SEL} value={applyForm.leaveTypeId} onChange={e => setApplyForm(f => ({ ...f, leaveTypeId: e.target.value }))}>
                 <option value="">— Select —</option>
                 {leaveTypes.map((lt: any) => {
@@ -447,7 +447,7 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
                 const bal = getBalance(applyForm.leaveTypeId);
                 if (!bal) return null;
                 return (
-                  <div className={`mt-2 text-xs px-3 py-1.5 rounded-lg ${bal.available <= 0 ? "bg-rose-500/10 text-rose-400" : "bg-emerald-500/10 text-emerald-400"}`}>
+                  <div className={`mt-2 text-xs px-3 py-1.5 rounded-lg ${bal.available <= 0 ? "bg-rose-50 text-rose-700" : "bg-emerald-50 text-emerald-700"}`}>
                     {bal.available} day(s) available · {bal.used} used of {bal.total} allocated
                   </div>
                 );
@@ -455,25 +455,25 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-white/60 mb-1">From *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">From *</label>
                 <input type="date" className={SEL} value={applyForm.fromDate} onChange={e => setApplyForm(f => ({ ...f, fromDate: e.target.value }))} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-white/60 mb-1">To *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">To *</label>
                 <input type="date" className={SEL} value={applyForm.toDate} onChange={e => setApplyForm(f => ({ ...f, toDate: e.target.value }))} />
               </div>
             </div>
             {applyForm.fromDate && applyForm.toDate && (
-              <p className="text-xs text-white/40 bg-[#0f1015] px-3 py-1.5 rounded-lg">
+              <p className="text-xs text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg">
                 Duration: <strong>{calcDays(applyForm.fromDate, applyForm.toDate)}</strong> day(s)
               </p>
             )}
             <div>
-              <label className="block text-xs font-medium text-white/60 mb-1">Reason</label>
-              <textarea rows={2} className="w-full border border-white/[0.08] rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-xs font-medium text-gray-700 mb-1">Reason</label>
+              <textarea rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={applyForm.reason} onChange={e => setApplyForm(f => ({ ...f, reason: e.target.value }))} placeholder="Optional reason…" />
             </div>
-            {applyErr && <p className="text-sm text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{applyErr}</p>}
+            {applyErr && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{applyErr}</p>}
           </div>
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setApplyOpen(false)}>Cancel</Button>
@@ -490,14 +490,14 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
             <div className="flex gap-2">
               {(["staff","student"] as const).map(t => (
                 <button key={t} onClick={() => setAdminApplyType(t)}
-                  className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${adminApplyType === t ? "bg-blue-600 text-white border-blue-600" : "bg-[#111318] text-white/50 border-white/[0.08] hover:bg-[#0f1015]"}`}>
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${adminApplyType === t ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"}`}>
                   {t === "staff" ? "Staff" : "Student"}
                 </button>
               ))}
             </div>
             {adminApplyType === "staff" ? (
               <div>
-                <label className="block text-xs font-medium text-white/60 mb-1">Staff Member *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Staff Member *</label>
                 <select className={SEL} value={adminForm.staffId} onChange={e => setAdminForm(f => ({ ...f, staffId: e.target.value }))}>
                   <option value="">— Select —</option>
                   {staff.map((s: any) => <option key={s.id} value={s.id}>{s.firstName} {s.lastName} ({s.employeeId})</option>)}
@@ -505,7 +505,7 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-medium text-white/60 mb-1">Student *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Student *</label>
                 <select className={SEL} value={adminForm.studentId} onChange={e => setAdminForm(f => ({ ...f, studentId: e.target.value }))}>
                   <option value="">— Select —</option>
                   {students.map((s: any) => <option key={s.id} value={s.id}>{s.firstName} {s.lastName} ({s.admissionNo})</option>)}
@@ -514,7 +514,7 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
             )}
             {adminApplyType === "staff" && (
               <div>
-                <label className="block text-xs font-medium text-white/60 mb-1">Leave Type *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Leave Type *</label>
                 <select className={SEL} value={adminForm.leaveTypeId} onChange={e => setAdminForm(f => ({ ...f, leaveTypeId: e.target.value }))}>
                   <option value="">— Select —</option>
                   {leaveTypes.map((lt: any) => <option key={lt.id} value={lt.id}>{lt.name} ({lt.daysAllowed} days/yr)</option>)}
@@ -523,20 +523,20 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
             )}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-white/60 mb-1">From *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">From *</label>
                 <input type="date" className={SEL} value={adminForm.fromDate} onChange={e => setAdminForm(f => ({ ...f, fromDate: e.target.value }))} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-white/60 mb-1">To *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">To *</label>
                 <input type="date" className={SEL} value={adminForm.toDate} onChange={e => setAdminForm(f => ({ ...f, toDate: e.target.value }))} />
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-white/60 mb-1">Reason</label>
-              <textarea rows={2} className="w-full border border-white/[0.08] rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-xs font-medium text-gray-700 mb-1">Reason</label>
+              <textarea rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={adminForm.reason} onChange={e => setAdminForm(f => ({ ...f, reason: e.target.value }))} />
             </div>
-            {adminErr && <p className="text-sm text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{adminErr}</p>}
+            {adminErr && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{adminErr}</p>}
           </div>
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setAdminApplyOpen(false)}>Cancel</Button>
@@ -549,14 +549,14 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
       <Dialog open={remarkOpen} onOpenChange={o => !o && setRemarkOpen(false)}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className={remarkTarget?.newStatus === "APPROVED" ? "text-emerald-400" : "text-rose-400"}>
+            <DialogTitle className={remarkTarget?.newStatus === "APPROVED" ? "text-emerald-700" : "text-rose-700"}>
               {remarkTarget?.newStatus === "APPROVED" ? "Approve Leave" : "Reject Leave"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
-              <label className="block text-xs font-medium text-white/60 mb-1">Admin Remark (optional)</label>
-              <textarea rows={3} className="w-full border border-white/[0.08] rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-xs font-medium text-gray-700 mb-1">Admin Remark (optional)</label>
+              <textarea rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={remark} onChange={e => setRemark(e.target.value)} placeholder="Add a note for the staff member…" />
             </div>
           </div>

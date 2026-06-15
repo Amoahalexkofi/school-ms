@@ -15,7 +15,7 @@ type Tab = "categories" | "types" | "groups" | "discounts";
 function Field({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-white/60 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       <Input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
     </div>
   );
@@ -194,16 +194,16 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
   ];
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-[#0f1015]">
-      <Link href="/fees" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors">
+    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+      <Link href="/fees" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
         <ArrowLeft className="h-4 w-4" /> Back to Fees
       </Link>
 
       {/* Tab bar */}
-      <div className="flex gap-1 bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-1 w-fit">
+      <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-white/50 hover:bg-white/[0.04]"}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
             {t.label}
           </button>
         ))}
@@ -213,7 +213,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
       {tab === "categories" && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-white/40">{categories.length} categor{categories.length !== 1 ? "ies" : "y"}</p>
+            <p className="text-sm text-gray-500">{categories.length} categor{categories.length !== 1 ? "ies" : "y"}</p>
             <Button onClick={() => { setCatName(""); setCatDesc(""); setCatEdit(null); setCatErr(""); setCatOpen(true); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Add Category
             </Button>
@@ -223,15 +223,15 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
               <Card key={c.id}>
                 <CardContent className="pt-4 flex items-start justify-between gap-2">
                   <div>
-                    <p className="font-medium text-white/80">{c.name}</p>
-                    {c.description && <p className="text-xs text-white/30 mt-0.5">{c.description}</p>}
-                    <p className="text-xs text-blue-400 mt-1">{c._count.feeTypes} fee type{c._count.feeTypes !== 1 ? "s" : ""}</p>
+                    <p className="font-medium text-gray-900">{c.name}</p>
+                    {c.description && <p className="text-xs text-gray-400 mt-0.5">{c.description}</p>}
+                    <p className="text-xs text-blue-600 mt-1">{c._count.feeTypes} fee type{c._count.feeTypes !== 1 ? "s" : ""}</p>
                   </div>
                   <div className="flex gap-1 shrink-0">
                     <Button size="sm" variant="outline" onClick={() => { setCatName(c.name); setCatDesc(c.description ?? ""); setCatEdit(c); setCatErr(""); setCatOpen(true); }}>
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Button size="sm" variant="outline" className="text-red-400 border-red-500/20 hover:bg-red-500/10" onClick={() => deleteCategory(c.id)}>
+                    <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => deleteCategory(c.id)}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
@@ -246,33 +246,33 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
       {tab === "types" && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-white/40">{types.length} fee type{types.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{types.length} fee type{types.length !== 1 ? "s" : ""}</p>
             <Button onClick={() => { setTypeName(""); setTypeCode(""); setTypeCatId(""); setTypeDesc(""); setTypeEdit(null); setTypeErr(""); setTypeOpen(true); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Add Fee Type
             </Button>
           </div>
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
+              <thead className="bg-gray-50 border-b">
                 <tr>
                   {["Name", "Code", "Category", ""].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {types.length === 0 ? (
-                  <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-white/30">No fee types yet.</td></tr>
+                  <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-gray-400">No fee types yet.</td></tr>
                 ) : types.map((t: any) => (
-                  <tr key={t.id} className="hover:bg-[#0f1015]">
-                    <td className="px-4 py-3 font-medium text-white/80">{t.name}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-white/40">{t.code}</td>
-                    <td className="px-4 py-3 text-white/40">{t.feeCategory?.name ?? "—"}</td>
+                  <tr key={t.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium text-gray-900">{t.name}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{t.code}</td>
+                    <td className="px-4 py-3 text-gray-500">{t.feeCategory?.name ?? "—"}</td>
                     <td className="px-4 py-3 flex gap-2 justify-end">
                       <Button size="sm" variant="outline" onClick={() => { setTypeName(t.name); setTypeCode(t.code); setTypeCatId(t.feeCategoryId ?? ""); setTypeDesc(t.description ?? ""); setTypeEdit(t); setTypeErr(""); setTypeOpen(true); }}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
-                      <Button size="sm" variant="outline" className="text-red-400 border-red-500/20 hover:bg-red-500/10" onClick={() => deleteType(t.id)}>
+                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => deleteType(t.id)}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </td>
@@ -288,22 +288,22 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
       {tab === "groups" && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-white/40">{groups.length} group{groups.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{groups.length} group{groups.length !== 1 ? "s" : ""}</p>
             <Button onClick={() => { setGrpName(""); setGrpDesc(""); setGrpEdit(null); setGrpErr(""); setGrpOpen(true); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Add Fee Group
             </Button>
           </div>
           <div className="space-y-3">
             {groups.length === 0 && (
-              <Card><CardContent className="py-10 text-center text-sm text-white/30">No fee groups yet.</CardContent></Card>
+              <Card><CardContent className="py-10 text-center text-sm text-gray-400">No fee groups yet.</CardContent></Card>
             )}
             {groups.map((g: any) => (
               <Card key={g.id}>
                 <CardContent className="pt-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-semibold text-white/80">{g.name}</p>
-                      {g.description && <p className="text-xs text-white/30">{g.description}</p>}
+                      <p className="font-semibold text-gray-900">{g.name}</p>
+                      {g.description && <p className="text-xs text-gray-400">{g.description}</p>}
                     </div>
                     <div className="flex gap-2">
                       <Button size="sm" variant="outline" onClick={() => { setSgGroupId(g.id); setSgSession(sessions[0]?.id ?? ""); setSgErr(""); setSgOpen(true); }}>
@@ -312,7 +312,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
                       <Button size="sm" variant="outline" onClick={() => { setGrpName(g.name); setGrpDesc(g.description ?? ""); setGrpEdit(g); setGrpErr(""); setGrpOpen(true); }}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
-                      <Button size="sm" variant="outline" className="text-red-400 border-red-500/20 hover:bg-red-500/10" onClick={() => deleteGroup(g.id)}>
+                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => deleteGroup(g.id)}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -322,14 +322,14 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
                     <div className="mt-3 space-y-2">
                       {g.sessionGroups.map((sg: any) => (
                         <Link key={sg.id} href={`/fees/groups/${sg.id}`}>
-                          <div className="flex items-center justify-between p-3 rounded-lg bg-[#0f1015] border border-white/[0.04] hover:border-blue-500/20 hover:bg-blue-500/10/40 transition-colors cursor-pointer">
+                          <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-100 hover:border-blue-200 hover:bg-blue-50/40 transition-colors cursor-pointer">
                             <div className="flex items-center gap-3">
                               <div>
-                                <p className="text-sm font-medium text-white/70">{sg.session.session}</p>
-                                <p className="text-xs text-white/30">{sg._count.items} items · {sg._count.studentFeesMasters} students assigned</p>
+                                <p className="text-sm font-medium text-gray-800">{sg.session.session}</p>
+                                <p className="text-xs text-gray-400">{sg._count.items} items · {sg._count.studentFeesMasters} students assigned</p>
                               </div>
                             </div>
-                            <ChevronRight className="h-4 w-4 text-white/30" />
+                            <ChevronRight className="h-4 w-4 text-gray-400" />
                           </div>
                         </Link>
                       ))}
@@ -346,32 +346,32 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
       {tab === "discounts" && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-white/40">{discounts.length} discount{discounts.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{discounts.length} discount{discounts.length !== 1 ? "s" : ""}</p>
             <Button onClick={() => { setDiscName(""); setDiscCode(""); setDiscType("percentage"); setDiscPct(""); setDiscAmt(""); setDiscDesc(""); setDiscExpiry(""); setDiscEdit(null); setDiscErr(""); setDiscOpen(true); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Add Discount
             </Button>
           </div>
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
+              <thead className="bg-gray-50 border-b">
                 <tr>
                   {["Name", "Code", "Type", "Value", "Expires", ""].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {discounts.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-white/30">No discounts yet.</td></tr>
+                  <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No discounts yet.</td></tr>
                 ) : discounts.map((d: any) => (
-                  <tr key={d.id} className="hover:bg-[#0f1015]">
-                    <td className="px-4 py-3 font-medium text-white/80">{d.name}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-white/40">{d.code}</td>
-                    <td className="px-4 py-3 text-white/40 capitalize">{d.type}</td>
-                    <td className="px-4 py-3 text-white/60">
+                  <tr key={d.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium text-gray-900">{d.name}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{d.code}</td>
+                    <td className="px-4 py-3 text-gray-500 capitalize">{d.type}</td>
+                    <td className="px-4 py-3 text-gray-700">
                       {d.type === "percentage" ? `${d.percentage}%` : `₵${Number(d.amount).toLocaleString()}`}
                     </td>
-                    <td className="px-4 py-3 text-white/30 text-xs">
+                    <td className="px-4 py-3 text-gray-400 text-xs">
                       {d.expireDate ? new Date(d.expireDate).toLocaleDateString() : "—"}
                     </td>
                     <td className="px-4 py-3 flex gap-2 justify-end">
@@ -383,7 +383,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
                       }}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
-                      <Button size="sm" variant="outline" className="text-red-400 border-red-500/20 hover:bg-red-500/10" onClick={() => deleteDiscount(d.id)}>
+                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => deleteDiscount(d.id)}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </td>
@@ -403,7 +403,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             <Field label="Name *" value={catName} onChange={setCatName} placeholder="e.g. Academic Fees" />
             <Field label="Description" value={catDesc} onChange={setCatDesc} placeholder="Optional" />
           </div>
-          {catErr && <p className="text-sm text-red-400">{catErr}</p>}
+          {catErr && <p className="text-sm text-red-600">{catErr}</p>}
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setCatOpen(false)}>Cancel</Button>
             <Button disabled={catLoad} onClick={saveCategory}>{catLoad ? "Saving…" : "Save"}</Button>
@@ -419,8 +419,8 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             <Field label="Name *" value={typeName} onChange={setTypeName} placeholder="e.g. Tuition Fee" />
             <Field label="Code *" value={typeCode} onChange={setTypeCode} placeholder="e.g. TUI" />
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Category</label>
-              <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={typeCatId} onChange={e => setTypeCatId(e.target.value)}>
                 <option value="">— None —</option>
                 {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -428,7 +428,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             </div>
             <Field label="Description" value={typeDesc} onChange={setTypeDesc} />
           </div>
-          {typeErr && <p className="text-sm text-red-400">{typeErr}</p>}
+          {typeErr && <p className="text-sm text-red-600">{typeErr}</p>}
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setTypeOpen(false)}>Cancel</Button>
             <Button disabled={typeLoad} onClick={saveType}>{typeLoad ? "Saving…" : "Save"}</Button>
@@ -444,7 +444,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             <Field label="Name *" value={grpName} onChange={setGrpName} placeholder="e.g. Grade 1 Fees 2026" />
             <Field label="Description" value={grpDesc} onChange={setGrpDesc} />
           </div>
-          {grpErr && <p className="text-sm text-red-400">{grpErr}</p>}
+          {grpErr && <p className="text-sm text-red-600">{grpErr}</p>}
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setGrpOpen(false)}>Cancel</Button>
             <Button disabled={grpLoad} onClick={saveGroup}>{grpLoad ? "Saving…" : "Save"}</Button>
@@ -456,15 +456,15 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
       <Dialog open={sgOpen} onOpenChange={o => !o && setSgOpen(false)}>
         <DialogContent className="max-w-sm">
           <DialogHeader><DialogTitle>Link to Session</DialogTitle></DialogHeader>
-          <p className="text-xs text-white/40">Select the academic session this fee group applies to.</p>
+          <p className="text-xs text-gray-500">Select the academic session this fee group applies to.</p>
           <div>
-            <label className="block text-sm font-medium text-white/60 mb-1">Session *</label>
-            <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <label className="block text-sm font-medium text-gray-700 mb-1">Session *</label>
+            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={sgSession} onChange={e => setSgSession(e.target.value)}>
               {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
             </select>
           </div>
-          {sgErr && <p className="text-sm text-red-400">{sgErr}</p>}
+          {sgErr && <p className="text-sm text-red-600">{sgErr}</p>}
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setSgOpen(false)}>Cancel</Button>
             <Button disabled={sgLoad} onClick={addSessionGroup}>{sgLoad ? "Linking…" : "Link Session"}</Button>
@@ -479,8 +479,8 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             <Field label="Name *" value={discName} onChange={setDiscName} placeholder="e.g. Staff Child Discount" />
             <Field label="Code *" value={discCode} onChange={v => setDiscCode(v.toUpperCase())} placeholder="e.g. STAFF10" />
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Type</label>
-              <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={discType} onChange={e => setDiscType(e.target.value)}>
                 <option value="percentage">Percentage</option>
                 <option value="amount">Fixed Amount</option>
@@ -491,12 +491,12 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
               : <Field label="Amount (₵)" value={discAmt} onChange={setDiscAmt} placeholder="e.g. 500" />}
             <Field label="Description" value={discDesc} onChange={setDiscDesc} />
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Expiry Date (optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date (optional)</label>
               <input type="date" value={discExpiry} onChange={e => setDiscExpiry(e.target.value)}
-                className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
           </div>
-          {discErr && <p className="text-sm text-red-400">{discErr}</p>}
+          {discErr && <p className="text-sm text-red-600">{discErr}</p>}
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setDiscOpen(false)}>Cancel</Button>
             <Button disabled={discLoad} onClick={saveDiscount}>{discLoad ? "Saving…" : "Save"}</Button>

@@ -99,13 +99,13 @@ export default function ChatPage() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* Room list */}
-        <aside className="w-64 shrink-0 border-r bg-[#111318] flex flex-col">
+        <aside className="w-64 shrink-0 border-r bg-white flex flex-col">
           <div className="p-3 border-b">
-            <p className="text-xs font-semibold text-white/40 uppercase tracking-wide">Conversations</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Conversations</p>
           </div>
           <div className="flex-1 overflow-y-auto">
             {rooms.length === 0 ? (
-              <p className="text-xs text-white/30 text-center mt-8 px-3">No conversations yet.</p>
+              <p className="text-xs text-gray-400 text-center mt-8 px-3">No conversations yet.</p>
             ) : (
               rooms.map((room) => {
                 const last = room.messages[0];
@@ -114,20 +114,20 @@ export default function ChatPage() {
                     key={room.id}
                     onClick={() => setActiveRoomId(room.id)}
                     className={cn(
-                      "w-full text-left px-3 py-3 border-b hover:bg-[#0f1015] transition-colors",
-                      activeRoomId === room.id && "bg-blue-500/10 border-l-2 border-l-blue-600"
+                      "w-full text-left px-3 py-3 border-b hover:bg-gray-50 transition-colors",
+                      activeRoomId === room.id && "bg-blue-50 border-l-2 border-l-blue-600"
                     )}
                   >
                     <div className="flex items-center gap-2 mb-0.5">
                       {room.type === "GROUP" ? (
-                        <Users className="h-3.5 w-3.5 text-white/30 shrink-0" />
+                        <Users className="h-3.5 w-3.5 text-gray-400 shrink-0" />
                       ) : (
-                        <MessageCircle className="h-3.5 w-3.5 text-white/30 shrink-0" />
+                        <MessageCircle className="h-3.5 w-3.5 text-gray-400 shrink-0" />
                       )}
-                      <p className="text-sm font-medium text-white/70 truncate">{roomLabel(room, myId)}</p>
+                      <p className="text-sm font-medium text-gray-800 truncate">{roomLabel(room, myId)}</p>
                     </div>
                     {last && (
-                      <p className="text-xs text-white/30 truncate pl-5">{last.content}</p>
+                      <p className="text-xs text-gray-400 truncate pl-5">{last.content}</p>
                     )}
                   </button>
                 );
@@ -137,10 +137,10 @@ export default function ChatPage() {
         </aside>
 
         {/* Message thread */}
-        <div className="flex-1 flex flex-col bg-[#0f1015]">
+        <div className="flex-1 flex flex-col bg-gray-50">
           {!activeRoomId ? (
             <div className="flex-1 flex items-center justify-center">
-              <div className="text-center text-white/30">
+              <div className="text-center text-gray-400">
                 <MessageCircle className="h-10 w-10 mx-auto mb-2 opacity-30" />
                 <p className="text-sm">Select a conversation</p>
               </div>
@@ -148,12 +148,12 @@ export default function ChatPage() {
           ) : (
             <>
               {/* Header */}
-              <div className="px-4 py-3 bg-[#111318] border-b">
+              <div className="px-4 py-3 bg-white border-b">
                 <p className="font-semibold text-sm">
                   {activeRoom ? roomLabel(activeRoom, myId) : ""}
                 </p>
                 {activeRoom && (
-                  <p className="text-xs text-white/30">
+                  <p className="text-xs text-gray-400">
                     {activeRoom.participants.length} participant{activeRoom.participants.length !== 1 ? "s" : ""}
                   </p>
                 )}
@@ -162,22 +162,22 @@ export default function ChatPage() {
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {messages.length === 0 ? (
-                  <p className="text-xs text-white/30 text-center mt-8">No messages yet. Say hello!</p>
+                  <p className="text-xs text-gray-400 text-center mt-8">No messages yet. Say hello!</p>
                 ) : (
                   messages.map((msg) => {
                     const isMe = msg.sender.id === myId;
                     return (
                       <div key={msg.id} className={cn("flex flex-col", isMe ? "items-end" : "items-start")}>
-                        <p className="text-xs text-white/30 mb-0.5 px-1">{senderName(msg.sender)}</p>
+                        <p className="text-xs text-gray-400 mb-0.5 px-1">{senderName(msg.sender)}</p>
                         <div className={cn(
                           "px-3 py-2 rounded-2xl text-sm max-w-xs lg:max-w-md break-words",
                           isMe
                             ? "bg-blue-600 text-white rounded-tr-sm"
-                            : "bg-[#111318] border text-white/70 rounded-tl-sm"
+                            : "bg-white border text-gray-800 rounded-tl-sm"
                         )}>
                           {msg.content}
                         </div>
-                        <p className="text-xs text-white/30 mt-0.5 px-1">
+                        <p className="text-xs text-gray-300 mt-0.5 px-1">
                           {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </p>
                       </div>
@@ -188,7 +188,7 @@ export default function ChatPage() {
               </div>
 
               {/* Input */}
-              <form onSubmit={handleSend} className="p-3 bg-[#111318] border-t flex gap-2">
+              <form onSubmit={handleSend} className="p-3 bg-white border-t flex gap-2">
                 <input
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}

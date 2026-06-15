@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Printer, FileText } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type Schedule = {
   id: string; dateOfExam: string | null; startTime: string | null; endTime: string | null;
@@ -97,7 +97,7 @@ export function AdmitCardClient({ examGroups, classes, school }: {
       </div>
 
       {students.length === 0 && !loading && (
-        <div className="no-print text-center py-16 text-white/30 border-2 border-dashed rounded-xl">
+        <div className="no-print text-center py-16 text-gray-400 border-2 border-dashed rounded-xl">
           <FileText className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p className="font-medium">Select an exam group, class and section then click Generate</p>
         </div>
@@ -114,7 +114,7 @@ export function AdmitCardClient({ examGroups, classes, school }: {
             <div className="bg-blue-700 text-white p-3 text-center">
               <h2 className="font-bold text-lg leading-tight">{schoolName}</h2>
               {school?.address && <p className="text-xs text-blue-200 mt-0.5">{school.address}</p>}
-              <div className="mt-2 bg-[#111318] text-blue-400 rounded px-3 py-0.5 inline-block">
+              <div className="mt-2 bg-white text-blue-700 rounded px-3 py-0.5 inline-block">
                 <p className="font-bold text-sm tracking-wide">ADMIT CARD</p>
               </div>
               <p className="text-xs text-blue-200 mt-1 font-medium">{selectedExam?.name}</p>
@@ -122,10 +122,10 @@ export function AdmitCardClient({ examGroups, classes, school }: {
 
             {/* Student Info */}
             <div className="p-3 flex gap-3">
-              <div className="w-16 h-20 bg-white/[0.04] border border-white/[0.08] rounded flex items-center justify-center shrink-0 overflow-hidden">
+              <div className="w-16 h-20 bg-gray-100 border border-gray-300 rounded flex items-center justify-center shrink-0 overflow-hidden">
                 {student.image
                   ? <img src={student.image} alt="" className="w-full h-full object-cover" />
-                  : <span className="text-2xl text-white/30 font-bold">{student.firstName[0]}</span>
+                  : <span className="text-2xl text-gray-300 font-bold">{student.firstName[0]}</span>
                 }
               </div>
               <div className="flex-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
@@ -142,19 +142,19 @@ export function AdmitCardClient({ examGroups, classes, school }: {
 
             {/* Exam Schedule Table */}
             <div className="px-3 pb-3">
-              <p className="text-xs font-semibold text-white/50 mb-1 border-b pb-1">Examination Schedule</p>
+              <p className="text-xs font-semibold text-gray-600 mb-1 border-b pb-1">Examination Schedule</p>
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="bg-[#0f1015]">
-                    <th className="text-left py-1 px-1.5 font-semibold text-white/50">Subject</th>
-                    <th className="text-left py-1 px-1.5 font-semibold text-white/50">Date</th>
-                    <th className="text-left py-1 px-1.5 font-semibold text-white/50">Time</th>
-                    <th className="text-right py-1 px-1.5 font-semibold text-white/50">Max</th>
+                  <tr className="bg-gray-50">
+                    <th className="text-left py-1 px-1.5 font-semibold text-gray-600">Subject</th>
+                    <th className="text-left py-1 px-1.5 font-semibold text-gray-600">Date</th>
+                    <th className="text-left py-1 px-1.5 font-semibold text-gray-600">Time</th>
+                    <th className="text-right py-1 px-1.5 font-semibold text-gray-600">Max</th>
                   </tr>
                 </thead>
                 <tbody>
                   {schedules.length === 0 ? (
-                    <tr><td colSpan={4} className="py-1 px-1.5 text-white/30 italic">No schedule defined</td></tr>
+                    <tr><td colSpan={4} className="py-1 px-1.5 text-gray-400 italic">No schedule defined</td></tr>
                   ) : schedules.map(s => (
                     <tr key={s.id} className="border-b last:border-0">
                       <td className="py-0.5 px-1.5">{s.subject.name}</td>
@@ -168,7 +168,7 @@ export function AdmitCardClient({ examGroups, classes, school }: {
             </div>
 
             {/* Footer */}
-            <div className="border-t px-3 py-2 flex justify-between items-center text-xs text-white/40">
+            <div className="border-t px-3 py-2 flex justify-between items-center text-xs text-gray-500">
               <p>{selectedExam?.schedules?.[0]?.session?.session}</p>
               <div className="text-right">
                 <div className="border-t border-gray-400 mt-4 pt-0.5 w-24">Principal's Signature</div>
@@ -184,8 +184,8 @@ export function AdmitCardClient({ examGroups, classes, school }: {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span className="text-white/30">{label}: </span>
-      <span className="font-medium text-white/70">{value}</span>
+      <span className="text-gray-400">{label}: </span>
+      <span className="font-medium text-gray-800">{value}</span>
     </div>
   );
 }

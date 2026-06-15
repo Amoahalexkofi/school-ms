@@ -61,9 +61,9 @@ export default async function ParentResultsPage() {
         <Topbar title="Results" />
         <main className="flex-1 p-6 flex items-center justify-center">
           <div className="text-center">
-            <Users className="h-10 w-10 mx-auto text-white/30 mb-3" />
-            <p className="text-white/40 font-medium">No children linked to your account.</p>
-            <p className="text-sm text-white/30 mt-1">Contact the school administrator to link your children.</p>
+            <Users className="h-10 w-10 mx-auto text-gray-300 mb-3" />
+            <p className="text-gray-500 font-medium">No children linked to your account.</p>
+            <p className="text-sm text-gray-400 mt-1">Contact the school administrator to link your children.</p>
           </div>
         </main>
       </div>
@@ -85,7 +85,7 @@ export default async function ParentResultsPage() {
               {/* Child header */}
               <div className="bg-gradient-to-r from-indigo-600 to-blue-600 rounded-2xl p-5 text-white mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[#111318]/20 rounded-xl flex items-center justify-center font-black text-sm">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center font-black text-sm">
                     {student.firstName[0]}{student.lastName?.[0]}
                   </div>
                   <div>
@@ -98,8 +98,8 @@ export default async function ParentResultsPage() {
               </div>
 
               {examGroups.length === 0 ? (
-                <div className="text-center py-8 bg-[#111318] rounded-2xl border border-white/[0.04]">
-                  <p className="text-white/30 text-sm">No published results yet for this child.</p>
+                <div className="text-center py-8 bg-white rounded-2xl border border-gray-100">
+                  <p className="text-gray-400 text-sm">No published results yet for this child.</p>
                 </div>
               ) : (
                 examGroups.map((eg: any) => {
@@ -111,25 +111,25 @@ export default async function ParentResultsPage() {
                   const pct = totalFull > 0 ? Math.round((totalObt / totalFull) * 100) : 0;
 
                   return (
-                    <div key={eg.id} className="bg-[#111318] rounded-2xl border border-white/[0.04] overflow-hidden shadow-sm mb-4">
-                      <div className="bg-[#0f1015] border-b px-5 py-3.5 flex items-center justify-between flex-wrap gap-2">
-                        <p className="font-bold text-white/80">{eg.name}</p>
+                    <div key={eg.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-4">
+                      <div className="bg-gray-50 border-b px-5 py-3.5 flex items-center justify-between flex-wrap gap-2">
+                        <p className="font-bold text-gray-900">{eg.name}</p>
                         {totalFull > 0 && (
                           <div className="flex items-center gap-3 text-sm">
-                            <span className="font-black text-blue-400">{pct}%</span>
-                            <span className="font-black text-indigo-400">{getGrade(totalObt, totalFull)}</span>
-                            <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full">{passed} passed</span>
-                            {failed > 0 && <span className="text-xs text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded-full">{failed} failed</span>}
+                            <span className="font-black text-blue-600">{pct}%</span>
+                            <span className="font-black text-indigo-600">{getGrade(totalObt, totalFull)}</span>
+                            <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">{passed} passed</span>
+                            {failed > 0 && <span className="text-xs text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded-full">{failed} failed</span>}
                           </div>
                         )}
                       </div>
                       <table className="w-full text-sm">
-                        <thead className="bg-[#0f1015] border-b">
+                        <thead className="bg-gray-50 border-b">
                           <tr>
-                            <th className="text-left px-5 py-2.5 text-xs font-semibold text-white/40">Subject</th>
-                            <th className="text-center px-3 py-2.5 text-xs font-semibold text-white/40">Marks</th>
-                            <th className="text-center px-3 py-2.5 text-xs font-semibold text-white/40">Grade</th>
-                            <th className="text-center px-3 py-2.5 text-xs font-semibold text-white/40">Status</th>
+                            <th className="text-left px-5 py-2.5 text-xs font-semibold text-gray-500">Subject</th>
+                            <th className="text-center px-3 py-2.5 text-xs font-semibold text-gray-500">Marks</th>
+                            <th className="text-center px-3 py-2.5 text-xs font-semibold text-gray-500">Grade</th>
+                            <th className="text-center px-3 py-2.5 text-xs font-semibold text-gray-500">Status</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -137,14 +137,14 @@ export default async function ParentResultsPage() {
                             const m = markMap.get(s.id) as any;
                             const p = m && s.fullMark ? Math.round((m.obtainedMark / s.fullMark) * 100) : null;
                             return (
-                              <tr key={s.id} className="hover:bg-[#0f1015]">
-                                <td className="px-5 py-2.5 font-medium text-white/70">{s.subject?.name}</td>
-                                <td className="text-center px-3 py-2.5 text-white/60">{m ? `${m.obtainedMark}/${s.fullMark}` : "—"}</td>
+                              <tr key={s.id} className="hover:bg-gray-50">
+                                <td className="px-5 py-2.5 font-medium text-gray-800">{s.subject?.name}</td>
+                                <td className="text-center px-3 py-2.5 text-gray-700">{m ? `${m.obtainedMark}/${s.fullMark}` : "—"}</td>
                                 <td className="text-center px-3 py-2.5">
-                                  {m ? <span className={`text-xs font-black px-2 py-0.5 rounded-full ${p! >= 60 ? "bg-emerald-500/10 text-emerald-400" : p! >= 40 ? "bg-amber-500/10 text-amber-400" : "bg-rose-500/10 text-rose-400"}`}>{getGrade(m.obtainedMark, s.fullMark)}</span> : <span className="text-white/30">—</span>}
+                                  {m ? <span className={`text-xs font-black px-2 py-0.5 rounded-full ${p! >= 60 ? "bg-emerald-100 text-emerald-700" : p! >= 40 ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"}`}>{getGrade(m.obtainedMark, s.fullMark)}</span> : <span className="text-gray-300">—</span>}
                                 </td>
                                 <td className="text-center px-3 py-2.5">
-                                  {m ? (m.isPassed ? <CheckCircle2 className="h-4 w-4 text-emerald-400 mx-auto" /> : <XCircle className="h-4 w-4 text-rose-400 mx-auto" />) : null}
+                                  {m ? (m.isPassed ? <CheckCircle2 className="h-4 w-4 text-emerald-600 mx-auto" /> : <XCircle className="h-4 w-4 text-rose-600 mx-auto" />) : null}
                                 </td>
                               </tr>
                             );

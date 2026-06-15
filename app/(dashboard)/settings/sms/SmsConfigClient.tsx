@@ -95,19 +95,19 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
+      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
 
       <div>
         <h2 className="text-lg font-bold">SMS Configuration</h2>
-        <p className="text-sm text-white/40 mt-0.5">Configure one SMS gateway to send attendance alerts, fee reminders, and notifications.</p>
+        <p className="text-sm text-gray-500 mt-0.5">Configure one SMS gateway to send attendance alerts, fee reminders, and notifications.</p>
       </div>
 
       {/* Test SMS widget */}
-      <Card className="border-blue-500/20 bg-blue-500/10/30">
+      <Card className="border-blue-200 bg-blue-50/30">
         <CardContent className="pt-4">
-          <p className="text-sm font-medium text-white/60 mb-2">Send Test SMS</p>
+          <p className="text-sm font-medium text-gray-700 mb-2">Send Test SMS</p>
           <div className="flex gap-2">
             <Input
               value={testPhone}
@@ -120,7 +120,7 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
             </Button>
           </div>
           {testResult && (
-            <p className={`mt-2 text-sm font-medium ${testResult.ok ? "text-emerald-400" : "text-red-500"}`}>
+            <p className={`mt-2 text-sm font-medium ${testResult.ok ? "text-green-600" : "text-red-500"}`}>
               {testResult.ok ? "✓" : "✗"} {testResult.msg}
             </p>
           )}
@@ -136,9 +136,9 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4 text-blue-400" />
+                    <MessageSquare className="h-4 w-4 text-blue-600" />
                     {prov.label}
-                    {isActive && <span className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-medium">Active</span>}
+                    {isActive && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Active</span>}
                   </CardTitle>
                   {!isActive && (
                     <Button size="sm" variant="outline" onClick={() => setActive(prov.value)}>
@@ -158,7 +158,7 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
                         onChange={(e) => update(prov.value, "apiKey", e.target.value)}
                         placeholder="Enter API key"
                       />
-                      <button type="button" onClick={() => setShowPass(s => ({ ...s, [prov.value]: !s[prov.value] }))} className="absolute right-2 top-2.5 text-white/30">
+                      <button type="button" onClick={() => setShowPass(s => ({ ...s, [prov.value]: !s[prov.value] }))} className="absolute right-2 top-2.5 text-gray-400">
                         {showPass[prov.value] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
@@ -186,7 +186,7 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
                   <Button size="sm" onClick={() => save(prov.value)} disabled={saving === prov.value} className="gap-1">
                     <Save className="h-3.5 w-3.5" />{saving === prov.value ? "Saving…" : "Save"}
                   </Button>
-                  {saved === prov.value && <span className="text-sm text-emerald-400 font-medium">Saved</span>}
+                  {saved === prov.value && <span className="text-sm text-green-600 font-medium">Saved</span>}
                 </div>
               </CardContent>
             </Card>

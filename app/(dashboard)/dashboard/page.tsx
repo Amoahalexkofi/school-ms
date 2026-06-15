@@ -4,377 +4,421 @@ import { getDashboardStats } from "@/lib/services/dashboard";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import {
-  ArrowRight, Users, UserCog, Banknote, TrendingDown,
+  ArrowRight, AlertCircle, Users, UserCog, Banknote, TrendingDown,
   ClipboardList, DollarSign, BookOpen, BarChart2, UserPlus,
-  ArrowUpRight, Minus,
 } from "lucide-react";
 import Link from "next/link";
 
-/* ─── tiny sparkline ─────────────────────────────────────────────────────── */
-function Spark({ data, color }: { data: number[]; color: string }) {
-  if (!data?.length) return null;
-  const w = 72, h = 28;
+// ─── Sparkline ────────────────────────────────────────────────────────────────
+function Sparkline({ data, color }: { data: number[]; color: string }) {
+  const w = 80, h = 32;
+  const allZero = data.every(v => v === 0);
+  if (allZero) {
+    return (
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
+        <line x1="2" y1={h / 2} x2={w - 2} y2={h / 2}
+          stroke={color} strokeWidth="1.5" strokeOpacity="0.4" strokeDasharray="5 3" strokeLinecap="round" />
+      </svg>
+    );
+  }
   const max = Math.max(...data), min = Math.min(...data), range = max - min || 1;
   const pts = data.map((v, i) => {
-    const x = (i / (data.length - 1)) * (w - 4) + 2;
-    const y = h - 4 - ((v - min) / range) * (h - 8);
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
+    const x = ((i / (data.length - 1)) * (w - 4) + 2).toFixed(1);
+    const y = (h - 4 - ((v - min) / range) * (h - 8)).toFixed(1);
+    return `${x},${y}`;
   }).join(" ");
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
-      <polyline points={pts} stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <polyline points={pts} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-/* ─── arc gauge ──────────────────────────────────────────────────────────── */
-function ArcGauge({ pct, size = 120 }: { pct: number; size?: number }) {
-  const stroke = 10, r = (size - stroke) / 2, cx = size / 2, cy = size / 2;
-  const toRad = (d: number) => (d * Math.PI) / 180;
-  const start = 135, span = 270;
-  function arc(from: number, to: number) {
-    const sx = cx + r * Math.cos(toRad(from)), sy = cy + r * Math.sin(toRad(from));
-    const ex = cx + r * Math.cos(toRad(to)),   ey = cy + r * Math.sin(toRad(to));
-    return `M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${r} ${r} 0 ${to - from > 180 ? 1 : 0} 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
-  }
-  const color = pct >= 90 ? "#10b981" : pct >= 70 ? "#3b82f6" : pct >= 50 ? "#f59e0b" : "#ef4444";
-  return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size}>
-        <path d={arc(start, start + span)} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={stroke} strokeLinecap="round" />
-        {pct > 0 && (
-          <path
-            d={arc(start, start + Math.max((pct / 100) * span, 5))}
-            fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"
-          />
-        )}
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center pb-2">
-        <span className="text-2xl font-black text-white tabular-nums leading-none" style={{ color }}>{pct}%</span>
-        <span className="text-[10px] text-white/30 mt-0.5 font-medium">present</span>
-      </div>
-    </div>
-  );
-}
-
-/* ─── KPI card ───────────────────────────────────────────────────────────── */
+// ─── KPI Card (dark) ──────────────────────────────────────────────────────────
 function KpiCard({
-  label, value, sub, href, accent, sparkData, sparkColor, delta,
+  label, value, sub, href,
+  icon: Icon, accent,
+  sparkData, sparkColor,
 }: {
   label: string; value: string | number; sub?: string; href?: string;
-  accent: string; sparkData?: number[]; sparkColor?: string; delta?: number | null;
+  icon: React.ElementType; accent: string; // tailwind text color for dot + icon
+  sparkData?: number[]; sparkColor?: string;
 }) {
   const inner = (
-    <div className="relative bg-[#111318] border border-white/[0.06] rounded-xl p-5 h-full flex flex-col justify-between gap-4 overflow-hidden hover:border-white/[0.1] transition-colors group">
+    <div className="relative bg-slate-900 rounded-2xl p-4 md:p-6 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-shadow duration-200 group h-full flex flex-col justify-between gap-4">
+      {/* Ghost icon watermark */}
+      <Icon className="absolute -right-4 -bottom-4 h-24 w-24 text-white opacity-[0.04] pointer-events-none" />
+
       <div>
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-[0.06em] mb-3">{label}</p>
-        <p className="text-[32px] font-black text-white leading-none tabular-nums tracking-tight">{value}</p>
-        {sub && <p className="text-[11px] text-white/25 mt-1.5">{sub}</p>}
-      </div>
-      <div className="flex items-end justify-between gap-2">
-        {sparkData && sparkColor ? (
-          <Spark data={sparkData} color={sparkColor} />
-        ) : <span />}
-        <div className="flex items-center gap-1.5 ml-auto">
-          {typeof delta === "number" && delta !== 0 && (
-            <span className={`text-[11px] font-semibold ${delta > 0 ? "text-emerald-400" : "text-red-400"}`}>
-              {delta > 0 ? "+" : ""}{delta}%
-            </span>
-          )}
-          {href && (
-            <ArrowUpRight className="h-3.5 w-3.5 text-white/10 group-hover:text-white/30 transition-colors" />
-          )}
+        <div className="flex items-center gap-1.5 mb-2.5">
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${accent.replace("text-", "bg-")}`} />
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 truncate">{label}</p>
         </div>
+        <p className="text-3xl md:text-[40px] font-bold text-white leading-none tabular-nums tracking-tight truncate">{value}</p>
+        {sub && <p className="text-[11px] text-slate-500 mt-1.5">{sub}</p>}
+      </div>
+
+      <div className="flex items-end justify-between gap-2">
+        {sparkData && sparkColor
+          ? <Sparkline data={sparkData} color={sparkColor} />
+          : <span />}
+        {href && (
+          <ArrowRight className="h-4 w-4 text-slate-700 group-hover:text-slate-400 transition-colors shrink-0 mb-1" />
+        )}
       </div>
     </div>
   );
   return href ? <Link href={href} className="block h-full">{inner}</Link> : <div className="h-full">{inner}</div>;
 }
 
-/* ─── section header ─────────────────────────────────────────────────────── */
-function SectionHead({ title, href, sub }: { title: string; href?: string; sub?: string }) {
+// ─── Arc Gauge ────────────────────────────────────────────────────────────────
+function ArcGauge({ pct, size = 140, empty = false }: { pct: number; size?: number; empty?: boolean }) {
+  const stroke = 12, r = (size - stroke) / 2, cx = size / 2, cy = size / 2;
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const startDeg = 135, totalDeg = 270;
+
+  function arcPath(from: number, to: number) {
+    const sx = cx + r * Math.cos(toRad(from)), sy = cy + r * Math.sin(toRad(from));
+    const ex = cx + r * Math.cos(toRad(to)),   ey = cy + r * Math.sin(toRad(to));
+    return `M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${r} ${r} 0 ${to - from > 180 ? 1 : 0} 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
+  }
+
+  const trackEnd = startDeg + totalDeg;
+  const fillEnd  = startDeg + Math.max((pct / 100) * totalDeg, pct > 0 ? 5 : 0);
+  const color = pct >= 90 ? "#16a34a" : pct >= 75 ? "#2563eb" : pct >= 50 ? "#d97706" : "#dc2626";
+
   return (
-    <div className="flex items-center justify-between mb-4">
-      <div>
-        <h2 className="text-[13px] font-semibold text-white/70">{title}</h2>
-        {sub && <p className="text-[11px] text-white/25 mt-0.5">{sub}</p>}
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg width={size} height={size}>
+        <path d={arcPath(startDeg, trackEnd)} fill="none" stroke="#f1f5f9" strokeWidth={stroke} strokeLinecap="round" />
+        {!empty && pct > 0 && (
+          <path d={arcPath(startDeg, fillEnd)} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" />
+        )}
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pb-3">
+        {empty ? (
+          <>
+            <span className="text-2xl font-bold leading-none text-gray-200">—</span>
+            <span className="text-[10px] text-gray-300 mt-1">no data</span>
+          </>
+        ) : (
+          <>
+            <span className="text-[32px] font-bold leading-none tabular-nums" style={{ color }}>{pct}%</span>
+            <span className="text-[10px] text-gray-400 mt-1 font-medium">present</span>
+          </>
+        )}
       </div>
-      {href && (
-        <Link href={href} className="text-[11px] text-emerald-400/70 hover:text-emerald-400 font-medium flex items-center gap-0.5 transition-colors">
-          View all <ArrowRight className="h-3 w-3" />
-        </Link>
-      )}
     </div>
   );
 }
 
-/* ─── page ───────────────────────────────────────────────────────────────── */
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function DashboardPage() {
   const session = await auth();
   const role    = (session?.user as any)?.role;
   if (role === "STUDENT") redirect("/my-results");
   if (role === "PARENT")  redirect("/parent/results");
 
-  const [stats, db] = await Promise.all([
-    getDashboardStats().catch(() => null),
-    getDb().catch(() => null),
-  ]);
+  const stats   = await getDashboardStats().catch(() => null);
+  const db      = await getDb().catch(() => null);
+  const profile = db ? await (db as any).schoolProfile
+    .findFirst({ select: { name: true, currency: true } })
+    .catch(() => null) : null;
 
-  const profile = db
-    ? await (db as any).schoolProfile.findFirst({ select: { name: true, currency: true } }).catch(() => null)
-    : null;
+  const schoolName  = profile?.name ?? "Your School";
+  const currency    = profile?.currency ?? "";
+  const totalStaff  = Object.values(stats?.staffByRole ?? {}).reduce((a: number, b) => a + (b as number), 0);
+  const teacherCount = stats?.staffByRole?.["TEACHER"] ?? 0;
 
-  const schoolName   = profile?.name ?? "Your School";
-  const currency     = profile?.currency ?? "";
-  const totalStaff   = Object.values(stats?.staffByRole ?? {}).reduce((a: number, b) => a + (b as number), 0);
-  const teacherCount = (stats?.staffByRole?.["TEACHER"] ?? 0) as number;
-  const attTotal     = stats?.studentAttendance?.total ?? 0;
-  const attPct       = (v: number) => attTotal > 0 ? Math.round((v / attTotal) * 100) : 0;
-  const presentPct   = attPct(stats?.studentAttendance?.present ?? 0);
-  const feesTotal    = stats?.feesTotal ?? 0;
-  const feesPaidPct  = feesTotal > 0 ? Math.round(((stats?.feesPaid ?? 0) / feesTotal) * 100) : 0;
+  const attTotal    = stats?.studentAttendance?.total ?? 0;
+  const attPct      = (v: number) => attTotal > 0 ? Math.round((v / attTotal) * 100) : 0;
+  const presentPct  = attPct(stats?.studentAttendance?.present ?? 0);
+  const feesPaidPct = (stats?.feesTotal ?? 0) > 0 ? Math.round(((stats?.feesPaid ?? 0) / stats!.feesTotal) * 100) : 0;
 
   const now      = new Date();
-  const dayLabel = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+  const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
+  const dayLabel = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <div className="flex flex-col flex-1 bg-[#0a0b0f] min-h-screen">
+    <div className="flex flex-col flex-1 bg-[#f4f6fb] min-h-screen">
       <Topbar title="Dashboard" />
 
-      <main className="flex-1 p-5 md:p-6 max-w-[1440px] w-full mx-auto space-y-5">
+      <main className="flex-1 px-4 py-5 md:p-6 max-w-[1400px] mx-auto w-full space-y-4 md:space-y-5">
 
-        {/* ── Header row ── */}
+        {/* ── Header ── */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-xl font-black text-white tracking-tight">{schoolName}</h1>
-            <p className="text-[12px] text-white/25 mt-0.5">{dayLabel}</p>
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{schoolName}</h1>
+            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+              <p className="text-sm text-gray-400">{greeting}</p>
+              {stats?.currentSession && (
+                <>
+                  <span className="text-gray-300">·</span>
+                  <span className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
+                    {stats.currentSession}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
-          {stats?.currentSession && (
-            <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
-              {stats.currentSession}
-            </span>
-          )}
+          <p className="text-sm text-gray-400 hidden md:block shrink-0">{dayLabel}</p>
         </div>
 
-        {/* ── KPI row ── */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-          <KpiCard
-            label="Students enrolled" value={stats?.totalStudents ?? 0}
-            sub="current session" href="/students"
-            accent="blue" sparkData={[62,58,71,68,75,70,72]} sparkColor="#3b82f6"
-          />
-          <KpiCard
-            label="Teachers / Staff" value={`${teacherCount} / ${totalStaff}`}
-            sub="active employees" href="/staff"
-            accent="violet"
-          />
-          <KpiCard
-            label="Fees collected" value={`${currency}${(stats?.monthCollection ?? 0).toLocaleString()}`}
-            sub="this month" href="/fees/collect"
-            accent="emerald" sparkData={stats?.sparklines?.fees} sparkColor="#10b981"
-          />
-          <KpiCard
-            label="Expenses" value={`${currency}${(stats?.monthExpense ?? 0).toLocaleString()}`}
-            sub="this month" href="/finance"
-            accent="rose" sparkData={stats?.sparklines?.expenses} sparkColor="#f43f5e"
-          />
-        </div>
+        {!stats ? (
+          <div className="bg-white rounded-2xl border border-dashed border-gray-200 py-20 text-center shadow-sm">
+            <AlertCircle className="h-8 w-8 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-500">No data yet</p>
+            <p className="text-sm text-gray-400 mt-1">Create an active academic session to populate the dashboard.</p>
+            <Link href="/settings" className="inline-flex items-center gap-1 mt-4 text-sm text-blue-600 font-medium hover:underline">
+              Go to Settings <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        ) : (
+          <>
+            {/* ── KPI Strip ── */}
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
+              <KpiCard
+                label="Students enrolled" value={stats.totalStudents}
+                sub="current session" href="/students"
+                icon={Users} accent="text-blue-400"
+              />
+              <KpiCard
+                label="Teachers / Staff" value={`${teacherCount} / ${totalStaff}`}
+                sub="active employees" href="/staff"
+                icon={UserCog} accent="text-violet-400"
+              />
+              <KpiCard
+                label="Fees collected" value={`${currency}${(stats.monthCollection ?? 0).toLocaleString()}`}
+                sub="this month" href="/fees/collect"
+                icon={Banknote} accent="text-emerald-400"
+                sparkData={stats.sparklines.fees} sparkColor="#34d399"
+              />
+              <KpiCard
+                label="Expenses" value={`${currency}${(stats.monthExpense ?? 0).toLocaleString()}`}
+                sub="this month" href="/finance"
+                icon={TrendingDown} accent="text-rose-400"
+                sparkData={stats.sparklines.expenses} sparkColor="#fb7185"
+              />
+            </div>
 
-        {/* ── Main content ── */}
-        <div className="grid grid-cols-12 gap-4">
+            {/* ── Attendance + Fees (7/12 + 5/12) ── */}
+            <div className="grid grid-cols-12 gap-4">
 
-          {/* Attendance (5 cols) */}
-          <div className="col-span-12 lg:col-span-5 bg-[#111318] border border-white/[0.06] rounded-xl p-5">
-            <SectionHead title="Attendance" sub="Today's summary" href="/attendance" />
-
-            {attTotal === 0 ? (
-              <div className="flex flex-col items-center py-8 text-center">
-                <ClipboardList className="h-8 w-8 text-white/[0.08] mb-3" />
-                <p className="text-[13px] font-semibold text-white/30">Not marked today</p>
-                <p className="text-[11px] text-white/15 mt-1 mb-4">Take attendance to see the summary</p>
-                <Link href="/attendance" className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg hover:bg-emerald-500/15 transition-colors">
-                  <ClipboardList className="h-3 w-3" /> Mark now
-                </Link>
-              </div>
-            ) : (
-              <div className="flex gap-6 items-start">
-                <ArcGauge pct={presentPct} size={110} />
-                <div className="flex-1 space-y-2 pt-1 min-w-0">
-                  {[
-                    { label: "Present",  v: stats?.studentAttendance?.present ?? 0,  pct: attPct(stats?.studentAttendance?.present ?? 0),  color: "bg-emerald-500" },
-                    { label: "Absent",   v: stats?.studentAttendance?.absent ?? 0,   pct: attPct(stats?.studentAttendance?.absent ?? 0),   color: "bg-red-500" },
-                    { label: "Late",     v: stats?.studentAttendance?.late ?? 0,     pct: attPct(stats?.studentAttendance?.late ?? 0),     color: "bg-amber-500" },
-                    { label: "Half day", v: stats?.studentAttendance?.halfDay ?? 0,  pct: attPct(stats?.studentAttendance?.halfDay ?? 0),  color: "bg-blue-500" },
-                  ].map(({ label, v, pct: p, color }) => (
-                    <div key={label} className="flex items-center gap-2">
-                      <span className="text-[11px] text-white/30 w-14 shrink-0">{label}</span>
-                      <div className="flex-1 h-1 bg-[#111318]/[0.06] rounded-full overflow-hidden">
-                        <div className={`h-full rounded-full ${color}`} style={{ width: `${p}%` }} />
-                      </div>
-                      <span className="text-[11px] font-semibold text-white/50 tabular-nums w-6 text-right shrink-0">{v}</span>
-                    </div>
-                  ))}
-                  <div className="pt-2 border-t border-white/[0.06] flex justify-between">
-                    <span className="text-[10px] text-white/20">Total</span>
-                    <span className="text-[11px] font-bold text-white/40 tabular-nums">{attTotal}</span>
+              {/* Attendance */}
+              <div className="col-span-12 lg:col-span-7 bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-4 md:p-6">
+                <div className="flex items-start justify-between mb-5">
+                  <div>
+                    <h2 className="text-base font-bold text-gray-900">Student Attendance</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">Today's summary</p>
                   </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Fee collection (4 cols) */}
-          <div className="col-span-12 lg:col-span-4 bg-[#111318] border border-white/[0.06] rounded-xl p-5">
-            <SectionHead title="Fee Collection" sub="Current session" href="/fees/collect" />
-
-            <div className="mb-5">
-              <div className="flex items-baseline justify-between mb-2">
-                <span className="text-[36px] font-black text-white tabular-nums leading-none">{feesPaidPct}%</span>
-                <span className="text-[11px] text-white/25">{feesTotal} invoices</span>
-              </div>
-              <div className="h-1.5 bg-[#111318]/[0.06] rounded-full overflow-hidden mb-3">
-                <div
-                  className="h-full bg-emerald-500 rounded-full transition-all duration-700"
-                  style={{ width: `${feesPaidPct}%` }}
-                />
-              </div>
-              <p className="text-[10px] text-white/20">collected this session</p>
-            </div>
-
-            <div className="space-y-0 divide-y divide-white/[0.04]">
-              {[
-                { label: "Paid",            value: String(stats?.feesPaid ?? 0),  accent: false },
-                { label: "Outstanding",     value: String(stats?.feesUnpaid ?? 0), accent: (stats?.feesUnpaid ?? 0) > 0 },
-                { label: "This month",      value: `${currency}${(stats?.monthCollection ?? 0).toLocaleString()}`, accent: false },
-                { label: "Expenses",        value: `${currency}${(stats?.monthExpense ?? 0).toLocaleString()}`,    accent: false },
-              ].map(({ label, value, accent }) => (
-                <div key={label} className="flex items-center justify-between py-2.5">
-                  <span className="text-[12px] text-white/30">{label}</span>
-                  <span className={`text-[12px] font-semibold tabular-nums ${accent ? "text-red-400" : "text-white/60"}`}>{value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Staff + Library (3 cols) */}
-          <div className="col-span-12 lg:col-span-3 flex flex-col gap-4">
-            {/* Staff today */}
-            <div className="bg-[#111318] border border-white/[0.06] rounded-xl p-5">
-              <SectionHead title="Staff today" href="/attendance/staff" />
-              <div className="space-y-0 divide-y divide-white/[0.04]">
-                {[
-                  { label: "Present", v: stats?.staffAttendance?.present ?? 0, color: "text-emerald-400" },
-                  { label: "Absent",  v: stats?.staffAttendance?.absent  ?? 0, color: (stats?.staffAttendance?.absent ?? 0) > 0 ? "text-red-400" : "text-white/50" },
-                ].map(({ label, v, color }) => (
-                  <div key={label} className="flex justify-between items-center py-2.5">
-                    <span className="text-[12px] text-white/30">{label}</span>
-                    <span className={`text-[13px] font-bold tabular-nums ${color}`}>{v}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            {/* Library */}
-            <div className="bg-[#111318] border border-white/[0.06] rounded-xl p-5 flex-1">
-              <SectionHead title="Library" href="/library" />
-              <div className="space-y-0 divide-y divide-white/[0.04]">
-                {[
-                  { label: "Available", v: stats?.books?.available ?? 0,      color: "text-white/50" },
-                  { label: "Issued",    v: stats?.books?.issued ?? 0,          color: "text-white/50" },
-                  ...(( stats?.books?.dueForReturn ?? 0) > 0
-                    ? [{ label: "Overdue", v: stats?.books?.dueForReturn ?? 0, color: "text-red-400" }]
-                    : []),
-                ].map(({ label, v, color }) => (
-                  <div key={label} className="flex justify-between items-center py-2.5">
-                    <span className={`text-[12px] ${label === "Overdue" ? "text-red-400/60" : "text-white/30"}`}>{label}</span>
-                    <span className={`text-[13px] font-bold tabular-nums ${color}`}>{v}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Bottom row ── */}
-        <div className="grid grid-cols-12 gap-4">
-
-          {/* Today's payments (8 cols) */}
-          <div className="col-span-12 lg:col-span-8 bg-[#111318] border border-white/[0.06] rounded-xl p-5">
-            <SectionHead
-              title="Today's Payments"
-              sub={`${stats?.todayPayments?.length ?? 0} transaction${stats?.todayPayments?.length !== 1 ? "s" : ""}`}
-              href="/fees/collect"
-            />
-
-            {!stats?.todayPayments?.length ? (
-              <div className="py-10 flex flex-col items-center text-center">
-                <DollarSign className="h-8 w-8 text-white/[0.06] mb-3" />
-                <p className="text-[12px] text-white/25">No payments today</p>
-                <Link href="/fees/collect" className="mt-3 text-[11px] text-emerald-400/70 hover:text-emerald-400 font-medium transition-colors">
-                  Collect a fee →
-                </Link>
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-[1fr_64px_72px] text-[10px] font-semibold uppercase tracking-[0.06em] text-white/20 pb-2 border-b border-white/[0.05] gap-3">
-                  <span>Student</span>
-                  <span className="text-right">Time</span>
-                  <span className="text-right">Amount</span>
-                </div>
-                <div className="divide-y divide-white/[0.04]">
-                  {stats.todayPayments.slice(0, 8).map((p: any, i: number) => (
-                    <div key={i} className="grid grid-cols-[1fr_64px_72px] items-center py-2.5 gap-3 hover:bg-[#111318]/[0.02] -mx-1 px-1 rounded transition-colors">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-6 h-6 rounded-full bg-[#111318]/[0.06] flex items-center justify-center shrink-0 text-[9px] font-bold text-white/40">
-                          {(p.studentName || "?").slice(0, 2).toUpperCase()}
-                        </div>
-                        <span className="text-[12px] text-white/60 font-medium truncate">{p.studentName || "—"}</span>
-                      </div>
-                      <span className="text-[11px] text-white/25 tabular-nums text-right">
-                        {new Date(p.createdAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
-                      </span>
-                      <span className="text-[12px] font-semibold text-white/60 tabular-nums text-right">
-                        {currency}{(p.amount ?? 0).toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                {stats.todayPayments.length > 8 && (
-                  <p className="pt-3 text-center text-[11px] text-white/20">
-                    +{stats.todayPayments.length - 8} more
-                  </p>
-                )}
-              </>
-            )}
-          </div>
-
-          {/* Quick actions (4 cols) */}
-          <div className="col-span-12 lg:col-span-4 bg-[#111318] border border-white/[0.06] rounded-xl p-5">
-            <SectionHead title="Quick actions" />
-            <div className="space-y-0.5">
-              {[
-                { href: "/attendance",   label: "Mark attendance",  icon: ClipboardList, show: ["ADMIN","SUPER_ADMIN","TEACHER"] },
-                { href: "/fees/collect", label: "Collect fees",     icon: DollarSign,    show: ["ADMIN","SUPER_ADMIN","ACCOUNTANT"] },
-                { href: "/students/new", label: "Add student",      icon: UserPlus,      show: ["ADMIN","SUPER_ADMIN"] },
-                { href: "/exam-groups",  label: "Enter exam marks", icon: BookOpen,      show: ["ADMIN","SUPER_ADMIN","TEACHER"] },
-                { href: "/staff/new",    label: "Add staff",        icon: UserCog,       show: ["ADMIN","SUPER_ADMIN"] },
-                { href: "/reports",      label: "View reports",     icon: BarChart2,     show: [] },
-              ]
-                .filter(a => !a.show.length || a.show.includes(role))
-                .map(({ href, label, icon: Icon }) => (
-                  <Link
-                    key={href} href={href}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#111318]/[0.04] transition-colors group"
-                  >
-                    <div className="w-6 h-6 rounded-md bg-[#111318]/[0.05] flex items-center justify-center shrink-0 group-hover:bg-emerald-500/10 transition-colors">
-                      <Icon className="h-3.5 w-3.5 text-white/25 group-hover:text-emerald-400 transition-colors" />
-                    </div>
-                    <span className="text-[12px] text-white/40 group-hover:text-white/70 flex-1 transition-colors">{label}</span>
-                    <ArrowRight className="h-3 w-3 text-white/10 group-hover:text-white/30 transition-colors" />
+                  <Link href="/attendance" className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors">
+                    Mark <ArrowRight className="h-3 w-3" />
                   </Link>
-                ))}
+                </div>
+
+                {attTotal === 0 ? (
+                  <div className="flex flex-col sm:flex-row items-center gap-6">
+                    <ArcGauge pct={0} empty />
+                    <div className="text-center sm:text-left">
+                      <p className="text-sm font-semibold text-gray-700 mb-1">Not marked today</p>
+                      <p className="text-xs text-gray-400 mb-4">Take attendance to see the breakdown.</p>
+                      <Link href="/attendance" className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors">
+                        <ClipboardList className="h-3.5 w-3.5" /> Mark now
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+                    <ArcGauge pct={presentPct} />
+                    <div className="flex-1 space-y-1 min-w-0">
+                      {[
+                        { label: "Present",  v: stats.studentAttendance.present,  p: attPct(stats.studentAttendance.present),  bar: "bg-green-500" },
+                        { label: "Absent",   v: stats.studentAttendance.absent,   p: attPct(stats.studentAttendance.absent),   bar: "bg-red-400" },
+                        { label: "Late",     v: stats.studentAttendance.late,     p: attPct(stats.studentAttendance.late),     bar: "bg-amber-400" },
+                        { label: "Half day", v: stats.studentAttendance.halfDay,  p: attPct(stats.studentAttendance.halfDay),  bar: "bg-blue-400" },
+                      ].map(({ label, v, p, bar }) => (
+                        <div key={label} className="flex items-center gap-2 py-1.5">
+                          <span className="text-sm text-gray-500 w-14 shrink-0">{label}</span>
+                          <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden min-w-0">
+                            <div className={`h-full rounded-full ${bar}`} style={{ width: `${p}%` }} />
+                          </div>
+                          <span className="text-sm font-semibold text-gray-900 tabular-nums w-7 text-right shrink-0">{v}</span>
+                          <span className="text-[11px] text-gray-400 tabular-nums w-7 text-right shrink-0">{p}%</span>
+                        </div>
+                      ))}
+                      <div className="pt-2.5 border-t border-gray-50 mt-1 flex items-center justify-between">
+                        <span className="text-xs text-gray-400">Total</span>
+                        <span className="text-sm font-bold text-gray-900 tabular-nums">{attTotal}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Fee Collection */}
+              <div className="col-span-12 lg:col-span-5 bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-4 md:p-6">
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h2 className="text-base font-bold text-gray-900">Fee Collection</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">Current session</p>
+                  </div>
+                  <Link href="/fees/collect" className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-full transition-colors">
+                    Collect <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+
+                {/* Big % + bar */}
+                <div className="mb-6">
+                  <div className="flex items-end justify-between mb-2">
+                    <span className="text-[40px] font-bold text-gray-900 leading-none tabular-nums">{feesPaidPct}%</span>
+                    <span className="text-xs text-gray-400 mb-1">{stats.feesPaid + stats.feesUnpaid} invoices</span>
+                  </div>
+                  <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                      style={{ width: `${feesPaidPct}%` }} />
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1.5">collected this session</p>
+                </div>
+
+                <div className="space-y-0 divide-y divide-gray-50">
+                  {[
+                    { label: "Paid",          value: String(stats.feesPaid),   cl: "text-gray-900" },
+                    { label: "Outstanding",   value: String(stats.feesUnpaid), cl: stats.feesUnpaid > 0 ? "text-red-600 font-semibold" : "text-gray-900" },
+                    { label: "Month receipts",value: `${currency}${(stats.monthCollection ?? 0).toLocaleString()}`, cl: "text-gray-900" },
+                    { label: "Month expenses",value: `${currency}${(stats.monthExpense ?? 0).toLocaleString()}`,    cl: "text-gray-900" },
+                  ].map(({ label, value, cl }) => (
+                    <div key={label} className="flex items-center justify-between py-2.5">
+                      <span className="text-sm text-gray-500">{label}</span>
+                      <span className={`text-sm tabular-nums ${cl}`}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+
+            {/* ── Payments + Right column (8/12 + 4/12) ── */}
+            <div className="grid grid-cols-12 gap-4">
+
+              {/* Payments table */}
+              <div className="col-span-12 lg:col-span-8 bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-4 md:p-6">
+                <div className="flex items-start justify-between mb-5">
+                  <div>
+                    <h2 className="text-base font-bold text-gray-900">Today's Payments</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {stats.todayPayments.length} transaction{stats.todayPayments.length !== 1 ? "s" : ""}
+                    </p>
+                  </div>
+                  <Link href="/fees/collect" className="text-xs text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-0.5">
+                    View all <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+
+                {stats.todayPayments.length === 0 ? (
+                  <div className="py-10 flex flex-col items-center text-center">
+                    <DollarSign className="h-10 w-10 text-gray-200 mb-3" />
+                    <p className="text-sm text-gray-400 font-medium">No payments yet today</p>
+                    <Link href="/fees/collect" className="mt-2 text-xs text-blue-600 font-semibold hover:underline">Collect a fee →</Link>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-[1fr_80px_80px] text-[11px] text-gray-400 font-semibold uppercase tracking-wider pb-2 border-b border-gray-100 gap-4">
+                      <span>Student</span>
+                      <span className="text-right">Time</span>
+                      <span className="text-right">Amount</span>
+                    </div>
+                    <div className="divide-y divide-gray-50">
+                      {stats.todayPayments.slice(0, 8).map((p: any, i: number) => (
+                        <div key={i} className="grid grid-cols-[1fr_80px_80px] items-center py-3 gap-4 hover:bg-gray-50/60 -mx-2 px-2 rounded-lg transition-colors">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center shrink-0 text-[10px] font-bold text-indigo-600">
+                              {(p.studentName || "?").slice(0, 2).toUpperCase()}
+                            </div>
+                            <span className="text-sm text-gray-800 font-medium truncate">{p.studentName || "—"}</span>
+                          </div>
+                          <span className="text-xs text-gray-400 tabular-nums text-right">
+                            {new Date(p.createdAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                          <span className="text-sm font-semibold text-gray-900 tabular-nums text-right">
+                            {currency}{(p.amount ?? 0).toLocaleString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    {stats.todayPayments.length > 8 && (
+                      <div className="pt-3 text-center">
+                        <Link href="/fees/collect" className="text-xs text-gray-400 hover:text-blue-600 transition-colors font-medium">
+                          + {stats.todayPayments.length - 8} more payments today
+                        </Link>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Right column */}
+              <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+
+                {/* Quick actions */}
+                <div className="bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-5">
+                  <h2 className="text-sm font-bold text-gray-900 mb-3">Quick actions</h2>
+                  <div className="space-y-0.5">
+                    {[
+                      { href: "/attendance",  label: "Mark attendance",  show: ["ADMIN","SUPER_ADMIN","TEACHER"],     icon: ClipboardList },
+                      { href: "/fees/collect",label: "Collect fees",     show: ["ADMIN","SUPER_ADMIN","ACCOUNTANT"],  icon: DollarSign },
+                      { href: "/students/new",label: "Add student",      show: ["ADMIN","SUPER_ADMIN"],               icon: UserPlus },
+                      { href: "/exam-groups", label: "Enter marks",      show: ["ADMIN","SUPER_ADMIN","TEACHER"],     icon: BookOpen },
+                      { href: "/staff/new",   label: "Add staff",        show: ["ADMIN","SUPER_ADMIN"],               icon: UserCog },
+                      { href: "/reports",     label: "Reports",          show: [],                                    icon: BarChart2 },
+                    ].filter(a => a.show.length === 0 || a.show.includes(role)).map(({ href, label, icon: Icon }) => (
+                      <Link key={href} href={href}
+                        className="flex items-center gap-2.5 py-2 px-2 rounded-lg hover:bg-gray-50 transition-colors group">
+                        <Icon className="h-3.5 w-3.5 text-gray-400 shrink-0 group-hover:text-gray-600" />
+                        <span className="text-sm text-gray-700 flex-1">{label}</span>
+                        <ArrowRight className="h-3.5 w-3.5 text-gray-200 group-hover:text-gray-400 transition-colors" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Staff + Library */}
+                <div className="bg-white rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.07)] p-5 flex-1">
+                  <div className="mb-4">
+                    <h2 className="text-sm font-bold text-gray-900 mb-2">Staff today</h2>
+                    <div className="space-y-1">
+                      {[
+                        { label: "Present", v: stats.staffAttendance.present, cl: "text-gray-900" },
+                        { label: "Absent",  v: stats.staffAttendance.absent,  cl: stats.staffAttendance.absent > 0 ? "text-red-600 font-semibold" : "text-gray-900" },
+                      ].map(({ label, v, cl }) => (
+                        <div key={label} className="flex justify-between items-center py-1.5 border-b border-gray-50 last:border-0">
+                          <span className="text-sm text-gray-500">{label}</span>
+                          <span className={`text-sm tabular-nums ${cl}`}>{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 className="text-sm font-bold text-gray-900 mb-2">Library</h2>
+                    <div className="space-y-1">
+                      {[
+                        { label: "Available", v: stats.books.available, cl: "text-gray-900" },
+                        { label: "Issued",    v: stats.books.issued,    cl: "text-gray-900" },
+                        ...(stats.books.dueForReturn > 0
+                          ? [{ label: "Overdue", v: stats.books.dueForReturn, cl: "text-red-600 font-semibold" }]
+                          : []),
+                      ].map(({ label, v, cl }) => (
+                        <div key={label} className="flex justify-between items-center py-1.5 border-b border-gray-50 last:border-0">
+                          <span className={`text-sm ${label === "Overdue" ? "text-red-500" : "text-gray-500"}`}>{label}</span>
+                          <span className={`text-sm tabular-nums ${cl}`}>{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </main>
     </div>
   );

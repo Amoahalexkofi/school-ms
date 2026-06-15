@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type Props = {
   leaveTypes: any[];
@@ -72,7 +72,7 @@ export function AddLeaveForm({ leaveTypes, staff, students }: Props) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/leave" className="text-sm text-blue-400 hover:underline">
+      <Link href="/leave" className="text-sm text-blue-600 hover:underline">
         ← Back to Leave Management
       </Link>
 
@@ -91,7 +91,7 @@ export function AddLeaveForm({ leaveTypes, staff, students }: Props) {
                 className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                   type === "staff"
                     ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-[#111318] text-white/50 border-white/[0.08] hover:bg-[#0f1015]"
+                    : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
                 }`}
               >
                 Staff Leave
@@ -102,7 +102,7 @@ export function AddLeaveForm({ leaveTypes, staff, students }: Props) {
                 className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                   type === "student"
                     ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-[#111318] text-white/50 border-white/[0.08] hover:bg-[#0f1015]"
+                    : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
                 }`}
               >
                 Student Leave
@@ -168,7 +168,7 @@ export function AddLeaveForm({ leaveTypes, staff, students }: Props) {
               <Label>Reason</Label>
               <textarea
                 rows={3}
-                className="w-full border border-white/[0.08] rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.reason}
                 onChange={set("reason")}
                 placeholder="Optional reason for leave..."

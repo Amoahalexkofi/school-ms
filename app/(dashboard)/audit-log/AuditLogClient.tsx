@@ -20,27 +20,27 @@ type Log = {
 };
 
 const ENTITY_COLORS: Record<string, string> = {
-  Student:    "bg-blue-500/10 text-blue-400",
-  Staff:      "bg-violet-500/10 text-violet-400",
-  Attendance: "bg-orange-500/10 text-orange-400",
-  ExamGroup:  "bg-red-500/10 text-red-400",
-  MarkEntry:  "bg-pink-500/10 text-pink-400",
-  Leave:      "bg-amber-500/10 text-amber-400",
-  Notice:     "bg-teal-500/10 text-teal-400",
-  Visitor:    "bg-cyan-500/10 text-cyan-400",
-  Library:    "bg-indigo-500/10 text-indigo-400",
-  Payroll:    "bg-emerald-500/10 text-emerald-400",
-  Fee:        "bg-amber-500/10 text-amber-400",
+  Student:    "bg-blue-100 text-blue-700",
+  Staff:      "bg-purple-100 text-purple-700",
+  Attendance: "bg-orange-100 text-orange-700",
+  ExamGroup:  "bg-red-100 text-red-700",
+  MarkEntry:  "bg-pink-100 text-pink-700",
+  Leave:      "bg-yellow-100 text-yellow-700",
+  Notice:     "bg-teal-100 text-teal-700",
+  Visitor:    "bg-cyan-100 text-cyan-700",
+  Library:    "bg-indigo-100 text-indigo-700",
+  Payroll:    "bg-green-100 text-green-700",
+  Fee:        "bg-amber-100 text-amber-700",
 };
 
 const ACTION_COLORS: Record<string, string> = {
-  CREATE: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  UPDATE: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  DELETE: "bg-red-500/10 text-red-400 border-red-500/20",
-  LOGIN:  "bg-[#0f1015] text-white/60 border-white/[0.06]",
+  CREATE: "bg-green-50 text-green-700 border-green-200",
+  UPDATE: "bg-blue-50 text-blue-700 border-blue-200",
+  DELETE: "bg-red-50 text-red-700 border-red-200",
+  LOGIN:  "bg-gray-50 text-gray-700 border-gray-200",
 };
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 function downloadCSV(rows: Log[]) {
   if (!rows.length) return alert("No data to export");
@@ -137,7 +137,7 @@ export function AuditLogClient({
         ].map((s) => (
           <Card key={s.label}>
             <CardContent className="pt-4">
-              <p className="text-xs text-white/40 mb-1">{s.label}</p>
+              <p className="text-xs text-gray-500 mb-1">{s.label}</p>
               <p className="text-3xl font-bold">{s.value}</p>
             </CardContent>
           </Card>
@@ -145,10 +145,10 @@ export function AuditLogClient({
       </div>
 
       {/* Filters */}
-      <div className="bg-[#111318] border rounded-lg p-4 space-y-3">
+      <div className="bg-white border rounded-lg p-4 space-y-3">
         <div className="flex items-center gap-2 flex-wrap">
           <div className="relative flex-1 min-w-48">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/30" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search action, entity, user…"
               value={search}
@@ -183,7 +183,7 @@ export function AuditLogClient({
             </div>
           </div>
           {hasFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-white/30 hover:text-white/50">
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-gray-400 hover:text-gray-600">
               <X className="h-4 w-4 mr-1" /> Clear
             </Button>
           )}
@@ -191,7 +191,7 @@ export function AuditLogClient({
             <Download className="h-3.5 w-3.5 mr-1" /> Export
           </Button>
         </div>
-        <p className="text-xs text-white/30">
+        <p className="text-xs text-gray-400">
           Showing {Math.min(paginated.length, filtered.length)} of {filtered.length} events
           {logs.length > 500 && " (last 500 loaded)"}
         </p>
@@ -199,30 +199,30 @@ export function AuditLogClient({
 
       {/* Table */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-white/30">
+        <div className="text-center py-16 text-gray-400">
           <ShieldCheck className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p>No audit events match your filters.</p>
         </div>
       ) : (
         <>
-          <div className="bg-[#111318] border rounded-lg overflow-hidden">
+          <div className="bg-white border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-[#0f1015] border-b sticky top-0">
+                <thead className="bg-gray-50 border-b sticky top-0">
                   <tr>
-                    <th className="text-left px-4 py-2.5 font-medium text-white/50 whitespace-nowrap">Time</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-white/50">User</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-white/50">Action</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-white/50">Entity</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-white/50">Entity ID</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-white/50">Details</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-gray-600 whitespace-nowrap">Time</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">User</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Action</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Entity</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Entity ID</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Details</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {paginated.map((log) => {
                     const actionKey = Object.keys(ACTION_COLORS).find((k) => log.action.includes(k)) ?? "";
-                    const actionStyle = ACTION_COLORS[actionKey] ?? "bg-[#0f1015] text-white/50 border-white/[0.06]";
-                    const entityStyle = Object.entries(ENTITY_COLORS).find(([k]) => log.entity.includes(k))?.[1] ?? "bg-white/[0.04] text-white/50";
+                    const actionStyle = ACTION_COLORS[actionKey] ?? "bg-gray-50 text-gray-600 border-gray-200";
+                    const entityStyle = Object.entries(ENTITY_COLORS).find(([k]) => log.entity.includes(k))?.[1] ?? "bg-gray-100 text-gray-600";
                     let details = "";
                     try {
                       if (log.metadata) {
@@ -232,12 +232,12 @@ export function AuditLogClient({
                     } catch { /* ignore */ }
 
                     return (
-                      <tr key={log.id} className="hover:bg-[#0f1015]">
-                        <td className="px-4 py-2.5 text-xs text-white/40 whitespace-nowrap">
+                      <tr key={log.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-2.5 text-xs text-gray-500 whitespace-nowrap">
                           {new Date(log.createdAt).toLocaleString()}
                         </td>
-                        <td className="px-4 py-2.5 text-xs text-white/60 max-w-[160px] truncate">
-                          {log.userEmail ?? log.userId ?? <span className="text-white/30">System</span>}
+                        <td className="px-4 py-2.5 text-xs text-gray-700 max-w-[160px] truncate">
+                          {log.userEmail ?? log.userId ?? <span className="text-gray-400">System</span>}
                         </td>
                         <td className="px-4 py-2.5">
                           <span className={`text-xs px-2 py-0.5 rounded border font-medium ${actionStyle}`}>
@@ -249,10 +249,10 @@ export function AuditLogClient({
                             {log.entity}
                           </span>
                         </td>
-                        <td className="px-4 py-2.5 font-mono text-xs text-white/30 max-w-[120px] truncate" title={log.entityId ?? ""}>
+                        <td className="px-4 py-2.5 font-mono text-xs text-gray-400 max-w-[120px] truncate" title={log.entityId ?? ""}>
                           {log.entityId ?? "—"}
                         </td>
-                        <td className="px-4 py-2.5 text-xs text-white/30 max-w-[200px] truncate" title={details}>
+                        <td className="px-4 py-2.5 text-xs text-gray-400 max-w-[200px] truncate" title={details}>
                           {details || "—"}
                         </td>
                       </tr>

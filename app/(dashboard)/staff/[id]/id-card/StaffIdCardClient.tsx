@@ -41,10 +41,10 @@ export function StaffIdCardClient({ staff, template }: Props) {
     rows.push({ label: "Address", value: staff.permanentAddress ?? "—" });
 
   return (
-    <main className="min-h-screen bg-white/[0.04] p-6">
+    <main className="min-h-screen bg-gray-100 p-6">
       {/* Controls — hidden on print */}
       <div className="print:hidden flex items-center justify-between mb-6 max-w-md mx-auto">
-        <Link href={`/staff/${staff.id}`} className="flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
+        <Link href={`/staff/${staff.id}`} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
           <ArrowLeft className="h-3.5 w-3.5" /> Back
         </Link>
         <div className="flex gap-2">
@@ -60,7 +60,7 @@ export function StaffIdCardClient({ staff, template }: Props) {
       </div>
 
       {!template && (
-        <div className="print:hidden max-w-md mx-auto mb-4 bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 text-sm text-amber-400">
+        <div className="print:hidden max-w-md mx-auto mb-4 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-700">
           No template found. <Link href="/staff/id-card" className="underline font-medium">Create one →</Link>
         </div>
       )}
@@ -68,7 +68,7 @@ export function StaffIdCardClient({ staff, template }: Props) {
       {/* Card */}
       <div
         id="id-card"
-        className="mx-auto bg-[#111318] rounded-2xl shadow-lg overflow-hidden print:shadow-none print:rounded-none"
+        className="mx-auto bg-white rounded-2xl shadow-lg overflow-hidden print:shadow-none print:rounded-none"
         style={{ width: 340, minHeight: 200 }}
       >
         {/* Header */}
@@ -79,9 +79,9 @@ export function StaffIdCardClient({ staff, template }: Props) {
         </div>
 
         {/* Body */}
-        <div className="flex gap-4 px-5 py-4 bg-[#0f1015]">
+        <div className="flex gap-4 px-5 py-4 bg-gray-50">
           {/* Photo */}
-          <div className="flex-shrink-0 w-20 h-24 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30">
+          <div className="flex-shrink-0 w-20 h-24 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-300">
             {staff.photo
               ? <img src={staff.photo} alt="" className="w-full h-full object-cover rounded-lg" />
               : (
@@ -94,28 +94,28 @@ export function StaffIdCardClient({ staff, template }: Props) {
 
           {/* Fields */}
           <div className="flex-1 space-y-1.5 text-sm">
-            <p className="font-bold text-white/80 text-base leading-tight">
+            <p className="font-bold text-gray-900 text-base leading-tight">
               {staff.firstName} {staff.lastName}
             </p>
             {rows.filter(r => r.label !== "Name").map(r => (
               <div key={r.label} className="flex gap-1.5">
-                <span className="text-white/30 text-xs w-20 flex-shrink-0">{r.label}:</span>
-                <span className="text-white/70 text-xs font-medium">{r.value}</span>
+                <span className="text-gray-400 text-xs w-20 flex-shrink-0">{r.label}:</span>
+                <span className="text-gray-800 text-xs font-medium">{r.value}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="border-t px-5 py-2 bg-[#0f1015] flex items-center justify-between">
-          <p className="text-xs text-white/30">{staff.employeeId}</p>
+        <div className="border-t px-5 py-2 bg-gray-50 flex items-center justify-between">
+          <p className="text-xs text-gray-400">{staff.employeeId}</p>
           {staff.department?.name && (
-            <p className="text-xs text-white/30">{staff.department.name}</p>
+            <p className="text-xs text-gray-400">{staff.department.name}</p>
           )}
         </div>
 
         <div className="px-5 py-3 text-center">
-          <p className="text-xs text-white/30 italic">If found, please return to the school office</p>
+          <p className="text-xs text-gray-300 italic">If found, please return to the school office</p>
         </div>
       </div>
 

@@ -12,15 +12,15 @@ type Props = { purposes: any[]; visitors: any[]; complaintTypes: any[]; complain
 type Tab = "visitors" | "complaints" | "enquiries" | "complaint-types" | "dispatch";
 
 const COMPLAINT_STATUS_STYLE: Record<string, string> = {
-  OPEN:        "bg-red-500/10 text-red-400",
-  IN_PROGRESS: "bg-amber-500/10 text-amber-400",
-  RESOLVED:    "bg-emerald-500/10 text-emerald-400",
+  OPEN:        "bg-red-100 text-red-700",
+  IN_PROGRESS: "bg-amber-100 text-amber-700",
+  RESOLVED:    "bg-green-100 text-green-700",
 };
 const ENQ_STATUS_STYLE: Record<string, string> = {
-  NEW:       "bg-blue-500/10 text-blue-400",
-  CONTACTED: "bg-amber-500/10 text-amber-400",
-  CONVERTED: "bg-emerald-500/10 text-emerald-400",
-  CLOSED:    "bg-white/[0.04] text-white/50",
+  NEW:       "bg-blue-100 text-blue-700",
+  CONTACTED: "bg-amber-100 text-amber-700",
+  CONVERTED: "bg-green-100 text-green-700",
+  CLOSED:    "bg-gray-100 text-gray-600",
 };
 
 export function FrontOfficeClient({ purposes, visitors, complaintTypes: initTypes, complaints, enquiries, dispatches: initialDispatches }: Props) {
@@ -147,11 +147,11 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
   ];
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-[#0f1015]">
-      <div className="flex flex-wrap gap-1 bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-1 w-fit">
+    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+      <div className="flex flex-wrap gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-white/50 hover:bg-white/[0.04]"}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
             {t.label}
           </button>
         ))}
@@ -161,25 +161,25 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
       {tab === "visitors" && (
         <div className="space-y-4">
           <div className="flex justify-between">
-            <p className="text-sm text-white/40">{visitors.length} visitor{visitors.length !== 1 ? "s" : ""} today</p>
+            <p className="text-sm text-gray-500">{visitors.length} visitor{visitors.length !== 1 ? "s" : ""} today</p>
             <Link href="/front-office/visitors/new"><Button><Plus className="h-4 w-4 mr-1.5" />Log Visitor</Button></Link>
           </div>
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-x-auto">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
-                <tr>{["Visitor","Phone","Purpose","Host","# Visitors","In","Out",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>)}</tr>
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Visitor","Phone","Purpose","Host","# Visitors","In","Out",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y">
-                {visitors.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-white/30">No visitors today.</td></tr>
+                {visitors.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-400">No visitors today.</td></tr>
                 : visitors.map((v: any) => (
-                  <tr key={v.id} className={`hover:bg-[#0f1015] ${!v.outTime ? "bg-blue-500/10/20" : ""}`}>
+                  <tr key={v.id} className={`hover:bg-gray-50 ${!v.outTime ? "bg-blue-50/20" : ""}`}>
                     <td className="px-4 py-3 font-medium">{v.name}</td>
-                    <td className="px-4 py-3 text-white/40">{v.phone ?? "—"}</td>
-                    <td className="px-4 py-3 text-white/50">{v.purpose?.name ?? "—"}</td>
-                    <td className="px-4 py-3 text-white/40">{v.host ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500">{v.phone ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-600">{v.purpose?.name ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500">{v.host ?? "—"}</td>
                     <td className="px-4 py-3 text-center">{v.numVisitors}</td>
-                    <td className="px-4 py-3 text-xs text-white/40">{new Date(v.inTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</td>
-                    <td className="px-4 py-3 text-xs text-white/40">{v.outTime ? new Date(v.outTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : <span className="text-blue-400">In</span>}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500">{new Date(v.inTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500">{v.outTime ? new Date(v.outTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : <span className="text-blue-600">In</span>}</td>
                     <td className="px-4 py-3">
                       {!v.outTime && <Button size="sm" variant="outline" disabled={checkedOut === v.id} onClick={() => checkout(v.id)}>
                         <UserCheck className="h-3.5 w-3.5 mr-1" />{checkedOut === v.id ? "…" : "Check Out"}
@@ -197,26 +197,26 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
       {tab === "complaints" && (
         <div className="space-y-4">
           <div className="flex justify-between">
-            <p className="text-sm text-white/40">{complaints.length} complaint{complaints.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{complaints.length} complaint{complaints.length !== 1 ? "s" : ""}</p>
             <Link href="/front-office/complaints/new"><Button><Plus className="h-4 w-4 mr-1.5" />Add Complaint</Button></Link>
           </div>
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-x-auto">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
-                <tr>{["Title","Type","Raised By","Date","Status","Actions"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>)}</tr>
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Title","Type","Raised By","Date","Status","Actions"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y">
-                {complaints.length === 0 ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-white/30">No complaints.</td></tr>
+                {complaints.length === 0 ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No complaints.</td></tr>
                 : complaints.map((c: any) => (
-                  <tr key={c.id} className="hover:bg-[#0f1015]">
+                  <tr key={c.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium max-w-[200px] truncate">{c.title}</td>
-                    <td className="px-4 py-3 text-white/40">{c.complaintType?.name ?? "—"}</td>
-                    <td className="px-4 py-3 text-white/50">{c.raisedBy}</td>
-                    <td className="px-4 py-3 text-xs text-white/40">{new Date(c.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-gray-500">{c.complaintType?.name ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-600">{c.raisedBy}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500">{new Date(c.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${COMPLAINT_STATUS_STYLE[c.status]}`}>{c.status.replace(/_/g, " ")}</span></td>
                     <td className="px-4 py-3">
                       {c.status === "OPEN"        && <Button size="sm" variant="outline" onClick={() => updateComplaintStatus(c.id, "IN_PROGRESS")}>In Progress</Button>}
-                      {c.status === "IN_PROGRESS" && <Button size="sm" variant="outline" className="text-emerald-400 border-emerald-500/20" onClick={() => updateComplaintStatus(c.id, "RESOLVED")}><CheckCircle2 className="h-3.5 w-3.5 mr-1" />Resolve</Button>}
+                      {c.status === "IN_PROGRESS" && <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={() => updateComplaintStatus(c.id, "RESOLVED")}><CheckCircle2 className="h-3.5 w-3.5 mr-1" />Resolve</Button>}
                     </td>
                   </tr>
                 ))}
@@ -230,16 +230,16 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
       {tab === "enquiries" && (
         <div className="space-y-4">
           <div className="flex justify-between">
-            <p className="text-sm text-white/40">{enquiries.length} enqu{enquiries.length !== 1 ? "iries" : "iry"}</p>
+            <p className="text-sm text-gray-500">{enquiries.length} enqu{enquiries.length !== 1 ? "iries" : "iry"}</p>
             <Link href="/front-office/enquiries/new"><Button><Plus className="h-4 w-4 mr-1.5" />Add Enquiry</Button></Link>
           </div>
 
           {/* Follow-up inline form */}
           {followUpId && (
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-3">
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-amber-300">Log Follow-Up</p>
-                <button onClick={() => setFollowUpId(null)}><X className="h-4 w-4 text-white/30" /></button>
+                <p className="text-sm font-semibold text-amber-800">Log Follow-Up</p>
+                <button onClick={() => setFollowUpId(null)}><X className="h-4 w-4 text-gray-400" /></button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
@@ -258,27 +258,27 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
             </div>
           )}
 
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-x-auto">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
-                <tr>{["Name","Phone","Description","Next Follow-up","Follow-up Note","Date","Status","Actions"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-white/50 text-xs">{h}</th>)}</tr>
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Name","Phone","Description","Next Follow-up","Follow-up Note","Date","Status","Actions"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600 text-xs">{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y">
-                {enquiries.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-white/30">No enquiries.</td></tr>
+                {enquiries.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-400">No enquiries.</td></tr>
                 : enquiries.map((e: any) => (
-                  <tr key={e.id} className="hover:bg-[#0f1015]">
+                  <tr key={e.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium">{e.name}</td>
-                    <td className="px-4 py-3 text-white/40 text-xs">{e.phone ?? "—"}</td>
-                    <td className="px-4 py-3 text-white/40 max-w-[160px] truncate text-xs">{e.description ?? "—"}</td>
-                    <td className="px-4 py-3 text-xs text-amber-400">{e.nextFollowUp ? new Date(e.nextFollowUp).toLocaleDateString() : "—"}</td>
-                    <td className="px-4 py-3 text-xs text-white/40 max-w-[160px] truncate">{e.followUpNote ?? "—"}</td>
-                    <td className="px-4 py-3 text-xs text-white/40">{new Date(e.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-gray-500 text-xs">{e.phone ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500 max-w-[160px] truncate text-xs">{e.description ?? "—"}</td>
+                    <td className="px-4 py-3 text-xs text-amber-700">{e.nextFollowUp ? new Date(e.nextFollowUp).toLocaleDateString() : "—"}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500 max-w-[160px] truncate">{e.followUpNote ?? "—"}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500">{new Date(e.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ENQ_STATUS_STYLE[e.status]}`}>{e.status}</span></td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
                         {e.status === "NEW"       && <Button size="sm" variant="outline" onClick={() => { setFollowUpId(e.id); setFollowNote(e.followUpNote ?? ""); setFollowDate(e.nextFollowUp ? new Date(e.nextFollowUp).toISOString().slice(0,10) : ""); }}>Follow Up</Button>}
-                        {e.status === "CONTACTED" && <Button size="sm" variant="outline" className="text-emerald-400 border-emerald-500/20" onClick={() => updateEnquiryStatus(e.id, "CONVERTED")}>Converted</Button>}
-                        {(e.status === "NEW" || e.status === "CONTACTED") && <Button size="sm" variant="ghost" onClick={() => updateEnquiryStatus(e.id, "CLOSED")} className="text-white/30">Close</Button>}
+                        {e.status === "CONTACTED" && <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={() => updateEnquiryStatus(e.id, "CONVERTED")}>Converted</Button>}
+                        {(e.status === "NEW" || e.status === "CONTACTED") && <Button size="sm" variant="ghost" onClick={() => updateEnquiryStatus(e.id, "CLOSED")} className="text-gray-400">Close</Button>}
                       </div>
                     </td>
                   </tr>
@@ -296,7 +296,7 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
             <div className="flex gap-1">
               {(["all", "incoming", "outgoing"] as const).map(f => (
                 <button key={f} onClick={() => setDispFilter(f)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${dispFilter === f ? "bg-blue-600 text-white" : "bg-[#111318] border border-white/[0.06] text-white/50 hover:bg-[#0f1015]"}`}>
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${dispFilter === f ? "bg-blue-600 text-white" : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
                   {f === "all" ? "All" : f === "incoming" ? "Incoming" : "Outgoing"}
                 </button>
               ))}
@@ -307,43 +307,43 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
           </div>
 
           {dispPanel && (
-            <div className="bg-[#111318] rounded-xl border border-blue-500/20 p-4 space-y-3 shadow-sm">
+            <div className="bg-white rounded-xl border border-blue-200 p-4 space-y-3 shadow-sm">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-blue-300">New Dispatch Record</p>
-                <button onClick={() => setDispPanel(false)}><X className="h-4 w-4 text-white/30" /></button>
+                <p className="text-sm font-semibold text-blue-800">New Dispatch Record</p>
+                <button onClick={() => setDispPanel(false)}><X className="h-4 w-4 text-gray-400" /></button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Type *</label>
-                  <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Type *</label>
+                  <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={dispType} onChange={e => setDispType(e.target.value)}>
                     <option value="incoming">Incoming</option>
                     <option value="outgoing">Outgoing</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Title *</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Title *</label>
                   <Input value={dispTitle} onChange={e => setDispTitle(e.target.value)} placeholder="e.g. Letter from Ministry" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Reference No.</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Reference No.</label>
                   <Input value={dispRefNo} onChange={e => setDispRefNo(e.target.value)} placeholder="e.g. MOE/2026/001" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">{dispType === "incoming" ? "From" : "To"}</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">{dispType === "incoming" ? "From" : "To"}</label>
                   <Input value={dispFromTo} onChange={e => setDispFromTo(e.target.value)} placeholder={dispType === "incoming" ? "Sender name / organization" : "Recipient name / organization"} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Date *</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Date *</label>
                   <input type="date" value={dispDate} onChange={e => setDispDate(e.target.value)}
-                    className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Note</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Note</label>
                   <Input value={dispNote} onChange={e => setDispNote(e.target.value)} placeholder="Optional note" />
                 </div>
               </div>
-              {dispErr && <p className="text-sm text-red-400">{dispErr}</p>}
+              {dispErr && <p className="text-sm text-red-600">{dispErr}</p>}
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setDispPanel(false)}>Cancel</Button>
                 <Button disabled={dispLoad} onClick={saveDispatch}>{dispLoad ? "Saving…" : "Save"}</Button>
@@ -351,29 +351,29 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
             </div>
           )}
 
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-x-auto">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
-                <tr>{["Type","Title","Ref No.","From / To","Date","Note"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-white/50 text-xs">{h}</th>)}</tr>
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Type","Title","Ref No.","From / To","Date","Note"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600 text-xs">{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y">
                 {dispatches.filter(d => dispFilter === "all" || d.type === dispFilter).length === 0
-                  ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-white/30">No dispatch records.</td></tr>
+                  ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No dispatch records.</td></tr>
                   : dispatches
                       .filter(d => dispFilter === "all" || d.type === dispFilter)
                       .map((d: any) => (
-                    <tr key={d.id} className="hover:bg-[#0f1015]">
+                    <tr key={d.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${d.type === "incoming" ? "bg-blue-500/10 text-blue-400" : "bg-amber-500/10 text-amber-400"}`}>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${d.type === "incoming" ? "bg-blue-100 text-blue-700" : "bg-amber-100 text-amber-700"}`}>
                           {d.type === "incoming" ? <Inbox className="h-3 w-3" /> : <Send className="h-3 w-3" />}
                           {d.type}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-medium text-white/80 max-w-[200px] truncate">{d.title}</td>
-                      <td className="px-4 py-3 font-mono text-xs text-white/40">{d.refNo ?? "—"}</td>
-                      <td className="px-4 py-3 text-white/50 max-w-[150px] truncate">{d.fromTo ?? "—"}</td>
-                      <td className="px-4 py-3 text-xs text-white/40">{new Date(d.date).toLocaleDateString()}</td>
-                      <td className="px-4 py-3 text-xs text-white/30 max-w-[200px] truncate">{d.note ?? "—"}</td>
+                      <td className="px-4 py-3 font-medium text-gray-900 max-w-[200px] truncate">{d.title}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{d.refNo ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-600 max-w-[150px] truncate">{d.fromTo ?? "—"}</td>
+                      <td className="px-4 py-3 text-xs text-gray-500">{new Date(d.date).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-xs text-gray-400 max-w-[200px] truncate">{d.note ?? "—"}</td>
                     </tr>
                   ))}
               </tbody>
@@ -386,17 +386,17 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
       {tab === "complaint-types" && (
         <div className="space-y-4">
           <div className="flex justify-between">
-            <p className="text-sm text-white/40">{types.length} type{types.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{types.length} type{types.length !== 1 ? "s" : ""}</p>
             <Button onClick={() => { setTypeName(""); setTypeEdit(null); setTypeErr(""); setTypePanel(true); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Add Type
             </Button>
           </div>
 
           {typePanel && (
-            <div className="bg-[#111318] rounded-xl border border-blue-500/20 p-4 space-y-3">
+            <div className="bg-white rounded-xl border border-blue-200 p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-blue-300">{typeEdit ? "Edit Type" : "New Complaint Type"}</p>
-                <button onClick={() => setTypePanel(false)}><X className="h-4 w-4 text-white/30" /></button>
+                <p className="text-sm font-semibold text-blue-800">{typeEdit ? "Edit Type" : "New Complaint Type"}</p>
+                <button onClick={() => setTypePanel(false)}><X className="h-4 w-4 text-gray-400" /></button>
               </div>
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
@@ -406,19 +406,19 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
                 <Button disabled={typeLoad} onClick={saveType}>{typeLoad ? "Saving…" : "Save"}</Button>
                 <Button variant="outline" onClick={() => setTypePanel(false)}>Cancel</Button>
               </div>
-              {typeErr && <p className="text-sm text-red-400">{typeErr}</p>}
+              {typeErr && <p className="text-sm text-red-600">{typeErr}</p>}
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {types.length === 0
-              ? <p className="text-sm text-white/30 col-span-3 text-center py-8">No complaint types yet. Add one above.</p>
+              ? <p className="text-sm text-gray-400 col-span-3 text-center py-8">No complaint types yet. Add one above.</p>
               : types.map((t: any) => (
-                <div key={t.id} className="bg-[#111318] rounded-xl border border-white/[0.06] p-4 flex items-center justify-between">
-                  <p className="font-medium text-white/70">{t.name}</p>
+                <div key={t.id} className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between">
+                  <p className="font-medium text-gray-800">{t.name}</p>
                   <div className="flex gap-1">
                     <Button size="sm" variant="ghost" onClick={() => { setTypeName(t.name); setTypeEdit(t); setTypeErr(""); setTypePanel(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button size="sm" variant="ghost" onClick={() => deleteType(t.id)} className="text-red-400 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => deleteType(t.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>
                   </div>
                 </div>
               ))

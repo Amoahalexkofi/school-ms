@@ -29,12 +29,12 @@ function Field({
   options?: string[] | { value: string; label: string }[];
   span?: "2" | "3"; rows?: number; hint?: string;
 }) {
-  const base = "mt-1 block w-full rounded-lg border border-white/[0.08] bg-[#111318] px-3 py-2 text-sm text-white/80 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
+  const base = "mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
   const spanCls = span === "3" ? "sm:col-span-2 lg:col-span-3" : span === "2" ? "sm:col-span-2" : "";
   return (
     <div className={spanCls}>
-      <label className="block text-sm font-medium text-white/60">{label}</label>
-      {hint && <p className="text-xs text-white/30 mt-0.5">{hint}</p>}
+      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      {hint && <p className="text-xs text-gray-400 mt-0.5">{hint}</p>}
       {options ? (
         <select className={base} value={value} onChange={onChange}>
           <option value="">— Select —</option>
@@ -55,8 +55,8 @@ function Field({
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border-b border-white/[0.06] pb-2 mb-5">
-      <h3 className="text-sm font-semibold text-white/70">{children}</h3>
+    <div className="border-b border-gray-200 pb-2 mb-5">
+      <h3 className="text-sm font-semibold text-gray-800">{children}</h3>
     </div>
   );
 }
@@ -111,16 +111,16 @@ export function AddStaffForm({ departments, designations }: Props) {
   }
 
   return (
-    <main className="flex-1 bg-[#0f1015] min-h-0">
+    <main className="flex-1 bg-gray-50 min-h-0">
       <div className="max-w-5xl mx-auto px-6 py-6 space-y-6">
 
         {/* Back */}
-        <Link href="/staff" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors">
+        <Link href="/staff" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
           <ArrowLeft className="h-4 w-4" /> Back to Staff
         </Link>
 
         {/* Step nav */}
-        <div className="flex items-center gap-0 bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden">
+        <div className="flex items-center gap-0 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           {SECTIONS.map((s, i) => {
             const done   = i < secIdx;
             const active = s === section;
@@ -132,14 +132,14 @@ export function AddStaffForm({ departments, designations }: Props) {
                   active
                     ? "bg-blue-600 text-white"
                     : done
-                    ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/10"
-                    : "text-white/40 hover:bg-[#0f1015]"
+                    ? "bg-green-50 text-green-700 hover:bg-green-100"
+                    : "text-gray-500 hover:bg-gray-50"
                 }`}
               >
                 <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold ${
-                  active ? "bg-[#111318]/20" : done ? "bg-green-200 text-emerald-300" : "bg-white/[0.04] text-white/40"
+                  active ? "bg-white/20" : done ? "bg-green-200 text-green-800" : "bg-gray-100 text-gray-500"
                 }`}>
-                  {done ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : i + 1}
+                  {done ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : i + 1}
                 </span>
                 <span className="hidden sm:block text-center leading-tight">{s}</span>
               </button>
@@ -148,7 +148,7 @@ export function AddStaffForm({ departments, designations }: Props) {
         </div>
 
         {/* Form card */}
-        <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-6 space-y-6">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-6">
 
           {/* ── Personal Info ── */}
           {section === "Personal Info" && <>
@@ -239,7 +239,7 @@ export function AddStaffForm({ departments, designations }: Props) {
 
         {/* Error */}
         {error && (
-          <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+          <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
             <AlertCircle className="h-4 w-4 shrink-0" /> {error}
           </div>
         )}

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type Props = {
   purposes: any[];
@@ -56,7 +56,7 @@ export function AddVisitorForm({ purposes, staff }: Props) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/front-office" className="text-sm text-blue-400 hover:underline">
+      <Link href="/front-office" className="text-sm text-blue-600 hover:underline">
         ← Back to Front Office
       </Link>
 
@@ -111,7 +111,7 @@ export function AddVisitorForm({ purposes, staff }: Props) {
             <Label>Notes</Label>
             <textarea
               rows={3}
-              className="w-full border border-white/[0.08] rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={form.note}
               onChange={set("note")}
               placeholder="Any additional notes..."

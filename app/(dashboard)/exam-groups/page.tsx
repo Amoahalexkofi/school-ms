@@ -122,16 +122,16 @@ export default function ExamGroupsPage() {
       <Topbar title="Exams & Marks" />
       <main className="flex-1 p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-white/40">{groups.length} exam group{groups.length !== 1 ? "s" : ""}</p>
+          <p className="text-sm text-gray-500">{groups.length} exam group{groups.length !== 1 ? "s" : ""}</p>
           <Button size="sm" onClick={() => { setCreateDialog(true); setError(""); }}>
             <Plus className="h-4 w-4 mr-1" /> New Exam Group
           </Button>
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-white/30">Loading…</div>
+          <div className="text-center py-12 text-gray-400">Loading…</div>
         ) : groups.length === 0 ? (
-          <div className="text-center py-16 text-white/30">
+          <div className="text-center py-16 text-gray-400">
             <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-40" />
             <p>No exam groups yet. Create one to get started.</p>
           </div>
@@ -143,15 +143,15 @@ export default function ExamGroupsPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <CardTitle className="text-base">{g.name}</CardTitle>
-                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${g.published ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-white/[0.04] text-white/50 border-white/[0.06]"}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${g.published ? "bg-green-100 text-green-700 border-green-200" : "bg-gray-100 text-gray-600 border-gray-200"}`}>
                         {g.published ? "Published" : "Draft"}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-white/40">
+                      <span className="text-xs text-gray-500">
                         {new Date(g.startDate).toLocaleDateString()} – {new Date(g.endDate).toLocaleDateString()}
                       </span>
-                      {expanded === g.id ? <ChevronUp className="h-4 w-4 text-white/30" /> : <ChevronDown className="h-4 w-4 text-white/30" />}
+                      {expanded === g.id ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
                     </div>
                   </div>
                 </CardHeader>
@@ -163,7 +163,7 @@ export default function ExamGroupsPage() {
                         <Plus className="h-3.5 w-3.5 mr-1" /> Add Subject Schedule
                       </Button>
                       {!g.published && g.schedules?.length > 0 && (
-                        <Button size="sm" variant="outline" className="text-emerald-400 border-green-300 hover:bg-emerald-500/10"
+                        <Button size="sm" variant="outline" className="text-green-700 border-green-300 hover:bg-green-50"
                           onClick={() => handlePublish(g.id)} disabled={saving}>
                           <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Publish Results
                         </Button>
@@ -171,23 +171,23 @@ export default function ExamGroupsPage() {
                     </div>
 
                     {!g.schedules?.length ? (
-                      <p className="text-sm text-white/30">No subjects scheduled yet.</p>
+                      <p className="text-sm text-gray-400">No subjects scheduled yet.</p>
                     ) : (
                       <table className="w-full text-sm">
-                        <thead className="bg-[#0f1015]">
+                        <thead className="bg-gray-50">
                           <tr>
-                            <th className="text-left px-3 py-2 font-medium text-white/50">Subject</th>
-                            <th className="text-left px-3 py-2 font-medium text-white/50">Date</th>
-                            <th className="text-left px-3 py-2 font-medium text-white/50">Max Marks</th>
-                            <th className="text-left px-3 py-2 font-medium text-white/50">Pass Marks</th>
+                            <th className="text-left px-3 py-2 font-medium text-gray-600">Subject</th>
+                            <th className="text-left px-3 py-2 font-medium text-gray-600">Date</th>
+                            <th className="text-left px-3 py-2 font-medium text-gray-600">Max Marks</th>
+                            <th className="text-left px-3 py-2 font-medium text-gray-600">Pass Marks</th>
                             <th />
                           </tr>
                         </thead>
                         <tbody className="divide-y">
                           {g.schedules.map((s: any) => (
-                            <tr key={s.id} className="hover:bg-[#0f1015]">
+                            <tr key={s.id} className="hover:bg-gray-50">
                               <td className="px-3 py-2 font-medium">{s.subject?.name ?? s.subjectId}</td>
-                              <td className="px-3 py-2 text-white/40">{new Date(s.date).toLocaleDateString()}</td>
+                              <td className="px-3 py-2 text-gray-500">{new Date(s.date).toLocaleDateString()}</td>
                               <td className="px-3 py-2">{s.maxMarks}</td>
                               <td className="px-3 py-2">{s.passingMarks}</td>
                               <td className="px-3 py-2">
@@ -213,7 +213,7 @@ export default function ExamGroupsPage() {
           <DialogContent>
             <DialogHeader><DialogTitle>New Exam Group</DialogTitle></DialogHeader>
             <form onSubmit={handleCreateGroup} className="space-y-4">
-              {error && <p className="text-sm text-red-400">{error}</p>}
+              {error && <p className="text-sm text-red-600">{error}</p>}
               <div className="space-y-1.5">
                 <Label>Name</Label>
                 <Input name="name" required placeholder="e.g. Term 1 Exams" />
@@ -241,7 +241,7 @@ export default function ExamGroupsPage() {
           <DialogContent>
             <DialogHeader><DialogTitle>Add Subject Schedule</DialogTitle></DialogHeader>
             <form onSubmit={handleAddSchedule} className="space-y-4">
-              {error && <p className="text-sm text-red-400">{error}</p>}
+              {error && <p className="text-sm text-red-600">{error}</p>}
               <div className="space-y-1.5">
                 <Label>Subject</Label>
                 <select name="subjectId" required className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm">
@@ -297,10 +297,10 @@ export default function ExamGroupsPage() {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              {error && <p className="text-sm text-red-400">{error}</p>}
-              <p className="text-xs text-white/40">Max marks: {marksDialog?.schedule?.maxMarks} · Pass: {marksDialog?.schedule?.passingMarks}</p>
+              {error && <p className="text-sm text-red-600">{error}</p>}
+              <p className="text-xs text-gray-500">Max marks: {marksDialog?.schedule?.maxMarks} · Pass: {marksDialog?.schedule?.passingMarks}</p>
               {students.length === 0 ? (
-                <p className="text-sm text-white/30">No students found.</p>
+                <p className="text-sm text-gray-400">No students found.</p>
               ) : (
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {students.map((s: any) => (

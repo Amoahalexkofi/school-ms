@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 type ActiveTab = "hostel" | "room" | "roomtype";
 
 type Props = {
@@ -102,18 +102,18 @@ export function AddHostelForm({ roomTypes, hostels }: Props) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto w-full">
-      <Link href="/hostel" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60 mb-6">
+      <Link href="/hostel" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-6">
         <ArrowLeft className="h-3.5 w-3.5" /> Back
       </Link>
 
       {/* Tab switcher */}
-      <div className="flex gap-1 bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-1 w-fit mb-6">
+      <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit mb-6">
         {tabs.map(t => (
           <button
             key={t.key}
             type="button"
             onClick={() => setActiveTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-white/50 hover:bg-white/[0.04]"}`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}
           >
             {t.label}
           </button>
@@ -182,7 +182,7 @@ export function AddHostelForm({ roomTypes, hostels }: Props) {
               <div>
                 <Label>Description</Label>
                 <textarea
-                  className="w-full rounded-lg border border-white/[0.08] px-3 py-2 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[60px]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[60px]"
                   value={roomForm.description}
                   onChange={e => setRoomForm(f => ({ ...f, description: e.target.value }))}
                 />

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, School, Save } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 const CURRENCIES = ["GHS", "USD", "EUR", "GBP", "NGN", "KES", "ZAR", "INR", "CAD", "AUD"];
 const DATE_FORMATS = ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "DD-MM-YYYY"];
@@ -79,7 +79,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
+      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
 
@@ -87,7 +87,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <School className="h-4 w-4 text-blue-400" /> General Information
+            <School className="h-4 w-4 text-blue-600" /> General Information
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -171,7 +171,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
               max={365}
               placeholder="30"
             />
-            <p className="text-xs text-white/30 mt-1">Days after issue before fee is overdue</p>
+            <p className="text-xs text-gray-400 mt-1">Days after issue before fee is overdue</p>
           </div>
         </CardContent>
       </Card>
@@ -191,11 +191,11 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
           <div>
             <Label>Number of Digits</Label>
             <Input type="number" value={form.admNoDigit} onChange={(e) => set("admNoDigit", e.target.value)} min={1} max={10} />
-            <p className="text-xs text-white/30 mt-1">e.g. 4 digits → ADM0001</p>
+            <p className="text-xs text-gray-400 mt-1">e.g. 4 digits → ADM0001</p>
           </div>
           <div className="flex items-center gap-2 h-full pt-5">
-            <input type="checkbox" id="admAuto" checked={form.admAutoInsert} onChange={(e) => set("admAutoInsert", e.target.checked as any)} className="h-4 w-4 rounded border-white/[0.08]" />
-            <label htmlFor="admAuto" className="text-sm text-white/60">Auto-generate on new admission</label>
+            <input type="checkbox" id="admAuto" checked={form.admAutoInsert} onChange={(e) => set("admAutoInsert", e.target.checked as any)} className="h-4 w-4 rounded border-gray-300" />
+            <label htmlFor="admAuto" className="text-sm text-gray-700">Auto-generate on new admission</label>
           </div>
         </CardContent>
       </Card>
@@ -214,11 +214,11 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
           <div>
             <Label>Number of Digits</Label>
             <Input type="number" value={form.staffidNoDigit} onChange={(e) => set("staffidNoDigit", e.target.value)} min={1} max={10} />
-            <p className="text-xs text-white/30 mt-1">e.g. 4 digits → EMP0001</p>
+            <p className="text-xs text-gray-400 mt-1">e.g. 4 digits → EMP0001</p>
           </div>
           <div className="flex items-center gap-2 h-full pt-5">
-            <input type="checkbox" id="staffAuto" checked={form.staffidAutoInsert} onChange={(e) => set("staffidAutoInsert", e.target.checked as any)} className="h-4 w-4 rounded border-white/[0.08]" />
-            <label htmlFor="staffAuto" className="text-sm text-white/60">Auto-generate on new staff</label>
+            <input type="checkbox" id="staffAuto" checked={form.staffidAutoInsert} onChange={(e) => set("staffidAutoInsert", e.target.checked as any)} className="h-4 w-4 rounded border-gray-300" />
+            <label htmlFor="staffAuto" className="text-sm text-gray-700">Auto-generate on new staff</label>
           </div>
         </CardContent>
       </Card>
@@ -229,7 +229,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
           <div>
             <Label>Low Attendance Limit (%)</Label>
             <Input type="number" value={form.lowAttendanceLimit} onChange={(e) => set("lowAttendanceLimit", e.target.value)} min={1} max={100} />
-            <p className="text-xs text-white/30 mt-1">Students below this % are flagged in reports</p>
+            <p className="text-xs text-gray-400 mt-1">Students below this % are flagged in reports</p>
           </div>
         </CardContent>
       </Card>
@@ -240,7 +240,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
           <Save className="h-4 w-4" />
           {saving ? "Saving…" : "Save Profile"}
         </Button>
-        {saved && <span className="text-sm text-emerald-400 font-medium">Saved successfully</span>}
+        {saved && <span className="text-sm text-green-600 font-medium">Saved successfully</span>}
       </div>
     </main>
   );

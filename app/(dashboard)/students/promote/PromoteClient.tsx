@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, CheckSquare, Square } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type Props = { sessions: any[]; classSections: any[] };
 
@@ -88,18 +88,18 @@ export function PromoteClient({ sessions, classSections }: Props) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/students" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
+      <Link href="/students" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Students
       </Link>
 
       {result && (
-        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-sm text-emerald-400">
+        <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-700">
           ✓ Promoted <strong>{result.promoted}</strong> student{result.promoted !== 1 ? "s" : ""}.
           {result.skipped > 0 && ` ${result.skipped} already enrolled in destination — skipped.`}
         </div>
       )}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-400">{error}</div>
+        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">{error}</div>
       )}
 
       {/* ── Step 1: Source ── */}
@@ -108,7 +108,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-medium text-white/50 mb-1 block">Current Session</label>
+              <label className="text-xs font-medium text-gray-600 mb-1 block">Current Session</label>
               <select className={SEL} value={fromSessionId} onChange={e => setFromSessionId(e.target.value)}>
                 <option value="">— Select session —</option>
                 {sessions.map((s: any) => (
@@ -117,7 +117,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-white/50 mb-1 block">Current Class / Section</label>
+              <label className="text-xs font-medium text-gray-600 mb-1 block">Current Class / Section</label>
               <select className={SEL} value={fromClassSectionId} onChange={e => setFromClassSectionId(e.target.value)}>
                 <option value="">— Select class —</option>
                 {classSections.map((cs: any) => (
@@ -140,7 +140,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">Step 2 — Select Students</CardTitle>
-              <button onClick={toggleAll} className="flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300">
+              <button onClick={toggleAll} className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800">
                 {selected.size === students.length
                   ? <><CheckSquare className="h-4 w-4" /> Deselect all</>
                   : <><Square className="h-4 w-4" /> Select all</>
@@ -151,12 +151,12 @@ export function PromoteClient({ sessions, classSections }: Props) {
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-[#0f1015] border-b border-t">
+                <thead className="bg-gray-50 border-b border-t">
                   <tr>
                     <th className="px-4 py-3 w-10" />
-                    <th className="text-left px-4 py-3 font-medium text-white/50">Student</th>
-                    <th className="text-left px-4 py-3 font-medium text-white/50">Adm No.</th>
-                    <th className="text-left px-4 py-3 font-medium text-white/50">Roll No.</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Adm No.</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Roll No.</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -166,14 +166,14 @@ export function PromoteClient({ sessions, classSections }: Props) {
                       <tr
                         key={s.id}
                         onClick={() => toggle(s.id)}
-                        className={`cursor-pointer ${checked ? "bg-blue-500/10" : "hover:bg-[#0f1015]"}`}
+                        className={`cursor-pointer ${checked ? "bg-blue-50" : "hover:bg-gray-50"}`}
                       >
                         <td className="px-4 py-3">
-                          <input type="checkbox" readOnly checked={checked} className="h-4 w-4 rounded border-white/[0.08] text-blue-400" />
+                          <input type="checkbox" readOnly checked={checked} className="h-4 w-4 rounded border-gray-300 text-blue-600" />
                         </td>
                         <td className="px-4 py-3 font-medium">{s.firstName} {s.lastName}</td>
-                        <td className="px-4 py-3 font-mono text-xs text-white/40">{s.admissionNo}</td>
-                        <td className="px-4 py-3 text-white/40">
+                        <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.admissionNo}</td>
+                        <td className="px-4 py-3 text-gray-500">
                           {s.sessions?.find((ss: any) => ss.sessionId === fromSessionId)?.rollNo ?? "—"}
                         </td>
                       </tr>
@@ -182,7 +182,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
                 </tbody>
               </table>
             </div>
-            <div className="px-4 py-3 border-t bg-[#0f1015] text-sm text-white/40">
+            <div className="px-4 py-3 border-t bg-gray-50 text-sm text-gray-500">
               {selected.size} of {students.length} selected
             </div>
           </CardContent>
@@ -190,7 +190,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
       )}
 
       {students.length === 0 && fromSessionId && fromClassSectionId && !loadingStudents && (
-        <p className="text-sm text-white/30 text-center py-4">No students found in this class for the selected session.</p>
+        <p className="text-sm text-gray-400 text-center py-4">No students found in this class for the selected session.</p>
       )}
 
       {/* ── Step 3: Destination ── */}
@@ -200,7 +200,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-white/50 mb-1 block">New Session</label>
+                <label className="text-xs font-medium text-gray-600 mb-1 block">New Session</label>
                 <select className={SEL} value={toSessionId} onChange={e => setToSessionId(e.target.value)}>
                   <option value="">— Select session —</option>
                   {sessions.map((s: any) => (
@@ -209,7 +209,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-white/50 mb-1 block">New Class / Section</label>
+                <label className="text-xs font-medium text-gray-600 mb-1 block">New Class / Section</label>
                 <select className={SEL} value={toClassSectionId} onChange={e => setToClassSectionId(e.target.value)}>
                   <option value="">— Select class —</option>
                   {classSections.map((cs: any) => (
@@ -220,11 +220,11 @@ export function PromoteClient({ sessions, classSections }: Props) {
             </div>
 
             {fromCS && toCS && toSessionId && toClassSectionId && (
-              <div className="mt-4 flex items-center gap-3 text-sm text-white/50 bg-[#0f1015] rounded-lg px-4 py-3">
-                <span className="font-medium text-white/70">{fromCS.class.name} – {fromCS.section.name}</span>
-                <ArrowRight className="h-4 w-4 text-white/30" />
-                <span className="font-medium text-blue-400">{toCS.class.name} – {toCS.section.name}</span>
-                <span className="text-white/30">·</span>
+              <div className="mt-4 flex items-center gap-3 text-sm text-gray-600 bg-gray-50 rounded-lg px-4 py-3">
+                <span className="font-medium text-gray-800">{fromCS.class.name} – {fromCS.section.name}</span>
+                <ArrowRight className="h-4 w-4 text-gray-400" />
+                <span className="font-medium text-blue-700">{toCS.class.name} – {toCS.section.name}</span>
+                <span className="text-gray-400">·</span>
                 <span>{selected.size} student{selected.size !== 1 ? "s" : ""}</span>
               </div>
             )}

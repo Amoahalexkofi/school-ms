@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Printer, FileText, CheckCircle2, XCircle } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type MarkEntry = {
   student: {
@@ -28,11 +28,11 @@ type ExamGroup = { id: string; name: string; schedules: Schedule[] };
 type ClassData = { id: string; name: string; classSections: { id: string; section: { id: string; name: string } }[] };
 
 function getGradeDivision(pct: number) {
-  if (pct >= 80) return { div: "Distinction", color: "text-violet-400" };
-  if (pct >= 60) return { div: "First Class",  color: "text-emerald-400"  };
-  if (pct >= 45) return { div: "Second Class", color: "text-blue-400"   };
-  if (pct >= 33) return { div: "Pass",         color: "text-amber-400" };
-  return { div: "Fail", color: "text-red-400" };
+  if (pct >= 80) return { div: "Distinction", color: "text-purple-700" };
+  if (pct >= 60) return { div: "First Class",  color: "text-green-700"  };
+  if (pct >= 45) return { div: "Second Class", color: "text-blue-700"   };
+  if (pct >= 33) return { div: "Pass",         color: "text-yellow-700" };
+  return { div: "Fail", color: "text-red-700" };
 }
 
 export function MarksheetClient({ examGroups, classes, school }: {
@@ -135,13 +135,13 @@ export function MarksheetClient({ examGroups, classes, school }: {
       </div>
 
       {!classSectionId || !examGroupId ? (
-        <div className="no-print text-center py-16 text-white/30 border-2 border-dashed rounded-xl">
+        <div className="no-print text-center py-16 text-gray-400 border-2 border-dashed rounded-xl">
           <FileText className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p className="font-medium">Select a published exam group, class and section</p>
           <p className="text-sm mt-1">Only published exam groups appear here</p>
         </div>
       ) : studentMarksheets.length === 0 ? (
-        <div className="no-print text-center py-16 text-white/30 border-2 border-dashed rounded-xl">
+        <div className="no-print text-center py-16 text-gray-400 border-2 border-dashed rounded-xl">
           <p className="font-medium">No mark entries found for this selection</p>
           <p className="text-sm mt-1">Make sure marks have been entered for this class in this exam group</p>
         </div>
@@ -156,7 +156,7 @@ export function MarksheetClient({ examGroups, classes, school }: {
               <div className="bg-blue-700 text-white p-4 text-center">
                 <h1 className="text-xl font-bold">{schoolName}</h1>
                 {school?.address && <p className="text-sm text-blue-200">{school.address}</p>}
-                <div className="mt-2 inline-block bg-[#111318] text-blue-400 font-bold px-4 py-1 rounded text-sm tracking-widest">
+                <div className="mt-2 inline-block bg-white text-blue-700 font-bold px-4 py-1 rounded text-sm tracking-widest">
                   REPORT CARD / MARKSHEET
                 </div>
                 <p className="text-sm text-blue-200 mt-1">{selectedExam?.name} — {sessionLabel}</p>
@@ -164,10 +164,10 @@ export function MarksheetClient({ examGroups, classes, school }: {
 
               {/* Student Info */}
               <div className="p-4 flex gap-4 border-b">
-                <div className="w-20 h-24 bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0 overflow-hidden">
+                <div className="w-20 h-24 bg-gray-100 border border-gray-300 flex items-center justify-center shrink-0 overflow-hidden">
                   {ms.student.image
                     ? <img src={ms.student.image} alt="" className="w-full h-full object-cover" />
-                    : <span className="text-3xl text-white/30 font-bold">{ms.student.firstName[0]}</span>
+                    : <span className="text-3xl text-gray-300 font-bold">{ms.student.firstName[0]}</span>
                   }
                 </div>
                 <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 text-sm">
@@ -182,8 +182,8 @@ export function MarksheetClient({ examGroups, classes, school }: {
                   <Field label="Issue Date"     value={printDate} />
                 </div>
                 <div className="text-center shrink-0">
-                  <div className="text-2xl font-bold text-blue-400">#{(ms as any).rank}</div>
-                  <div className="text-xs text-white/30">Rank</div>
+                  <div className="text-2xl font-bold text-blue-700">#{(ms as any).rank}</div>
+                  <div className="text-xs text-gray-400">Rank</div>
                 </div>
               </div>
 
@@ -191,47 +191,47 @@ export function MarksheetClient({ examGroups, classes, school }: {
               <div className="p-4">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-white/[0.04]">
-                      <th className="border border-white/[0.08] px-3 py-2 text-left">Subject</th>
-                      <th className="border border-white/[0.08] px-3 py-2 text-center">Max Marks</th>
-                      <th className="border border-white/[0.08] px-3 py-2 text-center">Pass Marks</th>
-                      <th className="border border-white/[0.08] px-3 py-2 text-center">Marks Obtained</th>
-                      <th className="border border-white/[0.08] px-3 py-2 text-center">Grade</th>
-                      <th className="border border-white/[0.08] px-3 py-2 text-center">Result</th>
+                    <tr className="bg-gray-100">
+                      <th className="border border-gray-300 px-3 py-2 text-left">Subject</th>
+                      <th className="border border-gray-300 px-3 py-2 text-center">Max Marks</th>
+                      <th className="border border-gray-300 px-3 py-2 text-center">Pass Marks</th>
+                      <th className="border border-gray-300 px-3 py-2 text-center">Marks Obtained</th>
+                      <th className="border border-gray-300 px-3 py-2 text-center">Grade</th>
+                      <th className="border border-gray-300 px-3 py-2 text-center">Result</th>
                     </tr>
                   </thead>
                   <tbody>
                     {ms.rows.map((row, i) => (
-                      <tr key={i} className={row.isPassing ? "" : "bg-red-500/10"}>
-                        <td className="border border-white/[0.08] px-3 py-2">{row.subjectName}</td>
-                        <td className="border border-white/[0.08] px-3 py-2 text-center">{row.fullMarks}</td>
-                        <td className="border border-white/[0.08] px-3 py-2 text-center">{row.passingMarks}</td>
-                        <td className="border border-white/[0.08] px-3 py-2 text-center font-semibold">
+                      <tr key={i} className={row.isPassing ? "" : "bg-red-50"}>
+                        <td className="border border-gray-300 px-3 py-2">{row.subjectName}</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">{row.fullMarks}</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">{row.passingMarks}</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center font-semibold">
                           {row.obtained !== null ? row.obtained : "ABS"}
                         </td>
-                        <td className="border border-white/[0.08] px-3 py-2 text-center font-bold text-blue-400">
+                        <td className="border border-gray-300 px-3 py-2 text-center font-bold text-blue-700">
                           {row.grade ?? "—"}
                         </td>
-                        <td className="border border-white/[0.08] px-3 py-2 text-center">
+                        <td className="border border-gray-300 px-3 py-2 text-center">
                           {row.isPassing
-                            ? <span className="inline-flex items-center gap-1 text-emerald-400 font-medium"><CheckCircle2 className="h-3.5 w-3.5" />PASS</span>
-                            : <span className="inline-flex items-center gap-1 text-red-400 font-medium"><XCircle className="h-3.5 w-3.5" />FAIL</span>
+                            ? <span className="inline-flex items-center gap-1 text-green-700 font-medium"><CheckCircle2 className="h-3.5 w-3.5" />PASS</span>
+                            : <span className="inline-flex items-center gap-1 text-red-600 font-medium"><XCircle className="h-3.5 w-3.5" />FAIL</span>
                           }
                         </td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="bg-[#0f1015] font-semibold">
-                      <td className="border border-white/[0.08] px-3 py-2">TOTAL</td>
-                      <td className="border border-white/[0.08] px-3 py-2 text-center">{ms.totalFull}</td>
-                      <td className="border border-white/[0.08] px-3 py-2" />
-                      <td className="border border-white/[0.08] px-3 py-2 text-center">{ms.totalObtained}</td>
-                      <td className="border border-white/[0.08] px-3 py-2 text-center">{ms.pct}%</td>
-                      <td className="border border-white/[0.08] px-3 py-2 text-center">
+                    <tr className="bg-gray-50 font-semibold">
+                      <td className="border border-gray-300 px-3 py-2">TOTAL</td>
+                      <td className="border border-gray-300 px-3 py-2 text-center">{ms.totalFull}</td>
+                      <td className="border border-gray-300 px-3 py-2" />
+                      <td className="border border-gray-300 px-3 py-2 text-center">{ms.totalObtained}</td>
+                      <td className="border border-gray-300 px-3 py-2 text-center">{ms.pct}%</td>
+                      <td className="border border-gray-300 px-3 py-2 text-center">
                         {ms.allPassed
-                          ? <span className="text-emerald-400 font-bold">PASS</span>
-                          : <span className="text-red-400 font-bold">FAIL</span>
+                          ? <span className="text-green-700 font-bold">PASS</span>
+                          : <span className="text-red-600 font-bold">FAIL</span>
                         }
                       </td>
                     </tr>
@@ -242,11 +242,11 @@ export function MarksheetClient({ examGroups, classes, school }: {
               {/* Summary + Signatures */}
               <div className="px-4 pb-4 flex items-end justify-between">
                 <div className="space-y-1 text-sm">
-                  <p><span className="text-white/40">Percentage:</span> <strong>{ms.pct}%</strong></p>
-                  <p><span className="text-white/40">Division:</span> <strong className={ms.color}>{ms.div}</strong></p>
-                  <p><span className="text-white/40">Overall Result:</span> <strong className={ms.allPassed ? "text-emerald-400" : "text-red-400"}>{ms.allPassed ? "PASSED" : "FAILED"}</strong></p>
+                  <p><span className="text-gray-500">Percentage:</span> <strong>{ms.pct}%</strong></p>
+                  <p><span className="text-gray-500">Division:</span> <strong className={ms.color}>{ms.div}</strong></p>
+                  <p><span className="text-gray-500">Overall Result:</span> <strong className={ms.allPassed ? "text-green-700" : "text-red-600"}>{ms.allPassed ? "PASSED" : "FAILED"}</strong></p>
                 </div>
-                <div className="flex gap-12 text-center text-xs text-white/40">
+                <div className="flex gap-12 text-center text-xs text-gray-500">
                   <div>
                     <div className="border-t border-gray-400 mt-8 pt-1 w-28">Class Teacher</div>
                   </div>
@@ -266,8 +266,8 @@ export function MarksheetClient({ examGroups, classes, school }: {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span className="text-xs text-white/30">{label}</span>
-      <p className="font-medium text-white/70 text-sm">{value}</p>
+      <span className="text-xs text-gray-400">{label}</span>
+      <p className="font-medium text-gray-800 text-sm">{value}</p>
     </div>
   );
 }

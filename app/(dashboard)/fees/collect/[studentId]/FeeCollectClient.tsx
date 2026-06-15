@@ -110,37 +110,37 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-[#0f1015]">
-      <Link href="/fees" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors">
+    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+      <Link href="/fees" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
         <ArrowLeft className="h-4 w-4" /> Back to Fees
       </Link>
 
       {/* Student header */}
-      <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
               {student.firstName[0]}{(student.lastName ?? "?")[0]}
             </div>
             <div>
-              <h2 className="text-base font-semibold text-white/80">
+              <h2 className="text-base font-semibold text-gray-900">
                 {student.firstName} {student.middleName ? student.middleName + " " : ""}{student.lastName}
               </h2>
-              <p className="text-sm text-white/30 font-mono">{student.admissionNo}</p>
+              <p className="text-sm text-gray-400 font-mono">{student.admissionNo}</p>
             </div>
           </div>
           <div className="flex gap-6 text-center">
             <div>
-              <p className="text-xs text-white/30">Total</p>
-              <p className="text-xl font-bold text-white/80">₵{grandTotal.toLocaleString()}</p>
+              <p className="text-xs text-gray-400">Total</p>
+              <p className="text-xl font-bold text-gray-900">₵{grandTotal.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-xs text-white/30">Paid</p>
-              <p className="text-xl font-bold text-emerald-400">₵{grandPaid.toLocaleString()}</p>
+              <p className="text-xs text-gray-400">Paid</p>
+              <p className="text-xl font-bold text-green-600">₵{grandPaid.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-xs text-white/30">Balance</p>
-              <p className={`text-xl font-bold ${grandBalance > 0 ? "text-red-400" : "text-emerald-400"}`}>
+              <p className="text-xs text-gray-400">Balance</p>
+              <p className={`text-xl font-bold ${grandBalance > 0 ? "text-red-600" : "text-green-600"}`}>
                 ₵{grandBalance.toLocaleString()}
               </p>
             </div>
@@ -149,20 +149,20 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
       </div>
 
       {lastDepositId && (
-        <div className="flex items-center justify-between text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3">
+        <div className="flex items-center justify-between text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
           <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0" /> Payment recorded successfully.</span>
           <Link href={`/fees/receipt/${lastDepositId}/${lastSubInvoice ?? 1}`} target="_blank"
-            className="flex items-center gap-1 font-medium text-emerald-300 hover:underline">
+            className="flex items-center gap-1 font-medium text-green-800 hover:underline">
             <Receipt className="h-4 w-4" /> Print Receipt
           </Link>
         </div>
       )}
 
       {masters.length === 0 ? (
-        <div className="bg-[#111318] rounded-xl border border-white/[0.06] p-10 text-center text-white/30">
+        <div className="bg-white rounded-xl border border-gray-200 p-10 text-center text-gray-400">
           <DollarSign className="h-10 w-10 mx-auto mb-2 opacity-30" />
           <p className="text-sm">No fees assigned to this student yet.</p>
-          <Link href="/fees/assign" className="text-blue-400 hover:underline text-sm mt-1 inline-block">Assign fees →</Link>
+          <Link href="/fees/assign" className="text-blue-600 hover:underline text-sm mt-1 inline-block">Assign fees →</Link>
         </div>
       ) : (
         <div className="space-y-4">
@@ -176,13 +176,13 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
               <Card key={master.id}>
                 <CardHeader className="pb-2 flex flex-row items-start justify-between">
                   <div>
-                    <CardTitle className="text-sm font-semibold text-white/70">
+                    <CardTitle className="text-sm font-semibold text-gray-800">
                       {master.feeSessionGroup.feeGroup.name}
                     </CardTitle>
-                    <p className="text-xs text-white/30 mt-0.5">{master.feeSessionGroup.session.session}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{master.feeSessionGroup.session.session}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${isPaid ? "bg-emerald-500/10 text-emerald-400" : balance === Number(master.amount) ? "bg-red-500/10 text-red-400" : "bg-amber-500/10 text-amber-400"}`}>
+                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${isPaid ? "bg-green-100 text-green-700" : balance === Number(master.amount) ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>
                       {isPaid ? "PAID" : paid > 0 ? "PARTIAL" : "UNPAID"}
                     </span>
                     {!isPaid && (
@@ -205,12 +205,12 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
                 <CardContent>
                   {/* Progress bar */}
                   <div className="mb-3">
-                    <div className="flex justify-between text-xs text-white/40 mb-1">
+                    <div className="flex justify-between text-xs text-gray-500 mb-1">
                       <span>₵{paid.toLocaleString()} paid</span>
                       <span>{pct}%</span>
                       <span>₵{Number(master.amount).toLocaleString()} total</span>
                     </div>
-                    <div className="h-2 bg-white/[0.04] rounded-full overflow-hidden">
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div className={`h-2 rounded-full transition-all ${isPaid ? "bg-green-500" : "bg-blue-500"}`}
                         style={{ width: `${Math.min(pct, 100)}%` }} />
                     </div>
@@ -218,7 +218,7 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
 
                   {/* Fee items breakdown */}
                   <table className="w-full text-xs">
-                    <thead className="text-white/30">
+                    <thead className="text-gray-400">
                       <tr>
                         <th className="text-left py-1">Fee Type</th>
                         <th className="text-right py-1">Amount</th>
@@ -228,12 +228,12 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
                     <tbody className="divide-y divide-gray-50">
                       {master.feeSessionGroup.items.map((item, idx) => (
                         <tr key={item.id}>
-                          <td className="py-1.5 text-white/60">{item.feeType.name}</td>
-                          <td className="py-1.5 text-right font-medium text-white/80">
+                          <td className="py-1.5 text-gray-700">{item.feeType.name}</td>
+                          <td className="py-1.5 text-right font-medium text-gray-900">
                             {/* Smart School: for system (carry-forward) masters, item[0].amount = master.amount */}
                             ₵{(master.isSystem && idx === 0 ? Number(master.amount) : Number(item.amount)).toLocaleString()}
                           </td>
-                          <td className="py-1.5 text-right text-white/30">{item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "—"}</td>
+                          <td className="py-1.5 text-right text-gray-400">{item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "—"}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -242,14 +242,14 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
                   {/* Payment history */}
                   {master.deposits.length > 0 && (
                     <div className="mt-3 pt-3 border-t">
-                      <p className="text-xs font-medium text-white/40 mb-2">Payment History</p>
+                      <p className="text-xs font-medium text-gray-500 mb-2">Payment History</p>
                       <div className="space-y-1">
                         {master.deposits.map((d: any, i) => {
                           const detail = Object.values(d.amountDetail as Record<string, any>)[0] as any;
                           return (
-                            <div key={i} className="flex justify-between text-xs text-white/50">
+                            <div key={i} className="flex justify-between text-xs text-gray-600">
                               <span>{detail?.date} · {detail?.payment_mode}</span>
-                              <span className="font-medium text-emerald-400">₵{Number(detail?.amount ?? 0).toLocaleString()}</span>
+                              <span className="font-medium text-green-600">₵{Number(detail?.amount ?? 0).toLocaleString()}</span>
                             </div>
                           );
                         })}
@@ -271,29 +271,29 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
           </DialogHeader>
           {payDialog && (
             <div className="space-y-4">
-              <div className="bg-[#0f1015] rounded-lg p-3 text-sm">
-                <p className="font-medium text-white/70">{payDialog.master.feeSessionGroup.feeGroup.name}</p>
-                <p className="text-xs text-white/40 mt-0.5">
+              <div className="bg-gray-50 rounded-lg p-3 text-sm">
+                <p className="font-medium text-gray-800">{payDialog.master.feeSessionGroup.feeGroup.name}</p>
+                <p className="text-xs text-gray-500 mt-0.5">
                   Balance: ₵{(Number(payDialog.master.amount) - computePaid(payDialog.master.deposits)).toLocaleString()}
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/60 mb-1">Amount (₵) *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₵) *</label>
                 <Input type="number" min="0.01" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/60 mb-1">Payment Mode</label>
-                <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
+                <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={mode} onChange={e => setMode(e.target.value)}>
                   {PAYMENT_MODES.map(m => <option key={m} value={m}>{m.replace(/_/g, " ")}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/60 mb-1">Description / Reference</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description / Reference</label>
                 <Input value={desc} onChange={e => setDesc(e.target.value)} placeholder="Optional" />
               </div>
               {error && (
-                <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
                   <AlertCircle className="h-4 w-4 shrink-0" /> {error}
                 </div>
               )}

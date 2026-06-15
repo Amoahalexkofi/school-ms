@@ -11,7 +11,7 @@ import { Bus, MapPin, Users, Plus, X, ChevronDown, ChevronUp, Trash2 } from "luc
 type Props = { vehicles: any[]; routes: any[]; pickupPoints: any[]; students: any[] };
 type Tab = "vehicles" | "routes" | "points" | "students";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints: initialPoints, students: initialStudents }: Props) {
   const router = useRouter();
@@ -137,11 +137,11 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
   ];
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-[#0f1015]">
-      <div className="flex gap-1 bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm p-1 w-fit flex-wrap">
+    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+      <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit flex-wrap">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-white/50 hover:bg-white/[0.04]"}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
             {t.label}
           </button>
         ))}
@@ -151,29 +151,29 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
       {tab === "vehicles" && (
         <div className="space-y-4">
           <div className="flex justify-between">
-            <p className="text-sm text-white/40">{vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""}</p>
             <Link href="/transport/vehicles/new">
               <Button><Plus className="h-4 w-4 mr-1.5" /> Add Vehicle</Button>
             </Link>
           </div>
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-x-auto">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
+              <thead className="bg-gray-50 border-b">
                 <tr>{["Reg No.", "Model", "Year", "Driver", "Contact", "Licence"].map(h =>
-                  <th key={h} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>
+                  <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
                 )}</tr>
               </thead>
               <tbody className="divide-y">
                 {vehicles.length === 0
-                  ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-white/30">No vehicles yet.</td></tr>
+                  ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No vehicles yet.</td></tr>
                   : vehicles.map((v: any) => (
-                    <tr key={v.id} className="hover:bg-[#0f1015]">
+                    <tr key={v.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 font-mono font-medium">{v.vehicleNo}</td>
-                      <td className="px-4 py-3 text-white/50">{v.vehicleModel ?? "—"}</td>
-                      <td className="px-4 py-3 text-white/40">{v.manufactureYear ?? "—"}</td>
-                      <td className="px-4 py-3 text-white/60">{v.driverName ?? "—"}</td>
-                      <td className="px-4 py-3 text-white/40">{v.driverContact ?? "—"}</td>
-                      <td className="px-4 py-3 text-white/40">{v.driverLicence ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-600">{v.vehicleModel ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-500">{v.manufactureYear ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-700">{v.driverName ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-500">{v.driverContact ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-500">{v.driverLicence ?? "—"}</td>
                     </tr>
                   ))}
               </tbody>
@@ -186,14 +186,14 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
       {tab === "routes" && (
         <div className="space-y-4">
           <div className="flex justify-between">
-            <p className="text-sm text-white/40">{routes.length} route{routes.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{routes.length} route{routes.length !== 1 ? "s" : ""}</p>
             <Link href="/transport/routes/new">
               <Button><Plus className="h-4 w-4 mr-1.5" /> Add Route</Button>
             </Link>
           </div>
           <div className="space-y-3">
             {routes.length === 0 && (
-              <Card><CardContent className="py-10 text-center text-sm text-white/30">No routes yet.</CardContent></Card>
+              <Card><CardContent className="py-10 text-center text-sm text-gray-400">No routes yet.</CardContent></Card>
             )}
             {routes.map((r: any) => {
               const expanded = expandedRouteId === r.id;
@@ -206,8 +206,8 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                     {/* Route header */}
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-semibold text-white/80">{r.title}</p>
-                        <p className="text-xs text-white/30 mt-0.5">
+                        <p className="font-semibold text-gray-900">{r.title}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">
                           {r.vehicle?.vehicleNo ?? "No vehicle"} · {r._count?.studentRoutes ?? r.routePickupPoints.length} students
                         </p>
                       </div>
@@ -216,7 +216,7 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                           setExpandedRouteId(expanded ? null : r.id);
                           setStopForm({ pickupPointId: "", timing: "", fees: "" });
                         }}
-                        className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
+                        className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
                       >
                         Manage stops {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                       </button>
@@ -226,7 +226,7 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                     {!expanded && r.routePickupPoints.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-3">
                         {r.routePickupPoints.map((rpp: any) => (
-                          <span key={rpp.id} className="text-xs px-2 py-1 bg-blue-500/10 text-blue-400 rounded-md border border-blue-100">
+                          <span key={rpp.id} className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-md border border-blue-100">
                             {rpp.pickupPoint.name}{rpp.timing ? ` · ${rpp.timing}` : ""}{rpp.fees ? ` · GHS ${Number(rpp.fees).toFixed(2)}` : ""}
                           </span>
                         ))}
@@ -238,19 +238,19 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                       <div className="mt-4 border-t pt-4 space-y-4">
                         {/* Current stops */}
                         {r.routePickupPoints.length === 0 ? (
-                          <p className="text-sm text-white/30">No stops added yet.</p>
+                          <p className="text-sm text-gray-400">No stops added yet.</p>
                         ) : (
                           <div className="space-y-2">
                             {r.routePickupPoints.map((rpp: any) => (
-                              <div key={rpp.id} className="flex items-center justify-between bg-[#0f1015] rounded-lg px-3 py-2">
+                              <div key={rpp.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
                                 <div>
-                                  <span className="font-medium text-sm text-white/70">{rpp.pickupPoint.name}</span>
-                                  {rpp.timing && <span className="ml-2 text-xs text-white/40">{rpp.timing}</span>}
-                                  {rpp.fees && <span className="ml-2 text-xs text-emerald-400 font-medium">GHS {Number(rpp.fees).toFixed(2)}</span>}
+                                  <span className="font-medium text-sm text-gray-800">{rpp.pickupPoint.name}</span>
+                                  {rpp.timing && <span className="ml-2 text-xs text-gray-500">{rpp.timing}</span>}
+                                  {rpp.fees && <span className="ml-2 text-xs text-green-700 font-medium">GHS {Number(rpp.fees).toFixed(2)}</span>}
                                 </div>
                                 <button
                                   onClick={() => removeStop(r.id, rpp.id)}
-                                  className="text-red-400 hover:text-red-400 p-1"
+                                  className="text-red-400 hover:text-red-600 p-1"
                                   title="Remove stop"
                                 >
                                   <X className="h-4 w-4" />
@@ -261,11 +261,11 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                         )}
 
                         {/* Add stop form */}
-                        <div className="bg-blue-500/10 rounded-lg p-3 space-y-3">
-                          <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide">Add Stop</p>
+                        <div className="bg-blue-50 rounded-lg p-3 space-y-3">
+                          <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Add Stop</p>
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <div>
-                              <label className="text-xs text-white/50 mb-1 block">Pickup Point *</label>
+                              <label className="text-xs text-gray-600 mb-1 block">Pickup Point *</label>
                               <select
                                 className={SEL}
                                 value={stopForm.pickupPointId}
@@ -275,11 +275,11 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                                 {available.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                               </select>
                               {available.length === 0 && (
-                                <p className="text-xs text-white/30 mt-1">All points already added. Create new ones in Pickup Points tab.</p>
+                                <p className="text-xs text-gray-400 mt-1">All points already added. Create new ones in Pickup Points tab.</p>
                               )}
                             </div>
                             <div>
-                              <label className="text-xs text-white/50 mb-1 block">Pickup Time</label>
+                              <label className="text-xs text-gray-600 mb-1 block">Pickup Time</label>
                               <Input
                                 type="time"
                                 value={stopForm.timing}
@@ -287,7 +287,7 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                               />
                             </div>
                             <div>
-                              <label className="text-xs text-white/50 mb-1 block">Fee (GHS)</label>
+                              <label className="text-xs text-gray-600 mb-1 block">Fee (GHS)</label>
                               <Input
                                 type="number"
                                 min="0"
@@ -318,17 +318,17 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
       {tab === "points" && (
         <div className="space-y-4">
           <div className="flex justify-between">
-            <p className="text-sm text-white/40">{pickupPoints.length} pickup point{pickupPoints.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{pickupPoints.length} pickup point{pickupPoints.length !== 1 ? "s" : ""}</p>
             <Button onClick={() => { setPName(""); setShowAddPoint(!showAddPoint); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Add Point
             </Button>
           </div>
 
           {showAddPoint && (
-            <div className="bg-[#111318] border border-white/[0.06] rounded-xl p-4 space-y-3 shadow-sm">
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
               <div className="flex items-center justify-between">
-                <h3 className="font-medium text-white/70">New Pickup Point</h3>
-                <button onClick={() => setShowAddPoint(false)} className="text-white/30 hover:text-white/50"><X className="h-4 w-4" /></button>
+                <h3 className="font-medium text-gray-800">New Pickup Point</h3>
+                <button onClick={() => setShowAddPoint(false)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
               </div>
               <Input
                 value={pName}
@@ -343,15 +343,15 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
             </div>
           )}
 
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             {pickupPoints.length === 0 ? (
-              <p className="text-center text-sm text-white/30 py-10">No pickup points yet.</p>
+              <p className="text-center text-sm text-gray-400 py-10">No pickup points yet.</p>
             ) : (
               <table className="w-full text-sm">
-                <thead className="bg-[#0f1015] border-b">
+                <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left px-4 py-3 font-medium text-white/50">Name</th>
-                    <th className="text-left px-4 py-3 font-medium text-white/50">Used on routes</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Name</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Used on routes</th>
                     <th className="px-4 py-3" />
                   </tr>
                 </thead>
@@ -361,13 +361,13 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                       r.routePickupPoints.some((rpp: any) => rpp.pickupPointId === p.id)
                     ).length;
                     return (
-                      <tr key={p.id} className="hover:bg-[#0f1015]">
-                        <td className="px-4 py-3 font-medium text-white/70">{p.name}</td>
-                        <td className="px-4 py-3 text-white/40">{routeCount} route{routeCount !== 1 ? "s" : ""}</td>
+                      <tr key={p.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 font-medium text-gray-800">{p.name}</td>
+                        <td className="px-4 py-3 text-gray-500">{routeCount} route{routeCount !== 1 ? "s" : ""}</td>
                         <td className="px-4 py-3 text-right">
                           <button
                             onClick={() => deletePoint(p.id, p.name)}
-                            className="text-white/30 hover:text-red-500 transition-colors"
+                            className="text-gray-300 hover:text-red-500 transition-colors"
                             title="Delete"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -387,17 +387,17 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
       {tab === "students" && (
         <div className="space-y-4">
           <div className="flex justify-between">
-            <p className="text-sm text-white/40">{students.filter((s: any) => s.transportRoute).length} students assigned</p>
+            <p className="text-sm text-gray-500">{students.filter((s: any) => s.transportRoute).length} students assigned</p>
             <Button onClick={() => { setAssignForm({ studentId: "", routeId: "", pickupPointId: "" }); setShowAssign(!showAssign); }}>
               <Plus className="h-4 w-4 mr-1.5" /> Assign Student
             </Button>
           </div>
 
           {showAssign && (
-            <div className="bg-[#111318] border border-white/[0.06] rounded-xl p-4 space-y-3 shadow-sm">
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
               <div className="flex items-center justify-between">
-                <h3 className="font-medium text-white/70">Assign Student to Route</h3>
-                <button onClick={() => setShowAssign(false)} className="text-white/30 hover:text-white/50"><X className="h-4 w-4" /></button>
+                <h3 className="font-medium text-gray-800">Assign Student to Route</h3>
+                <button onClick={() => setShowAssign(false)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
@@ -409,7 +409,7 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                       : pickupPoints.map(p => ({ v: p.id, l: p.name }))) ?? [] },
                 ].map(({ label, key, opts }) => (
                   <div key={key}>
-                    <label className="block text-sm font-medium text-white/60 mb-1">{label}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
                     <select className={SEL} value={(assignForm as any)[key]} onChange={e => setAssignForm(f => ({ ...f, [key]: e.target.value }))}>
                       <option value="">— Select —</option>
                       {opts.map((o: any) => <option key={o.v} value={o.v}>{o.l}</option>)}
@@ -424,24 +424,24 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
             </div>
           )}
 
-          <div className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-x-auto">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-[#0f1015] border-b">
+              <thead className="bg-gray-50 border-b">
                 <tr>{["Student", "Adm No.", "Route", "Pickup Point", ""].map((h, i) =>
-                  <th key={i} className="text-left px-4 py-3 font-medium text-white/50">{h}</th>
+                  <th key={i} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
                 )}</tr>
               </thead>
               <tbody className="divide-y">
                 {students.filter((s: any) => s.transportRoute).length === 0 ? (
-                  <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-white/30">No students assigned yet.</td></tr>
+                  <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-400">No students assigned yet.</td></tr>
                 ) : students.filter((s: any) => s.transportRoute).map((s: any) => (
-                  <tr key={s.id} className="hover:bg-[#0f1015]">
+                  <tr key={s.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium">{s.firstName} {s.lastName}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-white/40">{s.admissionNo}</td>
-                    <td className="px-4 py-3 text-white/50">{s.transportRoute?.route?.title ?? "—"}</td>
-                    <td className="px-4 py-3 text-white/40">{s.transportRoute?.pickupPoint?.name ?? "—"}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.admissionNo}</td>
+                    <td className="px-4 py-3 text-gray-600">{s.transportRoute?.route?.title ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500">{s.transportRoute?.pickupPoint?.name ?? "—"}</td>
                     <td className="px-4 py-3 text-right">
-                      <button onClick={() => unassign(s.id)} className="text-white/30 hover:text-red-500 transition-colors" title="Unassign">
+                      <button onClick={() => unassign(s.id)} className="text-gray-300 hover:text-red-500 transition-colors" title="Unassign">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </td>

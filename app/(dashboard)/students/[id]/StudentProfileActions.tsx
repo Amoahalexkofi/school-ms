@@ -204,12 +204,12 @@ export function StudentProfileActions({ student }: Props) {
         <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
       </Button>
       {student.isActive ? (
-        <Button size="sm" variant="outline" className="text-red-400 border-red-500/20 hover:bg-red-500/10"
+        <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
           onClick={() => { setError(""); setDisableOpen(true); }}>
           <Ban className="h-3.5 w-3.5 mr-1" /> Disable
         </Button>
       ) : (
-        <Button size="sm" variant="outline" className="text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/10"
+        <Button size="sm" variant="outline" className="text-green-600 border-green-200 hover:bg-green-50"
           disabled={loading} onClick={handleReEnable}>
           <CheckCircle className="h-3.5 w-3.5 mr-1" /> Re-enable
         </Button>
@@ -243,7 +243,7 @@ export function StudentProfileActions({ student }: Props) {
             <Field label="Pincode" name="pincode" />
             <Field label="Note" name="note" textarea />
           </div>
-          {error && <p className="text-sm text-red-400 mt-2 bg-red-500/10 px-3 py-2 rounded">{error}</p>}
+          {error && <p className="text-sm text-red-600 mt-2 bg-red-50 px-3 py-2 rounded">{error}</p>}
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
             <Button disabled={loading} onClick={handleEdit}>{loading ? "Saving…" : "Save Changes"}</Button>
@@ -257,7 +257,7 @@ export function StudentProfileActions({ student }: Props) {
           <DialogHeader>
             <DialogTitle>Disable Student</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-white/40">This student will be marked inactive. You can re-enable them later.</p>
+          <p className="text-sm text-gray-500">This student will be marked inactive. You can re-enable them later.</p>
           <div className="space-y-3 mt-3">
             <div>
               <Label className="text-xs">Reason *</Label>
@@ -272,7 +272,7 @@ export function StudentProfileActions({ student }: Props) {
                 onChange={e => setDisableForm(f => ({ ...f, disableNote: e.target.value }))} />
             </div>
           </div>
-          {error && <p className="text-sm text-red-400 mt-2 bg-red-500/10 px-3 py-2 rounded">{error}</p>}
+          {error && <p className="text-sm text-red-600 mt-2 bg-red-50 px-3 py-2 rounded">{error}</p>}
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setDisableOpen(false)}>Cancel</Button>
             <Button variant="destructive" disabled={loading || !disableForm.disableReason}

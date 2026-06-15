@@ -48,7 +48,7 @@ export function StaffSubjectsManager({ staffId, assigned, allSubjects }: Props) 
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold flex items-center justify-between">
           <span className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4 text-indigo-400" /> Subjects Taught
+            <BookOpen className="h-4 w-4 text-indigo-600" /> Subjects Taught
           </span>
           {!editing ? (
             <Button size="sm" variant="outline" onClick={() => setEditing(true)}>
@@ -65,11 +65,11 @@ export function StaffSubjectsManager({ staffId, assigned, allSubjects }: Props) 
       <CardContent>
         {!editing ? (
           subjects.length === 0 ? (
-            <p className="text-sm text-white/30">No subjects assigned. Click "Manage" to assign.</p>
+            <p className="text-sm text-gray-400">No subjects assigned. Click "Manage" to assign.</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {subjects.map(s => (
-                <span key={s.id} className="text-xs px-2.5 py-1 bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/20">
+                <span key={s.id} className="text-xs px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
                   {s.name}{s.code && <span className="text-indigo-400 ml-1">({s.code})</span>}
                 </span>
               ))}
@@ -77,21 +77,21 @@ export function StaffSubjectsManager({ staffId, assigned, allSubjects }: Props) 
           )
         ) : (
           <div className="space-y-2">
-            <p className="text-xs text-white/40 mb-3">Check subjects this teacher can teach:</p>
+            <p className="text-xs text-gray-500 mb-3">Check subjects this teacher can teach:</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {allSubjects.map(s => {
                 const checked = selected.has(s.id);
                 return (
-                  <label key={s.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${checked ? "bg-indigo-500/10 border-indigo-300" : "bg-[#111318] border-white/[0.06] hover:border-white/[0.08]"}`}>
+                  <label key={s.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${checked ? "bg-indigo-50 border-indigo-300" : "bg-white border-gray-200 hover:border-gray-300"}`}>
                     <input type="checkbox" checked={checked} onChange={() => toggleSubject(s.id)}
-                      className="rounded border-white/[0.08] text-indigo-400 focus:ring-indigo-500" />
-                    <span className="text-sm text-white/70">{s.name}</span>
-                    {s.code && <span className="text-xs text-white/30">({s.code})</span>}
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                    <span className="text-sm text-gray-800">{s.name}</span>
+                    {s.code && <span className="text-xs text-gray-400">({s.code})</span>}
                   </label>
                 );
               })}
             </div>
-            {allSubjects.length === 0 && <p className="text-sm text-white/30 text-center py-4">No subjects available. Create subjects first.</p>}
+            {allSubjects.length === 0 && <p className="text-sm text-gray-400 text-center py-4">No subjects available. Create subjects first.</p>}
           </div>
         )}
       </CardContent>

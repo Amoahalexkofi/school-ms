@@ -48,7 +48,7 @@ export function AddEnquiryForm() {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/front-office" className="text-sm text-blue-400 hover:underline">
+      <Link href="/front-office" className="text-sm text-blue-600 hover:underline">
         ← Back to Front Office
       </Link>
 
@@ -81,7 +81,7 @@ export function AddEnquiryForm() {
             <Label>Description</Label>
             <textarea
               rows={3}
-              className="w-full border border-white/[0.08] rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={form.description}
               onChange={set("description")}
               placeholder="Enquiry details..."

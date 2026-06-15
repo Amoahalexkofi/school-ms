@@ -45,7 +45,7 @@ export default async function StaffProfilePage({
     <div className="flex flex-col flex-1">
       <Topbar title="Staff Profile" />
       <main className="flex-1 p-6 space-y-6 max-w-5xl">
-        <Link href="/staff" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70">
+        <Link href="/staff" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Staff
         </Link>
 
@@ -61,15 +61,15 @@ export default async function StaffProfilePage({
               <div className="flex-1">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h1 className="text-xl font-semibold text-white/80">{staff.firstName} {staff.lastName}</h1>
-                    <p className="text-sm text-white/40 font-mono">{staff.employeeId}</p>
+                    <h1 className="text-xl font-semibold text-gray-900">{staff.firstName} {staff.lastName}</h1>
+                    <p className="text-sm text-gray-500 font-mono">{staff.employeeId}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${staff.isActive ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
+                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${staff.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                       {staff.isActive ? "Active" : "Inactive"}
                     </span>
                     <Link href={`/staff/${staff.id}/id-card`}>
-                      <button className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-white/[0.06] bg-[#111318] hover:bg-[#0f1015] text-white/50 font-medium">
+                      <button className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 font-medium">
                         <CreditCard className="h-3.5 w-3.5" /> ID Card
                       </button>
                     </Link>
@@ -88,8 +88,8 @@ export default async function StaffProfilePage({
                     ["Email",        staff.user?.email],
                   ].map(([label, value]) => (
                     <div key={label as string}>
-                      <p className="text-xs text-white/30 uppercase tracking-wide">{label}</p>
-                      <p className="text-white/60 text-sm">{(value as string) ?? "—"}</p>
+                      <p className="text-xs text-gray-400 uppercase tracking-wide">{label}</p>
+                      <p className="text-gray-700 text-sm">{(value as string) ?? "—"}</p>
                     </div>
                   ))}
                 </div>
@@ -103,7 +103,7 @@ export default async function StaffProfilePage({
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <User className="h-4 w-4 text-white/50" /> Personal Details
+                <User className="h-4 w-4 text-gray-600" /> Personal Details
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
@@ -118,8 +118,8 @@ export default async function StaffProfilePage({
                 ["Shift",            staff.shift],
               ].map(([label, value]) => (
                 <div key={label as string}>
-                  <p className="text-xs text-white/30">{label}</p>
-                  <p className="text-white/60">{(value as string) ?? "—"}</p>
+                  <p className="text-xs text-gray-400">{label}</p>
+                  <p className="text-gray-700">{(value as string) ?? "—"}</p>
                 </div>
               ))}
             </CardContent>
@@ -129,7 +129,7 @@ export default async function StaffProfilePage({
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Briefcase className="h-4 w-4 text-blue-400" /> Employment &amp; Finance
+                <Briefcase className="h-4 w-4 text-blue-600" /> Employment &amp; Finance
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
@@ -144,8 +144,8 @@ export default async function StaffProfilePage({
                 ["Location",          staff.location],
               ].map(([label, value]) => (
                 <div key={label as string}>
-                  <p className="text-xs text-white/30">{label}</p>
-                  <p className="text-white/60">{(value as string) ?? "—"}</p>
+                  <p className="text-xs text-gray-400">{label}</p>
+                  <p className="text-gray-700">{(value as string) ?? "—"}</p>
                 </div>
               ))}
             </CardContent>
@@ -156,7 +156,7 @@ export default async function StaffProfilePage({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-teal-400" /> Contact &amp; Address
+              <DollarSign className="h-4 w-4 text-teal-600" /> Contact &amp; Address
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-2 text-sm">
@@ -169,8 +169,8 @@ export default async function StaffProfilePage({
               ["Country",           staff.country],
             ].map(([label, value]) => (
               <div key={label as string}>
-                <p className="text-xs text-white/30">{label}</p>
-                <p className="text-white/60">{(value as string) ?? "—"}</p>
+                <p className="text-xs text-gray-400">{label}</p>
+                <p className="text-gray-700">{(value as string) ?? "—"}</p>
               </div>
             ))}
           </CardContent>
@@ -188,13 +188,13 @@ export default async function StaffProfilePage({
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Briefcase className="h-4 w-4 text-orange-400" /> Class Teacher Of
+                <Briefcase className="h-4 w-4 text-orange-600" /> Class Teacher Of
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
                 {staff.classSectionsTeaching.map((cs: any) => (
-                  <span key={cs.id} className="text-xs px-2.5 py-1 bg-orange-500/10 text-orange-400 rounded-full border border-orange-500/20">
+                  <span key={cs.id} className="text-xs px-2.5 py-1 bg-orange-50 text-orange-700 rounded-full border border-orange-200">
                     {cs.class.name} – {cs.section.name}
                   </span>
                 ))}
@@ -208,14 +208,14 @@ export default async function StaffProfilePage({
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Share2 className="h-4 w-4 text-sky-400" /> Social Links
+                <Share2 className="h-4 w-4 text-sky-600" /> Social Links
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-4 text-sm">
-              {staff.facebook  && <a href={staff.facebook}  target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">Facebook</a>}
+              {staff.facebook  && <a href={staff.facebook}  target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">Facebook</a>}
               {staff.twitter   && <a href={staff.twitter}   target="_blank" rel="noreferrer" className="text-sky-500 hover:underline">Twitter / X</a>}
-              {staff.linkedin  && <a href={staff.linkedin}  target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">LinkedIn</a>}
-              {staff.instagram && <a href={staff.instagram} target="_blank" rel="noreferrer" className="text-pink-400 hover:underline">Instagram</a>}
+              {staff.linkedin  && <a href={staff.linkedin}  target="_blank" rel="noreferrer" className="text-blue-700 hover:underline">LinkedIn</a>}
+              {staff.instagram && <a href={staff.instagram} target="_blank" rel="noreferrer" className="text-pink-600 hover:underline">Instagram</a>}
             </CardContent>
           </Card>
         )}
@@ -225,30 +225,30 @@ export default async function StaffProfilePage({
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-emerald-400" /> Recent Payslips
+                <DollarSign className="h-4 w-4 text-green-600" /> Recent Payslips
               </CardTitle>
             </CardHeader>
             <CardContent>
               <table className="w-full text-sm">
-                <thead className="bg-[#0f1015]">
+                <thead className="bg-gray-50">
                   <tr>
-                    <th className="text-left px-3 py-2 font-medium text-white/50">Period</th>
-                    <th className="text-left px-3 py-2 font-medium text-white/50">Basic</th>
-                    <th className="text-left px-3 py-2 font-medium text-white/50">Net</th>
-                    <th className="text-left px-3 py-2 font-medium text-white/50">Status</th>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Period</th>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Basic</th>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Net</th>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {staff.payslips.map((p: any) => (
-                    <tr key={p.id} className="hover:bg-[#0f1015]">
-                      <td className="px-3 py-2 text-white/50">{p.month}/{p.year}</td>
+                    <tr key={p.id} className="hover:bg-gray-50">
+                      <td className="px-3 py-2 text-gray-600">{p.month}/{p.year}</td>
                       <td className="px-3 py-2">₵{Number(p.basicSalary).toLocaleString()}</td>
                       <td className="px-3 py-2 font-medium">₵{Number(p.netSalary).toLocaleString()}</td>
                       <td className="px-3 py-2">
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                          p.status === "PAID"     ? "bg-emerald-500/10 text-emerald-400"
-                          : p.status === "APPROVED" ? "bg-blue-500/10 text-blue-400"
-                          : "bg-white/[0.04] text-white/50"
+                          p.status === "PAID"     ? "bg-green-100 text-green-700"
+                          : p.status === "APPROVED" ? "bg-blue-100 text-blue-700"
+                          : "bg-gray-100 text-gray-600"
                         }`}>{p.status}</span>
                       </td>
                     </tr>
@@ -260,10 +260,10 @@ export default async function StaffProfilePage({
         )}
 
         {staff.note && (
-          <Card className="bg-amber-500/10 border-amber-500/20">
+          <Card className="bg-amber-50 border-amber-200">
             <CardContent className="pt-4">
-              <p className="text-sm font-medium text-amber-400">Note</p>
-              <p className="text-sm text-amber-400 mt-1">{staff.note}</p>
+              <p className="text-sm font-medium text-amber-700">Note</p>
+              <p className="text-sm text-amber-600 mt-1">{staff.note}</p>
             </CardContent>
           </Card>
         )}

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 const TABS = ["Basic Info", "Guardian", "Address", "Academic", "Other"] as const;
 type Tab = typeof TABS[number];
@@ -54,7 +54,7 @@ function Field({ label, name, type = "text", options, textarea, colSpan2, form, 
         <Label className="text-xs mb-1 block">{label}</Label>
         <textarea
           rows={3}
-          className="w-full rounded-lg border border-white/[0.08] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           value={form[name]}
           onChange={set(name)}
         />
@@ -142,7 +142,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
       <div className="max-w-4xl mx-auto space-y-6">
         <Link
           href="/students"
-          className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60"
+          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Students
         </Link>
@@ -156,8 +156,8 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
               onClick={() => setTab(t)}
               className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
                 tab === t
-                  ? "border-blue-600 text-blue-400"
-                  : "border-transparent text-white/40 hover:text-white/60"
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
               {t}
@@ -166,7 +166,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
         </div>
 
         {error && (
-          <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
             {error}
           </div>
         )}
@@ -200,7 +200,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
                     id="rte"
                     checked={form.rte}
                     onChange={(e) => setForm((f) => ({ ...f, rte: e.target.checked }))}
-                    className="h-4 w-4 rounded border-white/[0.08]"
+                    className="h-4 w-4 rounded border-gray-300"
                   />
                   <Label htmlFor="rte" className="text-sm cursor-pointer">
                     RTE (Right to Education) student

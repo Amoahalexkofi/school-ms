@@ -84,18 +84,18 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
   }
 
   return (
-    <main className="flex-1 p-6 max-w-3xl space-y-6 bg-[#0f1015]">
-      <Link href="/settings" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors">
+    <main className="flex-1 p-6 max-w-3xl space-y-6 bg-gray-50">
+      <Link href="/settings" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
         <ArrowLeft className="h-4 w-4" /> Back to Settings
       </Link>
 
       <div>
-        <h1 className="text-lg font-semibold text-white/80">Payment Gateway</h1>
-        <p className="text-sm text-white/40 mt-0.5">Configure online fee payment. Only one gateway can be active at a time.</p>
+        <h1 className="text-lg font-semibold text-gray-900">Payment Gateway</h1>
+        <p className="text-sm text-gray-500 mt-0.5">Configure online fee payment. Only one gateway can be active at a time.</p>
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+        <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
           <AlertCircle className="h-4 w-4 shrink-0" /> {error}
         </div>
       )}
@@ -116,7 +116,7 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
                   </div>
                   <div>
                     <CardTitle className="text-sm font-semibold">{def.label}</CardTitle>
-                    {isOn && <span className="text-xs text-emerald-400 font-medium">● Active{sandbox ? " (Sandbox)" : " (Live)"}</span>}
+                    {isOn && <span className="text-xs text-green-600 font-medium">● Active{sandbox ? " (Sandbox)" : " (Live)"}</span>}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -142,7 +142,7 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
                 const show  = showKey[`${def.key}_${field}`];
                 return (
                   <div key={field}>
-                    <label className="block text-sm font-medium text-white/60 mb-1">{label}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
                     <div className="relative">
                       <Input
                         type={show ? "text" : "password"}
@@ -152,7 +152,7 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
                         className="pr-10"
                       />
                       <button type="button"
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/50"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                         onClick={() => setShowKey(s => ({ ...s, [`${def.key}_${field}`]: !s[`${def.key}_${field}`] }))}>
                         {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -163,12 +163,12 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
 
               <div className="flex items-center justify-between pt-1">
                 <a href={def.docs} target="_blank" rel="noopener noreferrer"
-                  className="text-xs text-blue-400 hover:underline">
+                  className="text-xs text-blue-600 hover:underline">
                   Get API keys →
                 </a>
                 <div className="flex items-center gap-2">
                   {saved === def.key && (
-                    <span className="flex items-center gap-1 text-xs text-emerald-400">
+                    <span className="flex items-center gap-1 text-xs text-green-600">
                       <CheckCircle2 className="h-3.5 w-3.5" /> Saved
                     </span>
                   )}

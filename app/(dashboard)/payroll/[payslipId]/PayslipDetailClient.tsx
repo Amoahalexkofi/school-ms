@@ -21,9 +21,9 @@ const COMMON_ALLOWANCES = ["HRA","Transport Allowance","Medical Allowance","DA",
 const COMMON_DEDUCTIONS = ["Income Tax","Professional Tax","PF / Pension","Loan Deduction","Absence Deduction"];
 
 const STATUS_STYLE: Record<string, string> = {
-  DRAFT:    "bg-white/[0.04] text-white/60",
-  APPROVED: "bg-blue-500/10 text-blue-400",
-  PAID:     "bg-emerald-500/10 text-emerald-400",
+  DRAFT:    "bg-gray-100 text-gray-700",
+  APPROVED: "bg-blue-100 text-blue-700",
+  PAID:     "bg-green-100 text-green-700",
 };
 
 type Allowance = { id: string; type: string; amount: number; isDeduction: boolean; calType: string };
@@ -123,11 +123,11 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
   const deductions = payslip.allowances.filter(a =>  a.isDeduction);
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-[#0f1015]">
+    <main className="flex-1 p-6 space-y-5 bg-gray-50">
 
       {/* Top bar */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <Link href="/payroll" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors">
+        <Link href="/payroll" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
           <ArrowLeft className="h-4 w-4" /> Back to Payroll
         </Link>
         <div className="flex gap-2 items-center flex-wrap">
@@ -144,13 +144,13 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+        <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
           <AlertCircle className="h-4 w-4 shrink-0" /> {error}
         </div>
       )}
 
       {/* Payslip card — print-friendly */}
-      <div id="payslip-print" className="bg-[#111318] rounded-xl border border-white/[0.06] shadow-sm overflow-hidden print:shadow-none print:border-none">
+      <div id="payslip-print" className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden print:shadow-none print:border-none">
 
         {/* Header */}
         <div className="bg-indigo-600 px-6 py-5 text-white print:bg-indigo-600">
@@ -178,8 +178,8 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
             ["Payment Date",   payslip.paymentDate ? new Date(payslip.paymentDate).toLocaleDateString() : "—"],
           ].map(([label, value]) => (
             <div key={label as string}>
-              <p className="text-xs text-white/30">{label}</p>
-              <p className="font-medium text-white/80">{value}</p>
+              <p className="text-xs text-gray-400">{label}</p>
+              <p className="font-medium text-gray-900">{value}</p>
             </div>
           ))}
         </div>
@@ -190,8 +190,8 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
           {/* Earnings */}
           <div className="p-6">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-white/60 flex items-center gap-1.5">
-                <TrendingUp className="h-4 w-4 text-emerald-400" /> Earnings
+              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                <TrendingUp className="h-4 w-4 text-green-600" /> Earnings
               </h3>
               {!isPaid && (
                 <Button size="sm" variant="outline" onClick={() => { setLineIsDeduction(false); setLineType(""); setLineAmount(""); setLineError(""); setLineOpen(true); }}>
@@ -201,18 +201,18 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
             </div>
             <table className="w-full text-sm">
               <tbody className="divide-y divide-gray-50">
-                <tr className="text-white/60">
+                <tr className="text-gray-700">
                   <td className="py-2 font-medium">Basic Salary</td>
                   <td className="py-2 text-right font-semibold">₵{Number(payslip.basicSalary).toLocaleString()}</td>
                   <td className="w-8" />
                 </tr>
                 {allowances.map(a => (
-                  <tr key={a.id} className="text-white/50">
+                  <tr key={a.id} className="text-gray-600">
                     <td className="py-2">{a.type}</td>
-                    <td className="py-2 text-right text-emerald-400">+ ₵{Number(a.amount).toLocaleString()}</td>
+                    <td className="py-2 text-right text-green-700">+ ₵{Number(a.amount).toLocaleString()}</td>
                     <td className="py-2 pl-2">
                       {!isPaid && (
-                        <button onClick={() => deleteLine(a.id)} className="text-white/30 hover:text-red-500 transition-colors">
+                        <button onClick={() => deleteLine(a.id)} className="text-gray-300 hover:text-red-500 transition-colors">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       )}
@@ -220,10 +220,10 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="border-t-2 border-white/[0.06]">
+              <tfoot className="border-t-2 border-gray-200">
                 <tr>
-                  <td className="pt-2 font-semibold text-white/70">Total Earnings</td>
-                  <td className="pt-2 text-right font-bold text-emerald-400">
+                  <td className="pt-2 font-semibold text-gray-800">Total Earnings</td>
+                  <td className="pt-2 text-right font-bold text-green-700">
                     ₵{(Number(payslip.basicSalary) + Number(payslip.totalAllowance)).toLocaleString()}
                   </td>
                   <td />
@@ -235,7 +235,7 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
           {/* Deductions */}
           <div className="p-6">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-white/60 flex items-center gap-1.5">
+              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
                 <TrendingDown className="h-4 w-4 text-red-500" /> Deductions
               </h3>
               {!isPaid && (
@@ -247,29 +247,29 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
             <table className="w-full text-sm">
               <tbody className="divide-y divide-gray-50">
                 {/* Tax row — editable */}
-                <tr className="text-white/50">
+                <tr className="text-gray-600">
                   <td className="py-2">Tax</td>
                   <td className="py-2 text-right">
                     {!isPaid ? (
                       <div className="flex items-center justify-end gap-1">
-                        <span className="text-white/30">₵</span>
+                        <span className="text-gray-400">₵</span>
                         <Input type="number" min="0" step="0.01" className="w-24 h-7 text-right text-xs"
                           value={taxInput} onChange={e => setTaxInput(e.target.value)}
                           onBlur={updateTax} />
                       </div>
                     ) : (
-                      <span className="text-red-400">- ₵{Number(payslip.tax).toLocaleString()}</span>
+                      <span className="text-red-600">- ₵{Number(payslip.tax).toLocaleString()}</span>
                     )}
                   </td>
                   <td className="w-8" />
                 </tr>
                 {deductions.map(a => (
-                  <tr key={a.id} className="text-white/50">
+                  <tr key={a.id} className="text-gray-600">
                     <td className="py-2">{a.type}</td>
-                    <td className="py-2 text-right text-red-400">- ₵{Number(a.amount).toLocaleString()}</td>
+                    <td className="py-2 text-right text-red-600">- ₵{Number(a.amount).toLocaleString()}</td>
                     <td className="py-2 pl-2">
                       {!isPaid && (
-                        <button onClick={() => deleteLine(a.id)} className="text-white/30 hover:text-red-500 transition-colors">
+                        <button onClick={() => deleteLine(a.id)} className="text-gray-300 hover:text-red-500 transition-colors">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       )}
@@ -277,10 +277,10 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="border-t-2 border-white/[0.06]">
+              <tfoot className="border-t-2 border-gray-200">
                 <tr>
-                  <td className="pt-2 font-semibold text-white/70">Total Deductions</td>
-                  <td className="pt-2 text-right font-bold text-red-400">
+                  <td className="pt-2 font-semibold text-gray-800">Total Deductions</td>
+                  <td className="pt-2 text-right font-bold text-red-600">
                     ₵{(Number(payslip.totalDeduction) + Number(payslip.tax)).toLocaleString()}
                   </td>
                   <td />
@@ -305,11 +305,11 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Type *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Type *</label>
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {(lineIsDeduction ? COMMON_DEDUCTIONS : COMMON_ALLOWANCES).map(s => (
                   <button key={s} onClick={() => setLineType(s)}
-                    className={`text-xs px-2 py-1 rounded border transition-colors ${lineType === s ? "bg-blue-600 text-white border-blue-600" : "bg-[#111318] text-white/50 border-white/[0.06] hover:border-blue-300"}`}>
+                    className={`text-xs px-2 py-1 rounded border transition-colors ${lineType === s ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200 hover:border-blue-300"}`}>
                     {s}
                   </button>
                 ))}
@@ -317,11 +317,11 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
               <Input value={lineType} onChange={e => setLineType(e.target.value)} placeholder="Or type custom name…" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Amount (₵) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₵) *</label>
               <Input type="number" min="0.01" step="0.01" value={lineAmount} onChange={e => setLineAmount(e.target.value)} placeholder="0.00" />
             </div>
           </div>
-          {lineError && <p className="text-sm text-red-400 mt-1">{lineError}</p>}
+          {lineError && <p className="text-sm text-red-600 mt-1">{lineError}</p>}
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setLineOpen(false)}>Cancel</Button>
             <Button disabled={lineLoading} onClick={addLine}>{lineLoading ? "Adding…" : "Add"}</Button>
@@ -335,20 +335,20 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
           <DialogHeader><DialogTitle>Mark as Paid</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Payment Mode</label>
-              <select className="w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
+              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={payMode} onChange={e => setPayMode(e.target.value)}>
                 {PAYMENT_MODES.map(m => <option key={m} value={m}>{m.replace(/_/g, " ")}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Payment Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Payment Date</label>
               <Input type="date" value={payDate} onChange={e => setPayDate(e.target.value)} />
             </div>
-            <div className="bg-[#0f1015] rounded-lg p-3 text-sm">
+            <div className="bg-gray-50 rounded-lg p-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-white/40">Net Salary</span>
-                <span className="font-bold text-white/80">₵{Number(payslip.netSalary).toLocaleString()}</span>
+                <span className="text-gray-500">Net Salary</span>
+                <span className="font-bold text-gray-900">₵{Number(payslip.netSalary).toLocaleString()}</span>
               </div>
             </div>
           </div>

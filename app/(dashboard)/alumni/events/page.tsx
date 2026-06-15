@@ -12,7 +12,7 @@ import {
   ArrowLeft, Plus, Pencil, Trash2, Calendar, X, Globe,
 } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-white/[0.08] px-3 text-sm bg-[#111318] focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 type AlumniEvent = {
   id: string;
@@ -110,18 +110,18 @@ export default function AlumniEventsPage() {
       <Topbar title="Alumni Events" />
       <main className="flex-1 p-6 space-y-6">
         <div className="flex items-center justify-between">
-          <Link href="/alumni" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
+          <Link href="/alumni" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Alumni
           </Link>
           <Button onClick={openAdd}><Plus className="h-4 w-4 mr-1" /> Add Event</Button>
         </div>
 
         {showForm && (
-          <Card className="border-blue-500/20 bg-blue-500/10/30">
+          <Card className="border-blue-200 bg-blue-50/30">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm text-blue-300">{editing ? "Edit Event" : "Add Alumni Event"}</CardTitle>
-                <button onClick={() => setShowForm(false)}><X className="h-4 w-4 text-white/30" /></button>
+                <CardTitle className="text-sm text-blue-800">{editing ? "Edit Event" : "Add Alumni Event"}</CardTitle>
+                <button onClick={() => setShowForm(false)}><X className="h-4 w-4 text-gray-400" /></button>
               </div>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -165,7 +165,7 @@ export default function AlumniEventsPage() {
               <div className="md:col-span-2">
                 <Label>Event Note / Description</Label>
                 <textarea
-                  className="w-full rounded-lg border border-white/[0.08] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows={3}
                   value={form.note}
                   onChange={e => set("note", e.target.value)}
@@ -195,7 +195,7 @@ export default function AlumniEventsPage() {
         )}
 
         {events.length === 0 ? (
-          <div className="text-center py-16 text-white/30 border-2 border-dashed rounded-lg">
+          <div className="text-center py-16 text-gray-400 border-2 border-dashed rounded-lg">
             <Calendar className="h-10 w-10 mx-auto mb-3 opacity-30" />
             <p className="font-medium">No alumni events yet</p>
             <p className="text-sm mt-1">Click "Add Event" to schedule a reunion or gathering</p>
@@ -205,24 +205,24 @@ export default function AlumniEventsPage() {
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-[#0f1015] border-b">
+                  <thead className="bg-gray-50 border-b">
                     <tr>
-                      <th className="text-left px-4 py-3 font-medium text-white/50">#</th>
-                      <th className="text-left px-4 py-3 font-medium text-white/50">Title</th>
-                      <th className="text-left px-4 py-3 font-medium text-white/50">From</th>
-                      <th className="text-left px-4 py-3 font-medium text-white/50">To</th>
-                      <th className="text-left px-4 py-3 font-medium text-white/50">For</th>
-                      <th className="text-left px-4 py-3 font-medium text-white/50">Website</th>
-                      <th className="text-right px-4 py-3 font-medium text-white/50">Actions</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Title</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">From</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">To</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">For</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Website</th>
+                      <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {events.map((e, i) => (
-                      <tr key={e.id} className="hover:bg-[#0f1015]">
-                        <td className="px-4 py-3 text-white/30">{i + 1}</td>
+                      <tr key={e.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-gray-400">{i + 1}</td>
                         <td className="px-4 py-3 font-medium">{e.title}</td>
-                        <td className="px-4 py-3 text-white/50">{new Date(e.fromDate).toLocaleDateString()}</td>
-                        <td className="px-4 py-3 text-white/50">{new Date(e.toDate).toLocaleDateString()}</td>
+                        <td className="px-4 py-3 text-gray-600">{new Date(e.fromDate).toLocaleDateString()}</td>
+                        <td className="px-4 py-3 text-gray-600">{new Date(e.toDate).toLocaleDateString()}</td>
                         <td className="px-4 py-3">
                           {e.eventFor === "all"
                             ? <Badge variant="secondary">All Alumni</Badge>
@@ -232,13 +232,13 @@ export default function AlumniEventsPage() {
                         <td className="px-4 py-3">
                           {e.showOnWebsite
                             ? <Globe className="h-4 w-4 text-green-500" />
-                            : <span className="text-white/30 text-xs">—</span>
+                            : <span className="text-gray-300 text-xs">—</span>
                           }
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex gap-1 justify-end">
                             <Button size="sm" variant="ghost" onClick={() => openEdit(e)}><Pencil className="h-3.5 w-3.5" /></Button>
-                            <Button size="sm" variant="ghost" onClick={() => del(e.id)} className="text-red-400 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></Button>
+                            <Button size="sm" variant="ghost" onClick={() => del(e.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>
                           </div>
                         </td>
                       </tr>

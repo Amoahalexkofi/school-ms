@@ -126,14 +126,14 @@ export function StaffIdCardSetupClient({ templates: init }: { templates: Templat
 
   return (
     <main className="flex-1 p-6 space-y-5 max-w-4xl mx-auto">
-      <Link href="/staff" className="inline-flex items-center gap-1 text-sm text-white/40 hover:text-white/60">
+      <Link href="/staff" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Staff
       </Link>
 
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-base font-semibold text-white/80">Staff ID Card Templates</h2>
-          <p className="text-xs text-white/30 mt-0.5">Configure what fields appear on printed staff ID cards.</p>
+          <h2 className="text-base font-semibold text-gray-900">Staff ID Card Templates</h2>
+          <p className="text-xs text-gray-400 mt-0.5">Configure what fields appear on printed staff ID cards.</p>
         </div>
         <Button onClick={openNew}>
           <Plus className="h-4 w-4 mr-1.5" /> New Template
@@ -142,7 +142,7 @@ export function StaffIdCardSetupClient({ templates: init }: { templates: Templat
 
       {templates.length === 0 && (
         <Card>
-          <CardContent className="py-10 text-center text-sm text-white/30">
+          <CardContent className="py-10 text-center text-sm text-gray-400">
             No templates yet. Create one to enable staff ID card printing.
           </CardContent>
         </Card>
@@ -160,9 +160,9 @@ export function StaffIdCardSetupClient({ templates: init }: { templates: Templat
                 >
                   {t.schoolName || "School Name"}
                 </div>
-                <div className="px-3 py-2 bg-[#0f1015]">
-                  <p className="font-semibold text-white/70">{t.title || "Staff Identity Card"}</p>
-                  <p className="text-white/30 mt-0.5">
+                <div className="px-3 py-2 bg-gray-50">
+                  <p className="font-semibold text-gray-800">{t.title || "Staff Identity Card"}</p>
+                  <p className="text-gray-400 mt-0.5">
                     {enabledCount(t)} field{enabledCount(t) !== 1 ? "s" : ""} enabled
                     {t.enableVerticalCard ? " · Vertical" : " · Horizontal"}
                   </p>
@@ -174,7 +174,7 @@ export function StaffIdCardSetupClient({ templates: init }: { templates: Templat
                 </Button>
                 <Button
                   size="sm" variant="outline"
-                  className="text-red-400 border-red-500/20 hover:bg-red-500/10"
+                  className="text-red-600 border-red-200 hover:bg-red-50"
                   onClick={() => remove(t.id)}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -193,19 +193,19 @@ export function StaffIdCardSetupClient({ templates: init }: { templates: Templat
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Template Title *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Template Title *</label>
               <Input value={form.title} onChange={e => set("title", e.target.value)} placeholder="e.g. Default Staff Card" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">School Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">School Name *</label>
               <Input value={form.schoolName} onChange={e => set("schoolName", e.target.value)} placeholder="e.g. St. Mary's Academy" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">School Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">School Address</label>
               <Input value={form.schoolAddress} onChange={e => set("schoolAddress", e.target.value)} placeholder="e.g. 123 Main St, Accra" />
             </div>
             <div>
-              <label className="block text-xs text-white/50 mb-1">Header Colour</label>
+              <label className="block text-xs text-gray-600 mb-1">Header Colour</label>
               <input
                 type="color"
                 value={form.headerColor ?? "#1a56db"}
@@ -215,10 +215,10 @@ export function StaffIdCardSetupClient({ templates: init }: { templates: Templat
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Fields to display</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Fields to display</label>
               <div className="grid grid-cols-2 gap-1.5">
                 {TOGGLES.map(({ key, label }) => (
-                  <label key={key} className="flex items-center gap-2 text-sm text-white/60 cursor-pointer">
+                  <label key={key} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={Boolean((form as any)[key])}
@@ -231,7 +231,7 @@ export function StaffIdCardSetupClient({ templates: init }: { templates: Templat
               </div>
             </div>
           </div>
-          {err && <p className="text-sm text-red-400 mt-1">{err}</p>}
+          {err && <p className="text-sm text-red-600 mt-1">{err}</p>}
           <div className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
             <Button disabled={loading} onClick={save}>{loading ? "Saving…" : "Save Template"}</Button>
