@@ -389,7 +389,7 @@ export function HomepageClient() {
           </Link>
           {/* Center links */}
           <div className="hidden md:flex items-center gap-8">
-            {[["Features","#features"],["Solutions","#solutions"],["Pricing","#pricing"],["Resources","/features"],["Contact","/contact"]].map(([l,h])=>(
+            {[["Features","#features"],["Solutions","#solutions"],["Pricing","#pricing"],["All Features","/features"],["Contact","/contact"]].map(([l,h])=>(
               <a key={l} href={h} className="text-[13px] font-medium text-slate-500 hover:text-slate-900 transition-colors">{l}</a>
             ))}
           </div>
@@ -598,7 +598,7 @@ export function HomepageClient() {
               <span className="text-slate-400 font-light italic">Nothing you don't.</span>
             </motion.h2>
             <motion.p variants={fadeUp} className="text-slate-500 text-[17px] mt-5 max-w-xl mx-auto leading-relaxed">
-              16 modules. One subscription. No per-feature pricing, no hidden limits.
+              15 modules. One subscription. No per-feature pricing, no hidden limits.
             </motion.p>
           </motion.div>
 
@@ -919,7 +919,7 @@ export function HomepageClient() {
               Simple, transparent pricing.
             </motion.h2>
             <motion.p variants={fadeUp} className="text-slate-500 text-[16px] mt-4">
-              Every plan includes all 16 modules. No per-feature fees.
+              Every plan includes all 15 modules. No per-feature fees.
             </motion.p>
           </motion.div>
 
@@ -928,7 +928,7 @@ export function HomepageClient() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
             className="relative grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
             {[
-              { name: "Starter",      price: "Free",     sub: "30 days · no card needed",    hl: false, cta: "Try for free",   href: "/demo",    features: ["All 16 modules","Up to 200 students","Community support","Skula subdomain"] },
+              { name: "Starter",      price: "Free",     sub: "30 days · no card needed",    hl: false, cta: "Try for free",   href: "/demo",    features: ["All 15 modules","Up to 200 students","Community support","Skula subdomain"] },
               { name: "Professional", price: "GH₵ 199",  sub: "/ month, billed monthly",     hl: true,  cta: "Get started →",  href: "/contact", features: ["Everything in Starter","Unlimited students","Priority WhatsApp support","Custom domain","Parent SMS alerts","Daily backups","Advanced analytics"] },
               { name: "Enterprise",   price: "Custom",   sub: "let's talk",                  hl: false, cta: "Contact sales",  href: "/contact", features: ["Everything in Pro","Dedicated infrastructure","SLA guarantee","On-site training","Custom integrations","Dedicated account manager"] },
             ].map(({ name, price, sub, hl, features, cta, href }) => (
