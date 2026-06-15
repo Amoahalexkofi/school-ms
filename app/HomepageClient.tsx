@@ -427,51 +427,46 @@ export function HomepageClient() {
       {/* ── HERO ── */}
       <section className="relative min-h-screen flex overflow-hidden pt-16">
 
-        {/* ── LEFT PANEL — dark brand ── */}
-        <div className="lg:w-1/2 relative bg-slate-950 flex flex-col justify-center overflow-hidden px-10 xl:px-16 py-20">
+        {/* ── LEFT PANEL — light text side ── */}
+        <div className="lg:w-1/2 relative flex flex-col justify-center overflow-hidden px-10 xl:px-16 py-20"
+          style={{ background: "linear-gradient(145deg, #f8fafc 0%, #eef2ff 50%, #f8fafc 100%)" }}>
           {/* Dot grid */}
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ backgroundImage: "radial-gradient(circle at 1px 1px,rgba(255,255,255,0.03) 1px,transparent 0)", backgroundSize: "28px 28px" }} />
-          {/* Indigo orb top */}
-          <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 65%)" }} />
-          {/* Violet orb bottom-right */}
-          <div className="absolute bottom-[-80px] right-[-60px] w-[500px] h-[500px] rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 65%)" }} />
+          <div className="absolute inset-0 pointer-events-none opacity-50"
+            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #c7d2fe 1px, transparent 0)", backgroundSize: "28px 28px" }} />
           {/* Right accent border */}
           <div className="absolute right-0 top-0 bottom-0 w-px pointer-events-none"
             style={{ background: "linear-gradient(180deg, transparent 0%, #6366f1 30%, #8b5cf6 70%, transparent 100%)" }} />
 
           <motion.div variants={stagger} initial="hidden" animate="show" className="relative space-y-7">
             <motion.div variants={fadeUp}>
-              <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[12px] font-semibold px-4 py-1.5 rounded-full">
-                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" />
+              <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200/60 text-indigo-700 text-[12px] font-semibold px-4 py-1.5 rounded-full">
+                <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
                 Trusted by modern schools across Africa
               </div>
             </motion.div>
 
             <motion.div variants={fadeUp}>
-              <h1 className="text-[36px] sm:text-[48px] lg:text-[56px] xl:text-[62px] font-black leading-[1.05] tracking-[-0.03em] text-white">
+              <h1 className="text-[36px] sm:text-[48px] lg:text-[56px] xl:text-[62px] font-black leading-[1.05] tracking-[-0.03em] text-slate-900">
                 Run Your Entire<br />
                 School From One{" "}
-                <span style={{ background: "linear-gradient(135deg, #818cf8, #a78bfa, #67e8f9)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                   Intelligent
                 </span>{" "}
                 Platform.
               </h1>
             </motion.div>
 
-            <motion.p variants={fadeUp} className="text-[16px] text-slate-400 leading-relaxed max-w-[440px]">
+            <motion.p variants={fadeUp} className="text-[16px] text-slate-500 leading-relaxed max-w-[440px]">
               Admissions · Attendance · Academics · Finance · Communication · Reports — everything your school needs, seamlessly unified.
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3">
               <Link href="/contact"
-                className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-7 py-4 rounded-2xl text-[15px] transition-all shadow-lg shadow-indigo-500/30 hover:scale-[1.02] active:scale-[0.98]">
+                className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-7 py-4 rounded-2xl text-[15px] transition-all shadow-lg shadow-indigo-300/40 hover:scale-[1.02] active:scale-[0.98]">
                 Start Free Trial <ArrowRight className="h-4 w-4" />
               </Link>
               <Link href="/demo"
-                className="inline-flex items-center justify-center gap-2 border border-white/15 hover:border-indigo-400/60 text-white/80 hover:text-white font-bold px-7 py-4 rounded-2xl text-[15px] transition-all hover:bg-white/5">
+                className="inline-flex items-center justify-center gap-2 border-2 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 font-bold px-7 py-4 rounded-2xl text-[15px] transition-all hover:bg-indigo-50/50">
                 Book Demo
               </Link>
             </motion.div>
@@ -479,7 +474,7 @@ export function HomepageClient() {
             <motion.div variants={fadeUp} className="flex items-center gap-4 pt-1">
               <div className="flex -space-x-2">
                 {["bg-indigo-500","bg-violet-500","bg-emerald-500","bg-amber-500","bg-rose-500"].map((c,i) => (
-                  <div key={i} className={`w-8 h-8 rounded-full ${c} border-2 border-slate-800 flex items-center justify-center text-white text-[9px] font-black`}>
+                  <div key={i} className={`w-8 h-8 rounded-full ${c} border-2 border-white flex items-center justify-center text-white text-[9px] font-black`}>
                     {["GH","KE","NG","RW","ZA"][i]}
                   </div>
                 ))}
@@ -488,27 +483,29 @@ export function HomepageClient() {
                 <div className="flex gap-0.5">
                   {[0,1,2,3,4].map(i => <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />)}
                 </div>
-                <p className="text-[12px] text-slate-400 mt-0.5"><span className="font-bold text-white">500+ schools</span> trust Skula</p>
+                <p className="text-[12px] text-slate-500 mt-0.5"><span className="font-bold text-slate-700">500+ schools</span> trust Skula</p>
               </div>
             </motion.div>
 
             {/* Mobile image */}
             <motion.div variants={fadeUp} className="lg:hidden flex justify-center pt-4">
               <img src="/images/hero image1.png" alt="Student using Skula"
-                className="h-56 sm:h-72 object-contain drop-shadow-2xl" />
+                className="h-56 sm:h-72 object-contain drop-shadow-xl" />
             </motion.div>
           </motion.div>
         </div>
 
-        {/* ── RIGHT PANEL — light image side ── */}
-        <div className="hidden lg:flex lg:w-1/2 relative flex-col items-center justify-center overflow-hidden"
-          style={{ background: "linear-gradient(145deg, #f8fafc 0%, #eef2ff 50%, #f8fafc 100%)" }}>
+        {/* ── RIGHT PANEL — dark image side ── */}
+        <div className="hidden lg:flex lg:w-1/2 relative flex-col items-center justify-center overflow-hidden bg-slate-950">
           {/* Dot grid */}
-          <div className="absolute inset-0 pointer-events-none opacity-50"
-            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #c7d2fe 1px, transparent 0)", backgroundSize: "28px 28px" }} />
-          {/* Soft indigo glow centre */}
           <div className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at 50% 60%, rgba(99,102,241,0.10) 0%, transparent 65%)" }} />
+            style={{ backgroundImage: "radial-gradient(circle at 1px 1px,rgba(255,255,255,0.03) 1px,transparent 0)", backgroundSize: "28px 28px" }} />
+          {/* Indigo orb top-right */}
+          <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 65%)" }} />
+          {/* Violet orb bottom-left */}
+          <div className="absolute bottom-[-80px] left-[-60px] w-[500px] h-[500px] rounded-full pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 65%)" }} />
 
           <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
