@@ -300,64 +300,67 @@ export function HomepageClient() {
 
             {/* Right — dashboard + floating cards */}
             <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="relative hidden lg:block">
+              transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+              className="relative hidden lg:flex items-center justify-center h-[520px]">
 
-              {/* Main dashboard */}
-              <div className="relative z-10">
+              {/* Dashboard — centrepiece */}
+              <div className="relative z-10 w-full max-w-[520px]">
                 <DashboardMockup />
               </div>
 
-              {/* Floating card — attendance */}
-              <FloatingCard className="top-[-20px] left-[-30px] z-20 w-44">
-                <div className="flex items-center gap-2.5 mb-1.5">
-                  <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+              {/* Card — top left, above dashboard */}
+              <FloatingCard className="top-0 left-[-16px] z-20 w-48" delay={0}>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 bg-emerald-100 rounded-xl flex items-center justify-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                   </div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Attendance</span>
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide leading-none">Attendance</p>
+                  </div>
                 </div>
-                <p className="text-slate-900 text-xl font-black">98%</p>
-                <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">↑ This week</p>
+                <p className="text-slate-900 text-2xl font-black leading-none">98%</p>
+                <p className="text-[11px] text-emerald-600 font-semibold mt-1">↑ Best week this term</p>
               </FloatingCard>
 
-              {/* Floating card — students */}
-              <FloatingCard className="top-[60px] right-[-30px] z-20 w-48" delay={0.8}>
-                <div className="flex items-center gap-2.5 mb-1.5">
-                  <div className="w-7 h-7 bg-indigo-100 rounded-lg flex items-center justify-center">
-                    <Users className="h-3.5 w-3.5 text-indigo-600" />
+              {/* Card — top right */}
+              <FloatingCard className="top-6 right-[-16px] z-20 w-48" delay={1.2}>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 bg-indigo-100 rounded-xl flex items-center justify-center">
+                    <Users className="h-4 w-4 text-indigo-600" />
                   </div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Students</span>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Students</p>
                 </div>
-                <p className="text-slate-900 text-xl font-black">+1,250</p>
-                <div className="flex items-center gap-1 mt-0.5">
+                <p className="text-slate-900 text-2xl font-black leading-none">1,250</p>
+                <div className="flex items-center gap-1 mt-1">
                   <TrendingUp className="h-3 w-3 text-indigo-500" />
-                  <p className="text-[10px] text-indigo-600 font-semibold">Active this term</p>
+                  <p className="text-[11px] text-indigo-600 font-semibold">+12 this term</p>
                 </div>
               </FloatingCard>
 
-              {/* Floating card — fees */}
-              <FloatingCard className="bottom-[40px] left-[-20px] z-20 w-52">
-                <div className="flex items-center gap-2.5 mb-1.5">
-                  <div className="w-7 h-7 bg-amber-100 rounded-lg flex items-center justify-center">
-                    <DollarSign className="h-3.5 w-3.5 text-amber-600" />
+              {/* Card — bottom left */}
+              <FloatingCard className="bottom-4 left-[-16px] z-20 w-52" delay={0.6}>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 bg-amber-100 rounded-xl flex items-center justify-center">
+                    <DollarSign className="h-4 w-4 text-amber-600" />
                   </div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Fees Collected</span>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Fees Collected</p>
                 </div>
-                <p className="text-slate-900 text-xl font-black">GH₵ 450K</p>
-                <p className="text-[10px] text-amber-600 font-semibold mt-0.5">Term 2 · 2025</p>
+                <p className="text-slate-900 text-2xl font-black leading-none">GH₵ 450K</p>
+                <p className="text-[11px] text-amber-600 font-semibold mt-1">Term 2 · 2025/26</p>
               </FloatingCard>
 
-              {/* Floating card — satisfaction */}
-              <FloatingCard className="bottom-[-10px] right-[-20px] z-20 w-44">
-                <div className="flex items-center gap-2.5 mb-1.5">
-                  <div className="w-7 h-7 bg-rose-100 rounded-lg flex items-center justify-center">
-                    <Star className="h-3.5 w-3.5 text-rose-500 fill-rose-500" />
+              {/* Card — bottom right */}
+              <FloatingCard className="bottom-0 right-[-16px] z-20 w-44" delay={1.8}>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 bg-rose-100 rounded-xl flex items-center justify-center">
+                    <Star className="h-4 w-4 text-rose-500 fill-rose-500" />
                   </div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Satisfaction</span>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Parents</p>
                 </div>
-                <p className="text-slate-900 text-xl font-black">92%</p>
-                <p className="text-[10px] text-rose-500 font-semibold mt-0.5">Parent rating</p>
+                <p className="text-slate-900 text-2xl font-black leading-none">92%</p>
+                <p className="text-[11px] text-rose-500 font-semibold mt-1">Satisfaction rate</p>
               </FloatingCard>
+
             </motion.div>
           </div>
         </div>
