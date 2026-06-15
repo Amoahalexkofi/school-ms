@@ -425,150 +425,143 @@ export function HomepageClient() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="relative min-h-screen flex overflow-hidden pt-16">
+      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden"
+        style={{ background: "linear-gradient(to right, #f8fafc 0%, #f1f5f9 50%, #e0e7ff 75%, #ede9fe 100%)" }}>
+        {/* Background layers */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Dot grid — slate on left, indigo on right */}
+          <div className="absolute inset-0"
+            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)", backgroundSize: "28px 28px", opacity: 0.5 }} />
+          {/* Indigo blob right */}
+          <div className="absolute top-10 right-[-100px] w-[600px] h-[600px] rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)" }} />
+          {/* Violet blob bottom-right */}
+          <div className="absolute bottom-0 right-0 w-[500px] h-[400px]"
+            style={{ background: "radial-gradient(ellipse, rgba(139,92,246,0.14) 0%, transparent 70%)" }} />
+        </div>
 
-        {/* ── LEFT PANEL — light text side ── */}
-        <div className="lg:w-1/2 relative flex flex-col justify-center overflow-hidden px-10 xl:px-16 py-20"
-          style={{ background: "linear-gradient(145deg, #f8fafc 0%, #eef2ff 50%, #f8fafc 100%)" }}>
-          {/* Dot grid */}
-          <div className="absolute inset-0 pointer-events-none opacity-50"
-            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #c7d2fe 1px, transparent 0)", backgroundSize: "28px 28px" }} />
-          {/* Right accent border */}
-          <div className="absolute right-0 top-0 bottom-0 w-px pointer-events-none"
-            style={{ background: "linear-gradient(180deg, transparent 0%, #6366f1 30%, #8b5cf6 70%, transparent 100%)" }} />
-
-          <motion.div variants={stagger} initial="hidden" animate="show" className="relative space-y-7">
-            <motion.div variants={fadeUp}>
-              <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200/60 text-indigo-700 text-[12px] font-semibold px-4 py-1.5 rounded-full">
-                <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-                Trusted by modern schools across Africa
-              </div>
-            </motion.div>
-
-            <motion.div variants={fadeUp}>
-              <h1 className="text-[36px] sm:text-[48px] lg:text-[56px] xl:text-[62px] font-black leading-[1.05] tracking-[-0.03em] text-slate-900">
-                Run Your Entire<br />
-                School From One{" "}
-                <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                  Intelligent
-                </span>{" "}
-                Platform.
-              </h1>
-            </motion.div>
-
-            <motion.p variants={fadeUp} className="text-[16px] text-slate-500 leading-relaxed max-w-[440px]">
-              Admissions · Attendance · Academics · Finance · Communication · Reports — everything your school needs, seamlessly unified.
-            </motion.p>
-
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3">
-              <Link href="/contact"
-                className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-7 py-4 rounded-2xl text-[15px] transition-all shadow-lg shadow-indigo-300/40 hover:scale-[1.02] active:scale-[0.98]">
-                Start Free Trial <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link href="/demo"
-                className="inline-flex items-center justify-center gap-2 border-2 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 font-bold px-7 py-4 rounded-2xl text-[15px] transition-all hover:bg-indigo-50/50">
-                Book Demo
-              </Link>
-            </motion.div>
-
-            <motion.div variants={fadeUp} className="flex items-center gap-4 pt-1">
-              <div className="flex -space-x-2">
-                {["bg-indigo-500","bg-violet-500","bg-emerald-500","bg-amber-500","bg-rose-500"].map((c,i) => (
-                  <div key={i} className={`w-8 h-8 rounded-full ${c} border-2 border-white flex items-center justify-center text-white text-[9px] font-black`}>
-                    {["GH","KE","NG","RW","ZA"][i]}
-                  </div>
-                ))}
-              </div>
-              <div>
-                <div className="flex gap-0.5">
-                  {[0,1,2,3,4].map(i => <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />)}
+        <div className="relative max-w-6xl mx-auto px-6 w-full py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Left */}
+            <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-6">
+              <motion.div variants={fadeUp}>
+                <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200/60 text-indigo-700 text-[12px] font-semibold px-4 py-1.5 rounded-full">
+                  <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+                  Trusted by modern schools across Africa
                 </div>
-                <p className="text-[12px] text-slate-500 mt-0.5"><span className="font-bold text-slate-700">500+ schools</span> trust Skula</p>
-              </div>
+              </motion.div>
+
+              <motion.div variants={fadeUp}>
+                <h1 className="text-[36px] sm:text-[52px] lg:text-[68px] font-black leading-[1.02] tracking-[-0.03em] text-slate-900">
+                  Run Your Entire<br />
+                  School From One{" "}
+                  <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                    Intelligent
+                  </span>{" "}
+                  Platform.
+                </h1>
+              </motion.div>
+
+              <motion.p variants={fadeUp} className="text-[17px] text-slate-500 leading-relaxed max-w-[420px]">
+                Admissions · Attendance · Academics · Finance · Communication · Reports — everything your school needs, seamlessly unified.
+              </motion.p>
+
+              <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3">
+                <Link href="/contact"
+                  className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-7 py-4 rounded-2xl text-[15px] transition-all shadow-lg shadow-indigo-300/40 hover:shadow-indigo-300/60 hover:scale-[1.02] active:scale-[0.98]">
+                  Start Free Trial <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link href="/demo"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 font-bold px-7 py-4 rounded-2xl text-[15px] transition-all hover:bg-indigo-50/50">
+                  Book Demo
+                </Link>
+              </motion.div>
+
+              <motion.div variants={fadeUp} className="flex items-center gap-4 pt-1">
+                <div className="flex -space-x-2">
+                  {["bg-indigo-500","bg-violet-500","bg-emerald-500","bg-amber-500","bg-rose-500"].map((c,i) => (
+                    <div key={i} className={`w-8 h-8 rounded-full ${c} border-2 border-white flex items-center justify-center text-white text-[9px] font-black`}>
+                      {["GH","KE","NG","RW","ZA"][i]}
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div className="flex gap-0.5">
+                    {[0,1,2,3,4].map(i => <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />)}
+                  </div>
+                  <p className="text-[12px] text-slate-500 mt-0.5"><span className="font-bold text-slate-700">500+ schools</span> trust Skula</p>
+                </div>
+              </motion.div>
             </motion.div>
 
-            {/* Mobile image */}
-            <motion.div variants={fadeUp} className="lg:hidden flex justify-center pt-4">
+            {/* Mobile hero image */}
+            <motion.div variants={fadeUp} className="lg:hidden flex justify-center -mt-2">
               <img src="/images/hero image1.png" alt="Student using Skula"
                 className="h-56 sm:h-72 object-contain drop-shadow-xl" />
             </motion.div>
-          </motion.div>
+
+            {/* Right — student image + floating cards (desktop only) */}
+            <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+              className="relative hidden lg:flex items-center justify-center h-[520px]">
+
+              <div className="relative z-10 w-full max-w-[460px] flex items-end justify-center h-full">
+                <img src="/images/hero image1.png" alt="Student using Skula"
+                  className="w-full h-full object-contain object-bottom drop-shadow-2xl" />
+              </div>
+
+              <FloatingCard className="top-0 left-[-16px] z-20 w-48" delay={0}>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 bg-emerald-100 rounded-xl flex items-center justify-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                  </div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide leading-none">Attendance</p>
+                </div>
+                <p className="text-slate-900 text-2xl font-black leading-none">98%</p>
+                <p className="text-[11px] text-emerald-600 font-semibold mt-1">↑ Best week this term</p>
+              </FloatingCard>
+
+              <FloatingCard className="top-6 right-[-16px] z-20 w-48" delay={1.2}>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 bg-indigo-100 rounded-xl flex items-center justify-center">
+                    <Users className="h-4 w-4 text-indigo-600" />
+                  </div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Students</p>
+                </div>
+                <p className="text-slate-900 text-2xl font-black leading-none">1,250</p>
+                <div className="flex items-center gap-1 mt-1">
+                  <TrendingUp className="h-3 w-3 text-indigo-500" />
+                  <p className="text-[11px] text-indigo-600 font-semibold">+12 this term</p>
+                </div>
+              </FloatingCard>
+
+              <FloatingCard className="bottom-4 left-[-16px] z-20 w-52" delay={0.6}>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 bg-amber-100 rounded-xl flex items-center justify-center">
+                    <DollarSign className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Fees Collected</p>
+                </div>
+                <p className="text-slate-900 text-2xl font-black leading-none">GH₵ 450K</p>
+                <p className="text-[11px] text-amber-600 font-semibold mt-1">Term 2 · 2025/26</p>
+              </FloatingCard>
+
+              <FloatingCard className="bottom-0 right-[-16px] z-20 w-44" delay={1.8}>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 bg-rose-100 rounded-xl flex items-center justify-center">
+                    <Star className="h-4 w-4 text-rose-500 fill-rose-500" />
+                  </div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Parents</p>
+                </div>
+                <p className="text-slate-900 text-2xl font-black leading-none">92%</p>
+                <p className="text-[11px] text-rose-500 font-semibold mt-1">Satisfaction rate</p>
+              </FloatingCard>
+            </motion.div>
+          </div>
         </div>
 
-        {/* ── RIGHT PANEL — dark image side ── */}
-        <div className="hidden lg:flex lg:w-1/2 relative flex-col items-center justify-center overflow-hidden bg-slate-950">
-          {/* Dot grid */}
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ backgroundImage: "radial-gradient(circle at 1px 1px,rgba(255,255,255,0.03) 1px,transparent 0)", backgroundSize: "28px 28px" }} />
-          {/* Indigo orb top-right */}
-          <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 65%)" }} />
-          {/* Violet orb bottom-left */}
-          <div className="absolute bottom-[-80px] left-[-60px] w-[500px] h-[500px] rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 65%)" }} />
-
-          <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-            className="relative flex items-center justify-center w-full h-full max-h-[580px]">
-
-            {/* Student image */}
-            <div className="relative z-10 w-full max-w-[440px] flex items-end justify-center h-full px-8">
-              <img src="/images/hero image1.png" alt="Student using Skula"
-                className="w-full h-full object-contain object-bottom drop-shadow-2xl" />
-            </div>
-
-            {/* Floating cards */}
-            <FloatingCard className="top-8 left-4 z-20 w-48" delay={0}>
-              <div className="flex items-center gap-2.5 mb-2">
-                <div className="w-8 h-8 bg-emerald-100 rounded-xl flex items-center justify-center">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                </div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Attendance</p>
-              </div>
-              <p className="text-slate-900 text-2xl font-black leading-none">98%</p>
-              <p className="text-[11px] text-emerald-600 font-semibold mt-1">↑ Best week this term</p>
-            </FloatingCard>
-
-            <FloatingCard className="top-8 right-4 z-20 w-48" delay={1.2}>
-              <div className="flex items-center gap-2.5 mb-2">
-                <div className="w-8 h-8 bg-indigo-100 rounded-xl flex items-center justify-center">
-                  <Users className="h-4 w-4 text-indigo-600" />
-                </div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Students</p>
-              </div>
-              <p className="text-slate-900 text-2xl font-black leading-none">1,250</p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="h-3 w-3 text-indigo-500" />
-                <p className="text-[11px] text-indigo-600 font-semibold">+12 this term</p>
-              </div>
-            </FloatingCard>
-
-            <FloatingCard className="bottom-8 left-4 z-20 w-52" delay={0.6}>
-              <div className="flex items-center gap-2.5 mb-2">
-                <div className="w-8 h-8 bg-amber-100 rounded-xl flex items-center justify-center">
-                  <DollarSign className="h-4 w-4 text-amber-600" />
-                </div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Fees Collected</p>
-              </div>
-              <p className="text-slate-900 text-2xl font-black leading-none">GH₵ 450K</p>
-              <p className="text-[11px] text-amber-600 font-semibold mt-1">Term 2 · 2025/26</p>
-            </FloatingCard>
-
-            <FloatingCard className="bottom-8 right-4 z-20 w-44" delay={1.8}>
-              <div className="flex items-center gap-2.5 mb-2">
-                <div className="w-8 h-8 bg-rose-100 rounded-xl flex items-center justify-center">
-                  <Star className="h-4 w-4 text-rose-500 fill-rose-500" />
-                </div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Parents</p>
-              </div>
-              <p className="text-slate-900 text-2xl font-black leading-none">92%</p>
-              <p className="text-[11px] text-rose-500 font-semibold mt-1">Satisfaction rate</p>
-            </FloatingCard>
-          </motion.div>
-        </div>
-
-        {/* Bottom wave */}
-        <div className="absolute bottom-0 left-0 right-0 pointer-events-none z-10">
+        {/* Bottom wave divider */}
+        <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
           <svg viewBox="0 0 1440 90" preserveAspectRatio="none" className="w-full h-20 sm:h-28" fill="white" xmlns="http://www.w3.org/2000/svg">
             <path d="M0,45 C180,90 360,0 540,45 C720,90 900,0 1080,45 C1260,90 1350,20 1440,45 L1440,90 L0,90 Z" />
           </svg>
