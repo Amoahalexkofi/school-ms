@@ -7,8 +7,11 @@ import { DemoBanner } from "@/components/DemoBanner";
 
 const DEMO_EMAILS = new Set([
   "demo@getskula.com",
+  "admin.demo@getskula.com",
   "teacher.demo@getskula.com",
   "accountant.demo@getskula.com",
+  "librarian.demo@getskula.com",
+  "student.demo@getskula.com",
   "parent.demo@getskula.com",
 ]);
 

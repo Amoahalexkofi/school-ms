@@ -25,10 +25,13 @@ async function main() {
   // ─── Demo Accounts (one per role) ────────────────────────────────────────
   const demoPassword = await bcrypt.hash("Demo@Skula2026", 12);
   const demoAccounts = [
-    { email: "demo@getskula.com",            username: "demo",            role: "SUPER_ADMIN" },
-    { email: "teacher.demo@getskula.com",     username: "demo-teacher",    role: "TEACHER"     },
-    { email: "accountant.demo@getskula.com",  username: "demo-accountant", role: "ACCOUNTANT"  },
-    { email: "parent.demo@getskula.com",      username: "demo-parent",     role: "PARENT"      },
+    { email: "demo@getskula.com",             username: "demo",              role: "SUPER_ADMIN" },
+    { email: "admin.demo@getskula.com",        username: "demo-admin",        role: "ADMIN"       },
+    { email: "teacher.demo@getskula.com",      username: "demo-teacher",      role: "TEACHER"     },
+    { email: "accountant.demo@getskula.com",   username: "demo-accountant",   role: "ACCOUNTANT"  },
+    { email: "librarian.demo@getskula.com",    username: "demo-librarian",    role: "LIBRARIAN"   },
+    { email: "student.demo@getskula.com",      username: "demo-student",      role: "STUDENT"     },
+    { email: "parent.demo@getskula.com",       username: "demo-parent",       role: "PARENT"      },
   ];
   for (const acc of demoAccounts) {
     await (prisma as any).user.upsert({
