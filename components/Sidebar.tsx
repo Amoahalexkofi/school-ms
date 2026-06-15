@@ -15,9 +15,11 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 
-type NavItem  = { href: string; label: string; icon: React.ElementType };
+type StaffRole = "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "ACCOUNTANT" | "LIBRARIAN";
+type NavItem  = { href: string; label: string; icon: React.ElementType; roles?: StaffRole[] };
 type NavGroup = { label: string; items: NavItem[] };
 
+// roles: undefined = visible to all staff roles; otherwise restricted to listed roles
 const adminGroups: NavGroup[] = [
   {
     label: "Overview",
@@ -28,56 +30,57 @@ const adminGroups: NavGroup[] = [
   {
     label: "People",
     items: [
-      { href: "/students",   label: "Students",   icon: Users },
-      { href: "/staff",      label: "Staff",       icon: UserCog },
-      { href: "/admissions", label: "Admissions",  icon: UserPlus },
-      { href: "/alumni",     label: "Alumni",      icon: GraduationCap },
+      { href: "/students",   label: "Students",   icon: Users,         roles: ["SUPER_ADMIN","ADMIN","TEACHER"] },
+      { href: "/staff",      label: "Staff",       icon: UserCog,       roles: ["SUPER_ADMIN","ADMIN"] },
+      { href: "/admissions", label: "Admissions",  icon: UserPlus,      roles: ["SUPER_ADMIN","ADMIN"] },
+      { href: "/alumni",     label: "Alumni",      icon: GraduationCap, roles: ["SUPER_ADMIN","ADMIN"] },
     ],
   },
   {
     label: "Academics",
     items: [
-      { href: "/attendance",     label: "Attendance",    icon: ClipboardList },
-      { href: "/exam-groups",    label: "Exams & Marks", icon: BookOpen },
-      { href: "/results",        label: "Results",       icon: TrendingUp },
-      { href: "/timetable",      label: "Timetable",     icon: Calendar },
-      { href: "/homework",       label: "Homework",      icon: FileText },
-      { href: "/lesson-plans",   label: "Lesson Plans",  icon: ScrollText },
-      { href: "/subject-groups", label: "Subjects",      icon: Layers },
-      { href: "/online-exams",   label: "Online Exams",  icon: Monitor },
+      { href: "/attendance",     label: "Attendance",    icon: ClipboardList, roles: ["SUPER_ADMIN","ADMIN","TEACHER"] },
+      { href: "/exam-groups",    label: "Exams & Marks", icon: BookOpen,      roles: ["SUPER_ADMIN","ADMIN","TEACHER"] },
+      { href: "/results",        label: "Results",       icon: TrendingUp,    roles: ["SUPER_ADMIN","ADMIN","TEACHER"] },
+      { href: "/timetable",      label: "Timetable",     icon: Calendar,      roles: ["SUPER_ADMIN","ADMIN","TEACHER"] },
+      { href: "/homework",       label: "Homework",      icon: FileText,      roles: ["SUPER_ADMIN","ADMIN","TEACHER"] },
+      { href: "/lesson-plans",   label: "Lesson Plans",  icon: ScrollText,    roles: ["SUPER_ADMIN","ADMIN","TEACHER"] },
+      { href: "/subject-groups", label: "Subjects",      icon: Layers,        roles: ["SUPER_ADMIN","ADMIN","TEACHER"] },
+      { href: "/online-exams",   label: "Online Exams",  icon: Monitor,       roles: ["SUPER_ADMIN","ADMIN","TEACHER"] },
     ],
   },
   {
     label: "Finance",
     items: [
-      { href: "/fees",    label: "Fees",    icon: DollarSign },
-      { href: "/finance", label: "Finance", icon: Banknote },
+      { href: "/fees",     label: "Fees",     icon: DollarSign, roles: ["SUPER_ADMIN","ADMIN","ACCOUNTANT"] },
+      { href: "/finance",  label: "Finance",  icon: Banknote,   roles: ["SUPER_ADMIN","ADMIN","ACCOUNTANT"] },
+      { href: "/payroll",  label: "Payroll",  icon: CreditCard, roles: ["SUPER_ADMIN","ADMIN","ACCOUNTANT"] },
     ],
   },
   {
     label: "Operations",
     items: [
-      { href: "/library",      label: "Library",      icon: Library },
-      { href: "/transport",    label: "Transport",    icon: Bus },
-      { href: "/hostel",       label: "Hostel",       icon: Building },
-      { href: "/inventory",    label: "Inventory",    icon: Package },
-      { href: "/front-office", label: "Front Office", icon: ConciergeBell },
+      { href: "/library",      label: "Library",      icon: Library,      roles: ["SUPER_ADMIN","ADMIN","LIBRARIAN","TEACHER"] },
+      { href: "/transport",    label: "Transport",    icon: Bus,           roles: ["SUPER_ADMIN","ADMIN"] },
+      { href: "/hostel",       label: "Hostel",       icon: Building,      roles: ["SUPER_ADMIN","ADMIN"] },
+      { href: "/inventory",    label: "Inventory",    icon: Package,       roles: ["SUPER_ADMIN","ADMIN"] },
+      { href: "/front-office", label: "Front Office", icon: ConciergeBell, roles: ["SUPER_ADMIN","ADMIN"] },
     ],
   },
   {
     label: "Communication",
     items: [
-      { href: "/notice-board", label: "Notices",   icon: Megaphone },
-      { href: "/messaging",    label: "Messaging", icon: Send },
-      { href: "/chat",         label: "Chat",      icon: MessageCircle },
+      { href: "/notice-board", label: "Notices",   icon: Megaphone,    roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN"] },
+      { href: "/messaging",    label: "Messaging", icon: Send,          roles: ["SUPER_ADMIN","ADMIN"] },
+      { href: "/chat",         label: "Chat",      icon: MessageCircle, roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN"] },
     ],
   },
   {
     label: "System",
     items: [
-      { href: "/reports",   label: "Reports",   icon: BarChart2 },
-      { href: "/audit-log", label: "Audit Log", icon: ShieldCheck },
-      { href: "/settings",  label: "Settings",  icon: Settings },
+      { href: "/reports",   label: "Reports",   icon: BarChart2,  roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT"] },
+      { href: "/audit-log", label: "Audit Log", icon: ShieldCheck, roles: ["SUPER_ADMIN","ADMIN"] },
+      { href: "/settings",  label: "Settings",  icon: Settings,   roles: ["SUPER_ADMIN","ADMIN"] },
     ],
   },
 ];
@@ -125,7 +128,12 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
   const { data: session } = useSession();
   const [showUser, setShowUser] = useState(false);
 
-  const groups      = getGroups(role);
+  const rawGroups   = getGroups(role);
+  const staffRole   = role as StaffRole;
+  const groups      = rawGroups.map(g => ({
+    ...g,
+    items: g.items.filter(item => !item.roles || item.roles.includes(staffRole)),
+  })).filter(g => g.items.length > 0);
   const portalLabel = getPortalLabel(role);
   const userName    = (session?.user as any)?.name || session?.user?.email?.split("@")[0] || "User";
   const userEmail   = session?.user?.email ?? "";
