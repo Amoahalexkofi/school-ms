@@ -22,19 +22,22 @@ async function main() {
   });
   console.log("✓ Super admin:", adminUser.email);
 
-  // ─── Demo Account ─────────────────────────────────────────────────────────
+  // ─── Demo Accounts (one per role) ────────────────────────────────────────
   const demoPassword = await bcrypt.hash("Demo@Skula2026", 12);
-  await (prisma as any).user.upsert({
-    where: { email: "demo@getskula.com" },
-    update: {},
-    create: {
-      email: "demo@getskula.com",
-      username: "demo",
-      password: demoPassword,
-      role: "SUPER_ADMIN",
-    },
-  });
-  console.log("✓ Demo account: demo@getskula.com");
+  const demoAccounts = [
+    { email: "demo@getskula.com",            username: "demo",            role: "SUPER_ADMIN" },
+    { email: "teacher.demo@getskula.com",     username: "demo-teacher",    role: "TEACHER"     },
+    { email: "accountant.demo@getskula.com",  username: "demo-accountant", role: "ACCOUNTANT"  },
+    { email: "parent.demo@getskula.com",      username: "demo-parent",     role: "PARENT"      },
+  ];
+  for (const acc of demoAccounts) {
+    await (prisma as any).user.upsert({
+      where: { email: acc.email },
+      update: {},
+      create: { ...acc, password: demoPassword },
+    });
+    console.log("✓ Demo account:", acc.email, `(${acc.role})`);
+  }
 
   // ─── School Profile ───────────────────────────────────────────────────────
   const existingProfile = await (prisma as any).schoolProfile.findFirst();
