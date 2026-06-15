@@ -196,7 +196,7 @@ export default function DemoPage() {
       </div>
 
       {/* ── Right: role selection panel ── */}
-      <div className="flex-1 flex flex-col bg-slate-50 overflow-y-auto">
+      <div className="flex-1 flex flex-col bg-white overflow-y-auto">
 
         {/* Mobile nav */}
         <div className="lg:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-slate-100">
@@ -250,7 +250,9 @@ export default function DemoPage() {
                     </p>
                     <div className="flex flex-wrap gap-1 mt-1.5">
                       {r.tags.map(tag => (
-                        <span key={tag} className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
+                        <span key={tag} className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md transition-colors ${
+                          isActive ? c.tag : "bg-slate-100 text-slate-500"
+                        }`}>
                           {tag}
                         </span>
                       ))}

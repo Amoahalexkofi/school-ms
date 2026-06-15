@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Mail, Lock, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
 
 interface SignInPayload { email: string; password: string; }
 interface Props { onSubmit: (payload: SignInPayload) => Promise<void>; }
@@ -12,18 +12,18 @@ function isValidEmail(email: string) {
 }
 
 export function SignInForm({ onSubmit }: Props) {
-  const [email, setEmail]       = useState("");
-  const [password, setPassword] = useState("");
-  const [showPw, setShowPw]     = useState(false);
-  const [error, setError]       = useState<string | null>(null);
+  const [email, setEmail]           = useState("");
+  const [password, setPassword]     = useState("");
+  const [showPw, setShowPw]         = useState(false);
+  const [error, setError]           = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!email.trim())          return setError("Email is required");
-    if (!isValidEmail(email))   return setError("Please enter a valid email address");
-    if (!password)              return setError("Password is required");
+    if (!email.trim())        return setError("Email is required");
+    if (!isValidEmail(email)) return setError("Please enter a valid email address");
+    if (!password)            return setError("Password is required");
 
     setSubmitting(true);
     try {
@@ -39,7 +39,7 @@ export function SignInForm({ onSubmit }: Props) {
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
 
       {error && (
-        <div role="alert" className="flex items-start gap-2.5 bg-red-50 border border-red-100 text-red-700 text-sm rounded-xl px-4 py-3">
+        <div role="alert" className="flex items-start gap-2.5 bg-red-50 border border-red-100 text-red-700 text-[13px] rounded-xl px-4 py-3">
           <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
           {error}
         </div>
@@ -47,19 +47,20 @@ export function SignInForm({ onSubmit }: Props) {
 
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1.5">
+        <label htmlFor="signin-email" className="block text-sm font-semibold text-slate-700 mb-1.5">
           Email address
         </label>
         <div className="relative">
-          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
           <input
-            id="email"
+            id="signin-email"
             type="email"
             value={email}
             onChange={(e) => { setEmail(e.target.value); setError(null); }}
             autoComplete="email"
+            autoFocus
             placeholder="you@school.edu"
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all"
+            className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-400 transition-all"
           />
         </div>
       </div>
@@ -67,27 +68,28 @@ export function SignInForm({ onSubmit }: Props) {
       {/* Password */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label htmlFor="password" className="block text-sm font-semibold text-gray-700">Password</label>
-          <Link href="/forgot-password" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+          <label htmlFor="signin-password" className="block text-sm font-semibold text-slate-700">Password</label>
+          <Link href="/forgot-password" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
             Forgot password?
           </Link>
         </div>
         <div className="relative">
-          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
           <input
-            id="password"
+            id="signin-password"
             type={showPw ? "text" : "password"}
             value={password}
             onChange={(e) => { setPassword(e.target.value); setError(null); }}
             autoComplete="current-password"
             placeholder="••••••••"
-            className="w-full pl-10 pr-11 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all"
+            className="w-full pl-10 pr-11 py-3 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-400 transition-all"
           />
           <button
             type="button"
             onClick={() => setShowPw(s => !s)}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
             tabIndex={-1}
+            aria-label={showPw ? "Hide password" : "Show password"}
           >
             {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
@@ -97,17 +99,19 @@ export function SignInForm({ onSubmit }: Props) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:from-blue-400 disabled:to-indigo-400 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 mt-2"
+        className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors shadow-lg shadow-indigo-200 mt-1"
       >
         {submitting ? (
-          <span className="flex items-center justify-center gap-2">
+          <>
             <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
             </svg>
             Signing in…
-          </span>
-        ) : "Sign In"}
+          </>
+        ) : (
+          <>Sign in <ArrowRight className="h-4 w-4" /></>
+        )}
       </button>
     </form>
   );

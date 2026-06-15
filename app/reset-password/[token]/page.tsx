@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { GraduationCap, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { GraduationCap, ArrowLeft, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 
 export default function ResetPasswordPage() {
   const { token }             = useParams<{ token: string }>();
@@ -14,6 +14,10 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone]       = useState(false);
   const [error, setError]     = useState("");
+
+  const strength = password.length === 0 ? 0 : password.length < 6 ? 1 : password.length < 8 ? 2 : password.length < 10 ? 3 : 4;
+  const strengthLabel = ["", "Too short", "Weak", "Fair", "Strong"];
+  const strengthColor = ["", "bg-red-400", "bg-amber-400", "bg-yellow-400", "bg-emerald-500"];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,107 +43,165 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2.5 mb-4">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
-              <GraduationCap className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-white font-bold text-xl">Novalss</span>
-          </div>
-        </div>
+    <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(150deg, #f8faff 0%, #f0f4ff 100%)" }}>
 
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-8 pt-8">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-sm shadow-indigo-200 group-hover:bg-indigo-700 transition-colors">
+            <GraduationCap className="h-[18px] w-[18px] text-white" />
+          </div>
+          <span className="font-black text-slate-900 text-[15px] tracking-tight">Skula</span>
+        </Link>
+        <Link
+          href="/sign-in"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to sign in
+        </Link>
+      </div>
+
+      {/* Centred card */}
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-[420px]">
+
           {done ? (
-            <div className="text-center">
-              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="h-7 w-7 text-emerald-600" />
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-100/80 p-10 text-center">
+              <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <CheckCircle2 className="h-7 w-7 text-emerald-500" />
               </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Password updated!</h2>
-              <p className="text-gray-500 text-sm mb-4">Redirecting you to sign in…</p>
-              <Link href="/sign-in" className="text-indigo-600 hover:underline text-sm font-medium">
-                Sign in now
+              <h2 className="text-xl font-black text-slate-900 mb-2">Password updated!</h2>
+              <p className="text-sm text-slate-500 leading-relaxed mb-2">
+                Your password has been changed successfully.
+              </p>
+              <p className="text-xs text-slate-400 mb-6">Redirecting you to sign in…</p>
+              <Link
+                href="/sign-in"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+              >
+                Sign in now →
               </Link>
             </div>
           ) : (
-            <>
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Set new password</h2>
-                <p className="text-gray-500 text-sm mt-1">Choose a strong password for your account.</p>
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-100/80 p-8 sm:p-10">
+
+              <div className="mb-7">
+                <div className="w-11 h-11 bg-indigo-50 rounded-2xl flex items-center justify-center mb-5">
+                  <Lock className="h-5 w-5 text-indigo-600" />
+                </div>
+                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Set a new password</h1>
+                <p className="text-sm text-slate-500 mt-2 leading-relaxed">
+                  Choose something strong — at least 8 characters, mixed case and numbers.
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+
+                {/* New password */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">New password</label>
+                  <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-1.5">
+                    New password
+                  </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
                     <input
+                      id="password"
                       type={showPass ? "text" : "password"}
                       value={password}
-                      onChange={e => setPass(e.target.value)}
+                      onChange={e => { setPass(e.target.value); setError(""); }}
                       required minLength={6}
-                      placeholder="At least 6 characters"
-                      className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      autoFocus
+                      placeholder="At least 8 characters"
+                      className="w-full pl-10 pr-11 py-3 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-400 transition-all"
                     />
-                    <button type="button" onClick={() => setShow(s => !s)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <button type="button" onClick={() => setShow(s => !s)} tabIndex={-1}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
                       {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+
+                  {/* Strength bar */}
+                  {password && (
+                    <div className="mt-2 space-y-1">
+                      <div className="flex gap-1">
+                        {[1,2,3,4].map(i => (
+                          <div key={i} className={`h-1 flex-1 rounded-full transition-colors duration-300 ${strength >= i ? strengthColor[strength] : "bg-slate-100"}`} />
+                        ))}
+                      </div>
+                      <p className={`text-[11px] font-medium ${strength <= 1 ? "text-red-500" : strength === 2 ? "text-amber-500" : strength === 3 ? "text-yellow-600" : "text-emerald-600"}`}>
+                        {strengthLabel[strength]}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
+                {/* Confirm password */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm password</label>
+                  <label htmlFor="confirm" className="block text-sm font-semibold text-slate-700 mb-1.5">
+                    Confirm password
+                  </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
                     <input
+                      id="confirm"
                       type={showPass ? "text" : "password"}
                       value={confirm}
-                      onChange={e => setConfirm(e.target.value)}
+                      onChange={e => { setConfirm(e.target.value); setError(""); }}
                       required
-                      placeholder="Repeat password"
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Repeat your password"
+                      className={`w-full pl-10 pr-4 py-3 border rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-400 transition-all ${
+                        confirm && password !== confirm ? "border-red-300" : "border-slate-200"
+                      }`}
                     />
+                    {confirm && password === confirm && (
+                      <CheckCircle2 className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500" />
+                    )}
                   </div>
+                  {confirm && password !== confirm && (
+                    <p className="text-[11px] text-red-500 mt-1">Passwords don't match</p>
+                  )}
                 </div>
 
-                {/* Strength indicator */}
-                {password && (
-                  <div className="space-y-1">
-                    <div className="flex gap-1">
-                      {[6, 8, 10, 12].map(len => (
-                        <div key={len} className={`h-1 flex-1 rounded-full transition-colors ${password.length >= len ? "bg-indigo-500" : "bg-gray-200"}`} />
-                      ))}
-                    </div>
-                    <p className="text-xs text-gray-400">
-                      {password.length < 6 ? "Too short" : password.length < 8 ? "Weak" : password.length < 10 ? "Fair" : password.length < 12 ? "Good" : "Strong"}
-                    </p>
-                  </div>
-                )}
-
                 {error && (
-                  <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+                  <div className="flex items-start gap-2 bg-red-50 border border-red-100 text-red-700 text-sm rounded-xl px-4 py-3">
+                    <span className="shrink-0 mt-0.5">⚠</span>
+                    {error}
+                  </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={loading || !password || !confirm}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors"
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors shadow-lg shadow-indigo-200 mt-1"
                 >
-                  {loading ? "Updating…" : "Update password"}
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                      </svg>
+                      Updating…
+                    </span>
+                  ) : "Update password"}
                 </button>
               </form>
 
-              <div className="mt-5 text-center">
-                <Link href="/sign-in" className="text-sm text-gray-500 hover:text-gray-700">
-                  Back to sign in
+              <p className="text-center text-xs text-slate-400 mt-6">
+                <Link href="/sign-in" className="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors">
+                  ← Back to sign in
                 </Link>
-              </div>
-            </>
+              </p>
+            </div>
           )}
+
         </div>
       </div>
+
+      {/* Footer */}
+      <p className="text-center text-xs text-slate-400 pb-8">
+        © {new Date().getFullYear()} Skula · <a href="https://novalss.com" target="_blank" rel="noopener noreferrer" className="hover:text-slate-600 transition-colors">a Novalss product</a>
+      </p>
     </div>
   );
 }
