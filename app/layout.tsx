@@ -10,8 +10,20 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Skula",
-  description: "Smart school management for African institutions",
+  title: "Skula — School Management System",
+  description: "The modern school management platform. Students, fees, attendance, exams, payroll and more — all in one place. Trusted by schools worldwide.",
+  openGraph: {
+    title: "Skula — School Management System",
+    description: "The modern school management platform. Students, fees, attendance, exams, payroll and more — all in one place.",
+    url: "https://getskula.com",
+    siteName: "Skula",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Skula — School Management System",
+    description: "The modern school management platform. Students, fees, attendance, exams and more — all in one place.",
+  },
 };
 
 export default function RootLayout({

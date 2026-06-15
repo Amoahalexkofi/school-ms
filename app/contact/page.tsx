@@ -12,7 +12,7 @@ const CONTACT_EMAIL   = "hello@getskula.com";
 
 const BENEFITS = [
   { icon: Clock,   text: "Live in under 30 minutes — we set it up with you" },
-  { icon: Users,   text: "Built for Ghanaian schools — GHS, academic calendars, BECE prep" },
+  { icon: Users,   text: "Built for modern schools — flexible calendars, grading scales, multi-currency" },
   { icon: Shield,  text: "Your data stays yours. Hosted securely, backed up daily" },
   { icon: Check,   text: "Free trial. No card required. Cancel anytime" },
 ];
@@ -91,7 +91,7 @@ export default function ContactPage() {
 
             <div className="inline-flex items-center gap-2 bg-white/60 border border-white/80 text-indigo-700 text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-6 w-fit backdrop-blur-sm">
               <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-              Trusted by schools across Ghana
+              Trusted by schools worldwide
             </div>
 
             <h1 className="text-[42px] font-black text-slate-900 leading-[1.08] tracking-tight mb-5">

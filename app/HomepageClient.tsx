@@ -450,7 +450,7 @@ export function HomepageClient() {
               <motion.div variants={fadeUp}>
                 <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200/60 text-indigo-700 text-[12px] font-semibold px-4 py-1.5 rounded-full">
                   <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-                  Trusted by modern schools across Africa
+                  Trusted by modern schools worldwide
                 </div>
               </motion.div>
 
@@ -1000,7 +1000,7 @@ export function HomepageClient() {
                 {[
                   { icon: MessageSquare, label: "WhatsApp",     val: "+233 595 111 461",           color: "#25D366" },
                   { icon: Globe,         label: "Website",      val: "getskula.com",               color: "#6366f1" },
-                  { icon: Lock,          label: "Data",         val: "West Africa · EU-compliant", color: "#8b5cf6" },
+                  { icon: Lock,          label: "Data",         val: "Global · EU-compliant", color: "#8b5cf6" },
                 ].map(({ icon: Icon, label, val, color }) => (
                   <motion.div key={label} variants={fadeUp}
                     className="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50">
@@ -1097,7 +1097,7 @@ export function HomepageClient() {
                 <span className="text-white font-black text-[17px] tracking-tight">Skula</span>
               </div>
               <p className="text-[13px] leading-relaxed max-w-[210px] text-slate-500 mb-6">
-                The modern school management platform built for Africa.
+                The modern school management platform for schools worldwide.
               </p>
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/25 text-[#4ade80] text-[12px] font-semibold px-4 py-2 rounded-xl transition-colors">
@@ -1122,7 +1122,7 @@ export function HomepageClient() {
           </div>
           <div className="border-t border-white/[0.06] pt-7 flex flex-col sm:flex-row justify-between items-center gap-3">
             <p className="text-[12px] text-slate-600">© {new Date().getFullYear()} Novalss Ltd. All rights reserved.</p>
-            <p className="text-[12px] text-slate-600">Made with ♥ for schools across Africa</p>
+            <p className="text-[12px] text-slate-600">Made with ♥ for schools everywhere</p>
           </div>
         </div>
       </footer>
