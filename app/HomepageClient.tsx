@@ -24,10 +24,10 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" as const } },
 };
 const stagger = { show: { transition: { staggerChildren: 0.1 } } };
-const fadeIn = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.5 } } };
+const fadeIn = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.5, ease: "easeOut" as const } } };
 
 /* ─── SKULA DASHBOARD MOCKUP ─── */
 function DashboardMockup() {
@@ -137,11 +137,11 @@ function DashboardMockup() {
 }
 
 /* ─── FLOATING CARDS ─── */
-function FloatingCard({ children, className }: { children: React.ReactNode; className?: string }) {
+function FloatingCard({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   return (
     <motion.div
       animate={{ y: [0, -6, 0] }}
-      transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+      transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay }}
       className={`absolute bg-white/95 backdrop-blur border border-slate-200/80 rounded-2xl shadow-xl shadow-slate-300/30 p-3.5 ${className}`}
     >
       {children}
@@ -321,8 +321,7 @@ export function HomepageClient() {
               </FloatingCard>
 
               {/* Floating card — students */}
-              <FloatingCard className="top-[60px] right-[-30px] z-20 w-48"
-                style={{ animationDelay: "0.8s" } as React.CSSProperties}>
+              <FloatingCard className="top-[60px] right-[-30px] z-20 w-48" delay={0.8}>
                 <div className="flex items-center gap-2.5 mb-1.5">
                   <div className="w-7 h-7 bg-indigo-100 rounded-lg flex items-center justify-center">
                     <Users className="h-3.5 w-3.5 text-indigo-600" />
