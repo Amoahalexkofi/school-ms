@@ -85,8 +85,8 @@ export default async function SignInRoute() {
             <div className="flex items-center gap-3 mt-4">
               <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-black">AM</div>
               <div>
-                <p className="text-white text-xs font-semibold">Mrs. Adjoa Mensah</p>
-                <p className="text-slate-500 text-xs">Principal · GoldCoast Academy, Accra</p>
+                <p className="text-white text-xs font-semibold">Mrs. Adjoa M.</p>
+                <p className="text-slate-500 text-xs">Principal · Private School, Accra</p>
               </div>
             </div>
           </div>
@@ -94,33 +94,43 @@ export default async function SignInRoute() {
       </div>
 
       {/* ── Right panel — form side ── */}
-      <div className="flex-1 flex flex-col bg-white">
+      <div className="flex-1 flex flex-col relative"
+        style={{ background: "linear-gradient(145deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%)" }}>
+
+        {/* Subtle dot grid */}
+        <div className="absolute inset-0 pointer-events-none opacity-40"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)", backgroundSize: "24px 24px" }} />
+
+        {/* Left accent border */}
+        <div className="absolute left-0 top-0 bottom-0 w-px"
+          style={{ background: "linear-gradient(180deg, transparent 0%, #6366f1 30%, #8b5cf6 70%, transparent 100%)" }} />
 
         {/* Mobile logo (hidden on desktop) */}
-        <div className="lg:hidden flex items-center gap-2.5 px-8 pt-8 pb-0">
+        <div className="relative lg:hidden flex items-center gap-2.5 px-8 pt-8 pb-0">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
             <GraduationCap className="h-4 w-4 text-white" />
           </div>
           <span className="font-black text-gray-900">Skula</span>
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center px-8 py-10">
-          <div className="w-full max-w-sm">
+        <div className="relative flex-1 flex flex-col items-center justify-center px-8 py-10">
+          {/* Form card */}
+          <div className="w-full max-w-sm bg-white rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-200/60 px-8 py-10">
 
-            {/* Desktop logo mark */}
-            <div className="hidden lg:flex w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 items-center justify-center mb-8 shadow-lg shadow-indigo-500/25">
+            {/* Logo mark */}
+            <div className="flex w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 items-center justify-center mb-7 shadow-lg shadow-indigo-500/30">
               <GraduationCap className="h-5 w-5 text-white" />
             </div>
 
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">Welcome back</h2>
-            <p className="text-gray-500 text-sm mt-1.5">Sign in to your school dashboard</p>
+            <p className="text-gray-400 text-sm mt-1.5">Sign in to your school dashboard</p>
 
-            <div className="mt-8">
+            <div className="mt-7">
               <SignInPage tenant={tenant} />
             </div>
 
-            <div className="mt-8 pt-8 border-t border-gray-100 text-center">
-              <p className="text-sm text-gray-500">
+            <div className="mt-7 pt-7 border-t border-gray-100 text-center">
+              <p className="text-sm text-gray-400">
                 New to Skula?{" "}
                 <Link href="/contact" className="text-indigo-600 font-semibold hover:text-indigo-700 inline-flex items-center gap-1">
                   Get started free <ArrowRight className="h-3.5 w-3.5" />
@@ -131,7 +141,7 @@ export default async function SignInRoute() {
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 px-8 pb-8 text-center">
+        <div className="relative shrink-0 px-8 pb-8 text-center">
           <p className="text-xs text-gray-400">
             Powered by{" "}
             <span className="font-semibold text-gray-500">Skula</span>
