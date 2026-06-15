@@ -61,47 +61,92 @@ export default async function LandingPage() {
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden pt-16"
-        style={{ background: "linear-gradient(135deg, #eef2ff 0%, #f0f9ff 40%, #ffffff 100%)" }}>
+        style={{ background: "linear-gradient(150deg, #eef2ff 0%, #e0f2fe 50%, #f0fdf4 100%)" }}>
         {/* Soft blobs */}
-        <div className="absolute top-[-80px] right-[-100px] w-[480px] h-[480px] bg-indigo-100 rounded-full blur-[100px] opacity-60 pointer-events-none" />
-        <div className="absolute bottom-[-60px] left-[-80px] w-[360px] h-[360px] bg-blue-100 rounded-full blur-[80px] opacity-50 pointer-events-none" />
+        <div className="absolute top-0 right-[10%] w-[500px] h-[500px] bg-indigo-100 rounded-full blur-[120px] opacity-50 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-sky-100 rounded-full blur-[100px] opacity-40 pointer-events-none" />
 
-        <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-24">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-6">
-              <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-              Built for schools in Ghana — JHS, SHS &amp; Basic
+        <div className="relative max-w-6xl mx-auto px-6 pt-16 pb-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-end">
+
+            {/* Left — text */}
+            <div className="pb-16 lg:pb-20">
+              <div className="inline-flex items-center gap-2 bg-white/80 border border-indigo-100 text-indigo-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 shadow-sm">
+                <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+                Built for schools in Ghana — JHS, SHS &amp; Basic
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-black leading-[1.08] tracking-tight text-slate-900">
+                The smarter way<br />
+                to run your<br />
+                <span className="text-indigo-600">Ghanaian school.</span>
+              </h1>
+
+              <p className="mt-5 text-slate-600 text-[17px] leading-relaxed max-w-md">
+                Students, fees, attendance, exams and staff — all in one system designed
+                for how schools in Ghana actually work.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-start gap-3 mt-8">
+                <Link
+                  href="/demo"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-7 py-3.5 rounded-xl font-bold text-[15px] hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+                >
+                  Try it free <ArrowRight className="h-4 w-4" />
+                </Link>
+                <a
+                  href={WHATSAPP_URL}
+                  target="_blank" rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1fba5a] text-white px-7 py-3.5 rounded-xl font-bold text-[15px] transition-colors shadow-lg shadow-green-100"
+                >
+                  <WhatsAppIcon className="h-[18px] w-[18px]" />
+                  Chat on WhatsApp
+                </a>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4 mt-6">
+                {["50+ schools","Free 30-day trial","No credit card"].map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-slate-500 text-xs">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />{t}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-[64px] font-black leading-[1.05] tracking-tight text-slate-900">
-              Run your school.<br />
-              Not your paperwork.<br />
-              <span className="text-indigo-600">Skula handles it.</span>
-            </h1>
+            {/* Right — photo */}
+            <div className="relative hidden lg:flex items-end justify-center">
+              {/* Floating stat cards */}
+              <div className="absolute top-8 left-0 z-10 bg-white rounded-2xl shadow-xl border border-slate-100 px-4 py-3 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+                  <DollarSign className="h-4 w-4 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-slate-900 text-sm font-black">GHS 84,500</p>
+                  <p className="text-slate-400 text-[10px]">Fees collected this term</p>
+                </div>
+              </div>
+              <div className="absolute top-28 right-[-16px] z-10 bg-white rounded-2xl shadow-xl border border-slate-100 px-4 py-3">
+                <p className="text-slate-400 text-[10px] mb-1">Attendance today</p>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 flex-1 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: "94%" }} />
+                  </div>
+                  <span className="text-slate-900 text-xs font-black">94%</span>
+                </div>
+              </div>
 
-            <p className="mt-6 text-slate-600 text-lg leading-relaxed max-w-xl">
-              Stop collecting fees in a notebook. Stop sending marks in a WhatsApp group.
-              Skula gives every Ghanaian school a proper system — students, fees, attendance,
-              exams and staff — all in one place.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-start gap-3 mt-9">
-              <Link
-                href="/demo"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold text-base hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
-              >
-                Try it free <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a
-                href={WHATSAPP_URL}
-                target="_blank" rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1fba5a] text-white px-8 py-4 rounded-xl font-bold text-base transition-colors shadow-lg shadow-green-100"
-              >
-                <WhatsAppIcon className="h-5 w-5" />
-                Chat with us on WhatsApp
-              </a>
+              <div className="relative w-[480px] h-[480px] rounded-3xl overflow-hidden shadow-2xl shadow-indigo-100 border border-white/60">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80"
+                  alt="Students in a Ghanaian school"
+                  className="w-full h-full object-cover"
+                />
+                {/* Subtle gradient overlay at bottom */}
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-indigo-900/20 to-transparent" />
+              </div>
             </div>
-            <p className="mt-4 text-slate-400 text-sm">No credit card · Free 30-day trial · All modules included</p>
+
           </div>
         </div>
       </section>
