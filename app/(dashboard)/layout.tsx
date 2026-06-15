@@ -3,6 +3,14 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { Sidebar } from "@/components/Sidebar";
+import { DemoBanner } from "@/components/DemoBanner";
+
+const DEMO_EMAILS = new Set([
+  "demo@getskula.com",
+  "teacher.demo@getskula.com",
+  "accountant.demo@getskula.com",
+  "parent.demo@getskula.com",
+]);
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -24,21 +32,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
 
-  const isDemo = session.user?.email === "demo@getskula.com";
+  const isDemo = DEMO_EMAILS.has(session.user?.email ?? "");
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar role={role} />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {isDemo && (
-          <div className="bg-indigo-600 text-white text-xs font-medium px-4 py-2 flex items-center justify-center gap-3 shrink-0">
-            <span className="w-1.5 h-1.5 bg-indigo-300 rounded-full animate-pulse" />
-            You're viewing the Skula demo — data may be shared with other visitors.
-            <a href="/contact" className="underline underline-offset-2 hover:text-indigo-200 font-semibold">
-              Set up your school →
-            </a>
-          </div>
-        )}
+        {isDemo && <DemoBanner />}
         {children}
       </div>
     </div>
