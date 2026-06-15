@@ -426,18 +426,15 @@ export function HomepageClient() {
 
       {/* ── HERO ── */}
       <section className="relative min-h-screen flex items-center pt-16 overflow-hidden"
-        style={{ background: "linear-gradient(to right, #f8fafc 0%, #f1f5f9 50%, #e0e7ff 75%, #ede9fe 100%)" }}>
+        style={{ background: "linear-gradient(145deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%)" }}>
         {/* Background layers */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* Dot grid — slate on left, indigo on right */}
-          <div className="absolute inset-0"
-            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)", backgroundSize: "28px 28px", opacity: 0.5 }} />
-          {/* Indigo blob right */}
-          <div className="absolute top-10 right-[-100px] w-[600px] h-[600px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)" }} />
-          {/* Violet blob bottom-right */}
-          <div className="absolute bottom-0 right-0 w-[500px] h-[400px]"
-            style={{ background: "radial-gradient(ellipse, rgba(139,92,246,0.14) 0%, transparent 70%)" }} />
+          {/* Dot grid — exact same as sign-in right panel */}
+          <div className="absolute inset-0 opacity-40"
+            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)", backgroundSize: "24px 24px" }} />
+          {/* Subtle indigo glow right side only */}
+          <div className="absolute top-0 right-0 w-1/2 h-full"
+            style={{ background: "radial-gradient(ellipse at 80% 40%, rgba(99,102,241,0.08) 0%, transparent 70%)" }} />
         </div>
 
         <div className="relative max-w-6xl mx-auto px-6 w-full py-20">
