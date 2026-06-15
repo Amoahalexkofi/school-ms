@@ -20,7 +20,18 @@ export default async function MyFeesPage() {
       },
     },
   });
-  if (!student) redirect("/dashboard");
+  if (!student) return (
+    <div className="flex flex-col flex-1">
+      <Topbar title="My Fees" />
+      <main className="flex-1 flex items-center justify-center p-8">
+        <div className="text-center">
+          <CreditCard className="h-10 w-10 mx-auto text-gray-300 mb-3" />
+          <p className="font-semibold text-gray-500">No student profile linked</p>
+          <p className="text-sm text-gray-400 mt-1">This account is not connected to a student record yet.</p>
+        </div>
+      </main>
+    </div>
+  );
 
   // Get all fee masters for this student across all sessions
   const feeMasters = await (db as any).studentFeesMaster.findMany({
