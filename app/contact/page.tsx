@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   GraduationCap, ArrowLeft, MessageCircle, Mail, Check,
-  Clock, Shield, Users, ArrowRight, PhoneCall,
+  Clock, Shield, Users, ChevronRight,
 } from "lucide-react";
 
 const WHATSAPP_NUMBER = "233595111461";
@@ -57,156 +57,170 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen flex">
 
-      {/* Top nav */}
-      <nav className="bg-white border-b border-slate-100 px-6 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center">
-            <GraduationCap className="h-3.5 w-3.5 text-white" />
-          </div>
-          <span className="font-black text-slate-900 text-[15px] tracking-tight">Skula</span>
-        </Link>
-        <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to home
-        </Link>
-      </nav>
+      {/* ── Left panel — hero gradient ── */}
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col overflow-hidden border-r border-indigo-200/50"
+        style={{ background: "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 40%, #bae6fd 72%, #f8fafc 100%)" }}>
 
-      {/* Main content */}
-      <div className="flex-1 flex items-start justify-center px-4 py-12 md:py-16">
-        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+        {/* Blobs */}
+        <div className="absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)" }} />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)" }} />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.1) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
 
-          {/* ── Left: Brand panel ── */}
-          <div className="space-y-8">
+        <div className="relative flex flex-col h-full px-14 py-12">
 
-            {/* Headline */}
-            <div>
-              <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[12px] font-semibold px-3 py-1.5 rounded-full mb-4">
-                <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
-                Trusted by schools across Ghana
+          {/* Logo */}
+          <div className="flex items-center gap-4 shrink-0">
+            <Link href="/" className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-xl shadow-indigo-300/50">
+                <GraduationCap className="h-7 w-7 text-white" />
               </div>
-              <h1 className="text-[32px] font-black text-slate-900 leading-tight tracking-tight">
-                Get your school running<br />
-                <span className="text-indigo-600">on Skula today.</span>
-              </h1>
-              <p className="text-[15px] text-slate-500 mt-3 leading-relaxed">
-                We'll set everything up together — classes, students, fees, timetables.
-                Most schools are live the same day.
-              </p>
+              <div>
+                <span className="text-slate-900 font-black text-[32px] tracking-tight leading-none">Skula</span>
+                <p className="text-indigo-500 text-[11px] font-bold tracking-widest uppercase mt-0.5">by Novalss</p>
+              </div>
+            </Link>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 flex flex-col justify-center">
+
+            <div className="inline-flex items-center gap-2 bg-white/60 border border-white/80 text-indigo-700 text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-6 w-fit backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+              Trusted by schools across Ghana
             </div>
+
+            <h1 className="text-[42px] font-black text-slate-900 leading-[1.08] tracking-tight mb-5">
+              Get your school<br />running on{" "}
+              <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                Skula today.
+              </span>
+            </h1>
+
+            <p className="text-slate-600 text-[15px] leading-relaxed mb-10 max-w-sm">
+              We'll set everything up together — classes, students, fees, timetables. Most schools are live the same day.
+            </p>
 
             {/* Benefits */}
-            <div className="space-y-3">
+            <ul className="space-y-4 mb-10">
               {BENEFITS.map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0 mt-0.5">
+                <li key={text} className="flex items-center gap-3.5 text-[14px] font-medium text-slate-700">
+                  <div className="w-8 h-8 rounded-xl bg-white/70 border border-white/90 flex items-center justify-center shrink-0 backdrop-blur-sm shadow-sm">
                     <Icon className="h-4 w-4 text-indigo-600" />
                   </div>
-                  <p className="text-[14px] text-slate-600 leading-snug pt-1.5">{text}</p>
-                </div>
+                  {text}
+                </li>
               ))}
-            </div>
+            </ul>
 
-            {/* What happens next */}
-            <div className="bg-white rounded-xl border border-slate-200 p-5">
-              <p className="text-[12px] font-bold text-slate-400 uppercase tracking-wider mb-4">What happens next</p>
+            {/* Steps */}
+            <div className="bg-white/50 border border-white/80 rounded-2xl p-5 backdrop-blur-sm">
+              <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-4">What happens next</p>
               <div className="space-y-4">
-                {STEPS.map(({ n, label, sub }) => (
-                  <div key={n} className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center shrink-0 text-white text-[11px] font-bold mt-0.5">{n}</div>
-                    <div>
-                      <p className="text-[13px] font-semibold text-slate-800">{label}</p>
-                      <p className="text-[12px] text-slate-400 mt-0.5">{sub}</p>
+                {STEPS.map(({ n, label, sub }, i) => (
+                  <div key={n} className="flex items-start gap-3.5">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0 text-white text-[12px] font-black shadow-sm shadow-indigo-300/40">{n}</div>
+                    <div className="flex-1 pt-0.5">
+                      <p className="text-[14px] font-bold text-slate-800">{label}</p>
+                      <p className="text-[12px] text-slate-500 mt-0.5">{sub}</p>
                     </div>
+                    {i < STEPS.length - 1 && <ChevronRight className="h-4 w-4 text-slate-300 shrink-0 mt-1" />}
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* Direct contact */}
-            <div className="flex items-center gap-2 text-[13px] text-slate-400">
-              <PhoneCall className="h-3.5 w-3.5" />
-              <span>Prefer to just call?</span>
-              <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}`}
-                target="_blank" rel="noopener noreferrer"
-                className="text-indigo-600 font-semibold hover:underline"
-              >
-                Open WhatsApp directly →
-              </a>
-            </div>
           </div>
+        </div>
+      </div>
 
-          {/* ── Right: Form card ── */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_2px_16px_rgba(0,0,0,0.06)] p-7">
+      {/* ── Right panel — form side ── */}
+      <div className="lg:w-1/2 flex-1 flex flex-col relative"
+        style={{ background: "linear-gradient(145deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%)" }}>
+
+        {/* Dot grid */}
+        <div className="absolute inset-0 pointer-events-none opacity-40"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)", backgroundSize: "24px 24px" }} />
+
+        {/* Left accent border */}
+        <div className="absolute left-0 top-0 bottom-0 w-px"
+          style={{ background: "linear-gradient(180deg, transparent 0%, #6366f1 30%, #8b5cf6 70%, transparent 100%)" }} />
+
+        {/* Back link — top right */}
+        <div className="relative shrink-0 flex justify-end px-8 pt-6">
+          <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-slate-400 hover:text-slate-700 transition-colors">
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to home
+          </Link>
+        </div>
+
+        {/* Mobile logo */}
+        <div className="relative lg:hidden flex items-center gap-3 px-8 pt-4 pb-0">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <GraduationCap className="h-5 w-5 text-white" />
+          </div>
+          <span className="font-black text-gray-900 text-xl">Skula</span>
+        </div>
+
+        <div className="relative flex-1 flex flex-col items-center justify-center px-8 py-8">
+          <div className="w-full max-w-[440px] bg-white rounded-3xl border border-slate-200/80 shadow-2xl shadow-slate-200/80 px-10 py-10">
 
             {sent ? (
-              <div className="text-center py-8">
-                <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Check className="h-7 w-7 text-emerald-600" />
+              <div className="text-center py-6">
+                <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                  <Check className="h-8 w-8 text-emerald-600" />
                 </div>
-                <h2 className="text-[20px] font-black text-slate-900 mb-2">Message sent!</h2>
-                <p className="text-[14px] text-slate-500 mb-6">
-                  We'll get back to you within the hour. Check your WhatsApp.
-                </p>
-                <button
-                  onClick={() => setSent(false)}
-                  className="text-[13px] text-indigo-600 font-semibold hover:underline"
-                >
+                <h2 className="text-[24px] font-black text-slate-900 mb-2">Message sent!</h2>
+                <p className="text-[14px] text-slate-500 mb-6">We'll get back to you within the hour. Check your WhatsApp.</p>
+                <button onClick={() => setSent(false)} className="text-[13px] text-indigo-600 font-bold hover:underline">
                   Send another message
                 </button>
               </div>
             ) : (
               <>
-                <div className="mb-6">
-                  <h2 className="text-[20px] font-black text-slate-900">Talk to us</h2>
-                  <p className="text-[13px] text-slate-400 mt-1">We reply within the hour on WhatsApp.</p>
+                {/* Header */}
+                <div className="flex w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 items-center justify-center mb-7 shadow-lg shadow-indigo-300/40">
+                  <GraduationCap className="h-6 w-6 text-white" />
                 </div>
+                <h2 className="text-[28px] font-black text-slate-900 tracking-tight leading-tight">Talk to us</h2>
+                <p className="text-slate-400 text-[14px] mt-1.5 mb-7">We reply within the hour on WhatsApp.</p>
 
                 <div className="space-y-4">
-
                   {/* Name */}
                   <div>
-                    <label className="block text-[13px] font-semibold text-slate-700 mb-1.5">
+                    <label className="block text-[13px] font-bold text-slate-700 mb-1.5">
                       Your name <span className="text-red-400">*</span>
                     </label>
                     <input
-                      type="text"
-                      value={form.name}
-                      onChange={set("name")}
+                      type="text" value={form.name} onChange={set("name")}
                       placeholder="e.g. Kofi Mensah"
-                      className="w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors"
+                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all"
                     />
-                    {touched && !form.name.trim() && (
-                      <p className="text-[12px] text-red-500 mt-1">Name is required</p>
-                    )}
+                    {touched && !form.name.trim() && <p className="text-[12px] text-red-500 mt-1">Name is required</p>}
                   </div>
 
                   {/* School */}
                   <div>
-                    <label className="block text-[13px] font-semibold text-slate-700 mb-1.5">
+                    <label className="block text-[13px] font-bold text-slate-700 mb-1.5">
                       School name <span className="text-red-400">*</span>
                     </label>
                     <input
-                      type="text"
-                      value={form.school}
-                      onChange={set("school")}
+                      type="text" value={form.school} onChange={set("school")}
                       placeholder="e.g. Lincoln International School"
-                      className="w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors"
+                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all"
                     />
-                    {touched && !form.school.trim() && (
-                      <p className="text-[12px] text-red-500 mt-1">School name is required</p>
-                    )}
+                    {touched && !form.school.trim() && <p className="text-[12px] text-red-500 mt-1">School name is required</p>}
                   </div>
 
                   {/* Role */}
                   <div>
-                    <label className="block text-[13px] font-semibold text-slate-700 mb-1.5">Your role</label>
+                    <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Your role</label>
                     <select
-                      value={form.role}
-                      onChange={set("role")}
-                      className="w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors appearance-none"
-                      style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center", paddingRight: "36px" }}
+                      value={form.role} onChange={set("role")}
+                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all appearance-none"
+                      style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 14px center", paddingRight: "40px" }}
                     >
                       <option value="">— Select your role —</option>
                       <option>Headmaster / Principal</option>
@@ -219,48 +233,50 @@ export default function ContactPage() {
 
                   {/* Phone */}
                   <div>
-                    <label className="block text-[13px] font-semibold text-slate-700 mb-1.5">
-                      WhatsApp number
-                      <span className="text-slate-400 font-normal ml-1">(optional)</span>
+                    <label className="block text-[13px] font-bold text-slate-700 mb-1.5">
+                      WhatsApp number <span className="text-slate-400 font-normal">(optional)</span>
                     </label>
                     <input
-                      type="tel"
-                      value={form.phone}
-                      onChange={set("phone")}
+                      type="tel" value={form.phone} onChange={set("phone")}
                       placeholder="+233 XX XXX XXXX"
-                      className="w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors"
+                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all"
                     />
                   </div>
                 </div>
 
-                {/* CTA buttons */}
-                <div className="mt-6 space-y-2.5">
+                {/* CTAs */}
+                <div className="mt-7 space-y-3">
                   <button
                     onClick={handleWhatsApp}
-                    className="w-full inline-flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold h-11 rounded-xl transition-colors text-[14px] shadow-[0_2px_8px_rgba(37,211,102,0.35)]"
+                    className="w-full inline-flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold h-12 rounded-2xl transition-colors text-[15px] shadow-lg shadow-emerald-300/40"
                   >
-                    <MessageCircle className="h-[18px] w-[18px]" />
+                    <MessageCircle className="h-5 w-5" />
                     Chat on WhatsApp
                   </button>
                   <button
                     onClick={handleEmail}
-                    className="w-full inline-flex items-center justify-center gap-2.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold h-11 rounded-xl transition-colors text-[14px]"
+                    className="w-full inline-flex items-center justify-center gap-2.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-semibold h-12 rounded-2xl transition-colors text-[14px]"
                   >
                     <Mail className="h-4 w-4 text-slate-400" />
                     Send via email
                   </button>
                 </div>
 
-                {/* Demo link */}
                 <p className="text-center text-[12px] text-slate-400 mt-5">
                   Not ready yet?{" "}
-                  <Link href="/demo" className="text-indigo-600 font-semibold hover:underline">
-                    Try the live demo →
-                  </Link>
+                  <Link href="/demo" className="text-indigo-600 font-bold hover:underline">Try the live demo →</Link>
                 </p>
               </>
             )}
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="relative shrink-0 px-8 pb-6 text-center">
+          <p className="text-[11px] text-gray-400">
+            Powered by <span className="font-semibold text-gray-500">Skula</span>{" "}·{" "}
+            <a href="https://novalss.com" className="hover:underline">a Novalss product</a>
+          </p>
         </div>
       </div>
     </div>
