@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, School, Save } from "lucide-react";
+import { ArrowLeft, School, Save, MessageCircle } from "lucide-react";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
@@ -21,6 +21,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
     phone: profile?.phone ?? "",
     email: profile?.email ?? "",
     website: profile?.website ?? "",
+    whatsappNumber: profile?.whatsappNumber ?? "",
     motto: profile?.motto ?? "",
     currency: profile?.currency ?? "GHS",
     dateFormat: profile?.dateFormat ?? "DD/MM/YYYY",
@@ -114,6 +115,13 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
           <div>
             <Label>Website</Label>
             <Input value={form.website} onChange={(e) => set("website", e.target.value)} placeholder="https://school.edu" />
+          </div>
+          <div>
+            <Label className="flex items-center gap-1.5">
+              <MessageCircle className="h-3.5 w-3.5 text-green-600" /> WhatsApp Number
+            </Label>
+            <Input value={form.whatsappNumber} onChange={(e) => set("whatsappNumber", e.target.value)} placeholder="+233XXXXXXXXX (with country code)" />
+            <p className="text-xs text-gray-400 mt-1">Used to generate WhatsApp message links for parents</p>
           </div>
           <div>
             <Label>Motto / Tagline</Label>

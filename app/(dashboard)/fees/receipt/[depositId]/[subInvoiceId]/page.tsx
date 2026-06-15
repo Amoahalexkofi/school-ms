@@ -10,37 +10,51 @@ export default async function ReceiptPage({
   const { depositId, subInvoiceId } = await params;
   const db = await getDb();
 
-  const deposit = await (db as any).feeDeposit.findUnique({
-    where: { id: depositId },
-    include: {
-      studentFeesMaster: {
-        include: {
-          student: {
-            select: {
-              id: true, firstName: true, middleName: true, lastName: true,
-              admissionNo: true,
+  const [deposit, profile] = await Promise.all([
+    (db as any).feeDeposit.findUnique({
+      where: { id: depositId },
+      include: {
+        studentFeesMaster: {
+          include: {
+            student: {
+              select: {
+                id: true, firstName: true, middleName: true, lastName: true,
+                admissionNo: true, fatherPhone: true, motherPhone: true, guardianPhone: true,
+              },
             },
-          },
-          studentSession: {
-            include: {
-              session: { select: { session: true } },
-              classSection: { include: { class: true, section: true } },
+            studentSession: {
+              include: {
+                session: { select: { session: true } },
+                classSection: { include: { class: true, section: true } },
+              },
             },
-          },
-          feeSessionGroup: {
-            include: { feeGroup: { select: { name: true } } },
+            feeSessionGroup: {
+              include: { feeGroup: { select: { name: true } } },
+            },
           },
         },
       },
-    },
-  });
+    }),
+    (db as any).schoolProfile.findFirst({ select: { name: true, whatsappNumber: true } }),
+  ]);
 
   if (!deposit) notFound();
 
-  // Pick the specific sub-invoice entry from the JSON
   const allDetail = deposit.amountDetail as Record<string, any>;
   const entry = allDetail[subInvoiceId];
   if (!entry) notFound();
 
-  return <ReceiptClient deposit={deposit} entry={entry} subInvoiceId={Number(subInvoiceId)} />;
+  const student = deposit.studentFeesMaster.student;
+  const parentPhone: string =
+    student.fatherPhone || student.motherPhone || student.guardianPhone || "";
+
+  return (
+    <ReceiptClient
+      deposit={deposit}
+      entry={entry}
+      subInvoiceId={Number(subInvoiceId)}
+      parentPhone={parentPhone}
+      schoolName={profile?.name ?? ""}
+    />
+  );
 }

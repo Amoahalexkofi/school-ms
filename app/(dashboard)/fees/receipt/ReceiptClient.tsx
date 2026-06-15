@@ -2,11 +2,12 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Printer, X } from "lucide-react";
+import { Printer, X, MessageCircle } from "lucide-react";
+import { buildWhatsAppLink } from "@/lib/utils";
 
-type Props = { deposit: any; entry: any; subInvoiceId: number };
+type Props = { deposit: any; entry: any; subInvoiceId: number; parentPhone?: string; schoolName?: string };
 
-export function ReceiptClient({ deposit, entry, subInvoiceId }: Props) {
+export function ReceiptClient({ deposit, entry, subInvoiceId, parentPhone, schoolName }: Props) {
   const master  = deposit.studentFeesMaster;
   const student = master.student;
   const sess    = master.studentSession;
@@ -20,6 +21,14 @@ export function ReceiptClient({ deposit, entry, subInvoiceId }: Props) {
   // Receipt number = depositId suffix + sub-invoice (matches Smart School invoice_id/sub_invoice_id)
   const receiptNo = `${deposit.id.slice(-8).toUpperCase()}-${subInvoiceId}`;
 
+  const studentName = `${student.firstName}${student.middleName ? " " + student.middleName : ""} ${student.lastName}`;
+  const whatsAppHref = parentPhone
+    ? buildWhatsAppLink(
+        parentPhone,
+        `Dear Parent, payment of ${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} has been received for ${studentName}. Receipt No: ${receiptNo}. Thank you.${schoolName ? ` — ${schoolName}` : ""}`
+      )
+    : null;
+
   useEffect(() => {
     const t = setTimeout(() => window.print(), 500);
     return () => clearTimeout(t);
@@ -29,6 +38,13 @@ export function ReceiptClient({ deposit, entry, subInvoiceId }: Props) {
     <main className="min-h-screen bg-gray-100 flex items-start justify-center py-8 print:bg-white print:p-0">
       {/* Controls — hidden when printing */}
       <div className="print:hidden fixed top-4 right-4 flex gap-2 z-50">
+        {whatsAppHref && (
+          <a href={whatsAppHref} target="_blank" rel="noopener noreferrer">
+            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white gap-1.5">
+              <MessageCircle className="h-4 w-4" /> WhatsApp
+            </Button>
+          </a>
+        )}
         <Button onClick={() => window.print()} size="sm">
           <Printer className="h-4 w-4 mr-1" /> Print
         </Button>
@@ -54,7 +70,7 @@ export function ReceiptClient({ deposit, entry, subInvoiceId }: Props) {
 
         {/* Student info */}
         <div className="px-6 py-4 border-b space-y-1.5">
-          <Row label="Student" value={`${student.firstName}${student.middleName ? " " + student.middleName : ""} ${student.lastName}`} />
+          <Row label="Student" value={studentName} />
           <Row label="Admission No." value={student.admissionNo} mono />
           <Row label="Class" value={sess?.classSection ? `${sess.classSection.class.name} — ${sess.classSection.section.name}` : "—"} />
           <Row label="Session" value={sess?.session?.session ?? "—"} />
