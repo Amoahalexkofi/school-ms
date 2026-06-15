@@ -1892,6 +1892,7 @@ model SchoolProfile {
   country          String?
   state            String?
   city             String?
+  whatsappNumber   String?
   feeDueDays       Int     @default(30)
   // Admission number auto-generation
   admPrefix        String?
