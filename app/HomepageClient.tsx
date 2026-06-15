@@ -136,6 +136,195 @@ function DashboardMockup() {
   );
 }
 
+/* ─── STUDENTS MOCKUP ─── */
+function StudentsMockup() {
+  const students = [
+    { name: "Abena Mensah",  class: "JHS 3A", id: "SKL-001", att: "97%",  status: "active" },
+    { name: "Kwame Boateng", class: "JHS 3A", id: "SKL-002", att: "89%",  status: "active" },
+    { name: "Ama Asante",    class: "JHS 3B", id: "SKL-003", att: "100%", status: "active" },
+    { name: "Kofi Tetteh",   class: "JHS 2A", id: "SKL-004", att: "74%",  status: "warning" },
+    { name: "Efua Darko",    class: "JHS 2B", id: "SKL-005", att: "93%",  status: "active" },
+  ];
+  return (
+    <div className="w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white">
+      <div className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-100/80 border-b border-slate-200">
+        <span className="w-2.5 h-2.5 rounded-full bg-red-400" /><span className="w-2.5 h-2.5 rounded-full bg-yellow-400" /><span className="w-2.5 h-2.5 rounded-full bg-green-400" />
+        <div className="mx-auto flex-1 max-w-xs bg-white border border-slate-200 rounded px-3 py-0.5 text-[10px] text-slate-400 text-center">app.getskula.com/students</div>
+      </div>
+      <div className="flex h-[340px]">
+        <div className="w-[130px] shrink-0 bg-slate-900 flex flex-col p-3 gap-0.5">
+          <div className="flex items-center gap-1.5 px-2 py-2 mb-3">
+            <div className="w-6 h-6 bg-indigo-500 rounded-md flex items-center justify-center"><GraduationCap className="h-3.5 w-3.5 text-white" /></div>
+            <span className="text-white text-[11px] font-black">Skula</span>
+          </div>
+          {[["Dashboard",false],["Students",true],["Fees",false],["Attendance",false],["Exams",false]].map(([l, a]) => (
+            <div key={l as string} className={`px-2 py-1.5 rounded-lg text-[10px] font-medium ${a ? "bg-indigo-600 text-white" : "text-slate-400"}`}>{l as string}</div>
+          ))}
+        </div>
+        <div className="flex-1 bg-slate-50 p-4 overflow-hidden">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-[12px] font-black text-slate-900">Students</p>
+              <p className="text-[9px] text-slate-400">1,247 enrolled · Term 2, 2025/26</p>
+            </div>
+            <div className="bg-indigo-600 text-white text-[9px] font-bold px-2.5 py-1 rounded-lg">+ Add Student</div>
+          </div>
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            {[{l:"Total",v:"1,247",c:"text-indigo-600"},{l:"Active",v:"1,231",c:"text-emerald-600"},{l:"BECE Candidates",v:"342",c:"text-amber-600"}].map(({l,v,c})=>(
+              <div key={l} className="bg-white rounded-xl p-2.5 border border-slate-100 text-center">
+                <p className={`text-[14px] font-black ${c}`}>{v}</p>
+                <p className="text-[8px] text-slate-400 mt-0.5">{l}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
+            <div className="grid grid-cols-4 px-3 py-1.5 bg-slate-50 border-b border-slate-100">
+              {["Name","Class","ID","Att."].map(h=><p key={h} className="text-[8px] font-bold text-slate-400 uppercase">{h}</p>)}
+            </div>
+            {students.map(({name,class:cls,id,att,status})=>(
+              <div key={id} className="grid grid-cols-4 px-3 py-2 border-b border-slate-50 last:border-0 items-center">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center text-[7px] font-black text-indigo-600">{name[0]}</div>
+                  <span className="text-[9px] font-semibold text-slate-700 truncate">{name}</span>
+                </div>
+                <span className="text-[9px] text-slate-500">{cls}</span>
+                <span className="text-[9px] text-slate-400">{id}</span>
+                <span className={`text-[9px] font-bold ${status==="warning"?"text-amber-500":"text-emerald-600"}`}>{att}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── FEES MOCKUP ─── */
+function FeesMockup() {
+  return (
+    <div className="w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white">
+      <div className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-100/80 border-b border-slate-200">
+        <span className="w-2.5 h-2.5 rounded-full bg-red-400" /><span className="w-2.5 h-2.5 rounded-full bg-yellow-400" /><span className="w-2.5 h-2.5 rounded-full bg-green-400" />
+        <div className="mx-auto flex-1 max-w-xs bg-white border border-slate-200 rounded px-3 py-0.5 text-[10px] text-slate-400 text-center">app.getskula.com/fees</div>
+      </div>
+      <div className="flex h-[340px]">
+        <div className="w-[130px] shrink-0 bg-slate-900 flex flex-col p-3 gap-0.5">
+          <div className="flex items-center gap-1.5 px-2 py-2 mb-3">
+            <div className="w-6 h-6 bg-indigo-500 rounded-md flex items-center justify-center"><GraduationCap className="h-3.5 w-3.5 text-white" /></div>
+            <span className="text-white text-[11px] font-black">Skula</span>
+          </div>
+          {[["Dashboard",false],["Students",false],["Fees",true],["Attendance",false],["Exams",false]].map(([l, a]) => (
+            <div key={l as string} className={`px-2 py-1.5 rounded-lg text-[10px] font-medium ${a ? "bg-emerald-600 text-white" : "text-slate-400"}`}>{l as string}</div>
+          ))}
+        </div>
+        <div className="flex-1 bg-slate-50 p-4 overflow-hidden">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-[12px] font-black text-slate-900">Fee Collection</p>
+              <p className="text-[9px] text-slate-400">Term 2 · 2025/26</p>
+            </div>
+            <div className="bg-emerald-600 text-white text-[9px] font-bold px-2.5 py-1 rounded-lg">Collect Fee</div>
+          </div>
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            {[{l:"Collected",v:"GH₵ 84.5K",c:"text-emerald-600",bg:"bg-emerald-50"},{l:"Pending",v:"GH₵ 12.3K",c:"text-amber-600",bg:"bg-amber-50"},{l:"Defaulters",v:"47",c:"text-red-500",bg:"bg-red-50"}].map(({l,v,c,bg})=>(
+              <div key={l} className={`${bg} rounded-xl p-2.5 border border-slate-100 text-center`}>
+                <p className={`text-[12px] font-black ${c}`}>{v}</p>
+                <p className="text-[8px] text-slate-500 mt-0.5">{l}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
+            <div className="grid grid-cols-4 px-3 py-1.5 bg-slate-50 border-b border-slate-100">
+              {["Student","Amount","Date","Status"].map(h=><p key={h} className="text-[8px] font-bold text-slate-400 uppercase">{h}</p>)}
+            </div>
+            {[
+              {n:"Abena M.",  amt:"GH₵ 450", date:"Jun 12", paid:true},
+              {n:"Kwame B.",  amt:"GH₵ 380", date:"Jun 11", paid:true},
+              {n:"Ama A.",    amt:"GH₵ 600", date:"Jun 10", paid:true},
+              {n:"Kofi T.",   amt:"GH₵ 450", date:"—",      paid:false},
+              {n:"Efua D.",   amt:"GH₵ 520", date:"Jun 9",  paid:true},
+            ].map(({n,amt,date,paid})=>(
+              <div key={n} className="grid grid-cols-4 px-3 py-2 border-b border-slate-50 last:border-0 items-center">
+                <span className="text-[9px] font-semibold text-slate-700">{n}</span>
+                <span className="text-[9px] font-bold text-emerald-700">{amt}</span>
+                <span className="text-[9px] text-slate-400">{date}</span>
+                <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full w-fit ${paid?"bg-emerald-100 text-emerald-700":"bg-amber-100 text-amber-700"}`}>{paid?"Paid":"Pending"}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── EXAMS MOCKUP ─── */
+function ExamsMockup() {
+  return (
+    <div className="w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white">
+      <div className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-100/80 border-b border-slate-200">
+        <span className="w-2.5 h-2.5 rounded-full bg-red-400" /><span className="w-2.5 h-2.5 rounded-full bg-yellow-400" /><span className="w-2.5 h-2.5 rounded-full bg-green-400" />
+        <div className="mx-auto flex-1 max-w-xs bg-white border border-slate-200 rounded px-3 py-0.5 text-[10px] text-slate-400 text-center">app.getskula.com/exams/marksheet</div>
+      </div>
+      <div className="flex h-[340px]">
+        <div className="w-[130px] shrink-0 bg-slate-900 flex flex-col p-3 gap-0.5">
+          <div className="flex items-center gap-1.5 px-2 py-2 mb-3">
+            <div className="w-6 h-6 bg-indigo-500 rounded-md flex items-center justify-center"><GraduationCap className="h-3.5 w-3.5 text-white" /></div>
+            <span className="text-white text-[11px] font-black">Skula</span>
+          </div>
+          {[["Dashboard",false],["Students",false],["Fees",false],["Attendance",false],["Exams",true]].map(([l, a]) => (
+            <div key={l as string} className={`px-2 py-1.5 rounded-lg text-[10px] font-medium ${a ? "bg-violet-600 text-white" : "text-slate-400"}`}>{l as string}</div>
+          ))}
+        </div>
+        <div className="flex-1 bg-slate-50 p-4 overflow-hidden">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-[12px] font-black text-slate-900">Marksheet · JHS 3A</p>
+              <p className="text-[9px] text-slate-400">End of Term 2 Exams · 28 students</p>
+            </div>
+            <div className="bg-violet-600 text-white text-[9px] font-bold px-2.5 py-1 rounded-lg">Print Cards</div>
+          </div>
+          <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
+            <div className="grid grid-cols-6 px-3 py-1.5 bg-slate-50 border-b border-slate-100">
+              {["#","Name","Math","English","Science","Grade"].map(h=><p key={h} className="text-[8px] font-bold text-slate-400 uppercase">{h}</p>)}
+            </div>
+            {[
+              {rank:1, name:"Ama A.",    math:92, eng:88, sci:94, grade:"A1"},
+              {rank:2, name:"Abena M.",  math:87, eng:91, sci:85, grade:"A2"},
+              {rank:3, name:"Efua D.",   math:83, eng:79, sci:88, grade:"B2"},
+              {rank:4, name:"Kwame B.",  math:76, eng:82, sci:74, grade:"B3"},
+              {rank:5, name:"Kofi T.",   math:68, eng:71, sci:65, grade:"C4"},
+            ].map(({rank,name,math,eng,sci,grade})=>(
+              <div key={name} className={`grid grid-cols-6 px-3 py-2 border-b border-slate-50 last:border-0 items-center ${rank===1?"bg-amber-50/50":""}`}>
+                <span className={`text-[9px] font-black ${rank===1?"text-amber-500":"text-slate-400"}`}>{rank}</span>
+                <span className="text-[9px] font-semibold text-slate-700">{name}</span>
+                <span className="text-[9px] text-slate-600">{math}</span>
+                <span className="text-[9px] text-slate-600">{eng}</span>
+                <span className="text-[9px] text-slate-600">{sci}</span>
+                <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-md w-fit ${grade.startsWith("A")?"bg-emerald-100 text-emerald-700":grade.startsWith("B")?"bg-indigo-100 text-indigo-700":"bg-amber-100 text-amber-700"}`}>{grade}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-2 flex gap-2">
+            <div className="flex-1 bg-white rounded-lg border border-slate-100 p-2 text-center">
+              <p className="text-[11px] font-black text-violet-600">82.4%</p>
+              <p className="text-[8px] text-slate-400">Class average</p>
+            </div>
+            <div className="flex-1 bg-white rounded-lg border border-slate-100 p-2 text-center">
+              <p className="text-[11px] font-black text-emerald-600">96%</p>
+              <p className="text-[8px] text-slate-400">Pass rate</p>
+            </div>
+            <div className="flex-1 bg-white rounded-lg border border-slate-100 p-2 text-center">
+              <p className="text-[11px] font-black text-indigo-600">28</p>
+              <p className="text-[8px] text-slate-400">Cards ready</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── FLOATING CARDS ─── */
 function FloatingCard({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   return (
@@ -448,10 +637,10 @@ export function HomepageClient() {
       <section id="solutions" className="py-24" style={{ background: "linear-gradient(180deg, #f8faff 0%, #ffffff 100%)" }}>
         <div className="max-w-6xl mx-auto px-6 space-y-28">
           {[
-            { eyebrow: "Student Information System", title: "Every student. Every detail. One place.", desc: "Enroll students, manage profiles, track BECE candidates, issue ID cards and promote entire classes in minutes — not days.", bullets: ["Bulk enrollment & promotion","BECE candidate management","Digital ID card generation","Parent portal access"], flip: false, accent: "#6366f1", accentBg: "#eef2ff" },
-            { eyebrow: "Finance & Fee Management",   title: "Collect fees. Track every pesewa.",       desc: "From setting up fee structures to issuing digital receipts on WhatsApp — Skula automates your entire finance workflow.",  bullets: ["Automated GHS receipts","Defaulter tracking & reminders","Term-by-term fee reports","Multi-currency support"],          flip: true,  accent: "#10b981", accentBg: "#dcfce7" },
-            { eyebrow: "Exams & Academic Performance",title: "From marks to report cards automatically.", desc: "Teachers enter marks once. Skula calculates rankings, generates BECE-style report cards, and makes results available to parents instantly.", bullets: ["Automated grade calculation","Class ranking & reports","BECE-style report cards","Parent result portal"], flip: false, accent: "#8b5cf6", accentBg: "#ede9fe" },
-          ].map(({ eyebrow, title, desc, bullets, flip, accent, accentBg }) => (
+            { eyebrow: "Student Information System",  title: "Every student. Every detail. One place.",         desc: "Enroll students, manage profiles, track BECE candidates, issue ID cards and promote entire classes in minutes — not days.",                                              bullets: ["Bulk enrollment & promotion","BECE candidate management","Digital ID card generation","Parent portal access"],    flip: false, accent: "#6366f1", accentBg: "#eef2ff", Mockup: StudentsMockup },
+            { eyebrow: "Finance & Fee Management",    title: "Collect fees. Track every pesewa.",               desc: "From setting up fee structures to issuing digital receipts on WhatsApp — Skula automates your entire finance workflow.",                                             bullets: ["Automated GHS receipts","Defaulter tracking & reminders","Term-by-term fee reports","Multi-currency support"],   flip: true,  accent: "#10b981", accentBg: "#dcfce7", Mockup: FeesMockup    },
+            { eyebrow: "Exams & Academic Performance",title: "From marks to report cards automatically.",       desc: "Teachers enter marks once. Skula calculates rankings, generates BECE-style report cards, and makes results available to parents instantly.",                         bullets: ["Automated grade calculation","Class ranking & reports","BECE-style report cards","Parent result portal"],         flip: false, accent: "#8b5cf6", accentBg: "#ede9fe", Mockup: ExamsMockup   },
+          ].map(({ eyebrow, title, desc, bullets, flip, accent, accentBg, Mockup }) => (
             <motion.div key={title} initial="hidden" whileInView="show"
               viewport={{ once: true, margin: "-80px" }} variants={stagger}
               className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
@@ -483,7 +672,7 @@ export function HomepageClient() {
                 style={{ filter: `drop-shadow(0 24px 48px ${accent}20)` }}>
                 <div className="rounded-2xl overflow-hidden border bg-white"
                   style={{ borderColor: accent + "20", boxShadow: `0 0 0 1px ${accent}10, 0 24px 48px ${accent}10` }}>
-                  <DashboardMockup />
+                  <Mockup />
                 </div>
               </motion.div>
             </motion.div>
