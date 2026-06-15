@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GraduationCap, Building2, CalendarDays, Layers, BookOpen, CheckCircle2, ArrowRight, ArrowLeft, Plus, X, Loader2 } from "lucide-react";
+import { Building2, CalendarDays, Layers, BookOpen, CheckCircle2, ArrowRight, ArrowLeft, Plus, X, Loader2 } from "lucide-react";
 
 // ── Preset data for Ghanaian / West African schools ────────────────────────
 
@@ -185,16 +185,17 @@ export function OnboardingClient({ profile }: Props) {
   // ── render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-start justify-center p-6">
+    <div className="flex-1 flex items-start justify-center p-6 md:p-10">
       <div className="w-full max-w-2xl">
 
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-2xl mb-3 shadow-lg">
-            <GraduationCap className="h-6 w-6 text-white" />
+        <div className="mb-8">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[12px] font-semibold px-3 py-1.5 rounded-full mb-3">
+            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+            One-time setup
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome to Skula</h1>
-          <p className="text-gray-500 text-sm mt-1">Let's get your school set up in 4 quick steps</p>
+          <h1 className="text-[24px] font-black text-slate-900 tracking-tight">Welcome to Skula 👋</h1>
+          <p className="text-slate-500 text-[14px] mt-1">Complete these 4 steps to get your school ready. It takes about 5 minutes.</p>
         </div>
 
         {/* Progress */}
