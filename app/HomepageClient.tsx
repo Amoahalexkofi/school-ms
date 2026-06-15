@@ -235,7 +235,7 @@ export function HomepageClient() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden bg-white">
+      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden" style={{ background: "linear-gradient(160deg, #eef2ff 0%, #f5f3ff 40%, #ffffff 100%)" }}>
         {/* Background mesh */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px]"
@@ -373,6 +373,13 @@ export function HomepageClient() {
 
             </motion.div>
           </div>
+        </div>
+
+        {/* Bottom wave divider */}
+        <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+          <svg viewBox="0 0 1440 72" preserveAspectRatio="none" className="w-full h-16 sm:h-20" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,36 C240,72 480,0 720,36 C960,72 1200,0 1440,36 L1440,72 L0,72 Z" />
+          </svg>
         </div>
       </section>
 
