@@ -7,11 +7,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DollarSign, Settings, Users, Search, ArrowRight, BarChart3, ArrowRightLeft, Tag } from "lucide-react";
+import { usePermission } from "@/components/PermissionsProvider";
 
 type Props = { totalStudents: number; totalMasters: number; totalCollected: number; students: any[] };
 
 export function FeesHubClient({ totalStudents, totalMasters, totalCollected, students }: Props) {
   const router = useRouter();
+  const perm = usePermission("fees_collection");
   const [search, setSearch] = useState("");
 
   const filtered = search.length > 1
@@ -51,37 +53,39 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, stu
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Collect fees — student search */}
-        <Card>
-          <CardContent className="pt-5 space-y-3">
-            <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-green-600" /> Collect Fees
-            </h2>
-            <p className="text-xs text-gray-400">Search for a student to view and collect their fees.</p>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input className="pl-9" placeholder="Name or admission number…"
-                value={search} onChange={e => setSearch(e.target.value)} />
-            </div>
-            {filtered.length > 0 && (
-              <div className="border rounded-lg divide-y overflow-hidden">
-                {filtered.map(s => (
-                  <button key={s.id}
-                    onClick={() => router.push(`/fees/collect/${s.id}`)}
-                    className="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-blue-50 transition-colors text-left">
-                    <div>
-                      <span className="font-medium text-gray-900">{s.firstName} {s.middleName ? s.middleName + " " : ""}{s.lastName}</span>
-                      <span className="text-xs text-gray-400 ml-2 font-mono">{s.admissionNo}</span>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-gray-400" />
-                  </button>
-                ))}
+        {perm.canAdd && (
+          <Card>
+            <CardContent className="pt-5 space-y-3">
+              <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-green-600" /> Collect Fees
+              </h2>
+              <p className="text-xs text-gray-400">Search for a student to view and collect their fees.</p>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input className="pl-9" placeholder="Name or admission number…"
+                  value={search} onChange={e => setSearch(e.target.value)} />
               </div>
-            )}
-            {search.length > 1 && filtered.length === 0 && (
-              <p className="text-xs text-gray-400 text-center py-2">No students found.</p>
-            )}
-          </CardContent>
-        </Card>
+              {filtered.length > 0 && (
+                <div className="border rounded-lg divide-y overflow-hidden">
+                  {filtered.map(s => (
+                    <button key={s.id}
+                      onClick={() => router.push(`/fees/collect/${s.id}`)}
+                      className="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-blue-50 transition-colors text-left">
+                      <div>
+                        <span className="font-medium text-gray-900">{s.firstName} {s.middleName ? s.middleName + " " : ""}{s.lastName}</span>
+                        <span className="text-xs text-gray-400 ml-2 font-mono">{s.admissionNo}</span>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-gray-400" />
+                    </button>
+                  ))}
+                </div>
+              )}
+              {search.length > 1 && filtered.length === 0 && (
+                <p className="text-xs text-gray-400 text-center py-2">No students found.</p>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Quick links */}
         <Card>

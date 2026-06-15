@@ -5,10 +5,12 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Megaphone, Trash2, Plus } from "lucide-react";
+import { usePermission } from "@/components/PermissionsProvider";
 
 const audienceColor: Record<string, string> = { ALL: "bg-blue-100 text-blue-700", STAFF: "bg-purple-100 text-purple-700", STUDENTS: "bg-green-100 text-green-700", PARENTS: "bg-orange-100 text-orange-700" };
 
 export function NoticeBoardClient({ notices }: any) {
+  const perm = usePermission("communicate");
   const router = useRouter();
 
   async function deleteNotice(id: string) {
@@ -21,9 +23,11 @@ export function NoticeBoardClient({ notices }: any) {
     <main className="flex-1 p-6 space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">{notices.length} notice{notices.length !== 1 ? "s" : ""}</p>
-        <Link href="/notice-board/new">
-          <Button><Plus className="h-4 w-4 mr-1" /> Post Notice</Button>
-        </Link>
+        {perm.canAdd && (
+          <Link href="/notice-board/new">
+            <Button><Plus className="h-4 w-4 mr-1" /> Post Notice</Button>
+          </Link>
+        )}
       </div>
 
       {notices.length === 0 ? (
@@ -39,9 +43,11 @@ export function NoticeBoardClient({ notices }: any) {
                     <h3 className="font-semibold text-base">{notice.title}</h3>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${audienceColor[notice.audience]}`}>{notice.audience}</span>
                   </div>
-                  <button onClick={() => deleteNotice(notice.id)} className="text-gray-400 hover:text-red-500 transition-colors shrink-0">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  {perm.canDelete && (
+                    <button onClick={() => deleteNotice(notice.id)} className="text-gray-400 hover:text-red-500 transition-colors shrink-0">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
                 <p className="text-sm text-gray-700 whitespace-pre-wrap">{notice.content}</p>
                 <p className="text-xs text-gray-400 mt-3 pt-3 border-t">

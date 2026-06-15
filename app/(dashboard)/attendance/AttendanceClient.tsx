@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, CheckCheck, AlertCircle, Save, ClipboardList } from "lucide-react";
 import Link from "next/link";
+import { usePermission } from "@/components/PermissionsProvider";
 
 type AttendanceType = { id: string; type: string; keyValue: string; nameStyle: string };
 type Enrollment     = { id: string; rollNo: string | null; student: { id: string; firstName: string; middleName: string | null; lastName: string | null; admissionNo: string; gender: string | null } };
@@ -20,6 +21,7 @@ const KV_STYLE: Record<string, string> = {
 };
 
 export function AttendanceClient({ sessions, classSections, attendanceTypes }: Props) {
+  const perm = usePermission("student_attendance");
   const today = new Date().toISOString().slice(0, 10);
 
   const [sessionId,      setSessionId]      = useState(sessions[0]?.id ?? "");
@@ -166,19 +168,23 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
                   Attendance already saved — saving again will update it
                 </span>
               )}
-              <div className="flex gap-1">
-                <span className="text-xs text-gray-500 self-center mr-1">Mark all:</span>
-                {attendanceTypes.filter(t => t.keyValue !== "H").map(t => (
-                  <button key={t.id} onClick={() => markAll(t.id)}
-                    className={`text-xs px-2.5 py-1 rounded-md border font-medium transition-colors ${KV_STYLE[t.keyValue] ?? ""}`}>
-                    {t.keyValue}
-                  </button>
-                ))}
-              </div>
-              <Button onClick={handleSave} disabled={saveState === "saving"} className="min-w-[120px]">
-                <Save className="h-4 w-4 mr-1.5" />
-                {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save"}
-              </Button>
+              {perm.canEdit && (
+                <div className="flex gap-1">
+                  <span className="text-xs text-gray-500 self-center mr-1">Mark all:</span>
+                  {attendanceTypes.filter(t => t.keyValue !== "H").map(t => (
+                    <button key={t.id} onClick={() => markAll(t.id)}
+                      className={`text-xs px-2.5 py-1 rounded-md border font-medium transition-colors ${KV_STYLE[t.keyValue] ?? ""}`}>
+                      {t.keyValue}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {perm.canEdit && (
+                <Button onClick={handleSave} disabled={saveState === "saving"} className="min-w-[120px]">
+                  <Save className="h-4 w-4 mr-1.5" />
+                  {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save"}
+                </Button>
+              )}
             </div>
           </div>
 
@@ -257,10 +263,12 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
               {/* Sticky footer save */}
               <div className="border-t bg-gray-50 px-4 py-3 flex items-center justify-between">
                 <span className="text-xs text-gray-400">{enrollments.length} students</span>
-                <Button onClick={handleSave} disabled={saveState === "saving"}>
-                  <Save className="h-4 w-4 mr-1.5" />
-                  {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Attendance"}
-                </Button>
+                {perm.canEdit && (
+                  <Button onClick={handleSave} disabled={saveState === "saving"}>
+                    <Save className="h-4 w-4 mr-1.5" />
+                    {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Attendance"}
+                  </Button>
+                )}
               </div>
             </div>
           )}

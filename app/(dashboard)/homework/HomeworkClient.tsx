@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { usePermission } from "@/components/PermissionsProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +22,7 @@ export function HomeworkClient({ classes, staff, session }: {
 }) {
   const { data: authSession } = useSession();
   const role = (authSession?.user as any)?.role;
+  const perm = usePermission("homework");
 
   const [classId, setClassId]             = useState("");
   const [classSectionId, setClassSectionId] = useState("");
@@ -93,7 +95,7 @@ export function HomeworkClient({ classes, staff, session }: {
     setHomework(h => h.filter(x => x.id !== id));
   }
 
-  const canCreate = role === "SUPER_ADMIN" || role === "ADMIN" || role === "TEACHER";
+  const canCreate = (role === "SUPER_ADMIN" || role === "ADMIN" || role === "TEACHER") && perm.canAdd;
 
   return (
     <main className="flex-1 p-6 space-y-5">
@@ -225,7 +227,7 @@ export function HomeworkClient({ classes, staff, session }: {
                             )}
                           </div>
                         </div>
-                        {canCreate && (
+                        {perm.canDelete && (role === "SUPER_ADMIN" || role === "ADMIN" || role === "TEACHER") && (
                           <Button size="sm" variant="ghost" onClick={() => deleteHw(hw.id)} className="text-red-400 hover:text-red-600">
                             <Trash2 className="h-4 w-4" />
                           </Button>

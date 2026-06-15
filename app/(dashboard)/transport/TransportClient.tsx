@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bus, MapPin, Users, Plus, X, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { usePermission } from "@/components/PermissionsProvider";
 
 type Props = { vehicles: any[]; routes: any[]; pickupPoints: any[]; students: any[] };
 type Tab = "vehicles" | "routes" | "points" | "students";
@@ -15,6 +16,7 @@ const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[
 
 export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints: initialPoints, students: initialStudents }: Props) {
   const router = useRouter();
+  const perm = usePermission("transport");
   const [tab, setTab] = useState<Tab>("vehicles");
 
   // Local copies so we can optimistically update without full page refresh
@@ -152,9 +154,11 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""}</p>
-            <Link href="/transport/vehicles/new">
-              <Button><Plus className="h-4 w-4 mr-1.5" /> Add Vehicle</Button>
-            </Link>
+            {perm.canAdd && (
+              <Link href="/transport/vehicles/new">
+                <Button><Plus className="h-4 w-4 mr-1.5" /> Add Vehicle</Button>
+              </Link>
+            )}
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
@@ -187,9 +191,11 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{routes.length} route{routes.length !== 1 ? "s" : ""}</p>
-            <Link href="/transport/routes/new">
-              <Button><Plus className="h-4 w-4 mr-1.5" /> Add Route</Button>
-            </Link>
+            {perm.canAdd && (
+              <Link href="/transport/routes/new">
+                <Button><Plus className="h-4 w-4 mr-1.5" /> Add Route</Button>
+              </Link>
+            )}
           </div>
           <div className="space-y-3">
             {routes.length === 0 && (
@@ -319,9 +325,11 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{pickupPoints.length} pickup point{pickupPoints.length !== 1 ? "s" : ""}</p>
-            <Button onClick={() => { setPName(""); setShowAddPoint(!showAddPoint); }}>
-              <Plus className="h-4 w-4 mr-1.5" /> Add Point
-            </Button>
+            {perm.canAdd && (
+              <Button onClick={() => { setPName(""); setShowAddPoint(!showAddPoint); }}>
+                <Plus className="h-4 w-4 mr-1.5" /> Add Point
+              </Button>
+            )}
           </div>
 
           {showAddPoint && (
@@ -365,13 +373,15 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                         <td className="px-4 py-3 font-medium text-gray-800">{p.name}</td>
                         <td className="px-4 py-3 text-gray-500">{routeCount} route{routeCount !== 1 ? "s" : ""}</td>
                         <td className="px-4 py-3 text-right">
-                          <button
-                            onClick={() => deletePoint(p.id, p.name)}
-                            className="text-gray-300 hover:text-red-500 transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                          {perm.canDelete && (
+                            <button
+                              onClick={() => deletePoint(p.id, p.name)}
+                              className="text-gray-300 hover:text-red-500 transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );
@@ -388,9 +398,11 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{students.filter((s: any) => s.transportRoute).length} students assigned</p>
-            <Button onClick={() => { setAssignForm({ studentId: "", routeId: "", pickupPointId: "" }); setShowAssign(!showAssign); }}>
-              <Plus className="h-4 w-4 mr-1.5" /> Assign Student
-            </Button>
+            {perm.canAdd && (
+              <Button onClick={() => { setAssignForm({ studentId: "", routeId: "", pickupPointId: "" }); setShowAssign(!showAssign); }}>
+                <Plus className="h-4 w-4 mr-1.5" /> Assign Student
+              </Button>
+            )}
           </div>
 
           {showAssign && (
@@ -441,9 +453,11 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                     <td className="px-4 py-3 text-gray-600">{s.transportRoute?.route?.title ?? "—"}</td>
                     <td className="px-4 py-3 text-gray-500">{s.transportRoute?.pickupPoint?.name ?? "—"}</td>
                     <td className="px-4 py-3 text-right">
-                      <button onClick={() => unassign(s.id)} className="text-gray-300 hover:text-red-500 transition-colors" title="Unassign">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {perm.canDelete && (
+                        <button onClick={() => unassign(s.id)} className="text-gray-300 hover:text-red-500 transition-colors" title="Unassign">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

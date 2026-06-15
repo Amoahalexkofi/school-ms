@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { BookOpen, Plus, ChevronRight, Pencil, Trash2, Globe, Lock, FileText, CreditCard } from "lucide-react";
+import { usePermission } from "@/components/PermissionsProvider";
 
 const EXAM_TYPES = ["TERM", "MIDTERM", "FINAL", "UNIT_TEST", "MOCK", "OTHER"];
 
@@ -18,6 +19,7 @@ type Group = {
 };
 
 export function ExamsListClient({ groups }: { groups: Group[] }) {
+  const perm = usePermission("examination");
   const router = useRouter();
   const [open,    setOpen]    = useState(false);
   const [edit,    setEdit]    = useState<Group | null>(null);
@@ -72,9 +74,11 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
           <Link href="/exams/marksheet">
             <Button variant="outline"><FileText className="h-4 w-4 mr-1.5" /> Marksheets</Button>
           </Link>
-          <Link href="/exams/new">
-            <Button><Plus className="h-4 w-4 mr-1.5" /> New Exam Group</Button>
-          </Link>
+          {perm.canAdd && (
+            <Link href="/exams/new">
+              <Button><Plus className="h-4 w-4 mr-1.5" /> New Exam Group</Button>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -103,13 +107,19 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
                 <p className="text-xs text-gray-400 mt-0.5">{g._count.schedules} subject schedule{g._count.schedules !== 1 ? "s" : ""}</p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <Button size="sm" variant="outline" onClick={() => togglePublish(g)} title={g.isPublished ? "Unpublish" : "Publish"}>
-                  {g.isPublished ? <Lock className="h-3.5 w-3.5" /> : <Globe className="h-3.5 w-3.5" />}
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => openEdit(g)}><Pencil className="h-3.5 w-3.5" /></Button>
-                <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => handleDelete(g.id)}>
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+                {perm.canEdit && (
+                  <Button size="sm" variant="outline" onClick={() => togglePublish(g)} title={g.isPublished ? "Unpublish" : "Publish"}>
+                    {g.isPublished ? <Lock className="h-3.5 w-3.5" /> : <Globe className="h-3.5 w-3.5" />}
+                  </Button>
+                )}
+                {perm.canEdit && (
+                  <Button size="sm" variant="outline" onClick={() => openEdit(g)}><Pencil className="h-3.5 w-3.5" /></Button>
+                )}
+                {perm.canDelete && (
+                  <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => handleDelete(g.id)}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
                 <Link href={`/exams/${g.id}`}>
                   <Button size="sm">
                     Schedules <ChevronRight className="h-3.5 w-3.5 ml-1" />

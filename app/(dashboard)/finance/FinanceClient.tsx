@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Wallet, Users, Plus } from "lucide-react";
+import { usePermission } from "@/components/PermissionsProvider";
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -20,6 +21,7 @@ async function post(url: string, body: object) {
 
 export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHeads }: any) {
   const router = useRouter();
+  const perm = usePermission("expense");
   const [open, setOpen] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -51,10 +53,12 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2"><Wallet className="h-4 w-4 text-blue-600" /> Transactions</CardTitle>
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => { setError(""); setOpen("head"); }}>+ Head</Button>
-            <Link href="/finance/new">
-              <Button size="sm"><Plus className="h-4 w-4 mr-1" /> Record</Button>
-            </Link>
+            {perm.canAdd && <Button size="sm" variant="outline" onClick={() => { setError(""); setOpen("head"); }}>+ Head</Button>}
+            {perm.canAdd && (
+              <Link href="/finance/new">
+                <Button size="sm"><Plus className="h-4 w-4 mr-1" /> Record</Button>
+              </Link>
+            )}
           </div>
         </CardHeader>
         <CardContent>

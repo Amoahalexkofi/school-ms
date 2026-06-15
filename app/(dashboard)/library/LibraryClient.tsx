@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, RotateCcw, Trash2, X } from "lucide-react";
+import { usePermission } from "@/components/PermissionsProvider";
 
 type Props = { books: any[]; issues: any[]; students: any[]; staff: any[]; members: any[] };
 type Tab = "catalog" | "issues" | "members";
@@ -16,6 +17,7 @@ const STATUS_STYLE: Record<string, string> = {
 
 export function LibraryClient({ books, issues, students, staff, members: initialMembers }: Props) {
   const router = useRouter();
+  const perm = usePermission("library");
   const [tab, setTab] = useState<Tab>("catalog");
   const [search, setSearch] = useState("");
   const [returning,     setReturning]     = useState<string | null>(null);
@@ -102,12 +104,16 @@ export function LibraryClient({ books, issues, students, staff, members: initial
           <div className="flex items-center justify-between gap-3">
             <Input className="w-64" placeholder="Search books…" value={search} onChange={e => setSearch(e.target.value)} />
             <div className="flex gap-2">
-              <Link href="/library/issue/new">
-                <Button variant="outline"><Plus className="h-4 w-4 mr-1.5" />Issue Book</Button>
-              </Link>
-              <Link href="/library/books/new">
-                <Button><Plus className="h-4 w-4 mr-1.5" />Add Book</Button>
-              </Link>
+              {perm.canAdd && (
+                <Link href="/library/issue/new">
+                  <Button variant="outline"><Plus className="h-4 w-4 mr-1.5" />Issue Book</Button>
+                </Link>
+              )}
+              {perm.canAdd && (
+                <Link href="/library/books/new">
+                  <Button><Plus className="h-4 w-4 mr-1.5" />Add Book</Button>
+                </Link>
+              )}
             </div>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -129,12 +135,10 @@ export function LibraryClient({ books, issues, students, staff, members: initial
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${b.available > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{b.available}</span>
                     </td>
                     <td className="px-4 py-3">
-                      {b.available > 0 ? (
+                      {perm.canAdd && b.available > 0 && (
                         <Link href="/library/issue/new">
                           <Button size="sm" variant="outline">Issue</Button>
                         </Link>
-                      ) : (
-                        <Button size="sm" variant="outline" disabled>Issue</Button>
                       )}
                     </td>
                   </tr>
@@ -149,9 +153,11 @@ export function LibraryClient({ books, issues, students, staff, members: initial
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-500">{members.length} member{members.length !== 1 ? "s" : ""}</p>
-            <Button onClick={() => { setMemPanel(true); setMemPersonId(""); setMemCardNo(""); setMemErr(""); }}>
-              <Plus className="h-4 w-4 mr-1.5" /> Add Member
-            </Button>
+            {perm.canAdd && (
+              <Button onClick={() => { setMemPanel(true); setMemPersonId(""); setMemCardNo(""); setMemErr(""); }}>
+                <Plus className="h-4 w-4 mr-1.5" /> Add Member
+              </Button>
+            )}
           </div>
 
           {memPanel && (
@@ -218,10 +224,12 @@ export function LibraryClient({ books, issues, students, staff, members: initial
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-400">{new Date(m.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
-                      <button onClick={() => removeMember(m.id)} disabled={removingMem === m.id}
-                        className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {perm.canDelete && (
+                        <button onClick={() => removeMember(m.id)} disabled={removingMem === m.id}
+                          className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -279,7 +287,7 @@ export function LibraryClient({ books, issues, students, staff, members: initial
                     <td className={`px-4 py-3 text-xs ${overdue ? "text-red-600 font-medium" : "text-gray-500"}`}>{new Date(i.dueDate).toLocaleDateString()}</td>
                     <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${overdue ? "bg-red-100 text-red-700" : STATUS_STYLE[i.status]}`}>{overdue ? "OVERDUE" : i.status}</span></td>
                     <td className="px-4 py-3 text-gray-600">{i.fine ? `₵${Number(i.fine).toFixed(2)}` : "—"}</td>
-                    <td className="px-4 py-3">{i.status === "ISSUED" && <Button size="sm" variant="outline" disabled={returning === i.id} onClick={() => returnBook(i.id)}><RotateCcw className="h-3.5 w-3.5 mr-1" />{returning === i.id ? "…" : "Return"}</Button>}</td>
+                    <td className="px-4 py-3">{i.status === "ISSUED" && perm.canEdit && <Button size="sm" variant="outline" disabled={returning === i.id} onClick={() => returnBook(i.id)}><RotateCcw className="h-3.5 w-3.5 mr-1" />{returning === i.id ? "…" : "Return"}</Button>}</td>
                   </tr>
                 );
               })}
