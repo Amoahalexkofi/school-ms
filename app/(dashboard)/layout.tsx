@@ -17,7 +17,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       const db = await getDb();
       const profile = await (db as any).schoolProfile.findFirst({
         select: { onboardingCompleted: true },
-      });
+      }).catch(() => null);
       if (profile && profile.onboardingCompleted === false) {
         redirect("/onboarding");
       }

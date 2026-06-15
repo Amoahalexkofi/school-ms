@@ -119,21 +119,21 @@ export default async function DashboardPage() {
   if (role === "STUDENT") redirect("/my-results");
   if (role === "PARENT")  redirect("/parent/results");
 
-  const stats   = await getDashboardStats();
-  const db      = await getDb();
-  const profile = await (db as any).schoolProfile
+  const stats   = await getDashboardStats().catch(() => null);
+  const db      = await getDb().catch(() => null);
+  const profile = db ? await (db as any).schoolProfile
     .findFirst({ select: { name: true, currency: true } })
-    .catch(() => null);
+    .catch(() => null) : null;
 
   const schoolName  = profile?.name ?? "Your School";
   const currency    = profile?.currency ?? "";
   const totalStaff  = Object.values(stats?.staffByRole ?? {}).reduce((a: number, b) => a + (b as number), 0);
   const teacherCount = stats?.staffByRole?.["TEACHER"] ?? 0;
 
-  const attTotal    = stats?.studentAttendance.total ?? 0;
+  const attTotal    = stats?.studentAttendance?.total ?? 0;
   const attPct      = (v: number) => attTotal > 0 ? Math.round((v / attTotal) * 100) : 0;
-  const presentPct  = attPct(stats?.studentAttendance.present ?? 0);
-  const feesPaidPct = stats?.feesTotal > 0 ? Math.round(((stats?.feesPaid ?? 0) / stats.feesTotal) * 100) : 0;
+  const presentPct  = attPct(stats?.studentAttendance?.present ?? 0);
+  const feesPaidPct = (stats?.feesTotal ?? 0) > 0 ? Math.round(((stats?.feesPaid ?? 0) / stats!.feesTotal) * 100) : 0;
 
   const now      = new Date();
   const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
