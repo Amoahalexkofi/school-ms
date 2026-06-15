@@ -971,7 +971,7 @@ export function HomepageClient() {
                 </a>
               </motion.div>
               <motion.p variants={fadeUp} className="text-white/35 text-[12px] mt-7">
-                Free 30-day trial · GH₵ 299/mo after · Cancel anytime
+                Free 30-day trial · GH₵ 199/mo after · Cancel anytime
               </motion.p>
             </div>
           </motion.div>
