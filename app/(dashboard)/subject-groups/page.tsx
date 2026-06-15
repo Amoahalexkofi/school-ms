@@ -5,7 +5,7 @@ import { SubjectGroupsClient } from "./SubjectGroupsClient";
 export default async function SubjectGroupsPage() {
   const db = await getDb();
   const [sessions, groups, subjects, classSections] = await Promise.all([
-    (db as any).academicSession.findMany({ orderBy: { createdAt: "desc" } }),
+    (db as any).academicSession.findMany({ orderBy: { createdAt: "desc" } }).catch(() => []),
     (db as any).subjectGroup.findMany({
       include: {
         subjects: { include: { subject: { select: { id: true, name: true, code: true } } } },
@@ -13,20 +13,20 @@ export default async function SubjectGroupsPage() {
           include: {
             classSection: {
               include: {
-                class:   { select: { id: true, class: true } },
-                section: { select: { id: true, section: true } },
+                class:   { select: { id: true, name: true } },
+                section: { select: { id: true, name: true } },
               },
             },
           },
         },
       },
       orderBy: { name: "asc" },
-    }),
+    }).catch(() => []),
     (db as any).subject.findMany({
       where: { isActive: true },
       orderBy: { name: "asc" },
       select: { id: true, name: true, code: true, type: true },
-    }),
+    }).catch(() => []),
     (db as any).classSection.findMany({
       where: { isActive: true },
       include: {
@@ -34,7 +34,7 @@ export default async function SubjectGroupsPage() {
         section: { select: { id: true, name: true } },
       },
       orderBy: [{ class: { name: "asc" } }, { section: { name: "asc" } }],
-    }),
+    }).catch(() => []),
   ]);
 
   return (
