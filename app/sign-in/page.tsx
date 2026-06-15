@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { GraduationCap, CheckCircle2, Users, DollarSign, BarChart3, ArrowRight, Star } from "lucide-react";
+import { GraduationCap, CheckCircle2, Users, DollarSign, BarChart3, ArrowRight } from "lucide-react";
 import { SignInPage } from "@/components/SignInPage";
 import Link from "next/link";
 
@@ -80,22 +80,6 @@ export default async function SignInRoute() {
             </ul>
           </div>
 
-          {/* Testimonial */}
-          <div className="shrink-0 mt-10 bg-white/50 border border-white/80 rounded-2xl p-5 backdrop-blur-sm">
-            <div className="flex gap-0.5 mb-3">
-              {[0,1,2,3,4].map(i => <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />)}
-            </div>
-            <p className="text-slate-700 text-[13px] leading-relaxed italic mb-4">
-              "We saved 3 days of admin work every term. I cannot believe how much time we were wasting before."
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-xs font-black shrink-0">AM</div>
-              <div>
-                <p className="text-slate-800 text-[13px] font-bold">Mrs. Adjoa M.</p>
-                <p className="text-slate-500 text-[11px]">Principal · Private School, Accra</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
