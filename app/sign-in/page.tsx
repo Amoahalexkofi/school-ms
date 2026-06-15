@@ -10,48 +10,49 @@ export default async function SignInRoute() {
   return (
     <div className="min-h-screen flex">
 
-      {/* ── Left panel — dark brand side ── */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-slate-950 flex-col overflow-hidden border-r border-white/[0.07]">
+      {/* ── Left panel — hero gradient ── */}
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col overflow-hidden border-r border-indigo-200/40"
+        style={{ background: "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 40%, #bae6fd 72%, #f8fafc 100%)" }}>
 
-        {/* Background texture */}
+        {/* Same blobs as hero */}
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%)" }} />
+        <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)" }} />
         <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px,rgba(255,255,255,0.03) 1px,transparent 0)", backgroundSize: "28px 28px" }} />
-
-        {/* Gradient orbs */}
-        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-blue-700/15 rounded-full blur-[100px] pointer-events-none" />
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.12) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
 
         <div className="relative flex flex-col h-full px-12 py-10">
 
           {/* Logo */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-300/40">
               <GraduationCap className="h-5 w-5 text-white" />
             </div>
-            <span className="text-white font-black text-xl tracking-tight">Skula</span>
+            <span className="text-slate-900 font-black text-xl tracking-tight">Skula</span>
           </div>
 
           {/* Main copy */}
           <div className="flex-1 flex flex-col justify-center max-w-md">
-            <p className="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-5">
+            <p className="text-indigo-600 text-xs font-bold uppercase tracking-widest mb-5">
               School Management Platform
             </p>
-            <h1 className="text-4xl font-black text-white leading-[1.1] tracking-tight">
+            <h1 className="text-4xl font-black text-slate-900 leading-[1.1] tracking-tight">
               Everything your school needs.<br />
-              <span className="text-indigo-400">One place.</span>
+              <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>One place.</span>
             </h1>
-            <p className="text-slate-400 text-base mt-5 leading-relaxed">
+            <p className="text-slate-600 text-base mt-5 leading-relaxed">
               Students, fees, attendance, exams, staff — managed from a single dashboard. Live in under 30 minutes.
             </p>
 
             {/* Stats row */}
             <div className="grid grid-cols-3 gap-3 mt-10">
               {[
-                { icon: Users,      value: "50+",  label: "Schools",    color: "text-blue-400",   bg: "bg-blue-500/10" },
-                { icon: DollarSign, value: "98%",  label: "Fee accuracy",color: "text-emerald-400",bg: "bg-emerald-500/10" },
-                { icon: BarChart3,  value: "3hrs",  label: "Saved/week", color: "text-violet-400", bg: "bg-violet-500/10" },
+                { icon: Users,      value: "50+",  label: "Schools",     color: "text-indigo-600", bg: "bg-indigo-100" },
+                { icon: DollarSign, value: "98%",  label: "Fee accuracy", color: "text-emerald-600",bg: "bg-emerald-100" },
+                { icon: BarChart3,  value: "3hrs", label: "Saved/week",  color: "text-violet-600", bg: "bg-violet-100" },
               ].map(({ icon: Icon, value, label, color, bg }) => (
-                <div key={label} className="bg-white/5 border border-white/8 rounded-2xl p-4">
+                <div key={label} className="bg-white/60 border border-white/80 rounded-2xl p-4 backdrop-blur-sm">
                   <div className={`w-8 h-8 ${bg} rounded-lg flex items-center justify-center mb-3`}>
                     <Icon className={`h-4 w-4 ${color}`} />
                   </div>
@@ -69,7 +70,7 @@ export default async function SignInRoute() {
                 "Exam marks → ranked marksheets in one click",
                 "Parent portal — results, fees, timetable",
               ].map(item => (
-                <li key={item} className="flex items-center gap-3 text-sm text-slate-400">
+                <li key={item} className="flex items-center gap-3 text-sm text-slate-600">
                   <CheckCircle2 className="h-4 w-4 text-indigo-500 shrink-0" />
                   {item}
                 </li>
@@ -78,14 +79,14 @@ export default async function SignInRoute() {
           </div>
 
           {/* Testimonial */}
-          <div className="shrink-0 border-t border-white/8 pt-8">
-            <p className="text-slate-300 text-sm leading-relaxed italic">
+          <div className="shrink-0 border-t border-indigo-200/60 pt-8">
+            <p className="text-slate-600 text-sm leading-relaxed italic">
               "We saved 3 days of admin work every term. I cannot believe how much time we were wasting before."
             </p>
             <div className="flex items-center gap-3 mt-4">
               <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-black">AM</div>
               <div>
-                <p className="text-white text-xs font-semibold">Mrs. Adjoa M.</p>
+                <p className="text-slate-800 text-xs font-semibold">Mrs. Adjoa M.</p>
                 <p className="text-slate-500 text-xs">Principal · Private School, Accra</p>
               </div>
             </div>
