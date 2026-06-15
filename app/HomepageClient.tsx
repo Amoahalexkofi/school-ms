@@ -392,16 +392,20 @@ export function HomepageClient() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section id="features" className="py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
+      <section id="features" className="py-24 relative" style={{ background: "linear-gradient(180deg, #ffffff 0%, #f8faff 100%)" }}>
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.05) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        <div className="relative max-w-6xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}
             variants={stagger} className="text-center mb-16">
-            <motion.p variants={fadeUp} className="text-indigo-600 text-[11px] font-bold uppercase tracking-[0.15em] mb-4">
-              Full Platform
-            </motion.p>
-            <motion.h2 variants={fadeUp} className="text-[40px] sm:text-[48px] font-black tracking-tight text-slate-900 leading-[1.1]">
+            <motion.div variants={fadeUp}>
+              <span className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-bold px-4 py-1.5 rounded-full">
+                <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" /> Full Platform
+              </span>
+            </motion.div>
+            <motion.h2 variants={fadeUp} className="text-[36px] sm:text-[48px] font-black tracking-tight text-slate-900 leading-[1.1] mt-5">
               Everything your school needs.<br />
-              <span className="text-slate-400 font-light">Nothing you don't.</span>
+              <span className="text-slate-400 font-light italic">Nothing you don't.</span>
             </motion.h2>
             <motion.p variants={fadeUp} className="text-slate-500 text-[17px] mt-5 max-w-xl mx-auto leading-relaxed">
               16 modules. One subscription. No per-feature pricing, no hidden limits.
@@ -409,26 +413,30 @@ export function HomepageClient() {
           </motion.div>
 
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}
-            variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { icon: Users,        color: "#6366f1", bg: "#eef2ff", title: "Admissions",             desc: "Online applications, enrollment workflows and student onboarding — all automated." },
-              { icon: ClipboardList,color: "#0ea5e9", bg: "#f0f9ff", title: "Attendance Tracking",    desc: "Mark attendance per class from any device. Absent alerts sent to parents instantly." },
-              { icon: DollarSign,   color: "#10b981", bg: "#f0fdf4", title: "Fee Collection",         desc: "Issue GHS receipts, track defaulters, send WhatsApp reminders automatically." },
-              { icon: BookOpen,     color: "#8b5cf6", bg: "#faf5ff", title: "Exams & Marksheets",     desc: "Enter marks, auto-rank students, generate BECE-style report cards to print." },
-              { icon: BarChart2,    color: "#f59e0b", bg: "#fffbeb", title: "Analytics & Reports",    desc: "Fee summaries, student lists, performance reports — PDF or CSV in one click." },
-              { icon: MessageSquare,color: "#ec4899", bg: "#fdf4ff", title: "Communication",          desc: "Bulk SMS to parents, homework, notice board and internal staff messaging." },
-              { icon: Bus,          color: "#14b8a6", bg: "#f0fdfa", title: "Transport",              desc: "Routes, vehicles, pickup points and transport fee management." },
-              { icon: Library,      color: "#f97316", bg: "#fff7ed", title: "Library",                desc: "Book catalog, issue/return tracking and library membership management." },
+              { icon: Users,        color: "#6366f1", bg: "#eef2ff", title: "Admissions",           desc: "Online applications, enrollment workflows and student onboarding — all automated." },
+              { icon: ClipboardList,color: "#0ea5e9", bg: "#e0f2fe", title: "Attendance Tracking",  desc: "Mark attendance per class from any device. Absent alerts sent to parents instantly." },
+              { icon: DollarSign,   color: "#10b981", bg: "#dcfce7", title: "Fee Collection",       desc: "Issue GHS receipts, track defaulters, send WhatsApp reminders automatically." },
+              { icon: BookOpen,     color: "#8b5cf6", bg: "#ede9fe", title: "Exams & Marksheets",   desc: "Enter marks, auto-rank students, generate BECE-style report cards to print." },
+              { icon: BarChart2,    color: "#f59e0b", bg: "#fef3c7", title: "Analytics & Reports",  desc: "Fee summaries, student lists, performance reports — PDF or CSV in one click." },
+              { icon: MessageSquare,color: "#ec4899", bg: "#fce7f3", title: "Communication",        desc: "Bulk SMS to parents, homework, notice board and internal staff messaging." },
+              { icon: Bus,          color: "#14b8a6", bg: "#ccfbf1", title: "Transport",            desc: "Routes, vehicles, pickup points and transport fee management." },
+              { icon: Library,      color: "#f97316", bg: "#ffedd5", title: "Library",              desc: "Book catalog, issue/return tracking and library membership management." },
             ].map(({ icon: Icon, color, bg, title, desc }, i) => (
               <motion.div key={title} variants={fadeUp}
-                whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(0,0,0,0.08)" }}
-                transition={{ duration: 0.2 }}
-                className="group p-6 rounded-2xl border border-slate-100 bg-white cursor-default">
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110"
+                whileHover={{ y: -6 }} transition={{ duration: 0.2 }}
+                className="group relative p-6 rounded-2xl bg-white border border-slate-100 cursor-default overflow-hidden"
+                style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.04)" }}>
+                <div className="absolute top-0 left-6 right-6 h-[2px] rounded-b-full transition-all duration-300 group-hover:left-0 group-hover:right-0"
+                  style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
+                <span className="absolute top-4 right-5 text-[11px] font-black tracking-widest select-none"
+                  style={{ color: color + "25" }}>{String(i + 1).padStart(2, "0")}</span>
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
                   style={{ backgroundColor: bg }}>
-                  <Icon className="h-5 w-5" style={{ color }} />
+                  <Icon className="h-[22px] w-[22px]" style={{ color }} />
                 </div>
-                <h3 className="text-slate-900 font-bold text-[14px] mb-2">{title}</h3>
+                <h3 className="text-slate-900 font-bold text-[15px] mb-2">{title}</h3>
                 <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
               </motion.div>
             ))}
@@ -436,66 +444,47 @@ export function HomepageClient() {
         </div>
       </section>
 
-      {/* ── DASHBOARD SHOWCASE — alternating ── */}
-      <section id="solutions" className="py-24 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-6 space-y-24">
+      {/* ── DASHBOARD SHOWCASE ── */}
+      <section id="solutions" className="py-24" style={{ background: "linear-gradient(180deg, #f8faff 0%, #ffffff 100%)" }}>
+        <div className="max-w-6xl mx-auto px-6 space-y-28">
           {[
-            {
-              eyebrow: "Student Information System",
-              title: "Every student. Every detail. One place.",
-              desc: "Enroll students, manage profiles, track BECE candidates, issue ID cards and promote entire classes in minutes — not days.",
-              bullets: ["Bulk enrollment & promotion","BECE candidate management","Digital ID card generation","Parent portal access"],
-              flip: false,
-              accent: "#6366f1",
-            },
-            {
-              eyebrow: "Finance & Fee Management",
-              title: "Collect fees. Track every pesewa.",
-              desc: "From setting up fee structures to issuing digital receipts on WhatsApp — Skula automates your entire finance workflow.",
-              bullets: ["Automated GHS receipts","Defaulter tracking & reminders","Term-by-term fee reports","Multi-currency support"],
-              flip: true,
-              accent: "#10b981",
-            },
-            {
-              eyebrow: "Exams & Academic Performance",
-              title: "From marks to report cards automatically.",
-              desc: "Teachers enter marks once. Skula calculates rankings, generates BECE-style report cards, and makes results available to parents instantly.",
-              bullets: ["Automated grade calculation","Class ranking & reports","BECE-style report cards","Parent result portal"],
-              flip: false,
-              accent: "#8b5cf6",
-            },
-          ].map(({ eyebrow, title, desc, bullets, flip, accent }) => (
+            { eyebrow: "Student Information System", title: "Every student. Every detail. One place.", desc: "Enroll students, manage profiles, track BECE candidates, issue ID cards and promote entire classes in minutes — not days.", bullets: ["Bulk enrollment & promotion","BECE candidate management","Digital ID card generation","Parent portal access"], flip: false, accent: "#6366f1", accentBg: "#eef2ff" },
+            { eyebrow: "Finance & Fee Management",   title: "Collect fees. Track every pesewa.",       desc: "From setting up fee structures to issuing digital receipts on WhatsApp — Skula automates your entire finance workflow.",  bullets: ["Automated GHS receipts","Defaulter tracking & reminders","Term-by-term fee reports","Multi-currency support"],          flip: true,  accent: "#10b981", accentBg: "#dcfce7" },
+            { eyebrow: "Exams & Academic Performance",title: "From marks to report cards automatically.", desc: "Teachers enter marks once. Skula calculates rankings, generates BECE-style report cards, and makes results available to parents instantly.", bullets: ["Automated grade calculation","Class ranking & reports","BECE-style report cards","Parent result portal"], flip: false, accent: "#8b5cf6", accentBg: "#ede9fe" },
+          ].map(({ eyebrow, title, desc, bullets, flip, accent, accentBg }) => (
             <motion.div key={title} initial="hidden" whileInView="show"
               viewport={{ once: true, margin: "-80px" }} variants={stagger}
-              className={`grid grid-cols-1 lg:grid-cols-2 gap-14 items-center ${flip ? "lg:flex-row-reverse" : ""}`}
-              style={{ direction: flip ? "rtl" : "ltr" }}>
-              <div style={{ direction: "ltr" }}>
-                <motion.p variants={fadeUp} className="text-[11px] font-bold uppercase tracking-[0.15em] mb-4" style={{ color: accent }}>
-                  {eyebrow}
-                </motion.p>
-                <motion.h3 variants={fadeUp} className="text-[34px] sm:text-[40px] font-black tracking-tight text-slate-900 leading-[1.1] mb-5">
-                  {title}
-                </motion.h3>
+              className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+              <div className={flip ? "lg:order-2" : ""}>
+                <motion.div variants={fadeUp}>
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-5"
+                    style={{ backgroundColor: accentBg, color: accent }}>{eyebrow}</span>
+                </motion.div>
+                <motion.h3 variants={fadeUp} className="text-[30px] sm:text-[38px] font-black tracking-tight text-slate-900 leading-[1.1] mb-5">{title}</motion.h3>
                 <motion.p variants={fadeUp} className="text-slate-500 text-[16px] leading-relaxed mb-7">{desc}</motion.p>
-                <motion.ul variants={stagger} className="space-y-3">
+                <motion.ul variants={stagger} className="space-y-3 mb-8">
                   {bullets.map(b => (
                     <motion.li key={b} variants={fadeUp} className="flex items-center gap-3">
-                      <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: accent + "20" }}>
-                        <Check className="h-3 w-3" style={{ color: accent }} />
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: accentBg }}>
+                        <Check className="h-3.5 w-3.5" style={{ color: accent }} />
                       </div>
-                      <span className="text-slate-600 text-[14px]">{b}</span>
+                      <span className="text-slate-700 text-[14px] font-medium">{b}</span>
                     </motion.li>
                   ))}
                 </motion.ul>
-                <motion.div variants={fadeUp} className="mt-8">
-                  <Link href="/demo" className="inline-flex items-center gap-2 font-bold text-[14px] transition-colors hover:gap-3" style={{ color: accent }}>
+                <motion.div variants={fadeUp}>
+                  <Link href="/demo" className="inline-flex items-center gap-2 font-bold text-[14px] px-5 py-2.5 rounded-xl transition-all hover:gap-3"
+                    style={{ backgroundColor: accentBg, color: accent }}>
                     See it live <ChevronRight className="h-4 w-4" />
                   </Link>
                 </motion.div>
               </div>
-              <motion.div variants={fadeIn} style={{ direction: "ltr" }}
-                className="rounded-2xl overflow-hidden border border-slate-200/60 shadow-xl shadow-slate-200/60 bg-white">
-                <DashboardMockup />
+              <motion.div variants={fadeIn} className={flip ? "lg:order-1" : ""}
+                style={{ filter: `drop-shadow(0 24px 48px ${accent}20)` }}>
+                <div className="rounded-2xl overflow-hidden border bg-white"
+                  style={{ borderColor: accent + "20", boxShadow: `0 0 0 1px ${accent}10, 0 24px 48px ${accent}10` }}>
+                  <DashboardMockup />
+                </div>
               </motion.div>
             </motion.div>
           ))}
@@ -503,64 +492,73 @@ export function HomepageClient() {
       </section>
 
       {/* ── WHY SKULA ── */}
-      <section className="py-24 bg-white">
-        <div className="max-w-5xl mx-auto px-6">
+      <section className="py-24 bg-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 70%)" }} />
+        <div className="relative max-w-5xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-14">
-            <motion.p variants={fadeUp} className="text-indigo-600 text-[11px] font-bold uppercase tracking-[0.15em] mb-4">Why Switch</motion.p>
-            <motion.h2 variants={fadeUp} className="text-[40px] sm:text-[48px] font-black tracking-tight text-slate-900 leading-[1.1]">
-              Traditional management<br />vs <span className="text-indigo-600">Skula</span>
+            <motion.p variants={fadeUp} className="text-indigo-400 text-[11px] font-bold uppercase tracking-[0.15em] mb-4">Why Switch</motion.p>
+            <motion.h2 variants={fadeUp} className="text-[36px] sm:text-[48px] font-black tracking-tight text-white leading-[1.1]">
+              Traditional management<br />vs <span className="text-indigo-400">Skula</span>
             </motion.h2>
+            <motion.p variants={fadeUp} className="text-slate-400 text-[16px] mt-4">See why modern schools are making the switch.</motion.p>
           </motion.div>
-
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeIn}>
-            <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
-            <div className="min-w-[600px] rounded-2xl overflow-hidden bg-white">
-              {/* Header */}
-              <div className="grid grid-cols-3 bg-slate-50 border-b border-slate-200">
-                <div className="px-6 py-4 text-[12px] font-bold text-slate-400 uppercase tracking-wide">Capability</div>
-                <div className="px-6 py-4 text-[12px] font-bold text-slate-500 uppercase tracking-wide text-center border-l border-slate-200">Traditional</div>
-                <div className="px-6 py-4 text-[12px] font-bold text-indigo-600 uppercase tracking-wide text-center border-l border-slate-200 bg-indigo-50">Skula ✦</div>
-              </div>
-              {[
-                ["Fee Collection","Manual receipts, cash only","Digital receipts, online payments, WhatsApp alerts"],
-                ["Attendance","Paper registers, lost easily","Digital, real-time, parent SMS alerts"],
-                ["Report Cards","Typed in Word, error-prone","Auto-generated from marks, print-ready"],
-                ["Communication","WhatsApp groups, chaotic","Structured channels, bulk SMS, portal"],
-                ["Analytics","None — end of term only","Live dashboards, trend analysis"],
-                ["Access","Office only, office hours","Any device, anywhere, 24/7"],
-                ["Data Safety","Physical files, fire risk","Cloud backup, 99.9% uptime, encrypted"],
-              ].map(([cap, trad, skula]) => (
-                <div key={cap} className="grid grid-cols-3 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
-                  <div className="px-6 py-4 text-[13px] font-semibold text-slate-700">{cap}</div>
-                  <div className="px-6 py-4 text-[13px] text-slate-500 border-l border-slate-100 flex items-center gap-2">
-                    <Minus className="h-3.5 w-3.5 text-red-400 shrink-0" />{trad}
-                  </div>
-                  <div className="px-6 py-4 text-[13px] text-indigo-700 font-medium border-l border-indigo-100 bg-indigo-50/40 flex items-center gap-2">
-                    <Check className="h-3.5 w-3.5 text-indigo-500 shrink-0" />{skula}
-                  </div>
+            <div className="overflow-x-auto rounded-2xl" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}>
+              <div className="min-w-[580px] overflow-hidden rounded-2xl">
+                <div className="grid grid-cols-3 border-b border-white/10" style={{ background: "rgba(255,255,255,0.04)" }}>
+                  <div className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Capability</div>
+                  <div className="px-6 py-4 text-[11px] font-bold text-red-400 uppercase tracking-widest text-center border-l border-white/10">Traditional</div>
+                  <div className="px-6 py-4 text-[11px] font-bold text-indigo-400 uppercase tracking-widest text-center border-l border-indigo-500/30 bg-indigo-500/10">Skula ✦</div>
                 </div>
-              ))}
-            </div>
+                {[
+                  ["Fee Collection","Manual receipts, cash only","Digital receipts + WhatsApp alerts"],
+                  ["Attendance","Paper registers, easily lost","Digital, real-time, parent SMS"],
+                  ["Report Cards","Typed in Word, error-prone","Auto-generated from marks, print-ready"],
+                  ["Communication","WhatsApp groups, chaotic","Structured channels, bulk SMS, portal"],
+                  ["Analytics","None — end of term only","Live dashboards, trend analysis"],
+                  ["Access","Office only, office hours","Any device, anywhere, 24/7"],
+                  ["Data Safety","Physical files, fire risk","Cloud backup, 99.9% uptime, encrypted"],
+                ].map(([cap, trad, skula]) => (
+                  <div key={cap} className="grid grid-cols-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.02] transition-colors">
+                    <div className="px-6 py-4 text-[13px] font-semibold text-slate-300">{cap}</div>
+                    <div className="px-6 py-4 text-[13px] text-red-400/80 border-l border-white/[0.05] flex items-start gap-2">
+                      <Minus className="h-3.5 w-3.5 mt-0.5 shrink-0 text-red-500" />{trad}
+                    </div>
+                    <div className="px-6 py-4 text-[13px] text-indigo-300 font-medium border-l border-indigo-500/20 bg-indigo-500/[0.07] flex items-start gap-2">
+                      <Check className="h-3.5 w-3.5 mt-0.5 shrink-0 text-indigo-400" />{skula}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* ── STATS ── */}
-      <section className="py-20 bg-indigo-600 relative overflow-hidden">
+      <section className="py-24 bg-indigo-600 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)", backgroundSize: "28px 28px" }} />
+        <div className="absolute -top-24 -left-24 w-[400px] h-[400px] bg-indigo-500/40 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute -bottom-24 -right-24 w-[400px] h-[400px] bg-violet-500/25 rounded-full blur-[80px] pointer-events-none" />
         <div className="relative max-w-5xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            className="grid grid-cols-2 md:grid-cols-4">
             {[
-              { n: "10,000+", l: "Students Managed" },
-              { n: "500+",    l: "Schools" },
-              { n: "99.9%",   l: "Uptime" },
-              { n: "1M+",     l: "Attendance Records" },
-            ].map(({ n, l }) => (
-              <motion.div key={l} variants={fadeUp}>
-                <p className="text-4xl sm:text-5xl font-black text-white mb-2">{n}</p>
+              { n: "10,000+", l: "Students Managed",   icon: Users },
+              { n: "500+",    l: "Schools Active",      icon: GraduationCap },
+              { n: "99.9%",   l: "Uptime SLA",          icon: Shield },
+              { n: "30 min",  l: "To Go Live",          icon: Clock },
+            ].map(({ n, l, icon: Icon }, i) => (
+              <motion.div key={l} variants={fadeUp}
+                className={`text-center py-10 px-4 ${i < 3 ? "md:border-r border-white/15" : ""} ${i % 2 === 0 && i < 3 ? "border-r border-white/15 md:border-r-0" : ""}`}>
+                <div className="w-11 h-11 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center">
+                  <Icon className="h-5 w-5 text-white" />
+                </div>
+                <p className="text-4xl sm:text-5xl font-black text-white mb-1.5 tracking-tight">{n}</p>
                 <p className="text-indigo-200 text-[13px] font-medium">{l}</p>
               </motion.div>
             ))}
@@ -569,34 +567,40 @@ export function HomepageClient() {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section className="py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
+      <section className="py-24 bg-slate-950 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.018) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] pointer-events-none"
+          style={{ background: "radial-gradient(ellipse, rgba(99,102,241,0.14) 0%, transparent 70%)" }} />
+        <div className="relative max-w-6xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-14">
-            <motion.p variants={fadeUp} className="text-indigo-600 text-[11px] font-bold uppercase tracking-[0.15em] mb-4">Testimonials</motion.p>
-            <motion.h2 variants={fadeUp} className="text-[40px] sm:text-[48px] font-black tracking-tight text-slate-900">
+            <motion.p variants={fadeUp} className="text-indigo-400 text-[11px] font-bold uppercase tracking-[0.15em] mb-4">Testimonials</motion.p>
+            <motion.h2 variants={fadeUp} className="text-[36px] sm:text-[48px] font-black tracking-tight text-white">
               Loved by school leaders.
             </motion.h2>
           </motion.div>
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
             className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
-              { quote: "Before Skula, I spent every Friday afternoon printing fee receipts by hand. Now my accountant handles everything digitally and I just review the monthly report. It's been life-changing for our school.", name: "Mrs. Adjoa Asante", role: "Headmistress", school: "GoldCoast Academy, Accra", init: "AA", color: "#6366f1" },
-              { quote: "The exam module alone saved us an entire week every term. We used to type report cards in Word and retype after every correction. Now we enter marks once and Skula does everything else.", name: "Mr. Kofi Acheampong", role: "Director", school: "Tema Community JHS", init: "KA", color: "#8b5cf6" },
-              { quote: "Parents actually pay faster now because they receive a WhatsApp receipt the second the accountant records the payment. Our term 2 fee collections improved by nearly 30% after switching to Skula.", name: "Mrs. Ama Boateng", role: "Principal", school: "Sunflower Int'l, Kumasi", init: "AB", color: "#10b981" },
+              { quote: "Before Skula, I spent every Friday printing fee receipts by hand. Now my accountant handles everything digitally and I just review the monthly report. Life-changing.", name: "Mrs. Adjoa A.", role: "Headmistress", school: "Private School, Accra", init: "AA", color: "#6366f1" },
+              { quote: "The exam module alone saved us an entire week every term. We used to type report cards in Word and retype after every correction. Now we enter marks once and Skula does the rest.", name: "Mr. Kofi A.", role: "Director", school: "Basic School, Greater Accra", init: "KA", color: "#8b5cf6" },
+              { quote: "Parents pay faster because they get a WhatsApp receipt the moment the accountant records payment. Our fee collections improved by nearly 30% after switching.", name: "Mrs. Ama B.", role: "Principal", school: "International School, Kumasi", init: "AB", color: "#10b981" },
             ].map(({ quote, name, role, school, init, color }) => (
               <motion.div key={name} variants={fadeUp}
-                className="bg-white p-7 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                className="relative p-7 rounded-2xl flex flex-col"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <span className="absolute top-4 right-6 text-[72px] leading-none font-black pointer-events-none select-none"
+                  style={{ color: color + "18" }}>"</span>
                 <div className="flex gap-0.5 mb-4">
                   {[0,1,2,3,4].map(i => <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
                 </div>
-                <p className="text-slate-600 text-[14px] leading-relaxed flex-1">"{quote}"</p>
-                <div className="flex items-center gap-3 mt-6 pt-5 border-t border-slate-100">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[11px] font-black shrink-0" style={{ backgroundColor: color }}>
-                    {init}
-                  </div>
+                <p className="text-slate-300 text-[14px] leading-relaxed flex-1 relative z-10">"{quote}"</p>
+                <div className="flex items-center gap-3 mt-6 pt-5 border-t border-white/[0.07]">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[11px] font-black shrink-0 ring-2 ring-white/10"
+                    style={{ backgroundColor: color }}>{init}</div>
                   <div>
-                    <p className="text-slate-900 text-[13px] font-bold">{name}</p>
-                    <p className="text-slate-400 text-[11px]">{role} · {school}</p>
+                    <p className="text-white text-[13px] font-bold">{name}</p>
+                    <p className="text-slate-500 text-[11px]">{role} · {school}</p>
                   </div>
                 </div>
               </motion.div>
@@ -606,7 +610,7 @@ export function HomepageClient() {
       </section>
 
       {/* ── PRICING ── */}
-      <section id="pricing" className="py-24 bg-slate-50">
+      <section id="pricing" className="py-24 relative overflow-hidden" style={{ background: "linear-gradient(160deg, #f5f3ff 0%, #eef2ff 50%, #f0f9ff 100%)" }}>
         <div className="max-w-5xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-14">
             <motion.p variants={fadeUp} className="text-indigo-600 text-[11px] font-bold uppercase tracking-[0.15em] mb-4">Pricing</motion.p>
@@ -618,49 +622,40 @@ export function HomepageClient() {
             </motion.p>
           </motion.div>
 
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.06) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            className="relative grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
             {[
-              {
-                name: "Starter", price: "Free", sub: "30 days · no card",
-                hl: false, cta: "Start free", href: "/demo",
-                features: ["All 16 modules","Up to 200 students","Community support","Skula subdomain"],
-              },
-              {
-                name: "Professional", price: "GH₵ 299", sub: "per month",
-                hl: true, cta: "Get started", href: "/contact",
-                features: ["Everything in Starter","Unlimited students","Priority WhatsApp support","Custom domain","Parent SMS alerts","Daily backups","Advanced analytics"],
-              },
-              {
-                name: "Enterprise", price: "Custom", sub: "talk to us",
-                hl: false, cta: "Contact sales", href: "/contact",
-                features: ["Everything in Pro","Dedicated infrastructure","SLA guarantee","On-site training","Custom integrations","Dedicated account manager"],
-              },
+              { name: "Starter",      price: "Free",     sub: "30 days · no card needed",    hl: false, cta: "Try for free",   href: "/demo",    features: ["All 16 modules","Up to 200 students","Community support","Skula subdomain"] },
+              { name: "Professional", price: "GH₵ 299",  sub: "/ month, billed monthly",     hl: true,  cta: "Get started →",  href: "/contact", features: ["Everything in Starter","Unlimited students","Priority WhatsApp support","Custom domain","Parent SMS alerts","Daily backups","Advanced analytics"] },
+              { name: "Enterprise",   price: "Custom",   sub: "let's talk",                  hl: false, cta: "Contact sales",  href: "/contact", features: ["Everything in Pro","Dedicated infrastructure","SLA guarantee","On-site training","Custom integrations","Dedicated account manager"] },
             ].map(({ name, price, sub, hl, features, cta, href }) => (
               <motion.div key={name} variants={fadeUp}
-                className={`rounded-2xl p-8 border relative flex flex-col ${hl ? "bg-indigo-600 border-indigo-500 shadow-2xl shadow-indigo-300/40 scale-[1.02]" : "bg-white border-slate-200 shadow-sm"}`}>
+                className={`rounded-2xl p-8 border relative flex flex-col ${hl ? "border-indigo-500 shadow-2xl shadow-indigo-300/30 scale-[1.03] z-10" : "bg-white border-slate-200/80 shadow-sm"}`}
+                style={hl ? { background: "linear-gradient(160deg, #4f46e5 0%, #7c3aed 100%)" } : {}}>
                 {hl && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 text-[11px] font-black px-5 py-1.5 rounded-full whitespace-nowrap">
-                    MOST POPULAR
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 text-[11px] font-black px-5 py-1.5 rounded-full whitespace-nowrap shadow-lg">
+                    ✦ MOST POPULAR
                   </div>
                 )}
-                <div className="mb-6">
-                  <p className={`text-[12px] font-bold uppercase tracking-wide mb-2 ${hl ? "text-indigo-200" : "text-slate-400"}`}>{name}</p>
-                  <p className={`text-4xl font-black mb-1 ${hl ? "text-white" : "text-slate-900"}`}>{price}</p>
+                <div className="mb-7">
+                  <p className={`text-[11px] font-bold uppercase tracking-widest mb-3 ${hl ? "text-indigo-200" : "text-slate-400"}`}>{name}</p>
+                  <p className={`text-5xl font-black leading-none mb-2 ${hl ? "text-white" : "text-slate-900"}`}>{price}</p>
                   <p className={`text-[12px] ${hl ? "text-indigo-300" : "text-slate-400"}`}>{sub}</p>
                 </div>
                 <ul className="space-y-3 flex-1 mb-8">
                   {features.map(f => (
                     <li key={f} className={`flex items-center gap-3 text-[13px] ${hl ? "text-indigo-100" : "text-slate-600"}`}>
-                      <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${hl ? "bg-white/20" : "bg-indigo-50"}`}>
-                        <Check className={`h-2.5 w-2.5 ${hl ? "text-white" : "text-indigo-600"}`} />
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${hl ? "bg-white/15" : "bg-indigo-50"}`}>
+                        <Check className={`h-3 w-3 ${hl ? "text-white" : "text-indigo-600"}`} />
                       </div>
                       {f}
                     </li>
                   ))}
                 </ul>
                 <Link href={href}
-                  className={`block text-center py-3.5 rounded-xl font-bold text-[14px] transition-all ${hl ? "bg-white text-indigo-600 hover:bg-indigo-50" : "bg-indigo-600 text-white hover:bg-indigo-700"}`}>
+                  className={`block text-center py-3.5 rounded-xl font-bold text-[14px] transition-all ${hl ? "bg-white text-indigo-600 hover:bg-indigo-50 shadow-lg" : "bg-slate-900 text-white hover:bg-slate-800"}`}>
                   {cta}
                 </Link>
               </motion.div>
@@ -697,30 +692,31 @@ export function HomepageClient() {
       </section>
 
       {/* ── CONTACT ── */}
-      <section className="py-24 bg-slate-50">
+      <section className="py-24 bg-white">
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}>
               <motion.p variants={fadeUp} className="text-indigo-600 text-[11px] font-bold uppercase tracking-[0.15em] mb-4">Get in Touch</motion.p>
-              <motion.h2 variants={fadeUp} className="text-[36px] sm:text-[44px] font-black tracking-tight text-slate-900 leading-[1.1] mb-5">
-                Ready to transform your school?
+              <motion.h2 variants={fadeUp} className="text-[32px] sm:text-[44px] font-black tracking-tight text-slate-900 leading-[1.1] mb-5">
+                Ready to transform<br />your school?
               </motion.h2>
-              <motion.p variants={fadeUp} className="text-slate-500 text-[16px] leading-relaxed mb-8">
+              <motion.p variants={fadeUp} className="text-slate-500 text-[16px] leading-relaxed mb-10">
                 Chat with us on WhatsApp and we'll have your school live today.
               </motion.p>
-              <motion.div variants={stagger} className="space-y-4">
+              <motion.div variants={stagger} className="space-y-3">
                 {[
-                  { icon: MessageSquare, label: "WhatsApp", val: "+233 595 111 461", color: "#25D366" },
-                  { icon: Globe, label: "Website", val: "getskula.com", color: "#6366f1" },
-                  { icon: Lock, label: "Data location", val: "West Africa · EU-compliant", color: "#8b5cf6" },
+                  { icon: MessageSquare, label: "WhatsApp",     val: "+233 595 111 461",           color: "#25D366" },
+                  { icon: Globe,         label: "Website",      val: "getskula.com",               color: "#6366f1" },
+                  { icon: Lock,          label: "Data",         val: "West Africa · EU-compliant", color: "#8b5cf6" },
                 ].map(({ icon: Icon, label, val, color }) => (
-                  <motion.div key={label} variants={fadeUp} className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: color + "15" }}>
-                      <Icon className="h-4 w-4" style={{ color }} />
+                  <motion.div key={label} variants={fadeUp}
+                    className="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: color + "15" }}>
+                      <Icon className="h-5 w-5" style={{ color }} />
                     </div>
                     <div>
-                      <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wide">{label}</p>
-                      <p className="text-slate-700 text-[14px] font-semibold">{val}</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{label}</p>
+                      <p className="text-slate-800 text-[14px] font-semibold mt-0.5">{val}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -729,25 +725,25 @@ export function HomepageClient() {
 
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
-              <h3 className="text-[18px] font-black text-slate-900 mb-1">Send us a message</h3>
-              <p className="text-slate-400 text-[13px] mb-6">We reply within the hour on WhatsApp.</p>
+              className="bg-white rounded-3xl border border-slate-200 p-8"
+              style={{ boxShadow: "0 8px 48px rgba(0,0,0,0.07)" }}>
+              <h3 className="text-[20px] font-black text-slate-900 mb-1">Send us a message</h3>
+              <p className="text-slate-400 text-[13px] mb-7">We reply within the hour on WhatsApp.</p>
               <div className="space-y-4">
                 {[
-                  { label: "Your name", placeholder: "e.g. Kofi Mensah", type: "text" },
-                  { label: "School name", placeholder: "e.g. Lincoln Academy", type: "text" },
-                  { label: "WhatsApp number", placeholder: "+233 XX XXX XXXX", type: "tel" },
+                  { label: "Your name",       placeholder: "e.g. Kofi Mensah",     type: "text" },
+                  { label: "School name",     placeholder: "e.g. Lincoln Academy", type: "text" },
+                  { label: "WhatsApp number", placeholder: "+233 XX XXX XXXX",      type: "tel"  },
                 ].map(({ label, placeholder, type }) => (
                   <div key={label}>
-                    <label className="block text-[13px] font-semibold text-slate-700 mb-1.5">{label}</label>
+                    <label className="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-widest">{label}</label>
                     <input type={type} placeholder={placeholder}
-                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-4 text-[14px] text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all" />
+                      className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-[14px] text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all" />
                   </div>
                 ))}
                 <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-                  className="flex w-full items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1fba5a] text-white font-bold h-12 rounded-xl text-[14px] transition-colors mt-2">
-                  <WhatsAppIcon className="h-4 w-4" />
-                  Chat on WhatsApp
+                  className="flex w-full items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1fba5a] text-white font-bold py-3.5 rounded-xl text-[15px] transition-all hover:scale-[1.01] shadow-lg shadow-green-300/25 mt-2">
+                  <WhatsAppIcon className="h-5 w-5" /> Chat on WhatsApp
                 </a>
               </div>
             </motion.div>
@@ -756,37 +752,36 @@ export function HomepageClient() {
       </section>
 
       {/* ── FINAL CTA ── */}
-      <section className="py-24 bg-white">
+      <section className="py-20 bg-slate-50">
         <div className="max-w-4xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
             className="relative rounded-3xl overflow-hidden text-center px-8 py-20"
-            style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%)" }}>
-            {/* Dot grid */}
+            style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #4f46e5 40%, #7c3aed 70%, #1d4ed8 100%)" }}>
             <div className="absolute inset-0 pointer-events-none"
-              style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl" />
+              style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)", backgroundSize: "28px 28px" }} />
+            <div className="absolute -top-20 -right-20 w-72 h-72 bg-violet-500/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-indigo-400/20 rounded-full blur-3xl pointer-events-none" />
             <div className="relative">
-              <motion.div variants={fadeUp} className="inline-flex items-center gap-2 bg-white/15 backdrop-blur text-white text-[11px] font-bold px-4 py-1.5 rounded-full border border-white/20 mb-6">
-                <Zap className="h-3 w-3" /> Live in 30 minutes
+              <motion.div variants={fadeUp} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur text-white text-[12px] font-bold px-5 py-2 rounded-full border border-white/20 mb-8">
+                <Zap className="h-3.5 w-3.5 text-amber-400" /> Live in 30 minutes — guaranteed
               </motion.div>
-              <motion.h2 variants={fadeUp} className="text-[38px] sm:text-[52px] font-black text-white leading-[1.05] tracking-tight mb-5">
+              <motion.h2 variants={fadeUp} className="text-[34px] sm:text-[52px] font-black text-white leading-[1.05] tracking-tight mb-5">
                 Your school deserves<br />a system that works.
               </motion.h2>
-              <motion.p variants={fadeUp} className="text-indigo-200 text-[16px] mb-10 max-w-lg mx-auto leading-relaxed">
-                Try the live demo — no sign-up needed. Or WhatsApp us and we'll have your school live before the day ends.
+              <motion.p variants={fadeUp} className="text-indigo-200 text-[17px] mb-10 max-w-lg mx-auto leading-relaxed">
+                Try the live demo — no sign-up. Or WhatsApp us and we'll have your school live before the day ends.
               </motion.p>
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href="/demo"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-indigo-600 hover:bg-indigo-50 px-8 py-4 rounded-2xl font-black text-[15px] transition-all shadow-xl hover:scale-[1.02]">
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-indigo-700 hover:bg-slate-100 px-8 py-4 rounded-2xl font-black text-[15px] transition-all shadow-2xl hover:scale-[1.02]">
                   Try Demo Free <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1fba5a] text-white px-8 py-4 rounded-2xl font-black text-[15px] transition-all shadow-xl hover:scale-[1.02]">
-                  <WhatsAppIcon className="h-5 w-5" />
-                  WhatsApp Us
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1fba5a] text-white px-8 py-4 rounded-2xl font-black text-[15px] transition-all shadow-2xl hover:scale-[1.02]">
+                  <WhatsAppIcon className="h-5 w-5" /> WhatsApp Us
                 </a>
               </motion.div>
-              <motion.p variants={fadeUp} className="text-indigo-300/80 text-[12px] mt-6">
+              <motion.p variants={fadeUp} className="text-white/35 text-[12px] mt-7">
                 Free 30-day trial · GH₵ 299/mo after · Cancel anytime
               </motion.p>
             </div>
@@ -795,43 +790,44 @@ export function HomepageClient() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-slate-950 text-slate-400">
-        <div className="max-w-6xl mx-auto px-6 py-14">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+      <footer className="bg-slate-950 text-slate-400 relative overflow-hidden">
+        <div className="h-px w-full" style={{ background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.7), rgba(139,92,246,0.7), transparent)" }} />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.015) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        <div className="relative max-w-6xl mx-auto px-6 py-16">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-14">
             <div className="col-span-2">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-indigo-500 rounded-xl flex items-center justify-center">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
                   <GraduationCap className="h-4 w-4 text-white" />
                 </div>
-                <span className="text-white font-black text-[15px]">Skula</span>
+                <span className="text-white font-black text-[17px] tracking-tight">Skula</span>
               </div>
-              <p className="text-[13px] leading-relaxed max-w-xs text-slate-500">
-                The modern school management platform built for educational institutions across Africa.
+              <p className="text-[13px] leading-relaxed max-w-[210px] text-slate-500 mb-6">
+                The modern school management platform built for Africa.
               </p>
-              <div className="flex gap-3 mt-5">
-                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-[#25D366] hover:text-[#4ade80] text-[12px] font-medium transition-colors">
-                  <WhatsAppIcon className="h-3.5 w-3.5" /> WhatsApp
-                </a>
-              </div>
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/25 text-[#4ade80] text-[12px] font-semibold px-4 py-2 rounded-xl transition-colors">
+                <WhatsAppIcon className="h-3.5 w-3.5" /> Chat on WhatsApp
+              </a>
             </div>
             {[
-              { title: "Product",   links: [["Features","/features"],["Pricing","#pricing"],["Demo","/demo"],["Changelog","/"]] },
-              { title: "Company",   links: [["About","/"],["Blog","/"],["Contact","/contact"],["Novalss","https://novalss.com"]] },
-              { title: "Legal",     links: [["Privacy","/"],["Terms","/"],["Security","/"]] },
+              { title: "Product", links: [["Features","/features"],["Pricing","#pricing"],["Demo","/demo"],["Changelog","/"]] },
+              { title: "Company", links: [["About","/"],["Blog","/"],["Contact","/contact"],["Novalss","https://novalss.com"]] },
+              { title: "Legal",   links: [["Privacy","/"],["Terms","/"],["Security","/"]] },
             ].map(({ title, links }) => (
               <div key={title}>
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500 mb-4">{title}</p>
-                <div className="flex flex-col gap-2.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600 mb-5">{title}</p>
+                <div className="flex flex-col gap-3">
                   {links.map(([l,h]) => (
                     <a key={l} href={h} target={h.startsWith("https") ? "_blank" : undefined} rel="noopener noreferrer"
-                      className="text-[13px] text-slate-400 hover:text-white transition-colors">{l}</a>
+                      className="text-[13px] text-slate-500 hover:text-white transition-colors w-fit">{l}</a>
                   ))}
                 </div>
               </div>
             ))}
           </div>
-          <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div className="border-t border-white/[0.06] pt-7 flex flex-col sm:flex-row justify-between items-center gap-3">
             <p className="text-[12px] text-slate-600">© {new Date().getFullYear()} Novalss Ltd. All rights reserved.</p>
             <p className="text-[12px] text-slate-600">Made with ♥ for schools across Africa</p>
           </div>
