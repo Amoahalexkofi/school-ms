@@ -817,7 +817,7 @@ export function HomepageClient() {
             className="relative grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
             {[
               { name: "Starter",      price: "Free",     sub: "30 days · no card needed",    hl: false, cta: "Try for free",   href: "/demo",    features: ["All 16 modules","Up to 200 students","Community support","Skula subdomain"] },
-              { name: "Professional", price: "GH₵ 299",  sub: "/ month, billed monthly",     hl: true,  cta: "Get started →",  href: "/contact", features: ["Everything in Starter","Unlimited students","Priority WhatsApp support","Custom domain","Parent SMS alerts","Daily backups","Advanced analytics"] },
+              { name: "Professional", price: "GH₵ 199",  sub: "/ month, billed monthly",     hl: true,  cta: "Get started →",  href: "/contact", features: ["Everything in Starter","Unlimited students","Priority WhatsApp support","Custom domain","Parent SMS alerts","Daily backups","Advanced analytics"] },
               { name: "Enterprise",   price: "Custom",   sub: "let's talk",                  hl: false, cta: "Contact sales",  href: "/contact", features: ["Everything in Pro","Dedicated infrastructure","SLA guarantee","On-site training","Custom integrations","Dedicated account manager"] },
             ].map(({ name, price, sub, hl, features, cta, href }) => (
               <motion.div key={name} variants={fadeUp}
