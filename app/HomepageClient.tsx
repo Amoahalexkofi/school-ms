@@ -403,23 +403,73 @@ export function HomepageClient() {
             </Link>
           </div>
           {/* Mobile toggle */}
-          <button className="md:hidden p-2" onClick={() => setMobileOpen(o => !o)}>
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <button
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-white/80 backdrop-blur-sm text-slate-700 hover:border-indigo-300 transition-colors"
+            onClick={() => setMobileOpen(o => !o)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
           </button>
         </div>
+
         {/* Mobile menu */}
         <AnimatePresence>
           {mobileOpen && (
-            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-              className="md:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-1">
-              {[["Features","#features"],["Pricing","#pricing"],["Contact","/contact"]].map(([l,h])=>(
-                <a key={l} href={h} onClick={() => setMobileOpen(false)} className="block py-2.5 text-[14px] font-medium text-slate-700">{l}</a>
-              ))}
-              <div className="pt-3 flex flex-col gap-2">
-                <Link href="/sign-in" className="block text-center py-2.5 border border-slate-200 rounded-xl text-[14px] font-semibold">Login</Link>
-                <Link href="/contact" className="block text-center py-2.5 bg-indigo-600 text-white rounded-xl text-[14px] font-bold">Start Free Trial</Link>
-              </div>
-            </motion.div>
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="md:hidden fixed inset-0 top-16 bg-slate-900/30 backdrop-blur-sm z-40"
+                onClick={() => setMobileOpen(false)}
+              />
+              {/* Panel */}
+              <motion.div
+                initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.2, ease: "easeOut" as const }}
+                className="md:hidden absolute inset-x-0 top-full z-50 mx-3 mt-2 bg-white rounded-2xl shadow-xl shadow-slate-200/80 border border-slate-200/80 overflow-hidden"
+              >
+                {/* Nav links */}
+                <div className="px-3 pt-3 pb-2">
+                  {[
+                    ["Features",     "#features"],
+                    ["Solutions",    "#solutions"],
+                    ["Pricing",      "#pricing"],
+                    ["All Features", "/features"],
+                    ["Contact",      "/contact"],
+                  ].map(([label, href]) => (
+                    <a
+                      key={label} href={href}
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-between px-4 py-3 rounded-xl text-[14px] font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors group"
+                    >
+                      {label}
+                      <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-indigo-400 transition-colors" />
+                    </a>
+                  ))}
+                </div>
+
+                {/* Divider */}
+                <div className="mx-4 border-t border-slate-100" />
+
+                {/* CTA buttons */}
+                <div className="p-3 flex flex-col gap-2">
+                  <Link
+                    href="/sign-in"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center h-11 rounded-xl border-2 border-slate-200 text-[14px] font-bold text-slate-700 hover:border-indigo-300 hover:text-indigo-700 transition-colors"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/contact"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center gap-2 h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[14px] font-bold transition-colors shadow-lg shadow-indigo-200"
+                  >
+                    Start Free Trial <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </nav>

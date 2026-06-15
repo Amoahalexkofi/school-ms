@@ -2167,6 +2167,21 @@ model SmsConfig {
   isActive Boolean @default(false)
 }
 
+model WhatsAppConfig {
+  id        String   @id @default(cuid())
+  provider  String   @unique // "twilio_whatsapp" | "wati" | "meta"
+  // Twilio WhatsApp: apiKey=AccountSID, password=AuthToken, senderId=whatsapp:+1234567890
+  // WATI:           apiKey=API token, endpoint=https://live-server.wati.io
+  // Meta Cloud API: apiKey=access token, senderId=phone_number_id
+  apiKey    String   @default("")
+  password  String   @default("")
+  senderId  String   @default("")  // sender phone / phone_number_id
+  endpoint  String   @default("")  // WATI endpoint URL
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // ─── Staff Attendance Schedule (by role) ─────────────────────────────────────
 
 model StaffAttendanceSchedule {

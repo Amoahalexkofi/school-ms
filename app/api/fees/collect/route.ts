@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { sendSms, feeReceiptSms } from "@/lib/services/sms";
+import { sendWhatsApp, whatsAppFeeReceipt } from "@/lib/services/whatsapp";
 import { sendEmail, feeReceiptEmail } from "@/lib/email";
 
 // Mirrors Smart School's fee_deposit() / fee_deposit_bulk():
@@ -130,6 +131,8 @@ export async function POST(req: NextRequest) {
       const phones = [student.phone, student.parentMobile].filter(Boolean) as string[];
       if (phones.length) {
         sendSms(phones, feeReceiptSms({ studentName, amount: amountStr, currency, receiptNo, schoolName })).catch(() => null);
+        // WhatsApp receipt (fire-and-forget, silently skips if no WhatsApp provider configured)
+        sendWhatsApp(phones, whatsAppFeeReceipt({ studentName, amount: amountStr, currency, receiptNo, schoolName, paymentMode: paymentMode || "Cash" })).catch(() => null);
       }
 
       // Email
