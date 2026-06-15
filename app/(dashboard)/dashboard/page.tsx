@@ -100,25 +100,8 @@ export default async function DashboardPage() {
 
   const db      = await getDb().catch(() => null);
   const profile = db ? await (db as any).schoolProfile
-    .findFirst({ select: { name: true, currency: true, onboardingCompleted: true } })
+    .findFirst({ select: { name: true, currency: true } })
     .catch(() => null) : null;
-
-  // If setup is incomplete for admin roles, show the wizard inline (no redirect)
-  const needsSetup =
-    (role === "SUPER_ADMIN" || role === "ADMIN") &&
-    profile?.onboardingCompleted === false;
-
-  if (needsSetup) {
-    const { OnboardingClient } = await import(
-      "@/app/(dashboard)/onboarding/OnboardingClient"
-    );
-    return (
-      <div className="flex flex-col flex-1 bg-slate-50 min-h-screen">
-        <Topbar title="School Setup" />
-        <OnboardingClient profile={profile} />
-      </div>
-    );
-  }
 
   const stats   = await getDashboardStats().catch(() => null);
 
