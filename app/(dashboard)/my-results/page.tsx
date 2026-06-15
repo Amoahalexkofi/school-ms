@@ -4,65 +4,70 @@ import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { TrendingUp, Award, BookOpen, CheckCircle2, XCircle } from "lucide-react";
 
+function NoProfile({ title }: { title: string }) {
+  return (
+    <div className="flex flex-col flex-1">
+      <Topbar title={title} />
+      <main className="flex-1 flex items-center justify-center p-8">
+        <div className="text-center">
+          <TrendingUp className="h-10 w-10 mx-auto text-gray-300 mb-3" />
+          <p className="font-semibold text-gray-500">No student profile linked</p>
+          <p className="text-sm text-gray-400 mt-1">This demo account is not connected to a student record.</p>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 export default async function MyResultsPage() {
   const session = await auth();
   if (!session) redirect("/sign-in");
   const userId = (session.user as any).id;
 
-  const db = await getDb();
+  let student: any = null;
+  let examGroups: any[] = [];
+  let markMap = new Map<string, any>();
+  let gradeScales: any[] = [];
 
-  // Get student record
-  const student = await (db as any).student.findUnique({
-    where: { userId },
-    include: {
-      studentSessions: {
-        include: { session: true, classSection: { include: { class: true, section: true } } },
-        orderBy: { createdAt: "desc" },
-        take: 1,
+  try {
+    const db = await getDb();
+    student = await (db as any).student.findUnique({
+      where: { userId },
+      include: {
+        studentSessions: {
+          include: { session: true, classSection: { include: { class: true, section: true } } },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
       },
-    },
-  });
+    }).catch(() => null);
 
-  if (!student) return (
-    <div className="flex flex-col flex-1">
-      <Topbar title="My Results" />
-      <main className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center">
-          <TrendingUp className="h-10 w-10 mx-auto text-gray-300 mb-3" />
-          <p className="font-semibold text-gray-500">No student profile linked</p>
-          <p className="text-sm text-gray-400 mt-1">This account is not connected to a student record yet.</p>
-        </div>
-      </main>
-    </div>
-  );
+    if (!student) return <NoProfile title="My Results" />;
+
+    const currentSession = student.studentSessions[0];
+    const classId   = currentSession?.classSection?.classId;
+    const sessionId = currentSession?.sessionId;
+
+    [examGroups, gradeScales] = await Promise.all([
+      (db as any).examGroup.findMany({
+        where: { sessionId, isPublished: true },
+        include: { examSchedules: { where: { classId }, include: { subject: true }, orderBy: { date: "asc" } } },
+        orderBy: { createdAt: "asc" },
+      }).catch(() => []),
+      (db as any).gradingScale.findMany({ orderBy: { percentageFrom: "desc" } }).catch(() => []),
+    ]);
+
+    const marks = await (db as any).studentMark.findMany({
+      where: { studentId: student.id },
+      include: { examSchedule: { include: { examGroup: true, subject: true } } },
+    }).catch(() => []);
+    markMap = new Map(marks.map((m: any) => [m.examScheduleId, m]));
+  } catch {
+    return <NoProfile title="My Results" />;
+  }
 
   const currentSession = student.studentSessions[0];
-  const classId    = currentSession?.classSection?.classId;
-  const sectionId  = currentSession?.classSection?.sectionId;
-  const sessionId  = currentSession?.sessionId;
 
-  // Get all exam groups for this session
-  const examGroups = await (db as any).examGroup.findMany({
-    where: { sessionId, isPublished: true },
-    include: {
-      examSchedules: {
-        where: { classId },
-        include: { subject: true },
-        orderBy: { date: "asc" },
-      },
-    },
-    orderBy: { createdAt: "asc" },
-  });
-
-  // Get all marks for this student
-  const marks = await (db as any).studentMark.findMany({
-    where: { studentId: student.id },
-    include: { examSchedule: { include: { examGroup: true, subject: true } } },
-  });
-  const markMap = new Map(marks.map((m: any) => [m.examScheduleId, m]));
-
-  // Get grade scale
-  const gradeScales = await (db as any).gradingScale.findMany({ orderBy: { percentageFrom: "desc" } });
   function getGrade(obtained: number, full: number) {
     if (!full) return "—";
     const pct = (obtained / full) * 100;
