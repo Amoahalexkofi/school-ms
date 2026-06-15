@@ -2,66 +2,70 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
-import { ClipboardList, CheckCircle2, XCircle, Clock, Calendar } from "lucide-react";
+import { ClipboardList, Calendar } from "lucide-react";
 
-export default async function MyAttendancePage() {
-  const session = await auth();
-  if (!session) redirect("/sign-in");
-  const userId = (session.user as any).id;
-  const db = await getDb();
-
-  const student = await (db as any).student.findUnique({
-    where: { userId },
-    include: {
-      studentSessions: {
-        include: { session: true, classSection: { include: { class: true, section: true } } },
-        orderBy: { createdAt: "desc" },
-        take: 1,
-      },
-    },
-  });
-  if (!student) return (
+function NoProfile() {
+  return (
     <div className="flex flex-col flex-1">
       <Topbar title="My Attendance" />
       <main className="flex-1 flex items-center justify-center p-8">
         <div className="text-center">
           <ClipboardList className="h-10 w-10 mx-auto text-gray-300 mb-3" />
           <p className="font-semibold text-gray-500">No student profile linked</p>
-          <p className="text-sm text-gray-400 mt-1">This account is not connected to a student record yet.</p>
+          <p className="text-sm text-gray-400 mt-1">This demo account is not connected to a student record.</p>
         </div>
       </main>
     </div>
   );
+}
 
-  const currentSession = student.studentSessions[0];
-  if (!currentSession) {
-    return (
-      <div className="flex flex-col flex-1">
-        <Topbar title="My Attendance" />
-        <main className="flex-1 p-6 flex items-center justify-center">
-          <p className="text-gray-400">No active session found.</p>
-        </main>
-      </div>
-    );
+export default async function MyAttendancePage() {
+  const session = await auth();
+  if (!session) redirect("/sign-in");
+  const userId = (session.user as any).id;
+
+  let student: any = null;
+  let attendanceRecords: any[] = [];
+
+  try {
+    const db = await getDb();
+    student = await (db as any).student.findUnique({
+      where: { userId },
+      include: {
+        studentSessions: {
+          include: { session: true, classSection: { include: { class: true, section: true } } },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
+      },
+    }).catch(() => null);
+
+    if (!student) return <NoProfile />;
+
+    const currentSession = student.studentSessions[0];
+    if (currentSession) {
+      attendanceRecords = await (db as any).studentAttendance.findMany({
+        where: { studentSessionId: currentSession.id },
+        include: { attendanceDay: true, attendanceType: true },
+        orderBy: { attendanceDay: { date: "desc" } },
+      }).catch(() => []);
+    }
+  } catch {
+    return <NoProfile />;
   }
 
-  // Get all attendance records for this student session
-  const attendanceRecords = await (db as any).studentAttendance.findMany({
-    where: { studentSessionId: currentSession.id },
-    include: { attendanceDay: true, attendanceType: true },
-    orderBy: { attendanceDay: { date: "desc" } },
-  });
+  if (!student) return <NoProfile />;
 
-  // Stats
+  const currentSession = student.studentSessions[0];
+
   const stats = { P: 0, A: 0, L: 0, H: 0, F: 0 };
   for (const r of attendanceRecords) {
     const key = r.attendanceType?.keyValue as keyof typeof stats;
     if (key && key in stats) stats[key]++;
   }
   const total = stats.P + stats.A + stats.L + stats.H + stats.F;
-  const presentPct = total > 0 ? Math.round(((stats.P + stats.L) / (total - stats.H)) * 100) : 0;
+  const presentPct = total > 0 ? Math.round(((stats.P + stats.L) / (total - stats.H || 1)) * 100) : 0;
 
-  // Group by month
   const byMonth: Record<string, typeof attendanceRecords> = {};
   for (const r of attendanceRecords) {
     const month = new Date(r.attendanceDay.date).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
@@ -70,11 +74,8 @@ export default async function MyAttendancePage() {
   }
 
   const typeStyle: Record<string, string> = {
-    P: "bg-emerald-100 text-emerald-700",
-    A: "bg-rose-100 text-rose-700",
-    L: "bg-amber-100 text-amber-700",
-    H: "bg-blue-100 text-blue-700",
-    F: "bg-purple-100 text-purple-700",
+    P: "bg-emerald-100 text-emerald-700", A: "bg-rose-100 text-rose-700",
+    L: "bg-amber-100 text-amber-700", H: "bg-blue-100 text-blue-700", F: "bg-purple-100 text-purple-700",
   };
   const typeLabel: Record<string, string> = { P: "Present", A: "Absent", L: "Late", H: "Holiday", F: "Half Day" };
 
@@ -83,7 +84,6 @@ export default async function MyAttendancePage() {
       <Topbar title="My Attendance" />
       <main className="flex-1 p-4 md:p-6 space-y-6 max-w-4xl mx-auto w-full">
 
-        {/* Header card */}
         <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 text-white">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -92,7 +92,7 @@ export default async function MyAttendancePage() {
             <div>
               <p className="font-black text-xl">{student.firstName} {student.lastName}</p>
               <p className="text-emerald-200 text-sm">
-                {currentSession.classSection?.class?.name} {currentSession.classSection?.section?.name} · {currentSession.session?.session}
+                {currentSession?.classSection?.class?.name} {currentSession?.classSection?.section?.name} · {currentSession?.session?.session}
               </p>
             </div>
           </div>
@@ -106,7 +106,6 @@ export default async function MyAttendancePage() {
           </div>
         </div>
 
-        {/* Attendance % bar */}
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-3">
             <p className="font-bold text-gray-800">Overall Attendance</p>
@@ -116,13 +115,10 @@ export default async function MyAttendancePage() {
             <div className={`h-full rounded-full transition-all ${presentPct >= 75 ? "bg-emerald-500" : "bg-rose-500"}`} style={{ width: `${presentPct}%` }} />
           </div>
           <p className="text-xs text-gray-400 mt-2">
-            {presentPct >= 75
-              ? "Good attendance. Keep it up!"
-              : "⚠️ Attendance below 75% minimum requirement."}
+            {presentPct >= 75 ? "Good attendance. Keep it up!" : "⚠️ Attendance below 75% minimum requirement."}
           </p>
         </div>
 
-        {/* Monthly breakdown */}
         {Object.entries(byMonth).map(([month, records]) => (
           <div key={month} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
             <div className="flex items-center gap-2 px-5 py-3.5 border-b bg-gray-50">

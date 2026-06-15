@@ -2,66 +2,67 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
-import { CheckSquare, Clock, CheckCircle2, BookOpen } from "lucide-react";
+import { CheckSquare, BookOpen } from "lucide-react";
 
-export default async function MyHomeworkPage() {
-  const session = await auth();
-  if (!session) redirect("/sign-in");
-  const userId = (session.user as any).id;
-  const db = await getDb();
-
-  const student = await (db as any).student.findUnique({
-    where: { userId },
-    include: {
-      studentSessions: {
-        include: { session: true, classSection: { include: { class: true, section: true } } },
-        orderBy: { createdAt: "desc" },
-        take: 1,
-      },
-    },
-  });
-  if (!student) return (
+function NoProfile() {
+  return (
     <div className="flex flex-col flex-1">
       <Topbar title="My Homework" />
       <main className="flex-1 flex items-center justify-center p-8">
         <div className="text-center">
           <BookOpen className="h-10 w-10 mx-auto text-gray-300 mb-3" />
           <p className="font-semibold text-gray-500">No student profile linked</p>
-          <p className="text-sm text-gray-400 mt-1">This account is not connected to a student record yet.</p>
+          <p className="text-sm text-gray-400 mt-1">This demo account is not connected to a student record.</p>
         </div>
       </main>
     </div>
   );
+}
 
-  const cs = student.studentSessions[0]?.classSection;
-  if (!cs) {
-    return (
-      <div className="flex flex-col flex-1">
-        <Topbar title="My Homework" />
-        <main className="flex-1 p-6 flex items-center justify-center">
-          <p className="text-gray-400">No active enrollment found.</p>
-        </main>
-      </div>
-    );
+export default async function MyHomeworkPage() {
+  const session = await auth();
+  if (!session) redirect("/sign-in");
+  const userId = (session.user as any).id;
+
+  let student: any = null;
+  let homework: any[] = [];
+
+  try {
+    const db = await getDb();
+    student = await (db as any).student.findUnique({
+      where: { userId },
+      include: {
+        studentSessions: {
+          include: { session: true, classSection: { include: { class: true, section: true } } },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
+      },
+    }).catch(() => null);
+
+    if (!student) return <NoProfile />;
+
+    const cs = student.studentSessions[0]?.classSection;
+    const sessionId = student.studentSessions[0]?.sessionId;
+    if (cs && sessionId) {
+      homework = await (db as any).homework.findMany({
+        where: { classSectionId: cs.id, sessionId },
+        include: {
+          subject: true,
+          staff: { select: { firstName: true, lastName: true } },
+          submissions: { where: { studentId: student.id } },
+        },
+        orderBy: { homeworkDate: "desc" },
+      }).catch(() => []);
+    }
+  } catch {
+    return <NoProfile />;
   }
 
-  // Get homework for this student's class + section (following Smart School pattern)
-  const homework = await (db as any).homework.findMany({
-    where: {
-      classSectionId: cs.id,
-      sessionId: student.studentSessions[0].sessionId,
-    },
-    include: {
-      subject: true,
-      staff: { select: { firstName: true, lastName: true } },
-      submissions: { where: { studentId: student.id } },
-    },
-    orderBy: { homeworkDate: "desc" },
-  });
+  if (!student) return <NoProfile />;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
+  const cs = student.studentSessions[0]?.classSection;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
   const pending   = homework.filter((h: any) => h.submissions.length === 0 && new Date(h.submissionDate) >= today);
   const submitted = homework.filter((h: any) => h.submissions.length > 0);
   const overdue   = homework.filter((h: any) => h.submissions.length === 0 && new Date(h.submissionDate) < today);
@@ -71,7 +72,6 @@ export default async function MyHomeworkPage() {
       <Topbar title="My Homework" />
       <main className="flex-1 p-4 md:p-6 space-y-6 max-w-4xl mx-auto w-full">
 
-        {/* Header */}
         <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-white">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -79,9 +79,7 @@ export default async function MyHomeworkPage() {
             </div>
             <div>
               <p className="font-black text-xl">My Homework</p>
-              <p className="text-amber-200 text-sm">
-                {cs.class?.name} {cs.section?.name}
-              </p>
+              <p className="text-amber-200 text-sm">{cs?.class?.name} {cs?.section?.name}</p>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
@@ -94,20 +92,9 @@ export default async function MyHomeworkPage() {
           </div>
         </div>
 
-        {/* Overdue */}
-        {overdue.length > 0 && (
-          <HomeworkList title="Overdue" items={overdue} variant="overdue" studentId={student.id} />
-        )}
-
-        {/* Pending */}
-        {pending.length > 0 && (
-          <HomeworkList title="Pending" items={pending} variant="pending" studentId={student.id} />
-        )}
-
-        {/* Submitted */}
-        {submitted.length > 0 && (
-          <HomeworkList title="Submitted" items={submitted} variant="submitted" studentId={student.id} />
-        )}
+        {overdue.length > 0 && <HomeworkList title="Overdue" items={overdue} variant="overdue" studentId={student.id} />}
+        {pending.length > 0 && <HomeworkList title="Pending" items={pending} variant="pending" studentId={student.id} />}
+        {submitted.length > 0 && <HomeworkList title="Submitted" items={submitted} variant="submitted" studentId={student.id} />}
 
         {homework.length === 0 && (
           <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
@@ -124,12 +111,11 @@ function HomeworkList({ title, items, variant, studentId }: {
   title: string; items: any[]; variant: "pending" | "submitted" | "overdue"; studentId: string;
 }) {
   const colors = {
-    pending:   { dot: "bg-amber-500",  badge: "bg-amber-50 text-amber-700",  heading: "text-amber-700" },
+    pending:   { dot: "bg-amber-500",  badge: "bg-amber-50 text-amber-700",     heading: "text-amber-700" },
     submitted: { dot: "bg-emerald-500",badge: "bg-emerald-50 text-emerald-700", heading: "text-emerald-700" },
-    overdue:   { dot: "bg-rose-500",   badge: "bg-rose-50 text-rose-700",    heading: "text-rose-700" },
+    overdue:   { dot: "bg-rose-500",   badge: "bg-rose-50 text-rose-700",       heading: "text-rose-700" },
   };
   const c = colors[variant];
-
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
       <div className="flex items-center gap-2.5 px-5 py-3.5 border-b bg-gray-50">
@@ -145,9 +131,7 @@ function HomeworkList({ title, items, variant, studentId }: {
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
-                      {h.subject?.name}
-                    </span>
+                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{h.subject?.name}</span>
                   </div>
                   <p className="text-sm font-bold text-gray-900">{h.homeworkTitle ?? h.description?.slice(0, 80)}</p>
                   {h.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{h.description}</p>}
