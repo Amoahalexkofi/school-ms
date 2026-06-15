@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 type Props = {
   classes: { id: string; name: string }[];
@@ -77,7 +77,7 @@ export function NewExamForm({ classes, subjects }: Props) {
       <div className="max-w-4xl mx-auto space-y-6">
         <Link
           href="/online-exams"
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+          className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Online Exams
         </Link>
@@ -90,12 +90,12 @@ export function NewExamForm({ classes, subjects }: Props) {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Exam Details</CardTitle>
+            <CardTitle className="text-[15px] font-bold text-slate-900">Exam Details</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="col-span-2">
-                <Label className="text-xs mb-1 block">Exam Title *</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Exam Title *</Label>
                 <Input
                   placeholder="e.g. Mid-term Math Quiz"
                   value={form.title}
@@ -104,7 +104,7 @@ export function NewExamForm({ classes, subjects }: Props) {
               </div>
 
               <div>
-                <Label className="text-xs mb-1 block">Class (optional)</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class (optional)</Label>
                 <select className={SEL} value={form.classId} onChange={set("classId")}>
                   <option value="">Any class</option>
                   {classes.map((c) => (
@@ -114,7 +114,7 @@ export function NewExamForm({ classes, subjects }: Props) {
               </div>
 
               <div>
-                <Label className="text-xs mb-1 block">Subject (optional)</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Subject (optional)</Label>
                 <select className={SEL} value={form.subjectId} onChange={set("subjectId")}>
                   <option value="">Any subject</option>
                   {subjects.map((s) => (
@@ -124,7 +124,7 @@ export function NewExamForm({ classes, subjects }: Props) {
               </div>
 
               <div>
-                <Label className="text-xs mb-1 block">Duration (minutes) *</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Duration (minutes) *</Label>
                 <Input
                   type="number"
                   value={form.duration}
@@ -135,7 +135,7 @@ export function NewExamForm({ classes, subjects }: Props) {
               </div>
 
               <div>
-                <Label className="text-xs mb-1 block">Passing Percentage (optional)</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Passing Percentage (optional)</Label>
                 <Input
                   type="number"
                   value={form.passingPercentage}
@@ -147,7 +147,7 @@ export function NewExamForm({ classes, subjects }: Props) {
               </div>
 
               <div>
-                <Label className="text-xs mb-1 block">Start Time *</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Start Time *</Label>
                 <Input
                   type="datetime-local"
                   value={form.startTime}
@@ -156,7 +156,7 @@ export function NewExamForm({ classes, subjects }: Props) {
               </div>
 
               <div>
-                <Label className="text-xs mb-1 block">End Time *</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">End Time *</Label>
                 <Input
                   type="datetime-local"
                   value={form.endTime}
@@ -165,10 +165,10 @@ export function NewExamForm({ classes, subjects }: Props) {
               </div>
 
               <div className="col-span-2">
-                <Label className="text-xs mb-1 block">Instructions (optional)</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Instructions (optional)</Label>
                 <textarea
                   rows={4}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 resize-none"
                   placeholder="Instructions for students taking this exam…"
                   value={form.instructions}
                   onChange={set("instructions")}

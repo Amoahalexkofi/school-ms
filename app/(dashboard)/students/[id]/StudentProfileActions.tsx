@@ -173,7 +173,7 @@ export function StudentProfileActions({ student }: Props) {
       return (
         <div>
           <Label className="text-xs">{label}</Label>
-          <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
             value={(form as any)[name]} onChange={set(name)}>
             <option value="">— Select —</option>
             {options.map(o => <option key={o} value={o}>{o}</option>)}
@@ -185,7 +185,7 @@ export function StudentProfileActions({ student }: Props) {
       return (
         <div className="col-span-2">
           <Label className="text-xs">{label}</Label>
-          <textarea rows={2} className="mt-1 w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          <textarea rows={2} className="mt-1 w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 resize-none"
             value={(form as any)[name]} onChange={set(name)} />
         </div>
       );
@@ -267,7 +267,7 @@ export function StudentProfileActions({ student }: Props) {
             </div>
             <div>
               <Label className="text-xs">Note (optional)</Label>
-              <textarea rows={2} className="mt-1 w-full border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <textarea rows={2} className="mt-1 w-full border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={disableForm.disableNote}
                 onChange={e => setDisableForm(f => ({ ...f, disableNote: e.target.value }))} />
             </div>

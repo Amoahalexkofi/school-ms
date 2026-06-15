@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Plus, Pencil, Trash2, GraduationCap, Calendar, X, User, Send, Mail } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 type AlumniRecord = {
   id: string;
@@ -157,14 +157,14 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
             <Input placeholder="Search by name or admission no…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 w-56" />
           </div>
           <div>
-            <Label className="text-xs mb-1 block">Pass-out Session</Label>
+            <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Pass-out Session</Label>
             <select className={SEL + " w-44"} value={filterSession} onChange={(e) => setFilterSession(e.target.value)}>
               <option value="">All Sessions</option>
               {sessions.map((s) => <option key={s.id} value={s.id}>{s.session}</option>)}
             </select>
           </div>
           <div>
-            <Label className="text-xs mb-1 block">Class</Label>
+            <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class</Label>
             <select className={SEL + " w-36"} value={filterClass} onChange={(e) => setFilterClass(e.target.value)}>
               <option value="">All Classes</option>
               {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -204,7 +204,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
             <div className="md:col-span-2">
               <Label>Message *</Label>
               <textarea
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 rows={4}
                 value={mail.message}
                 onChange={e => setM("message", e.target.value)}

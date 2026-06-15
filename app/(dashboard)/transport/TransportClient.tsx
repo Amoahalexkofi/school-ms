@@ -11,7 +11,7 @@ import { Bus, MapPin, Users, Plus, X, ChevronDown, ChevronUp, Trash2 } from "luc
 type Props = { vehicles: any[]; routes: any[]; pickupPoints: any[]; students: any[] };
 type Tab = "vehicles" | "routes" | "points" | "students";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints: initialPoints, students: initialStudents }: Props) {
   const router = useRouter();
@@ -141,7 +141,7 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
       <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit flex-wrap">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
             {t.label}
           </button>
         ))}
@@ -265,7 +265,7 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                           <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Add Stop</p>
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <div>
-                              <label className="text-xs text-gray-600 mb-1 block">Pickup Point *</label>
+                              <label className="text-[13px] font-semibold text-slate-700 mb-1 block">Pickup Point *</label>
                               <select
                                 className={SEL}
                                 value={stopForm.pickupPointId}
@@ -279,7 +279,7 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                               )}
                             </div>
                             <div>
-                              <label className="text-xs text-gray-600 mb-1 block">Pickup Time</label>
+                              <label className="text-[13px] font-semibold text-slate-700 mb-1 block">Pickup Time</label>
                               <Input
                                 type="time"
                                 value={stopForm.timing}
@@ -287,7 +287,7 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                               />
                             </div>
                             <div>
-                              <label className="text-xs text-gray-600 mb-1 block">Fee (GHS)</label>
+                              <label className="text-[13px] font-semibold text-slate-700 mb-1 block">Fee (GHS)</label>
                               <Input
                                 type="number"
                                 min="0"

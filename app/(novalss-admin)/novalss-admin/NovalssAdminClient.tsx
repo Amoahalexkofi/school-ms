@@ -12,7 +12,7 @@ import {
   Globe, CalendarDays, StickyNote, AlertTriangle, Copy, Check,
 } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 type School = {
   id: string; name: string; subdomain: string; customDomain?: string;
@@ -515,7 +515,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
               <div className="sm:col-span-2">
                 <Label className="flex items-center gap-1"><StickyNote className="h-3.5 w-3.5" /> Notes</Label>
                 <textarea
-                  className="w-full border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                   rows={3}
                   value={editForm.notes}
                   onChange={e => setEditForm((f: any) => ({ ...f, notes: e.target.value }))}

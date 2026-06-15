@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 const TYPES = ["MCQ", "TRUE_FALSE", "SHORT_ANSWER", "DESCRIPTIVE"] as const;
 type QType = typeof TYPES[number];
@@ -106,7 +106,7 @@ export function NewQuestionForm({ classes, subjects }: Props) {
       <div className="max-w-4xl mx-auto space-y-6">
         <Link
           href="/online-exams/questions"
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+          className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Question Bank
         </Link>
@@ -120,12 +120,12 @@ export function NewQuestionForm({ classes, subjects }: Props) {
         {/* Question Type & Meta */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Question Settings</CardTitle>
+            <CardTitle className="text-[15px] font-bold text-slate-900">Question Settings</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label className="text-xs mb-1 block">Question Type</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Question Type</Label>
                 <select className={SEL} value={form.questionType} onChange={set("questionType")}>
                   {TYPES.map((t) => (
                     <option key={t} value={t}>{TYPE_LABELS[t]}</option>
@@ -134,7 +134,7 @@ export function NewQuestionForm({ classes, subjects }: Props) {
               </div>
 
               <div>
-                <Label className="text-xs mb-1 block">Difficulty Level</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Difficulty Level</Label>
                 <select className={SEL} value={form.level} onChange={set("level")}>
                   {LEVELS.map((l) => (
                     <option key={l} value={l}>{l}</option>
@@ -143,7 +143,7 @@ export function NewQuestionForm({ classes, subjects }: Props) {
               </div>
 
               <div>
-                <Label className="text-xs mb-1 block">Class (optional)</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class (optional)</Label>
                 <select className={SEL} value={form.classId} onChange={set("classId")}>
                   <option value="">Any class</option>
                   {classes.map((c) => (
@@ -153,7 +153,7 @@ export function NewQuestionForm({ classes, subjects }: Props) {
               </div>
 
               <div>
-                <Label className="text-xs mb-1 block">Subject (optional)</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Subject (optional)</Label>
                 <select className={SEL} value={form.subjectId} onChange={set("subjectId")}>
                   <option value="">Any subject</option>
                   {subjects.map((s) => (
@@ -168,14 +168,14 @@ export function NewQuestionForm({ classes, subjects }: Props) {
         {/* Question Text */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Question Content</CardTitle>
+            <CardTitle className="text-[15px] font-bold text-slate-900">Question Content</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label className="text-xs mb-1 block">Question Text *</Label>
+              <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Question Text *</Label>
               <textarea
                 rows={4}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 resize-none"
                 placeholder="Enter the question text here…"
                 value={form.question}
                 onChange={set("question")}
@@ -215,7 +215,7 @@ export function NewQuestionForm({ classes, subjects }: Props) {
             {/* Correct Answer */}
             {hasOptions && (
               <div>
-                <Label className="text-xs mb-1 block">Correct Answer</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Correct Answer</Label>
                 <select className={SEL} value={form.correctAnswer} onChange={set("correctAnswer")}>
                   {isTF
                     ? [["A", "True"], ["B", "False"]].map(([v, l]) => (
@@ -231,7 +231,7 @@ export function NewQuestionForm({ classes, subjects }: Props) {
             {/* Word Limit for descriptive/short answer */}
             {isDescriptive && (
               <div>
-                <Label className="text-xs mb-1 block">Word Limit (optional)</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Word Limit (optional)</Label>
                 <Input
                   type="number"
                   value={form.wordLimit}

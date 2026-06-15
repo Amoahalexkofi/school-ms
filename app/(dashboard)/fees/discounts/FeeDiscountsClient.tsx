@@ -107,7 +107,7 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Discount *</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={discountId} onChange={e => { setDiscountId(e.target.value); setSearched(false); setRows([]); }}>
               <option value="">— Select discount —</option>
               {discounts.map((d: any) => (
@@ -120,7 +120,7 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Session *</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={sessionId} onChange={e => { setSessionId(e.target.value); setSearched(false); setRows([]); }}>
               {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
             </select>
@@ -128,7 +128,7 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Class / Section *</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={classSectionId} onChange={e => { setClassSectionId(e.target.value); setSearched(false); setRows([]); }}>
               <option value="">— Select class —</option>
               {classSections.map((cs: any) => (
@@ -190,7 +190,7 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
                 <tr>
                   <th className="px-4 py-3 w-10">
                     <input type="checkbox" checked={checked.size === rows.length} onChange={toggleAll}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                      className="rounded border-slate-200 text-blue-600 focus:ring-indigo-500/20 focus:border-indigo-400" />
                   </th>
                   {["Admission No", "Name", "Roll No", "Status"].map(h => (
                     <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
@@ -205,7 +205,7 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
                       onClick={() => toggleRow(row.studentSessionId)}>
                       <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                         <input type="checkbox" checked={isChecked} onChange={() => toggleRow(row.studentSessionId)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                          className="rounded border-slate-200 text-blue-600 focus:ring-indigo-500/20 focus:border-indigo-400" />
                       </td>
                       <td className="px-4 py-3 font-mono text-xs text-gray-500">{row.student.admissionNo}</td>
                       <td className="px-4 py-3 font-medium text-gray-900">

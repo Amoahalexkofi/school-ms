@@ -23,7 +23,7 @@ const FIELD_TYPES = ["TEXT", "NUMBER", "DATE", "SELECT", "TEXTAREA"];
 const TYPE_LABELS: Record<string, string> = {
   TEXT: "Text", NUMBER: "Number", DATE: "Date", SELECT: "Dropdown", TEXTAREA: "Textarea",
 };
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 const emptyForm = {
   tableName: "students",
@@ -193,7 +193,7 @@ export function CustomFieldsClient({ fields: initial }: { fields: CustomField[] 
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/settings" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
 
@@ -252,7 +252,7 @@ export function CustomFieldsClient({ fields: initial }: { fields: CustomField[] 
                 id="isRequired"
                 checked={form.isRequired}
                 onChange={(e) => set("isRequired", e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-slate-200"
               />
               <label htmlFor="isRequired" className="text-sm text-gray-700">Required field</label>
             </div>

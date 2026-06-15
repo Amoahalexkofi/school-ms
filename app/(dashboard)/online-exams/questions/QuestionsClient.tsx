@@ -40,7 +40,7 @@ const TYPE_LABELS: Record<string, string> = {
   DESCRIPTIVE: "Descriptive",
 };
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 const emptyEdit = {
   questionType: "MCQ",
@@ -290,7 +290,7 @@ export function QuestionsClient({
               onChange={(e) => set("question", e.target.value)}
               rows={3}
               placeholder="Enter the question…"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 resize-none"
             />
           </div>
 

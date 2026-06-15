@@ -173,14 +173,14 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Session *</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={form.sessionId} onChange={set("sessionId")}>
                 {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Class / Section *</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={form.classSectionId} onChange={set("classSectionId")}>
                 <option value="">— Select —</option>
                 {classSections.map((cs: any) => (
@@ -190,7 +190,7 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={form.subjectId} onChange={set("subjectId")}>
                 <option value="">— Select subject —</option>
                 {subjects.map((s: any) => <option key={s.id} value={s.id}>{s.name} ({s.code})</option>)}

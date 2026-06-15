@@ -49,7 +49,7 @@ export function ExamResultsClient({ group, classSections }: Props) {
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-end gap-4">
         <div className="flex-1 max-w-xs">
           <label className="block text-xs font-medium text-gray-600 mb-1">Class / Section</label>
-          <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
             value={classSectionId} onChange={e => setCsId(e.target.value)}>
             <option value="">— Select —</option>
             {classSections.map((cs: any) => (

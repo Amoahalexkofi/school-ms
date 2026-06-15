@@ -110,7 +110,7 @@ export function DesignationsClient({ designations }: { designations: Desig[] }) 
           </div>
           <div className="space-y-3">
             <div>
-              <Label className="text-xs mb-1 block">Designation Name *</Label>
+              <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Designation Name *</Label>
               <Input
                 placeholder="e.g. Head Teacher"
                 value={name}

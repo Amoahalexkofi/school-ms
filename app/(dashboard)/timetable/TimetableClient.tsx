@@ -13,7 +13,7 @@ const DAY_LABEL: Record<string, string> = {
   THURSDAY: "Thu", FRIDAY: "Fri", SATURDAY: "Sat",
 };
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 const SUBJECT_COLORS = [
   "bg-blue-100 text-blue-800 border-blue-200",
@@ -132,14 +132,14 @@ export function TimetableClient({ classes, staff, session }: {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-4 items-end">
           <div>
-            <Label className="text-xs mb-1 block">Class *</Label>
+            <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class *</Label>
             <select className={SEL + " w-44"} value={classId} onChange={e => { setClassId(e.target.value); setClassSectionId(""); }}>
               <option value="">Select Class</option>
               {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
-            <Label className="text-xs mb-1 block">Section *</Label>
+            <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Section *</Label>
             <select className={SEL + " w-36"} value={classSectionId} onChange={e => setClassSectionId(e.target.value)} disabled={!classId}>
               <option value="">Select Section</option>
               {sections.map(s => <option key={s.id} value={s.id}>{s.section.name}</option>)}

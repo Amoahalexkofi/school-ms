@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, School, Save } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 const CURRENCIES = ["GHS", "USD", "EUR", "GBP", "NGN", "KES", "ZAR", "INR", "CAD", "AUD"];
 const DATE_FORMATS = ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "DD-MM-YYYY"];
@@ -79,7 +79,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/settings" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
 
@@ -125,7 +125,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
       {/* Location */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Location</CardTitle>
+          <CardTitle className="text-[15px] font-bold text-slate-900">Location</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -146,7 +146,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
       {/* System Settings */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">System Preferences</CardTitle>
+          <CardTitle className="text-[15px] font-bold text-slate-900">System Preferences</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -178,7 +178,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
 
       {/* Number Auto-generation */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Admission Number Settings</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-[15px] font-bold text-slate-900">Admission Number Settings</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label>Prefix</Label>
@@ -194,14 +194,14 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
             <p className="text-xs text-gray-400 mt-1">e.g. 4 digits → ADM0001</p>
           </div>
           <div className="flex items-center gap-2 h-full pt-5">
-            <input type="checkbox" id="admAuto" checked={form.admAutoInsert} onChange={(e) => set("admAutoInsert", e.target.checked as any)} className="h-4 w-4 rounded border-gray-300" />
+            <input type="checkbox" id="admAuto" checked={form.admAutoInsert} onChange={(e) => set("admAutoInsert", e.target.checked as any)} className="h-4 w-4 rounded border-slate-200" />
             <label htmlFor="admAuto" className="text-sm text-gray-700">Auto-generate on new admission</label>
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Staff ID Settings</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-[15px] font-bold text-slate-900">Staff ID Settings</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label>Prefix</Label>
@@ -217,14 +217,14 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
             <p className="text-xs text-gray-400 mt-1">e.g. 4 digits → EMP0001</p>
           </div>
           <div className="flex items-center gap-2 h-full pt-5">
-            <input type="checkbox" id="staffAuto" checked={form.staffidAutoInsert} onChange={(e) => set("staffidAutoInsert", e.target.checked as any)} className="h-4 w-4 rounded border-gray-300" />
+            <input type="checkbox" id="staffAuto" checked={form.staffidAutoInsert} onChange={(e) => set("staffidAutoInsert", e.target.checked as any)} className="h-4 w-4 rounded border-slate-200" />
             <label htmlFor="staffAuto" className="text-sm text-gray-700">Auto-generate on new staff</label>
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Other Settings</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-[15px] font-bold text-slate-900">Other Settings</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label>Low Attendance Limit (%)</Label>

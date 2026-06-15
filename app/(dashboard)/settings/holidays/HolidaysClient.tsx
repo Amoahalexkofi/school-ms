@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, Pencil, Trash2, CalendarDays, Tag, X, Check } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 type HolidayType = { id: string; name: string; isDefault: boolean; _count?: { holidays: number } };
 type Holiday = {
@@ -142,7 +142,7 @@ export function HolidaysClient({
 
   return (
     <main className="flex-1 p-6 max-w-5xl mx-auto space-y-6">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/settings" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
 
@@ -150,7 +150,7 @@ export function HolidaysClient({
       <div className="flex gap-1 border-b">
         {([["holidays", "Holidays", CalendarDays], ["types", "Holiday Types", Tag]] as const).map(([id, label, Icon]) => (
           <button key={id} onClick={() => setTab(id)}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${tab === id ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${tab === id ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}>
             <Icon className="h-4 w-4" />{label}
           </button>
         ))}
@@ -163,14 +163,14 @@ export function HolidaysClient({
           <div className="flex flex-wrap gap-3 items-end justify-between">
             <div className="flex flex-wrap gap-3">
               <div>
-                <Label className="text-xs mb-1 block">Holiday Type</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Holiday Type</Label>
                 <select className={SEL + " w-44"} value={filterType} onChange={(e) => setFilterType(e.target.value)}>
                   <option value="">All Types</option>
                   {types.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
               </div>
               <div>
-                <Label className="text-xs mb-1 block">Session</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Session</Label>
                 <select className={SEL + " w-44"} value={filterSession} onChange={(e) => setFilterSession(e.target.value)}>
                   <option value="">All Sessions</option>
                   {sessions.map((s) => <option key={s.id} value={s.id}>{s.session}</option>)}
@@ -218,7 +218,7 @@ export function HolidaysClient({
                 </div>
                 <div className="md:col-span-2 flex items-center gap-2">
                   <input type="checkbox" id="frontSite" checked={hForm.frontSite}
-                    onChange={(e) => setHForm(f => ({ ...f, frontSite: e.target.checked }))} className="h-4 w-4 rounded border-gray-300" />
+                    onChange={(e) => setHForm(f => ({ ...f, frontSite: e.target.checked }))} className="h-4 w-4 rounded border-slate-200" />
                   <label htmlFor="frontSite" className="text-sm text-gray-700">Show on front site / calendar</label>
                 </div>
                 <div className="md:col-span-2 flex gap-2">
@@ -302,7 +302,7 @@ export function HolidaysClient({
                 </div>
                 <div className="flex items-end gap-2">
                   <div className="flex items-center gap-2 h-9">
-                    <input type="checkbox" id="isDefault" checked={typeDefault} onChange={(e) => setTypeDefault(e.target.checked)} className="h-4 w-4 rounded border-gray-300" />
+                    <input type="checkbox" id="isDefault" checked={typeDefault} onChange={(e) => setTypeDefault(e.target.checked)} className="h-4 w-4 rounded border-slate-200" />
                     <label htmlFor="isDefault" className="text-sm text-gray-700">Set as default type</label>
                   </div>
                 </div>

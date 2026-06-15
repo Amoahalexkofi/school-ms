@@ -97,7 +97,7 @@ export function IdCardSetupClient({ templates: init }: Props) {
 
   return (
     <main className="flex-1 p-6 space-y-5 max-w-4xl mx-auto">
-      <Link href="/students" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/students" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Students
       </Link>
 

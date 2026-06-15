@@ -53,7 +53,7 @@ export function NotificationsClient({ settings: initial }: { settings: NotifRow[
 
   return (
     <main className="flex-1 p-6 max-w-3xl mx-auto space-y-6">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/settings" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
 

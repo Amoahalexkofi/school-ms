@@ -338,7 +338,7 @@ export function TakeExamClient({
                         className={`w-full text-left p-3 rounded-lg border-2 transition-all text-sm ${
                           selected
                             ? "border-blue-500 bg-blue-50 text-blue-800"
-                            : "border-gray-200 bg-white hover:border-gray-300"
+                            : "border-gray-200 bg-white hover:border-slate-200"
                         }`}
                       >
                         <span className="font-medium">{label}.</span> {text}
@@ -358,7 +358,7 @@ export function TakeExamClient({
                       ? "Enter your short answer…"
                       : "Write your answer here…"
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 resize-none"
                 />
               )}
               {isText && q.wordLimit && (

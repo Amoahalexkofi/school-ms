@@ -110,7 +110,7 @@ export function DepartmentsClient({ departments }: { departments: Dept[] }) {
           </div>
           <div className="space-y-3">
             <div>
-              <Label className="text-xs mb-1 block">Department Name *</Label>
+              <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Department Name *</Label>
               <Input
                 placeholder="e.g. Science Department"
                 value={name}

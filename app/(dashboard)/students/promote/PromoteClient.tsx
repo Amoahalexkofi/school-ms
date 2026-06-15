@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, CheckSquare, Square } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 type Props = { sessions: any[]; classSections: any[] };
 
@@ -88,7 +88,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/students" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/students" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Students
       </Link>
 
@@ -104,7 +104,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
 
       {/* ── Step 1: Source ── */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Step 1 — Select Source Class</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-[15px] font-bold text-slate-900">Step 1 — Select Source Class</CardTitle></CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -139,7 +139,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Step 2 — Select Students</CardTitle>
+              <CardTitle className="text-[15px] font-bold text-slate-900">Step 2 — Select Students</CardTitle>
               <button onClick={toggleAll} className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800">
                 {selected.size === students.length
                   ? <><CheckSquare className="h-4 w-4" /> Deselect all</>
@@ -169,7 +169,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
                         className={`cursor-pointer ${checked ? "bg-blue-50" : "hover:bg-gray-50"}`}
                       >
                         <td className="px-4 py-3">
-                          <input type="checkbox" readOnly checked={checked} className="h-4 w-4 rounded border-gray-300 text-blue-600" />
+                          <input type="checkbox" readOnly checked={checked} className="h-4 w-4 rounded border-slate-200 text-blue-600" />
                         </td>
                         <td className="px-4 py-3 font-medium">{s.firstName} {s.lastName}</td>
                         <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.admissionNo}</td>
@@ -196,7 +196,7 @@ export function PromoteClient({ sessions, classSections }: Props) {
       {/* ── Step 3: Destination ── */}
       {selected.size > 0 && (
         <Card>
-          <CardHeader><CardTitle className="text-base">Step 3 — Select Destination</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-[15px] font-bold text-slate-900">Step 3 — Select Destination</CardTitle></CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>

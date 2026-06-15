@@ -136,7 +136,7 @@ export function PermissionsMatrix({ role, groups }: { role: Role; groups: Group[
   return (
     <main className="flex-1 p-6 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center gap-4 flex-wrap">
-        <Link href="/settings/roles" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+        <Link href="/settings/roles" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Roles
         </Link>
         <div className="flex-1">

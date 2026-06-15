@@ -273,7 +273,7 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
                       type="checkbox"
                       checked={selSubjects.has(s.id)}
                       onChange={() => toggleSub(s.id)}
-                      className="rounded border-gray-300 text-indigo-600"
+                      className="rounded border-slate-200 text-indigo-600"
                     />
                     <span className="text-gray-800 truncate">{s.name}</span>
                     {s.code && <span className="text-gray-400 text-xs">({s.code})</span>}
@@ -300,7 +300,7 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
                             type="checkbox"
                             checked={selSections.has(cs.id)}
                             onChange={() => toggleSec(cs.id)}
-                            className="rounded border-gray-300 text-green-600"
+                            className="rounded border-slate-200 text-green-600"
                           />
                           <span className="text-gray-800">{cs.section.name}</span>
                         </label>

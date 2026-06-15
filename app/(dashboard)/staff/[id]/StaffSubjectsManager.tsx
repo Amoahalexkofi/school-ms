@@ -82,9 +82,9 @@ export function StaffSubjectsManager({ staffId, assigned, allSubjects }: Props) 
               {allSubjects.map(s => {
                 const checked = selected.has(s.id);
                 return (
-                  <label key={s.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${checked ? "bg-indigo-50 border-indigo-300" : "bg-white border-gray-200 hover:border-gray-300"}`}>
+                  <label key={s.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${checked ? "bg-indigo-50 border-indigo-300" : "bg-white border-gray-200 hover:border-slate-200"}`}>
                     <input type="checkbox" checked={checked} onChange={() => toggleSubject(s.id)}
-                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                      className="rounded border-slate-200 text-indigo-600 focus:ring-indigo-500" />
                     <span className="text-sm text-gray-800">{s.name}</span>
                     {s.code && <span className="text-xs text-gray-400">({s.code})</span>}
                   </label>

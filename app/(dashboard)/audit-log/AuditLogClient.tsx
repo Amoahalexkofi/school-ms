@@ -40,7 +40,7 @@ const ACTION_COLORS: Record<string, string> = {
   LOGIN:  "bg-gray-50 text-gray-700 border-gray-200",
 };
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 function downloadCSV(rows: Log[]) {
   if (!rows.length) return alert("No data to export");

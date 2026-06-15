@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Printer, FileText } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 type Schedule = {
   id: string; dateOfExam: string | null; startTime: string | null; endTime: string | null;
@@ -63,21 +63,21 @@ export function AdmitCardClient({ examGroups, classes, school }: {
           <CardContent className="pt-4">
             <div className="flex flex-wrap gap-4 items-end">
               <div>
-                <Label className="text-xs mb-1 block">Exam Group *</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Exam Group *</Label>
                 <select className={SEL + " w-52"} value={examGroupId} onChange={e => { setExamGroupId(e.target.value); setStudents([]); }}>
                   <option value="">Select Exam Group</option>
                   {examGroups.map(eg => <option key={eg.id} value={eg.id}>{eg.name}</option>)}
                 </select>
               </div>
               <div>
-                <Label className="text-xs mb-1 block">Class *</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class *</Label>
                 <select className={SEL + " w-40"} value={classId} onChange={e => { setClassId(e.target.value); setClassSectionId(""); setStudents([]); }}>
                   <option value="">Select Class</option>
                   {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
               <div>
-                <Label className="text-xs mb-1 block">Section *</Label>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Section *</Label>
                 <select className={SEL + " w-36"} value={classSectionId} onChange={e => { setClassSectionId(e.target.value); setStudents([]); }} disabled={!classId}>
                   <option value="">Select Section</option>
                   {sections.map(s => <option key={s.id} value={s.id}>{s.section.name}</option>)}
@@ -122,7 +122,7 @@ export function AdmitCardClient({ examGroups, classes, school }: {
 
             {/* Student Info */}
             <div className="p-3 flex gap-3">
-              <div className="w-16 h-20 bg-gray-100 border border-gray-300 rounded flex items-center justify-center shrink-0 overflow-hidden">
+              <div className="w-16 h-20 bg-gray-100 border border-slate-200 rounded flex items-center justify-center shrink-0 overflow-hidden">
                 {student.image
                   ? <img src={student.image} alt="" className="w-full h-full object-cover" />
                   : <span className="text-2xl text-gray-300 font-bold">{student.firstName[0]}</span>

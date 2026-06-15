@@ -108,14 +108,14 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
         <div className="flex flex-wrap items-end gap-4">
           <div className="flex-1 min-w-[160px]">
             <label className="block text-xs font-medium text-gray-600 mb-1">Session</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={sessionId} onChange={e => setSessionId(e.target.value)}>
               {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
             </select>
           </div>
           <div className="flex-1 min-w-[200px]">
             <label className="block text-xs font-medium text-gray-600 mb-1">Class / Section</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={classSectionId} onChange={e => setClassSectionId(e.target.value)}>
               <option value="">— Select class —</option>
               {classSections.map((cs: any) => (
@@ -126,7 +126,7 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
           <div className="flex-1 min-w-[160px]">
             <label className="block text-xs font-medium text-gray-600 mb-1">Date</label>
             <input type="date" max={today}
-              className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={date} onChange={e => setDate(e.target.value)} />
           </div>
           <Button onClick={loadStudents} disabled={!classSectionId || !sessionId || loadState === "loading"}>

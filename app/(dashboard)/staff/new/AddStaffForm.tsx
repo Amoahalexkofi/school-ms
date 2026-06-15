@@ -29,7 +29,7 @@ function Field({
   options?: string[] | { value: string; label: string }[];
   span?: "2" | "3"; rows?: number; hint?: string;
 }) {
-  const base = "mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
+  const base = "mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 focus:border-indigo-400";
   const spanCls = span === "3" ? "sm:col-span-2 lg:col-span-3" : span === "2" ? "sm:col-span-2" : "";
   return (
     <div className={spanCls}>

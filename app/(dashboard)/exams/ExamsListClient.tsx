@@ -132,7 +132,7 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Exam Type</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={form.examType} onChange={set("examType")}>
                 <option value="">— Select —</option>
                 {EXAM_TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}
@@ -140,7 +140,7 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea rows={2} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              <textarea rows={2} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 resize-none"
                 value={form.description} onChange={set("description")} />
             </div>
           </div>

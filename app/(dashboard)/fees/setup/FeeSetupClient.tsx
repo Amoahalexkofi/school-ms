@@ -203,7 +203,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
       <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
             {t.label}
           </button>
         ))}
@@ -420,7 +420,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             <Field label="Code *" value={typeCode} onChange={setTypeCode} placeholder="e.g. TUI" />
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={typeCatId} onChange={e => setTypeCatId(e.target.value)}>
                 <option value="">— None —</option>
                 {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -459,7 +459,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
           <p className="text-xs text-gray-500">Select the academic session this fee group applies to.</p>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Session *</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={sgSession} onChange={e => setSgSession(e.target.value)}>
               {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
             </select>
@@ -480,7 +480,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             <Field label="Code *" value={discCode} onChange={v => setDiscCode(v.toUpperCase())} placeholder="e.g. STAFF10" />
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={discType} onChange={e => setDiscType(e.target.value)}>
                 <option value="percentage">Percentage</option>
                 <option value="amount">Fixed Amount</option>
@@ -493,7 +493,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date (optional)</label>
               <input type="date" value={discExpiry} onChange={e => setDiscExpiry(e.target.value)}
-                className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400" />
             </div>
           </div>
           {discErr && <p className="text-sm text-red-600">{discErr}</p>}

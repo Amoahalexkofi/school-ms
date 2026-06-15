@@ -91,7 +91,7 @@ export function LibraryClient({ books, issues, students, staff, members: initial
           { key: "members" as Tab, label: `Members (${members.length})` },
         ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
             {t.label}
           </button>
         ))}
@@ -163,7 +163,7 @@ export function LibraryClient({ books, issues, students, staff, members: initial
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Member Type *</label>
-                  <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                     value={memType} onChange={e => { setMemType(e.target.value); setMemPersonId(""); }}>
                     <option value="student">Student</option>
                     <option value="teacher">Staff</option>
@@ -171,7 +171,7 @@ export function LibraryClient({ books, issues, students, staff, members: initial
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">{memType === "student" ? "Student" : "Staff"} *</label>
-                  <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                     value={memPersonId} onChange={e => setMemPersonId(e.target.value)}>
                     <option value="">— Select —</option>
                     {personOptions.map((p: any) => (

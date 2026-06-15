@@ -103,7 +103,7 @@ export default async function ResultsPage() {
               return (
                 <Card key={g.name}>
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-base">{g.name}</CardTitle>
+                    <CardTitle className="text-[15px] font-bold text-slate-900">{g.name}</CardTitle>
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-gray-500">{pct}% overall</span>
                       <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>

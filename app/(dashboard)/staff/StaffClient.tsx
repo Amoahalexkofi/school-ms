@@ -43,7 +43,7 @@ export function StaffClient({ staff, departments, designations }: Props) {
             />
           </div>
           <select
-            className="h-9 rounded-md border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="h-9 rounded-md border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
             value={filterDept}
             onChange={e => setFilterDept(e.target.value)}
           >

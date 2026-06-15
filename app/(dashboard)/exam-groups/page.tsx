@@ -142,7 +142,7 @@ export default function ExamGroupsPage() {
                 <CardHeader className="cursor-pointer select-none" onClick={() => setExpanded(expanded === g.id ? null : g.id)}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <CardTitle className="text-base">{g.name}</CardTitle>
+                      <CardTitle className="text-[15px] font-bold text-slate-900">{g.name}</CardTitle>
                       <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${g.published ? "bg-green-100 text-green-700 border-green-200" : "bg-gray-100 text-gray-600 border-gray-200"}`}>
                         {g.published ? "Published" : "Draft"}
                       </span>

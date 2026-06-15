@@ -254,7 +254,7 @@ export function OnboardingClient({ profile }: Props) {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-                  <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                     value={profileForm.currency} onChange={e => setProfileForm(f => ({ ...f, currency: e.target.value }))}>
                     <option value="GHS">GHS — Ghana Cedi</option>
                     <option value="NGN">NGN — Nigerian Naira</option>
@@ -318,7 +318,7 @@ export function OnboardingClient({ profile }: Props) {
                   ].map(p => (
                     <button key={p.key} onClick={() => applyPreset(p.key)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
-                        selectedPreset === p.key ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-300 hover:border-blue-400"
+                        selectedPreset === p.key ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-slate-200 hover:border-blue-400"
                       }`}>
                       {p.label}
                     </button>
@@ -382,7 +382,7 @@ export function OnboardingClient({ profile }: Props) {
                   {SUBJECT_PRESETS.map(s => (
                     <button key={s} onClick={() => subjects.includes(s) ? removeItem(subjects, setSubjects, s) : setSubjects([...subjects, s])}
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                        subjects.includes(s) ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-300 hover:border-blue-400"
+                        subjects.includes(s) ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-slate-200 hover:border-blue-400"
                       }`}>
                       {s}
                     </button>

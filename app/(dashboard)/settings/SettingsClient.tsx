@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink, Home, Bell, Mail, MessageSquare, Clock, Landmark, Building2, CreditCard } from "lucide-react";
 import Link from "next/link";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 type Props = {
   sessions: any[]; classes: any[]; sections: any[]; subjects: any[]; profile: any; staff: any[];
@@ -113,16 +113,16 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <Label className="text-xs mb-1 block">Name *</Label>
+                    <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Name *</Label>
                     <Input placeholder="e.g. 2025/2026" value={sessionForm.form.name} onChange={sessionForm.set("name")} />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-xs mb-1 block">Start Date *</Label>
+                      <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Start Date *</Label>
                       <Input type="date" value={sessionForm.form.startDate} onChange={sessionForm.set("startDate")} />
                     </div>
                     <div>
-                      <Label className="text-xs mb-1 block">End Date *</Label>
+                      <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">End Date *</Label>
                       <Input type="date" value={sessionForm.form.endDate} onChange={sessionForm.set("endDate")} />
                     </div>
                   </div>
@@ -131,7 +131,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                       type="checkbox"
                       checked={sessionForm.form.setActive === "true"}
                       onChange={e => sessionForm.set("setActive")({ target: { value: String(e.target.checked) } } as any)}
-                      className="h-4 w-4 rounded border-gray-300"
+                      className="h-4 w-4 rounded border-slate-200"
                     />
                     Set as active session
                   </label>
@@ -201,7 +201,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <Label className="text-xs mb-1 block">Class Name *</Label>
+                    <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class Name *</Label>
                     <Input placeholder="e.g. Grade 7, JHS 1, Form 1" value={classForm.form.name} onChange={classForm.set("name")} />
                   </div>
                   {error && <p className="text-sm text-red-600">{error}</p>}
@@ -224,7 +224,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <Label className="text-xs mb-1 block">Section Name *</Label>
+                    <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Section Name *</Label>
                     <Input placeholder="e.g. A, B, Gold, Blue" value={sectionForm.form.name} onChange={sectionForm.set("name")} />
                   </div>
                   {error && <p className="text-sm text-red-600">{error}</p>}
@@ -301,7 +301,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                           <p className="text-xs font-medium text-purple-800">Link section to {cls.name}</p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div>
-                              <Label className="text-xs mb-1 block">Section *</Label>
+                              <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Section *</Label>
                               <select className={SEL} value={linkSectionId} onChange={e => setLinkSectionId(e.target.value)}>
                                 <option value="">— select section —</option>
                                 {availableSections.map((s: any) => (
@@ -311,7 +311,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                               {availableSections.length === 0 && <p className="text-xs text-gray-400 mt-1">All sections already linked.</p>}
                             </div>
                             <div>
-                              <Label className="text-xs mb-1 block">Class Teacher (optional)</Label>
+                              <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class Teacher (optional)</Label>
                               <select className={SEL} value={linkTeacherId} onChange={e => setLinkTeacherId(e.target.value)}>
                                 <option value="">— none —</option>
                                 {staff.map((s: any) => (
@@ -358,16 +358,16 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-xs mb-1 block">Name *</Label>
+                      <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Name *</Label>
                       <Input placeholder="e.g. Mathematics" value={subjectForm.form.name} onChange={subjectForm.set("name")} />
                     </div>
                     <div>
-                      <Label className="text-xs mb-1 block">Code *</Label>
+                      <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Code *</Label>
                       <Input placeholder="e.g. MATH" value={subjectForm.form.code} onChange={subjectForm.set("code")} />
                     </div>
                   </div>
                   <div>
-                    <Label className="text-xs mb-1 block">Class *</Label>
+                    <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class *</Label>
                     <select className={SEL} value={subjectForm.form.classId} onChange={subjectForm.set("classId")}>
                       {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>

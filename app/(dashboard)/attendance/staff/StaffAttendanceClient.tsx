@@ -96,7 +96,7 @@ export function StaffAttendanceClient({ departments, attendanceTypes }: Props) {
         <div className="flex flex-wrap items-end gap-4">
           <div className="flex-1 min-w-[160px]">
             <label className="block text-xs font-medium text-gray-600 mb-1">Department (optional)</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={departmentId} onChange={e => setDepartmentId(e.target.value)}>
               <option value="">All Departments</option>
               {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -105,7 +105,7 @@ export function StaffAttendanceClient({ departments, attendanceTypes }: Props) {
           <div className="flex-1 min-w-[160px]">
             <label className="block text-xs font-medium text-gray-600 mb-1">Date</label>
             <input type="date" max={today}
-              className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={date} onChange={e => setDate(e.target.value)} />
           </div>
           <Button onClick={loadStaff} disabled={!date || loadState === "loading"}>

@@ -21,7 +21,7 @@ const STATUS_STYLE: Record<string, string> = {
   REJECTED: "bg-red-100 text-red-700",
 };
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff, students, leaveBalances, isAdmin, myStaffId }: Props) {
   const router = useRouter();
@@ -194,7 +194,7 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
         <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1">
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
               {t.label}
             </button>
           ))}
@@ -470,7 +470,7 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
             )}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Reason</label>
-              <textarea rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <textarea rows={2} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={applyForm.reason} onChange={e => setApplyForm(f => ({ ...f, reason: e.target.value }))} placeholder="Optional reason…" />
             </div>
             {applyErr && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{applyErr}</p>}
@@ -490,7 +490,7 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
             <div className="flex gap-2">
               {(["staff","student"] as const).map(t => (
                 <button key={t} onClick={() => setAdminApplyType(t)}
-                  className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${adminApplyType === t ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"}`}>
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${adminApplyType === t ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-slate-200 hover:bg-gray-50"}`}>
                   {t === "staff" ? "Staff" : "Student"}
                 </button>
               ))}
@@ -533,7 +533,7 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Reason</label>
-              <textarea rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <textarea rows={2} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={adminForm.reason} onChange={e => setAdminForm(f => ({ ...f, reason: e.target.value }))} />
             </div>
             {adminErr && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{adminErr}</p>}
@@ -556,7 +556,7 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
           <div className="space-y-3 mt-2">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Admin Remark (optional)</label>
-              <textarea rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <textarea rows={3} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={remark} onChange={e => setRemark(e.target.value)} placeholder="Add a note for the staff member…" />
             </div>
           </div>

@@ -115,7 +115,7 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
                     {def.label.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <CardTitle className="text-sm font-semibold">{def.label}</CardTitle>
+                    <CardTitle className="text-[15px] font-bold text-slate-900">{def.label}</CardTitle>
                     {isOn && <span className="text-xs text-green-600 font-medium">● Active{sandbox ? " (Sandbox)" : " (Live)"}</span>}
                   </div>
                 </div>

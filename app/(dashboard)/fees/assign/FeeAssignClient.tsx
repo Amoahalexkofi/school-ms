@@ -53,7 +53,7 @@ export function FeeAssignClient({ sessions, classSections, sessionGroups }: Prop
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Fee Group *</label>
-                <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                   value={feeSessionGroupId} onChange={e => setFsgId(e.target.value)}>
                   <option value="">— Select fee group —</option>
                   {sessionGroups.map((sg: any) => (
@@ -69,7 +69,7 @@ export function FeeAssignClient({ sessions, classSections, sessionGroups }: Prop
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Academic Session *</label>
-                <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                   value={sessionId} onChange={e => setSessionId(e.target.value)}>
                   {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
                 </select>
@@ -77,7 +77,7 @@ export function FeeAssignClient({ sessions, classSections, sessionGroups }: Prop
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Class / Section *</label>
-                <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                   value={classSectionId} onChange={e => setCsId(e.target.value)}>
                   <option value="">— Select class —</option>
                   {classSections.map((cs: any) => (

@@ -95,7 +95,7 @@ export default function ApplyPage() {
                     value={form.gender}
                     onChange={set("gender")}
                     required
-                    className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="mt-1 w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                   >
                     <option value="">Select gender</option>
                     <option value="Male">Male</option>
@@ -141,7 +141,7 @@ export default function ApplyPage() {
                   value={form.notes}
                   onChange={set("notes")}
                   rows={3}
-                  className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="mt-1 w-full border border-slate-200 bg-white rounded-lg px-3 py-2 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors resize-none"
                 />
               </div>
 

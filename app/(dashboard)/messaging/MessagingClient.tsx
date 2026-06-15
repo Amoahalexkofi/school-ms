@@ -100,7 +100,7 @@ export function MessagingClient({ logs, parentCount, staffCount, studentCount }:
               </select>
             </div>
             <div><Label>Subject *</Label><Input className="mt-1" value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} /></div>
-            <div><Label>Message *</Label><textarea className="mt-1 w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={4} value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} /></div>
+            <div><Label>Message *</Label><textarea className="mt-1 w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 resize-none" rows={4} value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} /></div>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <Button className="w-full" disabled={loading} onClick={send}>{loading ? "Sending…" : `Send to ${recipientLabel[form.recipientType]}`}</Button>
           </div>

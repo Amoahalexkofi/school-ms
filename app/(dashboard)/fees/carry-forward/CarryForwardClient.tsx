@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 type Props = { sessions: any[]; classSections: any[] };
 type Row  = { student: { id: string; firstName: string; lastName: string; admissionNo: string }; balance: number };
@@ -64,7 +64,7 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
 
   return (
     <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/fees" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link href="/fees" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Fees
       </Link>
 
@@ -78,7 +78,7 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
 
       {/* Step 1 — Source */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Step 1 — Source Session & Class</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-[15px] font-bold text-slate-900">Step 1 — Source Session & Class</CardTitle></CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -109,7 +109,7 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">
+              <CardTitle className="text-[15px] font-bold text-slate-900">
                 {rows.length} student{rows.length !== 1 ? "s" : ""} with outstanding balances
               </CardTitle>
               <span className="text-sm font-semibold text-red-600">
@@ -149,7 +149,7 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
       {/* Step 2 — Destination */}
       {rows.length > 0 && (
         <Card>
-          <CardHeader><CardTitle className="text-base">Step 2 — Carry Forward To</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-[15px] font-bold text-slate-900">Step 2 — Carry Forward To</CardTitle></CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>

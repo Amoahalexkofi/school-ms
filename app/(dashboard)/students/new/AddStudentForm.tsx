@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 
-const SEL = "w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 const TABS = ["Basic Info", "Guardian", "Address", "Academic", "Other"] as const;
 type Tab = typeof TABS[number];
@@ -34,7 +34,7 @@ function Field({ label, name, type = "text", options, textarea, colSpan2, form, 
   if (options) {
     return (
       <div className={colSpan2 ? "col-span-2" : ""}>
-        <Label className="text-xs mb-1 block">{label}</Label>
+        <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">{label}</Label>
         <select className={SEL} value={form[name]} onChange={set(name)}>
           <option value="">— Select —</option>
           {options.map((o) =>
@@ -51,10 +51,10 @@ function Field({ label, name, type = "text", options, textarea, colSpan2, form, 
   if (textarea) {
     return (
       <div className={colSpan2 ? "col-span-2" : ""}>
-        <Label className="text-xs mb-1 block">{label}</Label>
+        <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">{label}</Label>
         <textarea
           rows={3}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 resize-none"
           value={form[name]}
           onChange={set(name)}
         />
@@ -63,7 +63,7 @@ function Field({ label, name, type = "text", options, textarea, colSpan2, form, 
   }
   return (
     <div className={colSpan2 ? "col-span-2" : ""}>
-      <Label className="text-xs mb-1 block">{label}</Label>
+      <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">{label}</Label>
       <Input type={type} value={form[name]} onChange={set(name)} />
     </div>
   );
@@ -142,7 +142,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
       <div className="max-w-4xl mx-auto space-y-6">
         <Link
           href="/students"
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+          className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Students
         </Link>
@@ -156,8 +156,8 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
               onClick={() => setTab(t)}
               className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
                 tab === t
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-indigo-600 text-indigo-600"
+                  : "border-transparent text-slate-500 hover:text-slate-700"
               }`}
             >
               {t}
@@ -175,7 +175,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
         {tab === "Basic Info" && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Basic Information</CardTitle>
+              <CardTitle className="text-[15px] font-bold text-slate-900">Basic Information</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -200,7 +200,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
                     id="rte"
                     checked={form.rte}
                     onChange={(e) => setForm((f) => ({ ...f, rte: e.target.checked }))}
-                    className="h-4 w-4 rounded border-gray-300"
+                    className="h-4 w-4 rounded border-slate-200"
                   />
                   <Label htmlFor="rte" className="text-sm cursor-pointer">
                     RTE (Right to Education) student
@@ -215,7 +215,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
         {tab === "Guardian" && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Guardian Information</CardTitle>
+              <CardTitle className="text-[15px] font-bold text-slate-900">Guardian Information</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -244,7 +244,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
         {tab === "Address" && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Address Details</CardTitle>
+              <CardTitle className="text-[15px] font-bold text-slate-900">Address Details</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -263,12 +263,12 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
         {tab === "Academic" && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Academic Details</CardTitle>
+              <CardTitle className="text-[15px] font-bold text-slate-900">Academic Details</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-xs mb-1 block">Session</Label>
+                  <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Session</Label>
                   <select className={SEL} value={form.sessionId} onChange={set("sessionId")}>
                     <option value="">— None —</option>
                     {sessions.map((s: any) => (
@@ -277,7 +277,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
                   </select>
                 </div>
                 <div>
-                  <Label className="text-xs mb-1 block">Class / Section</Label>
+                  <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class / Section</Label>
                   <select className={SEL} value={form.classSectionId} onChange={set("classSectionId")}>
                     <option value="">— None —</option>
                     {classSections.map((cs: any) => (
@@ -289,7 +289,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
                 </div>
                 <Field {...fp} label="Roll No." name="rollNo" />
                 <div>
-                  <Label className="text-xs mb-1 block">School House</Label>
+                  <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">School House</Label>
                   <select className={SEL} value={form.schoolHouseId} onChange={set("schoolHouseId")}>
                     <option value="">— None —</option>
                     {schoolHouses.map((h: any) => (
@@ -310,7 +310,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
         {tab === "Other" && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Other Details</CardTitle>
+              <CardTitle className="text-[15px] font-bold text-slate-900">Other Details</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

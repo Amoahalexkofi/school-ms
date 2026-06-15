@@ -290,7 +290,7 @@ export default async function StudentProfilePage({
                 </div>
               </div>
               {student.feesMasters.slice(0, 3).map((fm: any) => (
-                <div key={fm.id} className="text-xs text-gray-600 truncate">
+                <div key={fm.id} className="text-[13px] font-semibold text-slate-700 truncate">
                   {fm.feeSessionGroup?.feeGroup?.name}
                 </div>
               ))}

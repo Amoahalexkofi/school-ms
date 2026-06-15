@@ -98,21 +98,21 @@ export function PayrollClient({ departments }: Props) {
         <div className="flex flex-wrap items-end gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Month</label>
-            <select className="h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={month} onChange={e => setMonth(e.target.value)}>
               {MONTHS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Year</label>
-            <select className="h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={year} onChange={e => setYear(e.target.value)}>
               {years.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Department</label>
-            <select className="h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={departmentId} onChange={e => setDepartmentId(e.target.value)}>
               <option value="">All Departments</option>
               {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}

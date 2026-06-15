@@ -59,14 +59,14 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Session *</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={sessionId} onChange={e => setSessionId(e.target.value)}>
               {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Fee Group (optional)</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={fsgId} onChange={e => setFsgId(e.target.value)}>
               <option value="">All Groups</option>
               {sessionGroups.map((sg: any) => (
@@ -76,7 +76,7 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Class / Section (optional)</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={classSectionId} onChange={e => setCsId(e.target.value)}>
               <option value="">All Classes</option>
               {classSections.map((cs: any) => (

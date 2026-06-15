@@ -56,7 +56,7 @@ export function IdCardClient({ student, school, template }: Props) {
     <main className="min-h-screen bg-gray-100 p-6">
       {/* Controls — hidden on print */}
       <div className="print:hidden flex items-center justify-between mb-6 max-w-md mx-auto">
-        <Link href={`/students/${student.id}`} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+        <Link href={`/students/${student.id}`} className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700">
           <ArrowLeft className="h-3.5 w-3.5" /> Back
         </Link>
         <div className="flex gap-2">

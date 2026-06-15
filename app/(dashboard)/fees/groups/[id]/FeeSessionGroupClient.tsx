@@ -169,7 +169,7 @@ export function FeeSessionGroupClient({ sg, feeTypes }: Props) {
             {!editItem && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Fee Type *</label>
-                <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                   value={form.feeTypeId} onChange={set("feeTypeId")}>
                   <option value="">— Select —</option>
                   {availableTypes.map((t: any) => <option key={t.id} value={t.id}>{t.name} ({t.code})</option>)}
@@ -186,7 +186,7 @@ export function FeeSessionGroupClient({ sg, feeTypes }: Props) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Fine Type</label>
-              <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 value={form.fineType} onChange={set("fineType")}>
                 {FINE_TYPES.map(f => <option key={f} value={f}>{f}</option>)}
               </select>

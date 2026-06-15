@@ -56,14 +56,14 @@ export function AttendanceReportClient({ sessions, classSections }: Props) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Session</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={sessionId} onChange={e => setSessionId(e.target.value)}>
               {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Class / Section</label>
-            <select className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={classSectionId} onChange={e => setClassSectionId(e.target.value)}>
               <option value="">— Select class —</option>
               {classSections.map((cs: any) => (
@@ -73,12 +73,12 @@ export function AttendanceReportClient({ sessions, classSections }: Props) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">From</label>
-            <input type="date" className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <input type="date" className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={from} onChange={e => setFrom(e.target.value)} />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">To</label>
-            <input type="date" max={today} className="w-full h-9 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <input type="date" max={today} className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
               value={to} onChange={e => setTo(e.target.value)} />
           </div>
         </div>

@@ -853,9 +853,9 @@ export default function FeaturesPage() {
           </div>
           <p className="text-xs text-gray-700">© {new Date().getFullYear()} Novalss. All rights reserved.</p>
           <div className="flex gap-5">
-            <Link href="/" className="text-xs text-gray-600 hover:text-gray-400">Home</Link>
-            <Link href="/#pricing" className="text-xs text-gray-600 hover:text-gray-400">Pricing</Link>
-            <Link href="/sign-in" className="text-xs text-gray-600 hover:text-gray-400">Sign in</Link>
+            <Link href="/" className="text-[13px] font-semibold text-slate-700 hover:text-gray-400">Home</Link>
+            <Link href="/#pricing" className="text-[13px] font-semibold text-slate-700 hover:text-gray-400">Pricing</Link>
+            <Link href="/sign-in" className="text-[13px] font-semibold text-slate-700 hover:text-gray-400">Sign in</Link>
           </div>
         </div>
       </footer>
