@@ -11,7 +11,7 @@ export default async function SignInRoute() {
     <div className="min-h-screen flex">
 
       {/* ── Left panel — dark brand side ── */}
-      <div className="hidden lg:flex lg:w-[55%] relative bg-slate-950 flex-col overflow-hidden border-r border-white/[0.07]">
+      <div className="hidden lg:flex lg:w-1/2 relative bg-slate-950 flex-col overflow-hidden border-r border-white/[0.07]">
 
         {/* Background texture */}
         <div className="absolute inset-0 pointer-events-none"
@@ -94,7 +94,7 @@ export default async function SignInRoute() {
       </div>
 
       {/* ── Right panel — form side ── */}
-      <div className="flex-1 flex flex-col relative"
+      <div className="lg:w-1/2 flex-1 flex flex-col relative"
         style={{ background: "linear-gradient(145deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%)" }}>
 
         {/* Subtle dot grid */}
@@ -115,7 +115,7 @@ export default async function SignInRoute() {
 
         <div className="relative flex-1 flex flex-col items-center justify-center px-8 py-10">
           {/* Form card */}
-          <div className="w-full max-w-sm bg-white rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-200/60 px-8 py-10">
+          <div className="w-full max-w-[480px] bg-white rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-200/60 px-10 py-12">
 
             {/* Logo mark */}
             <div className="flex w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 items-center justify-center mb-7 shadow-lg shadow-indigo-500/30">
