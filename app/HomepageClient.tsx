@@ -235,13 +235,21 @@ export function HomepageClient() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden" style={{ background: "linear-gradient(160deg, #eef2ff 0%, #f5f3ff 40%, #ffffff 100%)" }}>
-        {/* Background mesh */}
+      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden" style={{ background: "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 40%, #bae6fd 72%, #f8fafc 100%)" }}>
+        {/* Background layers */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px]"
-            style={{ background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.10) 0%, transparent 70%)" }} />
+          {/* Large indigo blob top-left */}
+          <div className="absolute -top-32 -left-32 w-[700px] h-[700px] rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%)" }} />
+          {/* Violet blob center-right */}
+          <div className="absolute top-10 right-[-100px] w-[600px] h-[600px] rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)" }} />
+          {/* Cyan accent bottom */}
+          <div className="absolute bottom-0 left-1/3 w-[500px] h-[300px]"
+            style={{ background: "radial-gradient(ellipse, rgba(6,182,212,0.14) 0%, transparent 70%)" }} />
+          {/* Dot grid */}
           <div className="absolute inset-0"
-            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.06) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
+            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.12) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
         </div>
 
         <div className="relative max-w-6xl mx-auto px-6 w-full py-20">
@@ -377,8 +385,8 @@ export function HomepageClient() {
 
         {/* Bottom wave divider */}
         <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-          <svg viewBox="0 0 1440 72" preserveAspectRatio="none" className="w-full h-16 sm:h-20" fill="white" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,36 C240,72 480,0 720,36 C960,72 1200,0 1440,36 L1440,72 L0,72 Z" />
+          <svg viewBox="0 0 1440 90" preserveAspectRatio="none" className="w-full h-20 sm:h-28" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,45 C180,90 360,0 540,45 C720,90 900,0 1080,45 C1260,90 1350,20 1440,45 L1440,90 L0,90 Z" />
           </svg>
         </div>
       </section>
