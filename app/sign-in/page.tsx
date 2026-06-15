@@ -25,11 +25,14 @@ export default async function SignInRoute() {
         <div className="relative flex flex-col h-full px-14 py-12">
 
           {/* Logo */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-300/50">
-              <GraduationCap className="h-5 w-5 text-white" />
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-xl shadow-indigo-300/50">
+              <GraduationCap className="h-7 w-7 text-white" />
             </div>
-            <span className="text-slate-900 font-black text-2xl tracking-tight">Skula</span>
+            <div>
+              <span className="text-slate-900 font-black text-[32px] tracking-tight leading-none">Skula</span>
+              <p className="text-indigo-500 text-[11px] font-bold tracking-widest uppercase mt-0.5">by Novalss</p>
+            </div>
           </div>
 
           {/* Main copy */}
