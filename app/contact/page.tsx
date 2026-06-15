@@ -239,7 +239,7 @@ export default function ContactPage() {
                     onClick={handleWhatsApp}
                     className="w-full inline-flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold h-11 rounded-xl transition-colors text-[14px] shadow-[0_2px_8px_rgba(37,211,102,0.35)]"
                   >
-                    <MessageCircle className="h-4.5 w-4.5 h-[18px] w-[18px]" />
+                    <MessageCircle className="h-[18px] w-[18px]" />
                     Chat on WhatsApp
                   </button>
                   <button
