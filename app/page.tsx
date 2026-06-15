@@ -142,17 +142,14 @@ export default async function LandingPage() {
                 <p className="text-slate-400 text-[10px]">Today · All classes</p>
               </div>
 
-              {/* Photo */}
-              <div className="relative w-[420px] h-[520px]">
+              {/* Photo — cutout, no border/shadow needed */}
+              <div className="relative w-[460px] h-[520px]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80"
-                  alt="School administrator using Skula"
-                  className="w-full h-full object-cover object-top rounded-3xl"
+                  src="/hero-student.png"
+                  alt="Student using Skula on a laptop"
+                  className="w-full h-full object-contain object-bottom drop-shadow-xl"
                 />
-                {/* Bottom fade to match bg */}
-                <div className="absolute inset-x-0 bottom-0 h-32 rounded-b-3xl"
-                  style={{ background: "linear-gradient(to top, #f5f3ff 0%, transparent 100%)" }} />
               </div>
 
             </div>
