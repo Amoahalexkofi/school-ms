@@ -9,7 +9,7 @@ async function getStudentResults(db: any, studentId: string) {
   const student = await (db as any).student.findUnique({
     where: { id: studentId },
     include: {
-      studentSessions: {
+      sessions: {
         include: { session: true, classSection: { include: { class: true, section: true } } },
         orderBy: { createdAt: "desc" },
         take: 1,
@@ -17,7 +17,7 @@ async function getStudentResults(db: any, studentId: string) {
     },
   });
   if (!student) return null;
-  const cs = student.studentSessions[0];
+  const cs = student.sessions[0];
 
   const examGroups = await (db as any).examGroup.findMany({
     where: { sessionId: cs?.sessionId, isPublished: true },

@@ -30,20 +30,20 @@ export default async function ParentHomeworkPage() {
     const student = await (db as any).student.findUnique({
       where: { id },
       include: {
-        studentSessions: {
+        sessions: {
           include: { classSection: { include: { class: true, section: true } }, session: true },
           orderBy: { createdAt: "desc" }, take: 1,
         },
       },
     });
     if (!student) return null;
-    const cs = student.studentSessions[0];
+    const cs = student.sessions[0];
     const homework = await (db as any).homework.findMany({
       where: { classSectionId: cs?.classSection?.id, sessionId: cs?.sessionId },
       include: {
         subject: true,
         staff: { select: { firstName: true, lastName: true } },
-        submissions: { where: { studentId: id } },
+        acknowledgements: { where: { studentId: id } },
       },
       orderBy: { homeworkDate: "desc" },
       take: 20,
@@ -74,7 +74,7 @@ export default async function ParentHomeworkPage() {
                     <p className="text-amber-200 text-sm">{cs?.classSection?.class?.name} {cs?.classSection?.section?.name}</p>
                   </div>
                   <div className="ml-auto text-right">
-                    <p className="text-2xl font-black">{homework.filter((h: any) => h.submissions.length === 0 && new Date(h.submissionDate) >= today).length}</p>
+                    <p className="text-2xl font-black">{homework.filter((h: any) => h.acknowledgements.length === 0 && new Date(h.dueDate) >= today).length}</p>
                     <p className="text-amber-200 text-xs">pending</p>
                   </div>
                 </div>
@@ -87,8 +87,8 @@ export default async function ParentHomeworkPage() {
               ) : (
                 <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden divide-y">
                   {homework.map((h: any) => {
-                    const submitted = h.submissions.length > 0;
-                    const overdue   = !submitted && new Date(h.submissionDate) < today;
+                    const submitted = h.acknowledgements.length > 0;
+                    const overdue   = !submitted && new Date(h.dueDate) < today;
                     const variant   = submitted ? "submitted" : overdue ? "overdue" : "pending";
                     const s = variantStyle[variant];
                     return (
@@ -96,9 +96,9 @@ export default async function ParentHomeworkPage() {
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
                             <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{h.subject?.name}</span>
-                            <p className="text-sm font-bold text-gray-900 mt-0.5">{h.homeworkTitle ?? h.description?.slice(0, 60)}</p>
+                            <p className="text-sm font-bold text-gray-900 mt-0.5">{h.title ?? h.description?.slice(0, 60)}</p>
                             <p className="text-xs text-gray-400 mt-1">
-                              Due: {new Date(h.submissionDate).toLocaleDateString("en-GB", { day:"numeric", month:"short" })}
+                              Due: {new Date(h.dueDate).toLocaleDateString("en-GB", { day:"numeric", month:"short" })}
                               {h.staff && ` · ${h.staff.firstName} ${h.staff.lastName}`}
                             </p>
                           </div>

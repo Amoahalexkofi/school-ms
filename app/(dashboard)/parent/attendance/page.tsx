@@ -34,7 +34,7 @@ export default async function ParentAttendancePage() {
     const student = await (db as any).student.findUnique({
       where: { id },
       include: {
-        studentSessions: {
+        sessions: {
           include: { session: true, classSection: { include: { class: true, section: true } } },
           orderBy: { createdAt: "desc" },
           take: 1,
@@ -42,7 +42,7 @@ export default async function ParentAttendancePage() {
       },
     });
     if (!student) return null;
-    const cs = student.studentSessions[0];
+    const cs = student.sessions[0];
     const records = await (db as any).studentAttendance.findMany({
       where: { studentSessionId: cs?.id },
       include: { attendanceDay: true, attendanceType: true },

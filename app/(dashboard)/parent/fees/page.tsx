@@ -34,15 +34,19 @@ export default async function ParentFeesPage() {
     const feeMasters = await (db as any).studentFeesMaster.findMany({
       where: { studentId: id, isSystem: false },
       include: {
-        feeGroupItem: { include: { feeType: { include: { feeCategory: true } }, feeSessionGroup: { include: { session: true } } } },
-        feeDeposits: { orderBy: { createdAt: "desc" } },
+        feeSessionGroup: { include: { session: true } },
+        deposits: { orderBy: { createdAt: "desc" } },
       },
       orderBy: { createdAt: "desc" },
     });
     let totalInv = 0, totalPaid = 0;
     for (const fm of feeMasters) {
-      totalInv  += fm.amount ?? 0;
-      totalPaid += fm.feeDeposits.reduce((s: number, d: any) => s + (d.amount ?? 0), 0);
+      const amt = Number(fm.amount ?? 0);
+      totalInv  += amt;
+      totalPaid += fm.deposits.reduce((s: number, d: any) => {
+        const detail = Array.isArray(d.amountDetail) ? d.amountDetail : Object.values(d.amountDetail ?? {});
+        return s + detail.reduce((ds: number, dd: any) => ds + Number(dd?.amount ?? 0), 0);
+      }, 0);
     }
     return { student, feeMasters, totalInv, totalPaid, totalDue: totalInv - totalPaid };
   }));
@@ -54,6 +58,9 @@ export default async function ParentFeesPage() {
         {children.map((data, idx) => {
           if (!data) return null;
           const { student, feeMasters, totalInv, totalPaid, totalDue } = data;
+          const totalInvNum = Number(totalInv);
+          const totalPaidNum = Number(totalPaid);
+          const totalDueNum = Number(totalDue);
           return (
             <div key={childIds[idx]}>
               <div className="bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-5 text-white mb-4">
@@ -66,23 +73,27 @@ export default async function ParentFeesPage() {
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-white/15 rounded-xl p-3 text-center">
-                    <p className="text-xl font-black">₵{totalInv.toLocaleString()}</p>
+                    <p className="text-xl font-black">₵{totalInvNum.toLocaleString()}</p>
                     <p className="text-xs text-white/70 mt-0.5">Invoiced</p>
                   </div>
                   <div className="bg-white/15 rounded-xl p-3 text-center">
-                    <p className="text-xl font-black text-emerald-300">₵{totalPaid.toLocaleString()}</p>
+                    <p className="text-xl font-black text-emerald-300">₵{totalPaidNum.toLocaleString()}</p>
                     <p className="text-xs text-white/70 mt-0.5">Paid</p>
                   </div>
                   <div className="bg-white/15 rounded-xl p-3 text-center">
-                    <p className={`text-xl font-black ${totalDue > 0 ? "text-rose-300" : "text-emerald-300"}`}>₵{totalDue.toLocaleString()}</p>
+                    <p className={`text-xl font-black ${totalDueNum > 0 ? "text-rose-300" : "text-emerald-300"}`}>₵{totalDueNum.toLocaleString()}</p>
                     <p className="text-xs text-white/70 mt-0.5">Outstanding</p>
                   </div>
                 </div>
               </div>
               <div className="space-y-3">
                 {feeMasters.map((fm: any) => {
-                  const paid = fm.feeDeposits.reduce((s: number, d: any) => s + (d.amount ?? 0), 0);
-                  const due  = (fm.amount ?? 0) - paid;
+                  const paid = fm.deposits.reduce((s: number, d: any) => {
+                    const detail = Array.isArray(d.amountDetail) ? d.amountDetail : Object.values(d.amountDetail ?? {});
+                    return s + detail.reduce((ds: number, dd: any) => ds + Number(dd?.amount ?? 0), 0);
+                  }, 0);
+                  const amt  = Number(fm.amount ?? 0);
+                  const due  = amt - paid;
                   const full = due <= 0;
                   return (
                     <div key={fm.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
@@ -92,19 +103,19 @@ export default async function ParentFeesPage() {
                             {full ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : <AlertCircle className="h-4 w-4 text-rose-500" />}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-bold text-gray-900 text-sm truncate">{fm.feeGroupItem?.feeType?.name ?? "Fee Invoice"}</p>
-                            <p className="text-xs text-gray-400">{fm.feeGroupItem?.feeSessionGroup?.session?.session ?? "—"}</p>
+                            <p className="font-bold text-gray-900 text-sm truncate">{fm.feeSessionGroup?.name ?? "Fee Invoice"}</p>
+                            <p className="text-xs text-gray-400">{fm.feeSessionGroup?.session?.session ?? "—"}</p>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="font-black text-gray-900">₵{(fm.amount ?? 0).toLocaleString()}</p>
+                          <p className="font-black text-gray-900">₵{amt.toLocaleString()}</p>
                           {full ? <p className="text-xs text-emerald-600 font-bold">Paid</p> : <p className="text-xs text-rose-600 font-bold">Due ₵{due.toLocaleString()}</p>}
                         </div>
                       </div>
-                      {fm.feeDeposits.length > 0 && (
+                      {fm.deposits.length > 0 && (
                         <div className="border-t bg-gray-50 divide-y">
-                          {fm.feeDeposits.map((dep: any) => {
-                            const detail = Array.isArray(dep.amountDetail) ? dep.amountDetail : [{ amount: dep.amount, subId: 0 }];
+                          {fm.deposits.map((dep: any) => {
+                            const detail = Array.isArray(dep.amountDetail) ? dep.amountDetail : Object.values(dep.amountDetail ?? {});
                             return detail.map((d: any, i: number) => (
                               <div key={`${dep.id}-${i}`} className="flex items-center justify-between px-5 py-2 text-xs">
                                 <span className="text-gray-500 flex items-center gap-1.5">
@@ -112,7 +123,7 @@ export default async function ParentFeesPage() {
                                   {new Date(dep.createdAt).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })}
                                 </span>
                                 <div className="flex items-center gap-2">
-                                  <span className="font-bold text-emerald-700">₵{(d.amount ?? dep.amount ?? 0).toLocaleString()}</span>
+                                  <span className="font-bold text-emerald-700">₵{Number(d?.amount ?? 0).toLocaleString()}</span>
                                   <Link href={`/fees/receipt/${dep.id}/${d.subId ?? i}`} className="text-blue-600 hover:underline text-[10px] font-semibold">Receipt</Link>
                                 </div>
                               </div>
