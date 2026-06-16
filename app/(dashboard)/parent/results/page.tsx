@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { TrendingUp, CheckCircle2, XCircle, Users } from "lucide-react";
-import Link from "next/link";
 
 async function getStudentResults(db: any, studentId: string) {
   const student = await (db as any).student.findUnique({
@@ -19,28 +18,48 @@ async function getStudentResults(db: any, studentId: string) {
   if (!student) return null;
   const cs = student.sessions[0];
 
+  // ExamGroup has no sessionId — filter via schedules relation
   const examGroups = await (db as any).examGroup.findMany({
-    where: { sessionId: cs?.sessionId, isPublished: true },
+    where: {
+      isPublished: true,
+      schedules: {
+        some: {
+          sessionId: cs?.sessionId,
+          classSectionId: cs?.classSectionId,
+        },
+      },
+    },
     include: {
-      examSchedules: {
-        where: { classId: cs?.classSection?.classId },
+      schedules: {
+        where: {
+          sessionId: cs?.sessionId,
+          classSectionId: cs?.classSectionId,
+        },
         include: { subject: true },
       },
     },
     orderBy: { createdAt: "asc" },
   });
 
-  const marks = await (db as any).studentMark.findMany({
+  // MarkEntry is the correct model name (not StudentMark)
+  const marks = await (db as any).markEntry.findMany({
     where: { studentId },
   });
   const markMap = new Map(marks.map((m: any) => [m.examScheduleId, m]));
 
-  const gradeScales = await (db as any).gradingScale.findMany({ orderBy: { percentageFrom: "desc" } });
+  // GradeRange has grade, markFrom, markTo (percentage-based)
+  const gradeRanges = await (db as any).gradeRange.findMany({
+    where: { isActive: true },
+    orderBy: { markFrom: "desc" },
+  }).catch(() => []);
+
   function getGrade(obt: number, full: number) {
     if (!full) return "—";
     const pct = (obt / full) * 100;
-    const scale = gradeScales.find((g: any) => pct >= g.percentageFrom && pct <= g.percentageTo);
-    return scale?.grade ?? "—";
+    const range = gradeRanges.find(
+      (g: any) => pct >= Number(g.markFrom) && pct <= Number(g.markTo)
+    );
+    return range?.grade ?? "—";
   }
 
   return { student, cs, examGroups, markMap, getGrade };
@@ -104,9 +123,13 @@ export default async function ParentResultsPage() {
               ) : (
                 examGroups.map((eg: any) => {
                   let totalObt = 0, totalFull = 0, passed = 0, failed = 0;
-                  eg.examSchedules.forEach((s: any) => {
+                  eg.schedules.forEach((s: any) => {
                     const m = markMap.get(s.id) as any;
-                    if (m) { totalObt += m.obtainedMark ?? 0; totalFull += s.fullMark ?? 0; m.isPassed ? passed++ : failed++; }
+                    if (m) {
+                      totalObt  += Number(m.marksObtained ?? 0);
+                      totalFull += s.fullMarks ?? 0;
+                      m.isPassing ? passed++ : failed++;
+                    }
                   });
                   const pct = totalFull > 0 ? Math.round((totalObt / totalFull) * 100) : 0;
 
@@ -133,18 +156,26 @@ export default async function ParentResultsPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                          {eg.examSchedules.map((s: any) => {
+                          {eg.schedules.map((s: any) => {
                             const m = markMap.get(s.id) as any;
-                            const p = m && s.fullMark ? Math.round((m.obtainedMark / s.fullMark) * 100) : null;
+                            const obt = Number(m?.marksObtained ?? 0);
+                            const p = m && s.fullMarks ? Math.round((obt / s.fullMarks) * 100) : null;
                             return (
                               <tr key={s.id} className="hover:bg-gray-50">
                                 <td className="px-5 py-2.5 font-medium text-gray-800">{s.subject?.name}</td>
-                                <td className="text-center px-3 py-2.5 text-gray-700">{m ? `${m.obtainedMark}/${s.fullMark}` : "—"}</td>
+                                <td className="text-center px-3 py-2.5 text-gray-700">{m ? `${obt}/${s.fullMarks}` : "—"}</td>
                                 <td className="text-center px-3 py-2.5">
-                                  {m ? <span className={`text-xs font-black px-2 py-0.5 rounded-full ${p! >= 60 ? "bg-emerald-100 text-emerald-700" : p! >= 40 ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"}`}>{getGrade(m.obtainedMark, s.fullMark)}</span> : <span className="text-gray-300">—</span>}
+                                  {m ? (
+                                    <span className={`text-xs font-black px-2 py-0.5 rounded-full ${p! >= 60 ? "bg-emerald-100 text-emerald-700" : p! >= 40 ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"}`}>
+                                      {getGrade(obt, s.fullMarks)}
+                                    </span>
+                                  ) : <span className="text-gray-300">—</span>}
                                 </td>
                                 <td className="text-center px-3 py-2.5">
-                                  {m ? (m.isPassed ? <CheckCircle2 className="h-4 w-4 text-emerald-600 mx-auto" /> : <XCircle className="h-4 w-4 text-rose-600 mx-auto" />) : null}
+                                  {m ? (m.isPassing
+                                    ? <CheckCircle2 className="h-4 w-4 text-emerald-600 mx-auto" />
+                                    : <XCircle className="h-4 w-4 text-rose-600 mx-auto" />
+                                  ) : null}
                                 </td>
                               </tr>
                             );
