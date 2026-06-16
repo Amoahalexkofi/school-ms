@@ -60,7 +60,7 @@ export default function ContactPage() {
     <div className="min-h-screen flex">
 
       {/* ── Left panel — hero gradient ── */}
-      <div className="hidden lg:flex lg:w-[60%] relative flex-col overflow-hidden"
+      <div className="hidden lg:flex lg:w-[48%] relative flex-col overflow-hidden"
         style={{ background: "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 40%, #bae6fd 72%, #f8fafc 100%)" }}>
 
         {/* Blobs */}
@@ -71,7 +71,7 @@ export default function ContactPage() {
         <div className="absolute inset-0 pointer-events-none"
           style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.1) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
 
-        <div className="relative flex flex-col h-full px-16 py-12 max-w-[680px]">
+        <div className="relative flex flex-col h-full px-12 py-12 max-w-[600px]">
 
           {/* Logo */}
           <div className="flex items-center gap-4 shrink-0">
@@ -164,8 +164,8 @@ export default function ContactPage() {
           <span className="font-black text-gray-900 text-xl">Skula</span>
         </div>
 
-        <div className="relative flex-1 flex flex-col items-center justify-center px-6 py-8">
-          <div className="w-full max-w-[400px] bg-white rounded-3xl border border-slate-200/80 px-9 py-9"
+        <div className="relative flex-1 flex flex-col items-center justify-center px-10 py-8">
+          <div className="w-full max-w-[520px] bg-white rounded-3xl border border-slate-200/80 px-10 py-10"
             style={{ boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 8px 28px rgba(99,102,241,0.10), 0 32px 64px rgba(0,0,0,0.07)" }}>
 
             {sent ? (
