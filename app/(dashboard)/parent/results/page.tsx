@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
-import { TrendingUp, CheckCircle2, XCircle, Users } from "lucide-react";
+import { CheckCircle2, XCircle, Users } from "lucide-react";
 
 async function getStudentResults(db: any, studentId: string) {
   const student = await (db as any).student.findUnique({
@@ -16,44 +16,44 @@ async function getStudentResults(db: any, studentId: string) {
     },
   });
   if (!student) return null;
-  const cs = student.sessions[0];
 
-  // ExamGroup has no sessionId — filter via schedules relation
-  const examGroups = await (db as any).examGroup.findMany({
-    where: {
-      isPublished: true,
-      schedules: {
-        some: {
-          sessionId: cs?.sessionId,
-          classSectionId: cs?.classSectionId,
-        },
-      },
-    },
+  const cs = student.sessions[0];
+  if (!cs) return { student, cs: null, examGroups: [], markMap: new Map(), getGrade: () => "—" };
+
+  // Get all published exam groups + schedules for this session — post-filter in JS
+  const allGroups = await (db as any).examGroup.findMany({
+    where: { isPublished: true },
     include: {
       schedules: {
-        where: {
-          sessionId: cs?.sessionId,
-          classSectionId: cs?.classSectionId,
-        },
+        where: { sessionId: cs.sessionId },
         include: { subject: true },
       },
     },
     orderBy: { createdAt: "asc" },
   });
 
-  // MarkEntry is the correct model name (not StudentMark)
+  // Only keep groups that have schedules for this student's class section
+  const examGroups = allGroups
+    .map((eg: any) => ({
+      ...eg,
+      schedules: eg.schedules.filter(
+        (s: any) => !s.classSectionId || s.classSectionId === cs.classSectionId
+      ),
+    }))
+    .filter((eg: any) => eg.schedules.length > 0);
+
+  // MarkEntry (not studentMark)
   const marks = await (db as any).markEntry.findMany({
     where: { studentId },
   });
   const markMap = new Map(marks.map((m: any) => [m.examScheduleId, m]));
 
-  // GradeRange has grade, markFrom, markTo (percentage-based)
+  // Grade ranges (markFrom/markTo are percentage boundaries)
   const gradeRanges = await (db as any).gradeRange.findMany({
-    where: { isActive: true },
     orderBy: { markFrom: "desc" },
   }).catch(() => []);
 
-  function getGrade(obt: number, full: number) {
+  function getGrade(obt: number, full: number): string {
     if (!full) return "—";
     const pct = (obt / full) * 100;
     const range = gradeRanges.find(
@@ -101,7 +101,6 @@ export default async function ParentResultsPage() {
 
           return (
             <div key={childIds[idx]}>
-              {/* Child header */}
               <div className="bg-gradient-to-r from-indigo-600 to-blue-600 rounded-2xl p-5 text-white mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center font-black text-sm">
@@ -116,7 +115,7 @@ export default async function ParentResultsPage() {
                 </div>
               </div>
 
-              {examGroups.length === 0 ? (
+              {!cs || examGroups.length === 0 ? (
                 <div className="text-center py-8 bg-white rounded-2xl border border-gray-100">
                   <p className="text-gray-400 text-sm">No published results yet for this child.</p>
                 </div>
@@ -127,7 +126,7 @@ export default async function ParentResultsPage() {
                     const m = markMap.get(s.id) as any;
                     if (m) {
                       totalObt  += Number(m.marksObtained ?? 0);
-                      totalFull += s.fullMarks ?? 0;
+                      totalFull += Number(s.fullMarks ?? 0);
                       m.isPassing ? passed++ : failed++;
                     }
                   });
