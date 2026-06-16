@@ -69,7 +69,7 @@ export async function proxy(request: NextRequest) {
         `<html><body style="font-family:sans-serif;text-align:center;padding:80px;color:#374151">
           <h2 style="font-size:1.5rem;font-weight:700">School not found</h2>
           <p>No school is registered at <strong>${host}</strong>.</p>
-          <p style="margin-top:1rem"><a href="https://${APP_DOMAIN}/register" style="color:#2563eb">Register your school →</a></p>
+          <p style="margin-top:1rem"><a href="https://${APP_DOMAINS[0]}/register" style="color:#2563eb">Register your school →</a></p>
         </body></html>`,
         { status: 404, headers: { "content-type": "text/html" } }
       );
