@@ -60,28 +60,28 @@ export default function ContactPage() {
     <div className="min-h-screen flex">
 
       {/* ── Left panel — hero gradient ── */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col overflow-hidden border-r border-indigo-200/50"
+      <div className="hidden lg:flex lg:w-[60%] relative flex-col overflow-hidden"
         style={{ background: "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 40%, #bae6fd 72%, #f8fafc 100%)" }}>
 
         {/* Blobs */}
         <div className="absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)" }} />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)" }} />
+          style={{ background: "radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)" }} />
+        <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(139,92,246,0.13) 0%, transparent 70%)" }} />
         <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.1) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.1) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
 
-        <div className="relative flex flex-col h-full px-14 py-12">
+        <div className="relative flex flex-col h-full px-16 py-12 max-w-[680px]">
 
           {/* Logo */}
           <div className="flex items-center gap-4 shrink-0">
-            <Link href="/" className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-xl shadow-indigo-300/50">
-                <GraduationCap className="h-7 w-7 text-white" />
+            <Link href="/" className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-xl shadow-indigo-300/40">
+                <GraduationCap className="h-6 w-6 text-white" />
               </div>
               <div>
-                <span className="text-slate-900 font-black text-[32px] tracking-tight leading-none">Skula</span>
-                <p className="text-indigo-500 text-[11px] font-bold tracking-widest uppercase mt-0.5">by Novalss</p>
+                <span className="text-slate-900 font-black text-[28px] tracking-tight leading-none">Skula</span>
+                <p className="text-indigo-500 text-[10.5px] font-bold tracking-widest uppercase mt-0.5">by Novalss</p>
               </div>
             </Link>
           </div>
@@ -89,27 +89,27 @@ export default function ContactPage() {
           {/* Content */}
           <div className="flex-1 flex flex-col justify-center">
 
-            <div className="inline-flex items-center gap-2 bg-white/60 border border-white/80 text-indigo-700 text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-6 w-fit backdrop-blur-sm">
-              <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+            <div className="inline-flex items-center gap-2 bg-white/65 border border-white/80 text-indigo-700 text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-7 w-fit backdrop-blur-sm shadow-sm">
+              <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
               Trusted by schools worldwide
             </div>
 
-            <h1 className="text-[42px] font-black text-slate-900 leading-[1.08] tracking-tight mb-5">
+            <h1 className="font-black text-slate-900 leading-[1.06] tracking-tight mb-5" style={{ fontSize: "clamp(36px, 3.2vw, 48px)" }}>
               Get your school<br />running on{" "}
               <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 Skula today.
               </span>
             </h1>
 
-            <p className="text-slate-600 text-[15px] leading-relaxed mb-10 max-w-sm">
+            <p className="text-slate-600 text-[15.5px] leading-relaxed mb-10 max-w-[420px]">
               We'll set everything up together — classes, students, fees, timetables. Most schools are live the same day.
             </p>
 
             {/* Benefits */}
             <ul className="space-y-4 mb-10">
               {BENEFITS.map(({ icon: Icon, text }) => (
-                <li key={text} className="flex items-center gap-3.5 text-[14px] font-medium text-slate-700">
-                  <div className="w-8 h-8 rounded-xl bg-white/70 border border-white/90 flex items-center justify-center shrink-0 backdrop-blur-sm shadow-sm">
+                <li key={text} className="flex items-center gap-4 text-[14.5px] font-medium text-slate-700">
+                  <div className="w-9 h-9 rounded-xl bg-white/70 border border-white/90 flex items-center justify-center shrink-0 backdrop-blur-sm shadow-sm">
                     <Icon className="h-4 w-4 text-indigo-600" />
                   </div>
                   {text}
@@ -118,17 +118,17 @@ export default function ContactPage() {
             </ul>
 
             {/* Steps */}
-            <div className="bg-white/50 border border-white/80 rounded-2xl p-5 backdrop-blur-sm">
-              <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-4">What happens next</p>
-              <div className="space-y-4">
+            <div className="bg-white/55 border border-white/80 rounded-2xl p-6 backdrop-blur-sm max-w-[460px]">
+              <p className="text-[10.5px] font-black text-slate-400 uppercase tracking-[0.15em] mb-5">What happens next</p>
+              <div className="space-y-5">
                 {STEPS.map(({ n, label, sub }, i) => (
-                  <div key={n} className="flex items-start gap-3.5">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0 text-white text-[12px] font-black shadow-sm shadow-indigo-300/40">{n}</div>
+                  <div key={n} className="flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0 text-white text-[12px] font-black shadow-md shadow-indigo-300/30">{n}</div>
                     <div className="flex-1 pt-0.5">
                       <p className="text-[14px] font-bold text-slate-800">{label}</p>
-                      <p className="text-[12px] text-slate-500 mt-0.5">{sub}</p>
+                      <p className="text-[12.5px] text-slate-500 mt-0.5">{sub}</p>
                     </div>
-                    {i < STEPS.length - 1 && <ChevronRight className="h-4 w-4 text-slate-300 shrink-0 mt-1" />}
+                    {i < STEPS.length - 1 && <ChevronRight className="h-4 w-4 text-slate-300 shrink-0 mt-1.5" />}
                   </div>
                 ))}
               </div>
@@ -138,18 +138,18 @@ export default function ContactPage() {
       </div>
 
       {/* ── Right panel — form side ── */}
-      <div className="lg:w-1/2 flex-1 flex flex-col relative"
-        style={{ background: "linear-gradient(145deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%)" }}>
+      <div className="flex-1 flex flex-col relative"
+        style={{ background: "linear-gradient(160deg, #f8fafc 0%, #f1f5f9 60%, #f8fafc 100%)" }}>
 
-        {/* Dot grid */}
-        <div className="absolute inset-0 pointer-events-none opacity-40"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)", backgroundSize: "24px 24px" }} />
+        {/* Subtle dot grid */}
+        <div className="absolute inset-0 pointer-events-none opacity-30"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)", backgroundSize: "20px 20px" }} />
 
         {/* Left accent border */}
-        <div className="absolute left-0 top-0 bottom-0 w-px"
-          style={{ background: "linear-gradient(180deg, transparent 0%, #6366f1 30%, #8b5cf6 70%, transparent 100%)" }} />
+        <div className="absolute left-0 top-0 bottom-0 w-[2px]"
+          style={{ background: "linear-gradient(180deg, transparent 5%, #6366f1 35%, #8b5cf6 65%, transparent 95%)" }} />
 
-        {/* Back link — top right */}
+        {/* Back link */}
         <div className="relative shrink-0 flex justify-end px-8 pt-6">
           <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-slate-400 hover:text-slate-700 transition-colors">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to home
@@ -164,8 +164,9 @@ export default function ContactPage() {
           <span className="font-black text-gray-900 text-xl">Skula</span>
         </div>
 
-        <div className="relative flex-1 flex flex-col items-center justify-center px-8 py-8">
-          <div className="w-full max-w-[440px] bg-white rounded-3xl border border-slate-200/80 shadow-2xl shadow-slate-200/80 px-10 py-10">
+        <div className="relative flex-1 flex flex-col items-center justify-center px-6 py-8">
+          <div className="w-full max-w-[400px] bg-white rounded-3xl border border-slate-200/80 px-9 py-9"
+            style={{ boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 8px 28px rgba(99,102,241,0.10), 0 32px 64px rgba(0,0,0,0.07)" }}>
 
             {sent ? (
               <div className="text-center py-6">
