@@ -59,10 +59,14 @@ export const authConfig: NextAuthConfig = {
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
-          const schema = await resolveSchema(
-            credentials.tenant as string | undefined,
-            request as Request | undefined
-          );
+          // Prefer x-tenant-schema set by middleware (proxy.ts) — most reliable
+          // because it doesn't depend on APP_DOMAIN matching the actual host used.
+          const schemaFromHeader = (request as Request | undefined)?.headers?.get("x-tenant-schema");
+          const schema = schemaFromHeader
+            ?? await resolveSchema(
+                credentials.tenant as string | undefined,
+                request as Request | undefined
+              );
 
           const sql = neon(process.env.DATABASE_URL!);
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
