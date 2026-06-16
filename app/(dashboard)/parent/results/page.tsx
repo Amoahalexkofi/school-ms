@@ -20,19 +20,27 @@ async function getStudentResults(db: any, studentId: string) {
   const cs = student.sessions[0];
   if (!cs) return { student, cs: null, examGroups: [], markMap: new Map(), getGrade: () => "—" };
 
-  // Get all published exam groups + schedules for this session — post-filter in JS
-  const allGroups = await (db as any).examGroup.findMany({
-    where: { isPublished: true },
-    include: {
-      schedules: {
-        where: { sessionId: cs.sessionId },
-        include: { subject: true },
-      },
-    },
-    orderBy: { createdAt: "asc" },
-  });
+  console.log("[results] student:", studentId, "sessionId:", cs.sessionId, "classSectionId:", cs.classSectionId);
 
-  // Only keep groups that have schedules for this student's class section
+  // Step 1: exam groups
+  let allGroups: any[] = [];
+  try {
+    allGroups = await (db as any).examGroup.findMany({
+      where: { isPublished: true },
+      include: {
+        schedules: {
+          where: { sessionId: cs.sessionId },
+          include: { subject: true },
+        },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+    console.log("[results] examGroups fetched:", allGroups.length);
+  } catch (e: any) {
+    console.error("[results] examGroup query FAILED:", e?.message ?? e);
+    throw e;
+  }
+
   const examGroups = allGroups
     .map((eg: any) => ({
       ...eg,
@@ -42,16 +50,24 @@ async function getStudentResults(db: any, studentId: string) {
     }))
     .filter((eg: any) => eg.schedules.length > 0);
 
-  // MarkEntry (not studentMark)
-  const marks = await (db as any).markEntry.findMany({
-    where: { studentId },
-  });
+  // Step 2: marks
+  let marks: any[] = [];
+  try {
+    marks = await (db as any).markEntry.findMany({ where: { studentId } });
+    console.log("[results] markEntries fetched:", marks.length);
+  } catch (e: any) {
+    console.error("[results] markEntry query FAILED:", e?.message ?? e);
+    throw e;
+  }
   const markMap = new Map(marks.map((m: any) => [m.examScheduleId, m]));
 
-  // Grade ranges (markFrom/markTo are percentage boundaries)
-  const gradeRanges = await (db as any).gradeRange.findMany({
-    orderBy: { markFrom: "desc" },
-  }).catch(() => []);
+  // Step 3: grade ranges (non-fatal)
+  let gradeRanges: any[] = [];
+  try {
+    gradeRanges = await (db as any).gradeRange.findMany({ orderBy: { markFrom: "desc" } });
+  } catch (e: any) {
+    console.error("[results] gradeRange query FAILED (non-fatal):", e?.message ?? e);
+  }
 
   function getGrade(obt: number, full: number): string {
     if (!full) return "—";
