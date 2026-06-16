@@ -8,7 +8,7 @@ import {
   FileText, BarChart2, Banknote, Library, Bus, Building, Package,
   ConciergeBell, Monitor, UserPlus, ShieldCheck, Settings, ScrollText,
   Megaphone, Send, MessageCircle, Layers, Home, CreditCard, CheckSquare,
-  Bell, ChevronDown,
+  Bell, ChevronDown, Globe,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -73,6 +73,12 @@ const adminGroups: NavGroup[] = [
       { href: "/notice-board", label: "Notices",   icon: Megaphone,    roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN"], perm: "communicate" },
       { href: "/messaging",    label: "Messaging", icon: Send,          roles: ["SUPER_ADMIN","ADMIN"],                                    perm: "communicate" },
       { href: "/chat",         label: "Chat",      icon: MessageCircle, roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN"], perm: "chat" },
+    ],
+  },
+  {
+    label: "Website",
+    items: [
+      { href: "/website", label: "My Website", icon: Globe, roles: ["SUPER_ADMIN","ADMIN"], perm: "system_settings" },
     ],
   },
   {

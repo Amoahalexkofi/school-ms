@@ -2388,3 +2388,38 @@ model SchoolTenant {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
+
+// ─── School Public Website (per-tenant) ──────────────────────────────────────
+
+model WebsiteHeroSlide {
+  id        String   @id @default(cuid())
+  title     String
+  subtitle  String?
+  imageUrl  String?
+  ctaText   String   @default("Sign In to Portal")
+  ctaLink   String   @default("/sign-in")
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WebsiteNotice {
+  id        String    @id @default(cuid())
+  title     String
+  body      String?
+  type      String    @default("info") // info | warning | urgent
+  isActive  Boolean   @default(true)
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model WebsiteSettings {
+  id           String   @id @default(cuid())
+  aboutTitle   String?
+  aboutText    String?
+  primaryColor String   @default("#6366f1")
+  showStats    Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+}

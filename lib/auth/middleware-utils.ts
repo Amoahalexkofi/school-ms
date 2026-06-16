@@ -189,6 +189,15 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/settings",
     roles: ["SUPER_ADMIN", "ADMIN"],
   },
+  // School website management
+  {
+    prefix: "/website",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
+  {
+    prefix: "/api/website",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+  },
   // Lesson plans
   {
     prefix: "/lesson-plans",
