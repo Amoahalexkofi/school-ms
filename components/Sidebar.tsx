@@ -20,7 +20,6 @@ type StaffRole = "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "ACCOUNTANT" | "LIBRARIAN
 type NavItem  = { href: string; label: string; icon: React.ElementType; roles?: StaffRole[]; perm?: string };
 type NavGroup = { label: string; items: NavItem[] };
 
-// roles: undefined = visible to all staff roles; otherwise restricted to listed roles
 const adminGroups: NavGroup[] = [
   {
     label: "Overview",
@@ -79,9 +78,9 @@ const adminGroups: NavGroup[] = [
   {
     label: "System",
     items: [
-      { href: "/reports",   label: "Reports",   icon: BarChart2,  roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT"], perm: "reports" },
+      { href: "/reports",   label: "Reports",   icon: BarChart2,   roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT"], perm: "reports" },
       { href: "/audit-log", label: "Audit Log", icon: ShieldCheck, roles: ["SUPER_ADMIN","ADMIN"],                         perm: "system_settings" },
-      { href: "/settings",  label: "Settings",  icon: Settings,   roles: ["SUPER_ADMIN","ADMIN"],                         perm: "system_settings" },
+      { href: "/settings",  label: "Settings",  icon: Settings,    roles: ["SUPER_ADMIN","ADMIN"],                         perm: "system_settings" },
     ],
   },
 ];
@@ -140,6 +139,7 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
       return true;
     }),
   })).filter(g => g.items.length > 0);
+
   const portalLabel = getPortalLabel(role);
   const userName    = (session?.user as any)?.name || session?.user?.email?.split("@")[0] || "User";
   const userEmail   = session?.user?.email ?? "";
@@ -147,16 +147,16 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
   const initials    = userName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-slate-900">
 
       {/* Logo */}
-      <div className="h-14 px-4 flex items-center gap-2.5 border-b border-slate-100 shrink-0">
-        <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0">
-          <GraduationCap className="h-3.5 w-3.5 text-white" />
+      <div className="h-14 px-4 flex items-center gap-2.5 border-b border-white/[0.06] shrink-0">
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-900/40">
+          <GraduationCap className="h-4 w-4 text-white" />
         </div>
-        <span className="font-bold text-slate-900 text-[15px] tracking-tight">Skula</span>
+        <span className="font-black text-white text-[16px] tracking-tight">Skula</span>
         {portalLabel && (
-          <span className="ml-auto text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-100">
+          <span className="ml-auto text-[10px] font-bold text-indigo-300 bg-indigo-500/20 px-1.5 py-0.5 rounded-md border border-indigo-500/30">
             {portalLabel}
           </span>
         )}
@@ -165,9 +165,8 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5 scrollbar-none">
         {groups.map((group, gi) => (
-          <div key={group.label} className={cn(gi > 0 && "mt-4")}>
-
-            <p className="px-2.5 mb-1 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.08em] select-none">
+          <div key={group.label} className={cn(gi > 0 && "mt-5")}>
+            <p className="px-2.5 mb-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-[0.09em] select-none">
               {group.label}
             </p>
 
@@ -182,15 +181,15 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
                   href={href}
                   onClick={onNavigate}
                   className={cn(
-                    "flex items-center gap-2.5 h-8 px-2.5 rounded-md text-[13px] font-medium transition-colors duration-100 group",
+                    "flex items-center gap-2.5 h-8 px-2.5 rounded-lg text-[13px] font-medium transition-all duration-100 group",
                     active
-                      ? "bg-indigo-50 text-indigo-700"
-                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                      ? "bg-indigo-600 text-white shadow-sm shadow-indigo-900/40"
+                      : "text-slate-400 hover:bg-white/[0.07] hover:text-white"
                   )}
                 >
                   <Icon className={cn(
                     "h-[15px] w-[15px] shrink-0 transition-colors",
-                    active ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"
+                    active ? "text-white" : "text-slate-500 group-hover:text-slate-300"
                   )} />
                   <span className="truncate">{label}</span>
                 </Link>
@@ -201,39 +200,39 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
       </nav>
 
       {/* User footer */}
-      <div className="shrink-0 px-2 pb-3 pt-2 border-t border-slate-100">
+      <div className="shrink-0 px-2 pb-3 pt-2 border-t border-white/[0.06]">
         <button
           onClick={() => setShowUser(s => !s)}
-          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-slate-50 transition-colors text-left group"
+          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.07] transition-colors text-left group"
         >
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[9px] font-bold text-white shrink-0">
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white shrink-0">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[12px] font-semibold text-slate-700 truncate leading-none">{userName}</p>
-            <p className="text-[10px] text-slate-400 truncate mt-0.5 capitalize">{userRole}</p>
+            <p className="text-[12px] font-semibold text-white truncate leading-none">{userName}</p>
+            <p className="text-[10px] text-slate-500 truncate mt-0.5 capitalize">{userRole}</p>
           </div>
           <ChevronDown className={cn(
-            "h-3 w-3 text-slate-300 shrink-0 transition-transform duration-150",
+            "h-3 w-3 text-slate-600 shrink-0 transition-transform duration-150",
             showUser && "rotate-180"
           )} />
         </button>
 
         {showUser && (
-          <div className="mt-1 mx-0.5 rounded-lg border border-slate-100 bg-white shadow-sm overflow-hidden">
-            <div className="px-3 py-2 border-b border-slate-50">
-              <p className="text-[11px] text-slate-400 truncate">{userEmail}</p>
+          <div className="mt-1.5 mx-0.5 rounded-xl border border-white/[0.08] bg-slate-800 shadow-xl overflow-hidden">
+            <div className="px-3 py-2.5 border-b border-white/[0.06]">
+              <p className="text-[11px] text-slate-500 truncate">{userEmail}</p>
             </div>
             <Link
               href="/settings/school-profile"
               onClick={() => setShowUser(false)}
-              className="flex items-center gap-2 px-3 py-2 text-[12px] text-slate-600 hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-2 px-3 py-2.5 text-[12px] text-slate-300 hover:bg-white/[0.07] hover:text-white transition-colors"
             >
-              <Settings className="h-3.5 w-3.5 text-slate-400" /> Settings
+              <Settings className="h-3.5 w-3.5 text-slate-500" /> Settings
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/sign-in" })}
-              className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-red-500 hover:bg-red-50 transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-[12px] text-rose-400 hover:bg-rose-500/10 transition-colors"
             >
               <LogOut className="h-3.5 w-3.5" /> Sign out
             </button>
@@ -250,16 +249,16 @@ export function Sidebar({ role = "ADMIN" }: { role?: Role }) {
   return (
     <>
       {/* Mobile topbar */}
-      <div className="lg:hidden flex items-center justify-between px-4 h-14 bg-white border-b border-slate-100">
+      <div className="lg:hidden flex items-center justify-between px-4 h-14 bg-slate-900 border-b border-white/[0.06]">
         <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 bg-indigo-600 rounded-md flex items-center justify-center">
-            <GraduationCap className="h-3 w-3 text-white" />
+          <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+            <GraduationCap className="h-3.5 w-3.5 text-white" />
           </div>
-          <span className="font-bold text-slate-900 text-sm">Skula</span>
+          <span className="font-black text-white text-[15px]">Skula</span>
         </div>
         <button
           onClick={() => setOpen(!open)}
-          className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 transition-colors"
+          className="p-1.5 rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
         >
           {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
@@ -268,11 +267,11 @@ export function Sidebar({ role = "ADMIN" }: { role?: Role }) {
       {/* Mobile drawer */}
       {open && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+          className="lg:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-60 h-full bg-white border-r border-slate-100 shadow-xl flex flex-col"
+            className="w-60 h-full bg-slate-900 shadow-2xl flex flex-col"
             onClick={e => e.stopPropagation()}
           >
             <NavContent role={role} onNavigate={() => setOpen(false)} />
@@ -281,7 +280,7 @@ export function Sidebar({ role = "ADMIN" }: { role?: Role }) {
       )}
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-56 shrink-0 bg-white border-r border-slate-100 min-h-screen">
+      <aside className="hidden lg:flex flex-col w-56 shrink-0 bg-slate-900 min-h-screen">
         <NavContent role={role} />
       </aside>
     </>

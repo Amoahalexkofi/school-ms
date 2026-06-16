@@ -43,9 +43,10 @@ function KpiCard({
   sparkData?: number[]; sparkColor?: string;
 }) {
   const inner = (
-    <div className={`group relative bg-white rounded-xl border border-slate-200 p-5 h-full flex flex-col gap-4
-      shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]
-      hover:-translate-y-px transition-all duration-200 overflow-hidden`}>
+    <div className={`group relative bg-white rounded-2xl border border-slate-200/80 p-5 h-full flex flex-col gap-4
+      hover:-translate-y-0.5 transition-all duration-200 overflow-hidden`}
+      style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(99,102,241,0.06)" }}
+    >
       {/* Top accent line */}
       <div className={`absolute top-0 left-0 right-0 h-[3px] rounded-t-xl ${borderAccent}`} />
 
@@ -122,30 +123,38 @@ export default async function DashboardPage() {
   const userName = (session?.user as any)?.name || session?.user?.email?.split("@")[0] || "";
 
   return (
-    <div className="flex flex-col flex-1 bg-slate-50 min-h-screen">
+    <div className="flex flex-col flex-1 min-h-screen">
       <Topbar title="Dashboard" />
 
       <main className="flex-1 px-4 py-6 md:p-7 max-w-[1440px] mx-auto w-full space-y-6">
 
         {/* ── Welcome ── */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-[26px] font-black text-slate-900 tracking-tight leading-tight">
+        <div
+          className="rounded-2xl px-6 py-5 flex items-center justify-between gap-4 overflow-hidden relative"
+          style={{ background: "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 45%, #bae6fd 80%, #f0f9ff 100%)" }}
+        >
+          {/* Dot grid */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.10) 1px, transparent 0)",
+            backgroundSize: "24px 24px",
+          }} />
+          <div className="relative">
+            <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-tight">
               {greeting}{userName ? `, ${userName.split(" ")[0]}` : ""}.
             </h1>
             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-              <p className="text-[14px] text-slate-500 font-medium">{schoolName}</p>
+              <p className="text-[13.5px] text-slate-600 font-medium">{schoolName}</p>
               {stats?.currentSession && (
                 <>
-                  <span className="text-slate-300">·</span>
-                  <span className="text-[12px] font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
+                  <span className="text-slate-400">·</span>
+                  <span className="text-[11.5px] font-bold text-indigo-700 bg-white/70 border border-indigo-200/60 px-2 py-0.5 rounded-full backdrop-blur-sm">
                     {stats.currentSession}
                   </span>
                 </>
               )}
             </div>
           </div>
-          <p className="text-[13px] text-slate-400 hidden md:block shrink-0 mt-1">{dayLabel}</p>
+          <p className="text-[12.5px] text-slate-500 hidden md:block shrink-0 relative">{dayLabel}</p>
         </div>
 
         {!stats ? (
@@ -197,7 +206,7 @@ export default async function DashboardPage() {
             <div className="grid grid-cols-12 gap-4">
 
               {/* Attendance */}
-              <div className="col-span-12 lg:col-span-7 bg-white rounded-xl border border-slate-200 p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+              <div className="col-span-12 lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 p-5">
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h2 className="text-[15px] font-bold text-slate-900">Student Attendance</h2>
@@ -259,7 +268,7 @@ export default async function DashboardPage() {
               </div>
 
               {/* Fee Collection */}
-              <div className="col-span-12 lg:col-span-5 bg-white rounded-xl border border-slate-200 p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] flex flex-col">
+              <div className="col-span-12 lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 p-5 flex flex-col">
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h2 className="text-[15px] font-bold text-slate-900">Fee Collection</h2>
@@ -303,7 +312,7 @@ export default async function DashboardPage() {
             <div className="grid grid-cols-12 gap-4">
 
               {/* Recent payments */}
-              <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border border-slate-200 p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+              <div className="col-span-12 lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="text-[15px] font-bold text-slate-900">Today's Payments</h2>
@@ -367,7 +376,7 @@ export default async function DashboardPage() {
               <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
 
                 {/* Quick actions */}
-                <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+                <div className="bg-white rounded-2xl border border-slate-200/80 p-5">
                   <h2 className="text-[13px] font-bold text-slate-900 mb-3">Quick actions</h2>
                   <div className="space-y-0.5">
                     {[
@@ -391,7 +400,7 @@ export default async function DashboardPage() {
                 </div>
 
                 {/* Staff + Library */}
-                <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] flex-1">
+                <div className="bg-white rounded-2xl border border-slate-200/80 p-5 flex-1">
                   <div className="mb-4">
                     <h2 className="text-[13px] font-bold text-slate-900 mb-3">Staff today</h2>
                     {[
