@@ -6,7 +6,9 @@ import { neon } from "@neondatabase/serverless";
 
 // ── Tenant detection ──────────────────────────────────────────────────────────
 
-const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN ?? "novalss.com";
+// Comma-separated list of base domains — subdomains of any are treated as school tenants
+const APP_DOMAINS = (process.env.NEXT_PUBLIC_APP_DOMAIN ?? "novalss.com")
+  .split(",").map(d => d.trim()).filter(Boolean);
 
 // Cache subdomain → schemaName lookups for 60 s to avoid a DB hit per request
 const tenantCache = new Map<string, { schema: string; expiresAt: number }>();
@@ -34,9 +36,11 @@ async function getSchemaForSubdomain(subdomain: string): Promise<string | null> 
 
 function extractSubdomain(host: string): string | null {
   const withoutPort = host.split(":")[0];
-  if (withoutPort.endsWith(`.${APP_DOMAIN}`)) {
-    const sub = withoutPort.slice(0, -(APP_DOMAIN.length + 1));
-    if (sub && sub !== "www") return sub;
+  for (const domain of APP_DOMAINS) {
+    if (withoutPort.endsWith(`.${domain}`)) {
+      const sub = withoutPort.slice(0, -(domain.length + 1));
+      if (sub && sub !== "www") return sub;
+    }
   }
   return null;
 }

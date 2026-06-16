@@ -3,13 +3,19 @@ import Credentials from "next-auth/providers/credentials";
 import { verifyPassword } from "@/lib/auth/password";
 import { neon } from "@neondatabase/serverless";
 
-const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN ?? "novalss.com";
+const APP_DOMAINS = (process.env.NEXT_PUBLIC_APP_DOMAIN ?? "novalss.com")
+  .split(",").map(d => d.trim()).filter(Boolean);
 
 async function schemaForHost(rawHost: string): Promise<string | null> {
   const host = rawHost.split(":")[0];
-  if (!host.endsWith(`.${APP_DOMAIN}`)) return null;
-  const subdomain = host.slice(0, -(APP_DOMAIN.length + 1));
-  if (!subdomain || subdomain === "www") return null;
+  let subdomain: string | null = null;
+  for (const domain of APP_DOMAINS) {
+    if (host.endsWith(`.${domain}`)) {
+      const sub = host.slice(0, -(domain.length + 1));
+      if (sub && sub !== "www") { subdomain = sub; break; }
+    }
+  }
+  if (!subdomain) return null;
   try {
     const sql = neon(process.env.DATABASE_URL!);
     const rows = await sql`
