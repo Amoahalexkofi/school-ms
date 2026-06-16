@@ -2,93 +2,48 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
-import { CheckCircle2, XCircle, Users } from "lucide-react";
-
-async function getStudentResults(db: any, studentId: string) {
-  const student = await (db as any).student.findUnique({
-    where: { id: studentId },
-    include: {
-      sessions: {
-        include: { session: true, classSection: { include: { class: true, section: true } } },
-        orderBy: { createdAt: "desc" },
-        take: 1,
-      },
-    },
-  });
-  if (!student) return null;
-
-  const cs = student.sessions[0];
-  if (!cs) return { student, cs: null, examGroups: [], markMap: new Map(), getGrade: () => "—" };
-
-  console.log("[results] student:", studentId, "sessionId:", cs.sessionId, "classSectionId:", cs.classSectionId);
-
-  // Step 1: exam groups
-  let allGroups: any[] = [];
-  try {
-    allGroups = await (db as any).examGroup.findMany({
-      where: { isPublished: true },
-      include: {
-        schedules: {
-          where: { sessionId: cs.sessionId },
-          include: { subject: true },
-        },
-      },
-      orderBy: { createdAt: "asc" },
-    });
-    console.log("[results] examGroups fetched:", allGroups.length);
-  } catch (e: any) {
-    console.error("[results] examGroup query FAILED:", e?.message ?? e);
-    throw e;
-  }
-
-  const examGroups = allGroups
-    .map((eg: any) => ({
-      ...eg,
-      schedules: eg.schedules.filter(
-        (s: any) => !s.classSectionId || s.classSectionId === cs.classSectionId
-      ),
-    }))
-    .filter((eg: any) => eg.schedules.length > 0);
-
-  // Step 2: marks
-  let marks: any[] = [];
-  try {
-    marks = await (db as any).markEntry.findMany({ where: { studentId } });
-    console.log("[results] markEntries fetched:", marks.length);
-  } catch (e: any) {
-    console.error("[results] markEntry query FAILED:", e?.message ?? e);
-    throw e;
-  }
-  const markMap = new Map(marks.map((m: any) => [m.examScheduleId, m]));
-
-  // Step 3: grade ranges (non-fatal)
-  let gradeRanges: any[] = [];
-  try {
-    gradeRanges = await (db as any).gradeRange.findMany({ orderBy: { markFrom: "desc" } });
-  } catch (e: any) {
-    console.error("[results] gradeRange query FAILED (non-fatal):", e?.message ?? e);
-  }
-
-  function getGrade(obt: number, full: number): string {
-    if (!full) return "—";
-    const pct = (obt / full) * 100;
-    const range = gradeRanges.find(
-      (g: any) => pct >= Number(g.markFrom) && pct <= Number(g.markTo)
-    );
-    return range?.grade ?? "—";
-  }
-
-  return { student, cs, examGroups, markMap, getGrade };
-}
+import { CheckCircle2, XCircle, Users, AlertCircle } from "lucide-react";
 
 export default async function ParentResultsPage() {
   const session = await auth();
   if (!session) redirect("/sign-in");
   const user = session.user as any;
-  const db = await getDb();
 
-  const parentUser = await (db as any).user.findUnique({ where: { id: user.id } });
+  let db: any;
+  let errorMsg = "";
+
+  try {
+    db = await getDb();
+  } catch (e: any) {
+    errorMsg = "DB connection failed: " + (e?.message ?? String(e));
+  }
+
+  if (errorMsg || !db) {
+    return (
+      <div className="flex flex-col flex-1">
+        <Topbar title="Results" />
+        <main className="flex-1 p-6"><p className="text-red-600 text-sm font-mono">{errorMsg || "No DB"}</p></main>
+      </div>
+    );
+  }
+
+  let parentUser: any = null;
+  try {
+    parentUser = await (db as any).user.findUnique({ where: { id: user.id } });
+  } catch (e: any) {
+    errorMsg = "user.findUnique failed: " + (e?.message ?? String(e));
+  }
+
   const childIds = (parentUser?.childs ?? "").split(",").map((s: string) => s.trim()).filter(Boolean);
+
+  if (errorMsg) {
+    return (
+      <div className="flex flex-col flex-1">
+        <Topbar title="Results" />
+        <main className="flex-1 p-6"><p className="text-red-600 text-sm font-mono">{errorMsg}</p></main>
+      </div>
+    );
+  }
 
   if (childIds.length === 0) {
     return (
@@ -98,25 +53,96 @@ export default async function ParentResultsPage() {
           <div className="text-center">
             <Users className="h-10 w-10 mx-auto text-gray-300 mb-3" />
             <p className="text-gray-500 font-medium">No children linked to your account.</p>
-            <p className="text-sm text-gray-400 mt-1">Contact the school administrator to link your children.</p>
           </div>
         </main>
       </div>
     );
   }
 
-  const childResults = await Promise.all(childIds.map((id: string) => getStudentResults(db, id)));
+  // Fetch results per child — each wrapped in try/catch
+  const childResults = await Promise.all(
+    childIds.map(async (studentId: string) => {
+      try {
+        const student = await (db as any).student.findUnique({
+          where: { id: studentId },
+          include: {
+            sessions: {
+              include: { session: true, classSection: { include: { class: true, section: true } } },
+              orderBy: { createdAt: "desc" },
+              take: 1,
+            },
+          },
+        });
+        if (!student) return { studentId, error: "Student not found" };
+
+        const cs = student.sessions[0];
+        if (!cs) return { studentId, student, cs: null, examGroups: [], markMap: new Map(), getGrade: () => "—" };
+
+        const allGroups = await (db as any).examGroup.findMany({
+          where: { isPublished: true },
+          include: {
+            schedules: {
+              where: { sessionId: cs.sessionId },
+              include: { subject: true },
+            },
+          },
+          orderBy: { createdAt: "asc" },
+        });
+
+        const examGroups = allGroups
+          .map((eg: any) => ({
+            ...eg,
+            schedules: eg.schedules.filter(
+              (s: any) => !s.classSectionId || s.classSectionId === cs.classSectionId
+            ),
+          }))
+          .filter((eg: any) => eg.schedules.length > 0);
+
+        const marks = await (db as any).markEntry.findMany({ where: { studentId } });
+        const markMap = new Map(marks.map((m: any) => [m.examScheduleId, m]));
+
+        const gradeRanges = await (db as any).gradeRange
+          .findMany({ orderBy: { markFrom: "desc" } })
+          .catch(() => []);
+
+        function getGrade(obt: number, full: number): string {
+          if (!full) return "—";
+          const pct = (obt / full) * 100;
+          const range = gradeRanges.find(
+            (g: any) => pct >= Number(g.markFrom) && pct <= Number(g.markTo)
+          );
+          return range?.grade ?? "—";
+        }
+
+        return { studentId, student, cs, examGroups, markMap, getGrade, error: null };
+      } catch (e: any) {
+        const msg = e?.message ?? String(e);
+        console.error("[parent/results] child", studentId, "error:", msg);
+        return { studentId, error: msg };
+      }
+    })
+  );
 
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Results" />
       <main className="flex-1 p-4 md:p-6 space-y-8 max-w-5xl mx-auto w-full">
-        {childResults.map((data, idx) => {
-          if (!data) return null;
+        {childResults.map((data: any) => {
+          if (data.error) {
+            return (
+              <div key={data.studentId} className="bg-red-50 border border-red-200 rounded-2xl p-5">
+                <div className="flex items-center gap-2 text-red-700 font-semibold mb-1">
+                  <AlertCircle className="h-4 w-4" /> Error loading results
+                </div>
+                <p className="text-sm text-red-600 font-mono">{data.error}</p>
+              </div>
+            );
+          }
+
           const { student, cs, examGroups, markMap, getGrade } = data;
 
           return (
-            <div key={childIds[idx]}>
+            <div key={data.studentId}>
               <div className="bg-gradient-to-r from-indigo-600 to-blue-600 rounded-2xl p-5 text-white mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center font-black text-sm">
