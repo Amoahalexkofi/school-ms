@@ -3,12 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { usePermission } from "@/components/PermissionsProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Bell, Save } from "lucide-react";
 
 type NotifRow = { type: string; label: string; emailEnabled: boolean; smsEnabled: boolean; pushEnabled: boolean };
 
 export function NotificationsClient({ settings: initial }: { settings: NotifRow[] }) {
+  const perm = usePermission("system_settings");
   const [settings, setSettings] = useState<NotifRow[]>(initial);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -108,9 +110,11 @@ export function NotificationsClient({ settings: initial }: { settings: NotifRow[
       </Card>
 
       <div className="flex items-center gap-3">
-        <Button onClick={save} disabled={saving} className="gap-2">
-          <Save className="h-4 w-4" />{saving ? "Saving…" : "Save Settings"}
-        </Button>
+        {perm.canEdit && (
+          <Button onClick={save} disabled={saving} className="gap-2">
+            <Save className="h-4 w-4" />{saving ? "Saving…" : "Save Settings"}
+          </Button>
+        )}
         {saved && <span className="text-sm text-green-600 font-medium">Settings saved</span>}
       </div>
     </main>

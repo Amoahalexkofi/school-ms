@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { usePermission } from "@/components/PermissionsProvider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +14,7 @@ type Item = { id: string; name: string; description?: string };
 export function SourcesClient({ items: initial, apiPath, title, description }: {
   items: Item[]; entity: string; apiPath: string; title: string; description: string;
 }) {
+  const perm = usePermission("system_settings");
   const [items, setItems] = useState<Item[]>(initial);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -61,9 +63,11 @@ export function SourcesClient({ items: initial, apiPath, title, description }: {
           <h2 className="text-lg font-bold">{title}</h2>
           <p className="text-sm text-gray-500 mt-0.5">{description}</p>
         </div>
-        <Button onClick={() => { setShowForm(true); setForm({ name: "", description: "" }); }}>
-          <Plus className="h-4 w-4 mr-1" /> Add
-        </Button>
+        {perm.canAdd && (
+          <Button onClick={() => { setShowForm(true); setForm({ name: "", description: "" }); }}>
+            <Plus className="h-4 w-4 mr-1" /> Add
+          </Button>
+        )}
       </div>
 
       {showForm && (
@@ -124,8 +128,8 @@ export function SourcesClient({ items: initial, apiPath, title, description }: {
                           </>
                         ) : (
                           <>
-                            <Button size="sm" variant="ghost" onClick={() => { setEditId(item.id); setEditForm({ name: item.name, description: item.description ?? "" }); }}><Pencil className="h-3.5 w-3.5" /></Button>
-                            <Button size="sm" variant="ghost" onClick={() => del(item.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>
+                            {perm.canEdit && <Button size="sm" variant="ghost" onClick={() => { setEditId(item.id); setEditForm({ name: item.name, description: item.description ?? "" }); }}><Pencil className="h-3.5 w-3.5" /></Button>}
+                            {perm.canDelete && <Button size="sm" variant="ghost" onClick={() => del(item.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>}
                           </>
                         )}
                       </div>

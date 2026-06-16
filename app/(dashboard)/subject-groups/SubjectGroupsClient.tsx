@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, BookOpen, LayoutGrid } from "lucide-react";
@@ -32,6 +32,7 @@ function blank(sessionId: string) {
 }
 
 export function SubjectGroupsClient({ sessions, groups: init, subjects, classSections }: Props) {
+  const perm = usePermission("academics");
   const [groups,     setGroups]     = useState<Group[]>(init);
   const [sessionId,  setSessionId]  = useState(sessions[0]?.id ?? "");
   const [open,       setOpen]       = useState(false);
@@ -149,9 +150,11 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
           </select>
           <span className="text-sm text-gray-500">{filtered.length} group{filtered.length !== 1 ? "s" : ""}</span>
         </div>
-        <Button onClick={openNew}>
-          <Plus className="h-4 w-4 mr-1.5" /> New Group
-        </Button>
+        {perm.canAdd && (
+          <Button onClick={openNew}>
+            <Plus className="h-4 w-4 mr-1.5" /> New Group
+          </Button>
+        )}
       </div>
 
       {filtered.length === 0 && (
@@ -172,15 +175,19 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
                   {g.name}
                 </span>
                 <div className="flex gap-1">
-                  <Button size="sm" variant="outline" onClick={() => openEdit(g)}>
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button size="sm" variant="outline"
-                    className="text-red-600 border-red-200 hover:bg-red-50"
-                    onClick={() => remove(g.id)}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  {perm.canEdit && (
+                    <Button size="sm" variant="outline" onClick={() => openEdit(g)}>
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                  {perm.canDelete && (
+                    <Button size="sm" variant="outline"
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                      onClick={() => remove(g.id)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
                 </div>
               </CardTitle>
             </CardHeader>

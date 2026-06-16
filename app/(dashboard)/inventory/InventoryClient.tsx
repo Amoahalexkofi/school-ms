@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Plus, TrendingUp, TrendingDown, AlertTriangle, X, ArrowUpRight } from "lucide-react";
 
 type Props = { categories: any[]; suppliers: any[]; stores: any[]; items: any[]; issues: any[]; staff: any[] };
@@ -15,6 +15,7 @@ type Panel = "category" | "stockIn" | "stockOut" | "issueItem" | null;
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 export function InventoryClient({ categories, suppliers, stores, items, issues: initialIssues, staff }: Props) {
+  const perm = usePermission("inventory");
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("items");
   const [panel, setPanel] = useState<Panel>(null);
@@ -125,12 +126,16 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{items.length} item{items.length !== 1 ? "s" : ""}</p>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => openStock(panel === "stockIn" ? "OUT" : "IN")}>
-                Stock Movement
-              </Button>
-              <Link href="/inventory/items/new">
-                <Button><Plus className="h-4 w-4 mr-1.5" />Add Item</Button>
-              </Link>
+              {perm.canEdit && (
+                <Button variant="outline" onClick={() => openStock(panel === "stockIn" ? "OUT" : "IN")}>
+                  Stock Movement
+                </Button>
+              )}
+              {perm.canAdd && (
+                <Link href="/inventory/items/new">
+                  <Button><Plus className="h-4 w-4 mr-1.5" />Add Item</Button>
+                </Link>
+              )}
             </div>
           </div>
 
@@ -226,9 +231,11 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-500">{issues.length} issue record{issues.length !== 1 ? "s" : ""}</p>
-            <Button onClick={() => { setPanel(panel === "issueItem" ? null : "issueItem"); setIssueForm({ itemId: "", issueType: "staff", issuedToId: "", issuedTo: "", quantity: "1", returnDate: "", note: "" }); }}>
-              <ArrowUpRight className="h-4 w-4 mr-1.5" /> Issue Item
-            </Button>
+            {perm.canAdd && (
+              <Button onClick={() => { setPanel(panel === "issueItem" ? null : "issueItem"); setIssueForm({ itemId: "", issueType: "staff", issuedToId: "", issuedTo: "", quantity: "1", returnDate: "", note: "" }); }}>
+                <ArrowUpRight className="h-4 w-4 mr-1.5" /> Issue Item
+              </Button>
+            )}
           </div>
 
           {panel === "issueItem" && (

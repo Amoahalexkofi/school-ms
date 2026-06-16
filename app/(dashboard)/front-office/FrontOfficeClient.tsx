@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, CheckCircle2, UserCheck, X, Pencil, Trash2, Send, Inbox } from "lucide-react";
 
@@ -24,6 +24,7 @@ const ENQ_STATUS_STYLE: Record<string, string> = {
 };
 
 export function FrontOfficeClient({ purposes, visitors, complaintTypes: initTypes, complaints, enquiries, dispatches: initialDispatches }: Props) {
+  const perm = usePermission("front_office");
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("visitors");
   const [checkedOut, setCheckedOut] = useState<string | null>(null);
@@ -162,7 +163,7 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{visitors.length} visitor{visitors.length !== 1 ? "s" : ""} today</p>
-            <Link href="/front-office/visitors/new"><Button><Plus className="h-4 w-4 mr-1.5" />Log Visitor</Button></Link>
+            {perm.canAdd && <Link href="/front-office/visitors/new"><Button><Plus className="h-4 w-4 mr-1.5" />Log Visitor</Button></Link>}
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
@@ -181,7 +182,7 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
                     <td className="px-4 py-3 text-xs text-gray-500">{new Date(v.inTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</td>
                     <td className="px-4 py-3 text-xs text-gray-500">{v.outTime ? new Date(v.outTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : <span className="text-blue-600">In</span>}</td>
                     <td className="px-4 py-3">
-                      {!v.outTime && <Button size="sm" variant="outline" disabled={checkedOut === v.id} onClick={() => checkout(v.id)}>
+                      {!v.outTime && perm.canEdit && <Button size="sm" variant="outline" disabled={checkedOut === v.id} onClick={() => checkout(v.id)}>
                         <UserCheck className="h-3.5 w-3.5 mr-1" />{checkedOut === v.id ? "…" : "Check Out"}
                       </Button>}
                     </td>
@@ -198,7 +199,7 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{complaints.length} complaint{complaints.length !== 1 ? "s" : ""}</p>
-            <Link href="/front-office/complaints/new"><Button><Plus className="h-4 w-4 mr-1.5" />Add Complaint</Button></Link>
+            {perm.canAdd && <Link href="/front-office/complaints/new"><Button><Plus className="h-4 w-4 mr-1.5" />Add Complaint</Button></Link>}
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
@@ -215,8 +216,8 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
                     <td className="px-4 py-3 text-xs text-gray-500">{new Date(c.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${COMPLAINT_STATUS_STYLE[c.status]}`}>{c.status.replace(/_/g, " ")}</span></td>
                     <td className="px-4 py-3">
-                      {c.status === "OPEN"        && <Button size="sm" variant="outline" onClick={() => updateComplaintStatus(c.id, "IN_PROGRESS")}>In Progress</Button>}
-                      {c.status === "IN_PROGRESS" && <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={() => updateComplaintStatus(c.id, "RESOLVED")}><CheckCircle2 className="h-3.5 w-3.5 mr-1" />Resolve</Button>}
+                      {c.status === "OPEN"        && perm.canEdit && <Button size="sm" variant="outline" onClick={() => updateComplaintStatus(c.id, "IN_PROGRESS")}>In Progress</Button>}
+                      {c.status === "IN_PROGRESS" && perm.canEdit && <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={() => updateComplaintStatus(c.id, "RESOLVED")}><CheckCircle2 className="h-3.5 w-3.5 mr-1" />Resolve</Button>}
                     </td>
                   </tr>
                 ))}
@@ -231,7 +232,7 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{enquiries.length} enqu{enquiries.length !== 1 ? "iries" : "iry"}</p>
-            <Link href="/front-office/enquiries/new"><Button><Plus className="h-4 w-4 mr-1.5" />Add Enquiry</Button></Link>
+            {perm.canAdd && <Link href="/front-office/enquiries/new"><Button><Plus className="h-4 w-4 mr-1.5" />Add Enquiry</Button></Link>}
           </div>
 
           {/* Follow-up inline form */}
@@ -276,9 +277,9 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
                     <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ENQ_STATUS_STYLE[e.status]}`}>{e.status}</span></td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
-                        {e.status === "NEW"       && <Button size="sm" variant="outline" onClick={() => { setFollowUpId(e.id); setFollowNote(e.followUpNote ?? ""); setFollowDate(e.nextFollowUp ? new Date(e.nextFollowUp).toISOString().slice(0,10) : ""); }}>Follow Up</Button>}
-                        {e.status === "CONTACTED" && <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={() => updateEnquiryStatus(e.id, "CONVERTED")}>Converted</Button>}
-                        {(e.status === "NEW" || e.status === "CONTACTED") && <Button size="sm" variant="ghost" onClick={() => updateEnquiryStatus(e.id, "CLOSED")} className="text-gray-400">Close</Button>}
+                        {e.status === "NEW"       && perm.canEdit && <Button size="sm" variant="outline" onClick={() => { setFollowUpId(e.id); setFollowNote(e.followUpNote ?? ""); setFollowDate(e.nextFollowUp ? new Date(e.nextFollowUp).toISOString().slice(0,10) : ""); }}>Follow Up</Button>}
+                        {e.status === "CONTACTED" && perm.canEdit && <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={() => updateEnquiryStatus(e.id, "CONVERTED")}>Converted</Button>}
+                        {(e.status === "NEW" || e.status === "CONTACTED") && perm.canEdit && <Button size="sm" variant="ghost" onClick={() => updateEnquiryStatus(e.id, "CLOSED")} className="text-gray-400">Close</Button>}
                       </div>
                     </td>
                   </tr>

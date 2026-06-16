@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Download, ShieldCheck, X } from "lucide-react";
+import { usePermission } from "@/components/PermissionsProvider";import { Search, Download, ShieldCheck, X } from "lucide-react";
 
 type Log = {
   id: string;
@@ -78,6 +78,7 @@ export function AuditLogClient({
   entities: string[];
   actions: string[];
 }) {
+  const perm = usePermission("system_settings");
   const [search, setSearch] = useState("");
   const [filterEntity, setFilterEntity] = useState("");
   const [filterAction, setFilterAction] = useState("");
@@ -187,9 +188,11 @@ export function AuditLogClient({
               <X className="h-4 w-4 mr-1" /> Clear
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={() => downloadCSV(filtered)} className="ml-auto">
-            <Download className="h-3.5 w-3.5 mr-1" /> Export
-          </Button>
+          {perm.canView && (
+            <Button variant="outline" size="sm" onClick={() => downloadCSV(filtered)} className="ml-auto">
+              <Download className="h-3.5 w-3.5 mr-1" /> Export
+            </Button>
+          )}
         </div>
         <p className="text-xs text-gray-400">
           Showing {Math.min(paginated.length, filtered.length)} of {filtered.length} events

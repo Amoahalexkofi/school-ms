@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, CheckCircle2, XCircle, Pencil, Trash2, Calendar, Clock } from "lucide-react";
 
@@ -24,6 +24,7 @@ const STATUS_STYLE: Record<string, string> = {
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff, students, leaveBalances, isAdmin, myStaffId }: Props) {
+  const perm = usePermission("human_resource");
   const router = useRouter();
   const [tab, setTab] = useState<Tab>(isAdmin ? "types" : "staff");
 
@@ -218,9 +219,11 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-500">{leaveTypes.length} type{leaveTypes.length !== 1 ? "s" : ""}</p>
-            <Button onClick={() => { setTypeName(""); setTypeDays("0"); setTypeEdit(null); setTypeErr(""); setTypePanel(true); }}>
-              <Plus className="h-4 w-4 mr-1.5" /> Add Type
-            </Button>
+            {perm.canAdd && (
+              <Button onClick={() => { setTypeName(""); setTypeDays("0"); setTypeEdit(null); setTypeErr(""); setTypePanel(true); }}>
+                <Plus className="h-4 w-4 mr-1.5" /> Add Type
+              </Button>
+            )}
           </div>
 
           {typePanel && (
@@ -253,8 +256,8 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
                     <p className="text-xs text-gray-400 mt-0.5">{lt.daysAllowed} days / year</p>
                   </div>
                   <div className="flex gap-1 shrink-0">
-                    <Button size="sm" variant="outline" onClick={() => { setTypeName(lt.name); setTypeDays(String(lt.daysAllowed)); setTypeEdit(lt); setTypeErr(""); setTypePanel(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button size="sm" variant="outline" className="text-red-600 border-red-200" onClick={() => deleteType(lt.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    {perm.canEdit && <Button size="sm" variant="outline" onClick={() => { setTypeName(lt.name); setTypeDays(String(lt.daysAllowed)); setTypeEdit(lt); setTypeErr(""); setTypePanel(true); }}><Pencil className="h-3.5 w-3.5" /></Button>}
+                    {perm.canDelete && <Button size="sm" variant="outline" className="text-red-600 border-red-200" onClick={() => deleteType(lt.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}
                   </div>
                 </CardContent>
               </Card>
@@ -270,9 +273,11 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-500">{filteredStaff.length} request{filteredStaff.length !== 1 ? "s" : ""}</p>
             {isAdmin ? (
-              <Button onClick={() => { setAdminApplyType("staff"); setAdminForm({ staffId:"", studentId:"", leaveTypeId:"", fromDate:"", toDate:"", reason:"" }); setAdminErr(""); setAdminApplyOpen(true); }}>
-                <Plus className="h-4 w-4 mr-1.5" /> New Request
-              </Button>
+              perm.canAdd && (
+                <Button onClick={() => { setAdminApplyType("staff"); setAdminForm({ staffId:"", studentId:"", leaveTypeId:"", fromDate:"", toDate:"", reason:"" }); setAdminErr(""); setAdminApplyOpen(true); }}>
+                  <Plus className="h-4 w-4 mr-1.5" /> New Request
+                </Button>
+              )
             ) : (
               <Button onClick={() => { setApplyForm({ leaveTypeId:"", fromDate:"", toDate:"", reason:"" }); setApplyErr(""); setApplyOpen(true); }}>
                 <Plus className="h-4 w-4 mr-1.5" /> Apply for Leave
@@ -333,9 +338,11 @@ export function LeaveClient({ leaveTypes, staffRequests, studentRequests, staff,
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-500">{filteredStudents.length} request{filteredStudents.length !== 1 ? "s" : ""}</p>
-            <Button onClick={() => { setAdminApplyType("student"); setAdminForm({ staffId:"", studentId:"", leaveTypeId:"", fromDate:"", toDate:"", reason:"" }); setAdminErr(""); setAdminApplyOpen(true); }}>
-              <Plus className="h-4 w-4 mr-1.5" /> New Request
-            </Button>
+            {perm.canAdd && (
+              <Button onClick={() => { setAdminApplyType("student"); setAdminForm({ staffId:"", studentId:"", leaveTypeId:"", fromDate:"", toDate:"", reason:"" }); setAdminErr(""); setAdminApplyOpen(true); }}>
+                <Plus className="h-4 w-4 mr-1.5" /> New Request
+              </Button>
+            )}
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">

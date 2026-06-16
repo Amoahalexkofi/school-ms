@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { usePermission } from "@/components/PermissionsProvider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import { ArrowLeft, Plus, Pencil, Trash2, Home, X, Check } from "lucide-react";
 type House = { id: string; name: string; isActive: boolean; _count?: { students: number } };
 
 export function SchoolHousesClient({ houses: initial }: { houses: House[] }) {
+  const perm = usePermission("system_settings");
   const router = useRouter();
   const [houses, setHouses] = useState<House[]>(initial);
   const [showForm, setShowForm] = useState(false);
@@ -62,7 +64,7 @@ export function SchoolHousesClient({ houses: initial }: { houses: House[] }) {
           <h2 className="text-lg font-bold">School Houses</h2>
           <p className="text-sm text-gray-500 mt-0.5">Manage the school houses students are assigned to.</p>
         </div>
-        <Button onClick={() => { setShowForm(true); setName(""); }}><Plus className="h-4 w-4 mr-1" /> Add House</Button>
+        {perm.canAdd && <Button onClick={() => { setShowForm(true); setName(""); }}><Plus className="h-4 w-4 mr-1" /> Add House</Button>}
       </div>
 
       {showForm && (
@@ -116,8 +118,8 @@ export function SchoolHousesClient({ houses: initial }: { houses: House[] }) {
                     <td className="px-4 py-3 text-center text-gray-500">{h._count?.students ?? 0}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex gap-1 justify-end">
-                        <Button size="sm" variant="ghost" onClick={() => { setEditRowId(h.id); setEditName(h.name); }}><Pencil className="h-3.5 w-3.5" /></Button>
-                        <Button size="sm" variant="ghost" onClick={() => del(h.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>
+                        {perm.canEdit && <Button size="sm" variant="ghost" onClick={() => { setEditRowId(h.id); setEditName(h.name); }}><Pencil className="h-3.5 w-3.5" /></Button>}
+                        {perm.canDelete && <Button size="sm" variant="ghost" onClick={() => del(h.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>}
                       </div>
                     </td>
                   </tr>

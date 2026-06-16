@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { usePermission } from "@/components/PermissionsProvider";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ type Role = {
 };
 
 export function RolesClient({ roles: initial }: { roles: Role[] }) {
+  const perm = usePermission("system_settings");
   const router = useRouter();
   const [roles, setRoles] = useState<Role[]>(initial);
   const [showAdd, setShowAdd] = useState(false);
@@ -64,9 +66,11 @@ export function RolesClient({ roles: initial }: { roles: Role[] }) {
             Create custom roles and assign granular permissions per module. Staff are then linked to a role.
           </p>
         </div>
-        <Button onClick={() => { setShowAdd(true); setNewName(""); }}>
-          <Plus className="h-4 w-4 mr-1" /> Add Role
-        </Button>
+        {perm.canAdd && (
+          <Button onClick={() => { setShowAdd(true); setNewName(""); }}>
+            <Plus className="h-4 w-4 mr-1" /> Add Role
+          </Button>
+        )}
       </div>
 
       {/* Add Role inline */}
@@ -132,7 +136,7 @@ export function RolesClient({ roles: initial }: { roles: Role[] }) {
                       </Button>
                     </Link>
                   )}
-                  {!role.isSystem && (
+                  {!role.isSystem && perm.canDelete && (
                     <Button size="sm" variant="ghost" onClick={() => deleteRole(role.id)} className="text-red-400 hover:text-red-600">
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>

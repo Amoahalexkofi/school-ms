@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePermission } from "@/components/PermissionsProvider";import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, CheckSquare, Square } from "lucide-react";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
@@ -11,6 +11,7 @@ const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[
 type Props = { sessions: any[]; classSections: any[] };
 
 export function PromoteClient({ sessions, classSections }: Props) {
+  const perm = usePermission("student_information");
   // Step 1 — filter
   const [fromSessionId, setFromSessionId]         = useState("");
   const [fromClassSectionId, setFromClassSectionId] = useState("");
@@ -230,13 +231,15 @@ export function PromoteClient({ sessions, classSections }: Props) {
             )}
 
             <div className="mt-4">
-              <Button
-                disabled={loading || !toSessionId || !toClassSectionId}
-                onClick={promote}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                {loading ? "Promoting…" : `Promote ${selected.size} Student${selected.size !== 1 ? "s" : ""}`}
-              </Button>
+              {perm.canEdit && (
+                <Button
+                  disabled={loading || !toSessionId || !toClassSectionId}
+                  onClick={promote}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {loading ? "Promoting…" : `Promote ${selected.size} Student${selected.size !== 1 ? "s" : ""}`}
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

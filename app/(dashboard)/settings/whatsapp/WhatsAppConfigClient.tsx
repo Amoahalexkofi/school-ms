@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { usePermission } from "@/components/PermissionsProvider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,6 +67,7 @@ const PROVIDERS = [
 ];
 
 export function WhatsAppConfigClient({ configs: initial }: { configs: any[] }) {
+  const perm = usePermission("system_settings");
   const [configs, setConfigs]     = useState<any[]>(initial);
   const [saving, setSaving]       = useState<string | null>(null);
   const [saved, setSaved]         = useState<string | null>(null);
@@ -292,10 +294,12 @@ export function WhatsAppConfigClient({ configs: initial }: { configs: any[] }) {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <Button size="sm" onClick={() => save(prov.value)} disabled={saving === prov.value} className="gap-1">
-                      <Save className="h-3.5 w-3.5" />
-                      {saving === prov.value ? "Saving…" : "Save"}
-                    </Button>
+                    {perm.canEdit && (
+                      <Button size="sm" onClick={() => save(prov.value)} disabled={saving === prov.value} className="gap-1">
+                        <Save className="h-3.5 w-3.5" />
+                        {saving === prov.value ? "Saving…" : "Save"}
+                      </Button>
+                    )}
                     {saved === prov.value && (
                       <span className="text-sm text-green-600 font-medium flex items-center gap-1">
                         <Check className="h-3.5 w-3.5" /> Saved

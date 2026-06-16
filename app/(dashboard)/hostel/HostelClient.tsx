@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { usePermission } from "@/components/PermissionsProvider";import { Plus, X } from "lucide-react";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
@@ -13,6 +13,7 @@ type Props = { roomTypes: any[]; hostels: any[]; students: any[] };
 type Tab = "roomtypes" | "hostels" | "allocate";
 
 export function HostelClient({ roomTypes, hostels, students }: Props) {
+  const perm = usePermission("hostel");
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("hostels");
   const [allocPanelOpen, setAllocPanelOpen] = useState(false);
@@ -62,9 +63,11 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{roomTypes.length} type{roomTypes.length !== 1 ? "s" : ""}</p>
-            <Link href="/hostel/new">
-              <Button><Plus className="h-4 w-4 mr-1.5" />Add Type</Button>
-            </Link>
+            {perm.canAdd && (
+              <Link href="/hostel/new">
+                <Button><Plus className="h-4 w-4 mr-1.5" />Add Type</Button>
+              </Link>
+            )}
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {roomTypes.map((rt: any) => <Card key={rt.id}><CardContent className="pt-4 text-sm font-medium">{rt.name}</CardContent></Card>)}
@@ -78,9 +81,11 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{hostels.length} hostel{hostels.length !== 1 ? "s" : ""}</p>
-            <Link href="/hostel/new">
-              <Button><Plus className="h-4 w-4 mr-1.5" />Add Hostel / Room</Button>
-            </Link>
+            {perm.canAdd && (
+              <Link href="/hostel/new">
+                <Button><Plus className="h-4 w-4 mr-1.5" />Add Hostel / Room</Button>
+              </Link>
+            )}
           </div>
           <div className="space-y-4">
             {hostels.map((h: any) => (
@@ -125,9 +130,11 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
         <div className="space-y-4">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">{students.filter((s: any) => s.hostelAllocation).length} students allocated</p>
-            <Button onClick={() => { setAllocForm({ studentId: "", roomId: "" }); setAllocPanelOpen(!allocPanelOpen); }}>
-              <Plus className="h-4 w-4 mr-1.5" />Allocate Room
-            </Button>
+            {perm.canAdd && (
+              <Button onClick={() => { setAllocForm({ studentId: "", roomId: "" }); setAllocPanelOpen(!allocPanelOpen); }}>
+                <Plus className="h-4 w-4 mr-1.5" />Allocate Room
+              </Button>
+            )}
           </div>
 
           {/* Inline Allocation Panel */}

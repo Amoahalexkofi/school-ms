@@ -4,13 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Building2, Plus, Pencil, Trash2, X, Check } from "lucide-react";
 
 type Dept = { id: string; name: string; isActive: boolean; _count: { staff: number } };
 
 export function DepartmentsClient({ departments }: { departments: Dept[] }) {
+  const perm = usePermission("system_settings");
   const router = useRouter();
   const [showAddPanel, setShowAddPanel] = useState(false);
   const [editItemId, setEditItemId] = useState<string | null>(null);
@@ -94,9 +95,11 @@ export function DepartmentsClient({ departments }: { departments: Dept[] }) {
     <main className="flex-1 p-6 space-y-5 max-w-2xl">
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-500">{departments.length} department{departments.length !== 1 ? "s" : ""}</p>
-        <Button onClick={openAdd}>
-          <Plus className="h-4 w-4 mr-1" /> Add Department
-        </Button>
+        {perm.canAdd && (
+          <Button onClick={openAdd}>
+            <Plus className="h-4 w-4 mr-1" /> Add Department
+          </Button>
+        )}
       </div>
 
       {/* Inline Add Panel */}
@@ -181,13 +184,17 @@ export function DepartmentsClient({ departments }: { departments: Dept[] }) {
                         </>
                       ) : (
                         <>
-                          <Button size="sm" variant="outline" onClick={() => openEdit(d)}>
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
-                            onClick={() => handleDelete(d.id)}>
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
+                          {perm.canEdit && (
+                            <Button size="sm" variant="outline" onClick={() => openEdit(d)}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                          {perm.canDelete && (
+                            <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
+                              onClick={() => handleDelete(d.id)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                         </>
                       )}
                     </td>

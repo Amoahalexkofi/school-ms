@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2, X, Calendar, Printer } from "lucide-react";
@@ -44,6 +44,7 @@ export function TimetableClient({ classes, staff, session }: {
   staff: { id: string; firstName: string; lastName: string }[];
   session: { id: string; session: string } | null;
 }) {
+  const perm = usePermission("academics");
   const [classId, setClassId] = useState("");
   const [classSectionId, setClassSectionId] = useState("");
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -206,20 +207,24 @@ export function TimetableClient({ classes, staff, session }: {
                                 <p className="font-semibold">{slot.timeFrom} – {slot.timeTo}</p>
                                 {slot.staff && <p className="opacity-70">{slot.staff.firstName} {slot.staff.lastName}</p>}
                                 {slot.roomNo && <p className="opacity-60">Room: {slot.roomNo}</p>}
-                                <button
-                                  onClick={() => deleteSlot(slot.id)}
-                                  className="text-red-400 hover:text-red-600 mt-0.5 no-print"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </button>
+                                {perm.canDelete && (
+                                  <button
+                                    onClick={() => deleteSlot(slot.id)}
+                                    className="text-red-400 hover:text-red-600 mt-0.5 no-print"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                )}
                               </div>
                             ) : (
-                              <button
-                                onClick={() => { setAddingDay(day); setForm({ ...emptyForm, subjectId: sub.id }); setError(""); }}
-                                className="w-full h-12 text-gray-300 hover:text-blue-400 hover:bg-blue-50 rounded-lg border border-dashed border-gray-200 hover:border-blue-300 transition-colors flex items-center justify-center no-print"
-                              >
-                                <Plus className="h-4 w-4" />
-                              </button>
+                              perm.canAdd && (
+                                <button
+                                  onClick={() => { setAddingDay(day); setForm({ ...emptyForm, subjectId: sub.id }); setError(""); }}
+                                  className="w-full h-12 text-gray-300 hover:text-blue-400 hover:bg-blue-50 rounded-lg border border-dashed border-gray-200 hover:border-blue-300 transition-colors flex items-center justify-center no-print"
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </button>
+                              )
                             )}
                           </td>
                         );
@@ -227,13 +232,15 @@ export function TimetableClient({ classes, staff, session }: {
                       {subjects.length === 0 && <td className="border px-3 py-2.5 text-gray-300 text-xs">—</td>}
                       {/* Per-day add button */}
                       <td className="border px-2 py-2 text-center no-print">
-                        <button
-                          onClick={() => { setAddingDay(day); setForm(emptyForm); setError(""); }}
-                          title={`Add slot for ${DAY_LABEL[day]}`}
-                          className="p-1 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </button>
+                        {perm.canAdd && (
+                          <button
+                            onClick={() => { setAddingDay(day); setForm(emptyForm); setError(""); }}
+                            title={`Add slot for ${DAY_LABEL[day]}`}
+                            className="p-1 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
@@ -281,9 +288,11 @@ export function TimetableClient({ classes, staff, session }: {
                   <Input value={form.roomNo} onChange={e => setForm((f: any) => ({ ...f, roomNo: e.target.value }))} placeholder="e.g. Room 101" />
                 </div>
                 <div className="flex items-end gap-2">
-                  <Button size="sm" onClick={() => saveSlot(addingDay)} disabled={saving}>
-                    {saving ? "Saving…" : "Save Slot"}
-                  </Button>
+                  {perm.canAdd && (
+                    <Button size="sm" onClick={() => saveSlot(addingDay)} disabled={saving}>
+                      {saving ? "Saving…" : "Save Slot"}
+                    </Button>
+                  )}
                   <Button variant="outline" size="sm" onClick={() => { setAddingDay(null); setError(""); }}>Cancel</Button>
                 </div>
                 {error && <p className="sm:col-span-2 md:col-span-3 text-xs text-red-600">{error}</p>}

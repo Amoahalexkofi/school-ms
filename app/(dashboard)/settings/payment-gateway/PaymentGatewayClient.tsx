@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { usePermission } from "@/components/PermissionsProvider";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, CreditCard, CheckCircle2, AlertCircle, Eye, EyeOff } from "lucide-react";
@@ -41,6 +42,7 @@ type Gateway = {
 };
 
 export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[] }) {
+  const perm = usePermission("system_settings");
   const router = useRouter();
   const [gateways, setGateways] = useState<Gateway[]>(initial);
   const [saving, setSaving]     = useState<string | null>(null);
@@ -172,10 +174,12 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
                       <CheckCircle2 className="h-3.5 w-3.5" /> Saved
                     </span>
                   )}
-                  <Button size="sm" disabled={saving === def.key} onClick={() => handleSave(def.key)}>
-                    <CreditCard className="h-3.5 w-3.5 mr-1.5" />
-                    {saving === def.key ? "Saving…" : "Save"}
-                  </Button>
+                  {perm.canEdit && (
+                    <Button size="sm" disabled={saving === def.key} onClick={() => handleSave(def.key)}>
+                      <CreditCard className="h-3.5 w-3.5 mr-1.5" />
+                      {saving === def.key ? "Saving…" : "Save"}
+                    </Button>
+                  )}
                 </div>
               </div>
             </CardContent>

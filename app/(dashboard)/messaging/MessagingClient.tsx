@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Send, MessageSquare, Mail, Phone, Plus } from "lucide-react";
@@ -13,6 +13,7 @@ const channelColor: Record<string, string> = { SMS: "bg-green-100 text-green-700
 const recipientLabel: Record<string, string> = { ALL_PARENTS: "All Parents", ALL_STAFF: "All Staff", ALL_STUDENTS: "All Students", ALL: "Everyone" };
 
 export function MessagingClient({ logs, parentCount, staffCount, studentCount }: any) {
+  const perm = usePermission("communicate");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,7 @@ export function MessagingClient({ logs, parentCount, staffCount, studentCount }:
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base flex items-center justify-between w-full">
             <span className="flex items-center gap-2"><Send className="h-4 w-4 text-blue-600" /> Message Log</span>
-            <Button size="sm" onClick={() => { setError(""); setOpen(true); }}><Plus className="h-4 w-4 mr-1" /> Compose</Button>
+            {perm.canAdd && <Button size="sm" onClick={() => { setError(""); setOpen(true); }}><Plus className="h-4 w-4 mr-1" /> Compose</Button>}
           </CardTitle>
         </CardHeader>
         <CardContent>

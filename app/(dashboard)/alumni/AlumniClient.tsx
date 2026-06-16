@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Plus, Pencil, Trash2, GraduationCap, Calendar, X, User, Send, Mail } from "lucide-react";
@@ -35,6 +35,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
   classes: { id: string; name: string }[];
   students: any[];
 }) {
+  const perm = usePermission("alumni");
   const router = useRouter();
   const [alumni, setAlumni] = useState<AlumniRecord[]>(initial);
   const [search, setSearch] = useState("");
@@ -179,7 +180,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
           <Link href="/alumni/events">
             <Button variant="outline"><Calendar className="h-4 w-4 mr-1" /> Events</Button>
           </Link>
-          <Button onClick={openAdd}><Plus className="h-4 w-4 mr-1" /> Add Alumni</Button>
+          {perm.canAdd && <Button onClick={openAdd}><Plus className="h-4 w-4 mr-1" /> Add Alumni</Button>}
         </div>
       </div>
 
@@ -271,7 +272,9 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
               <Input value={form.address} onChange={(e) => set("address", e.target.value)} placeholder="Current city / address" />
             </div>
             <div className="md:col-span-2 flex gap-2">
-              <Button onClick={save} disabled={saving} size="sm">{saving ? "Saving…" : editing ? "Update" : "Add Alumni"}</Button>
+              {(editing ? perm.canEdit : perm.canAdd) && (
+                <Button onClick={save} disabled={saving} size="sm">{saving ? "Saving…" : editing ? "Update" : "Add Alumni"}</Button>
+              )}
               <Button variant="outline" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
             </div>
           </CardContent>
@@ -329,8 +332,8 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
                         <td className="px-4 py-3 text-gray-500">{a.occupation || "—"}</td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex gap-1 justify-end">
-                            <Button size="sm" variant="ghost" onClick={() => openEdit(a)}><Pencil className="h-3.5 w-3.5" /></Button>
-                            <Button size="sm" variant="ghost" onClick={() => del(a.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>
+                            {perm.canEdit && <Button size="sm" variant="ghost" onClick={() => openEdit(a)}><Pencil className="h-3.5 w-3.5" /></Button>}
+                            {perm.canDelete && <Button size="sm" variant="ghost" onClick={() => del(a.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>}
                           </div>
                         </td>
                       </tr>

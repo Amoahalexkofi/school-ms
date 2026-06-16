@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Download, Printer, Search, FileText } from "lucide-react";
@@ -64,6 +64,7 @@ function downloadCSV(rows: Record<string, any>[], filename: string) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function ReportsClient({ sessions, classes, sections, classSections, departments, examGroups }: Props) {
+  const perm = usePermission("reports");
   const [tab, setTab] = useState<ReportTab>("students");
   const printRef = useRef<HTMLDivElement>(null);
 
