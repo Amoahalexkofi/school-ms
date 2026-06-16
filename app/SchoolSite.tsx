@@ -18,7 +18,7 @@ interface Slide {
 }
 interface Notice {
   id: string; title: string; body?: string | null;
-  type: string; createdAt: string;
+  type: string; isActive?: boolean; createdAt: string;
 }
 interface Settings {
   aboutTitle?: string | null; aboutText?: string | null;
