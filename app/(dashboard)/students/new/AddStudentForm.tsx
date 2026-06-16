@@ -5,112 +5,95 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronRight, AlertCircle } from "lucide-react";
 
-const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
+// Shared select class — matches Input h-11 rounded-xl
+const SEL = "w-full h-11 rounded-xl border border-slate-200 bg-white px-3 text-[14px] text-slate-900 hover:border-slate-300 focus:outline-none focus:border-indigo-400 focus:ring-3 focus:ring-indigo-500/15 transition-all cursor-pointer";
 
 const TABS = ["Basic Info", "Guardian", "Address", "Academic", "Other"] as const;
 type Tab = typeof TABS[number];
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-const GENDERS = ["Male", "Female", "Other"];
-const RELIGIONS = ["Christian", "Muslim", "Traditional", "Other"];
-const GUARDIAN_IS = ["Father", "Mother", "Guardian", "Other"];
+const GENDERS      = ["Male", "Female", "Other"];
+const RELIGIONS    = ["Christian", "Muslim", "Traditional", "Other"];
+const GUARDIAN_IS  = ["Father", "Mother", "Guardian", "Other"];
 
 type FieldProps = {
   label: string;
   name: string;
+  required?: boolean;
   type?: string;
   options?: string[] | { value: string; label: string }[];
   textarea?: boolean;
   colSpan2?: boolean;
+  hint?: string;
   form: Record<string, any>;
-  set: (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  set: (k: string) => (e: React.ChangeEvent<any>) => void;
 };
 
-function Field({ label, name, type = "text", options, textarea, colSpan2, form, set }: FieldProps) {
-  if (options) {
-    return (
-      <div className={colSpan2 ? "col-span-2" : ""}>
-        <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">{label}</Label>
+function Field({ label, name, required, type = "text", options, textarea, colSpan2, hint, form, set }: FieldProps) {
+  return (
+    <div className={colSpan2 ? "col-span-2" : ""}>
+      <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">
+        {label}{required && <span className="text-rose-400 ml-0.5">*</span>}
+      </label>
+      {options ? (
         <select className={SEL} value={form[name]} onChange={set(name)}>
           <option value="">— Select —</option>
           {options.map((o) =>
-            typeof o === "string" ? (
-              <option key={o} value={o}>{o}</option>
-            ) : (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            )
+            typeof o === "string"
+              ? <option key={o} value={o}>{o}</option>
+              : <option key={o.value} value={o.value}>{o.label}</option>
           )}
         </select>
-      </div>
-    );
-  }
-  if (textarea) {
-    return (
-      <div className={colSpan2 ? "col-span-2" : ""}>
-        <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">{label}</Label>
+      ) : textarea ? (
         <textarea
           rows={3}
-          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 resize-none"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-[14px] text-slate-900 hover:border-slate-300 focus:outline-none focus:border-indigo-400 focus:ring-3 focus:ring-indigo-500/15 transition-all resize-none placeholder:text-slate-400"
           value={form[name]}
           onChange={set(name)}
         />
-      </div>
-    );
-  }
-  return (
-    <div className={colSpan2 ? "col-span-2" : ""}>
-      <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">{label}</Label>
-      <Input type={type} value={form[name]} onChange={set(name)} />
+      ) : (
+        <Input type={type} value={form[name]} onChange={set(name)} />
+      )}
+      {hint && <p className="text-[11.5px] text-slate-400 mt-1">{hint}</p>}
     </div>
   );
 }
 
-type Props = {
-  sessions: any[];
-  classSections: any[];
-  schoolHouses: any[];
-};
+type Props = { sessions: any[]; classSections: any[]; schoolHouses: any[] };
 
 export function AddStudentForm({ sessions, classSections, schoolHouses }: Props) {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>("Basic Info");
+  const [tab, setTab]       = useState<Tab>("Basic Info");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError]   = useState("");
 
   const [form, setForm] = useState({
-    // Basic
     firstName: "", middleName: "", lastName: "", admissionNo: "",
     admissionDate: "", dateOfBirth: "", gender: "", bloodGroup: "",
     religion: "", caste: "", category: "", nationality: "",
-    mobileNo: "", email: "", rte: false,
-    height: "", weight: "",
-    // Guardian
+    mobileNo: "", email: "", rte: false, height: "", weight: "",
     guardianIs: "Father",
     fatherName: "", fatherPhone: "", fatherEmail: "", fatherOccupation: "",
     motherName: "", motherPhone: "", motherEmail: "", motherOccupation: "",
     guardianName: "", guardianRelation: "", guardianPhone: "",
     guardianEmail: "", guardianOccupation: "", guardianAddress: "",
-    // Address
     currentAddress: "", permanentAddress: "", city: "", state: "", country: "", pincode: "",
-    // Academic
     sessionId: sessions[0]?.id ?? "",
     classSectionId: classSections[0]?.id ?? "",
     rollNo: "", schoolHouseId: "",
     previousSchool: "", previousClass: "", previousPercent: "", previousTc: "",
-    // Other
     bankAccountNo: "", bankName: "", ifscCode: "", bankBranch: "",
     aadharNo: "", samagraId: "", note: "", about: "",
   });
 
   const set = (k: string) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-      setForm((f) => ({ ...f, [k]: e.target.value }));
+    (e: React.ChangeEvent<any>) =>
+      setForm(f => ({ ...f, [k]: e.target.value }));
 
   const fp = { form: form as Record<string, any>, set };
+  const tabIdx = TABS.indexOf(tab);
 
   async function handleSubmit() {
     if (!form.firstName || !form.lastName || !form.dateOfBirth || !form.gender) {
@@ -118,18 +101,16 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
       setTab("Basic Info");
       return;
     }
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     try {
-      const res = await fetch("/api/students", {
+      const res  = await fetch("/api/students", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed");
-      router.push("/students");
-      router.refresh();
+      router.push("/students"); router.refresh();
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -138,137 +119,174 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
   }
 
   return (
-    <main className="flex-1 p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <Link
-          href="/students"
-          className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors"
-        >
+    <main className="flex-1 p-5 md:p-7">
+      <div className="max-w-4xl mx-auto space-y-5">
+
+        {/* Back link */}
+        <Link href="/students"
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Students
         </Link>
 
-        {/* Tab navigation */}
-        <div className="flex gap-1 border-b">
-          {TABS.map((t) => (
+        {/* Page header */}
+        <div>
+          <h1 className="text-[22px] font-black text-slate-900 tracking-tight">Add New Student</h1>
+          <p className="text-[13.5px] text-slate-500 mt-0.5">Fill in the details below. Required fields are marked.</p>
+        </div>
+
+        {/* Tab nav — pill style */}
+        <div className="flex items-center gap-1 bg-slate-100/80 p-1 rounded-2xl w-fit">
+          {TABS.map((t, i) => (
             <button
               key={t}
               type="button"
               onClick={() => setTab(t)}
-              className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12.5px] font-semibold transition-all duration-150 whitespace-nowrap ${
                 tab === t
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
               }`}
             >
+              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
+                tab === t ? "bg-indigo-600 text-white" : "bg-slate-300/60 text-slate-500"
+              }`}>{i + 1}</span>
               {t}
             </button>
           ))}
         </div>
 
+        {/* Error */}
         {error && (
-          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+          <div className="flex items-center gap-2.5 text-[13px] text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+            <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
             {error}
           </div>
         )}
 
         {/* ── Basic Info ── */}
         {tab === "Basic Info" && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[15px] font-bold text-slate-900">Basic Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field {...fp} label="First Name *" name="firstName" />
-                <Field {...fp} label="Middle Name" name="middleName" />
-                <Field {...fp} label="Last Name *" name="lastName" />
-                <Field {...fp} label="Admission No." name="admissionNo" />
-                <Field {...fp} label="Admission Date" name="admissionDate" type="date" />
-                <Field {...fp} label="Date of Birth *" name="dateOfBirth" type="date" />
-                <Field {...fp} label="Gender *" name="gender" options={GENDERS} />
-                <Field {...fp} label="Blood Group" name="bloodGroup" options={BLOOD_GROUPS} />
-                <Field {...fp} label="Religion" name="religion" options={RELIGIONS} />
-                <Field {...fp} label="Caste / Category" name="caste" />
-                <Field {...fp} label="Nationality" name="nationality" />
-                <Field {...fp} label="Mobile No." name="mobileNo" />
-                <Field {...fp} label="Email" name="email" type="email" />
-                <Field {...fp} label="Height (cm)" name="height" />
-                <Field {...fp} label="Weight (kg)" name="weight" />
-                <div className="col-span-2 flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="rte"
-                    checked={form.rte}
-                    onChange={(e) => setForm((f) => ({ ...f, rte: e.target.checked }))}
-                    className="h-4 w-4 rounded border-slate-200"
-                  />
-                  <Label htmlFor="rte" className="text-sm cursor-pointer">
+          <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(99,102,241,0.06)" }}>
+            <div className="px-6 py-5 border-b border-slate-100">
+              <h2 className="text-[15px] font-black text-slate-900 tracking-tight">Basic Information</h2>
+              <p className="text-[12.5px] text-slate-500 mt-0.5">Personal and identification details</p>
+            </div>
+            <div className="px-6 py-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+              <Field {...fp} label="First Name" name="firstName" required />
+              <Field {...fp} label="Middle Name" name="middleName" />
+              <Field {...fp} label="Last Name" name="lastName" required />
+              <Field {...fp} label="Admission No." name="admissionNo" hint="Leave blank to auto-generate" />
+              <Field {...fp} label="Admission Date" name="admissionDate" type="date" />
+              <Field {...fp} label="Date of Birth" name="dateOfBirth" type="date" required />
+              <Field {...fp} label="Gender" name="gender" options={GENDERS} required />
+              <Field {...fp} label="Blood Group" name="bloodGroup" options={BLOOD_GROUPS} />
+              <Field {...fp} label="Religion" name="religion" options={RELIGIONS} />
+              <Field {...fp} label="Caste / Category" name="caste" />
+              <Field {...fp} label="Nationality" name="nationality" />
+              <Field {...fp} label="Mobile No." name="mobileNo" />
+              <Field {...fp} label="Email Address" name="email" type="email" />
+              <div /> {/* spacer */}
+              <Field {...fp} label="Height (cm)" name="height" />
+              <Field {...fp} label="Weight (kg)" name="weight" />
+              <div className="col-span-2">
+                <label className="flex items-center gap-3 cursor-pointer select-none group w-fit">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      id="rte"
+                      checked={form.rte as boolean}
+                      onChange={e => setForm(f => ({ ...f, rte: e.target.checked }))}
+                      className="sr-only peer"
+                    />
+                    <div className="w-9 h-5 rounded-full bg-slate-200 peer-checked:bg-indigo-600 transition-colors" />
+                    <div className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
+                  </div>
+                  <span className="text-[13.5px] font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
                     RTE (Right to Education) student
-                  </Label>
-                </div>
+                  </span>
+                </label>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* ── Guardian ── */}
         {tab === "Guardian" && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[15px] font-bold text-slate-900">Guardian Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(99,102,241,0.06)" }}>
+            <div className="px-6 py-5 border-b border-slate-100">
+              <h2 className="text-[15px] font-black text-slate-900 tracking-tight">Guardian Information</h2>
+              <p className="text-[12.5px] text-slate-500 mt-0.5">Parent and emergency contact details</p>
+            </div>
+            <div className="px-6 py-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                 <Field {...fp} label="Guardian Is" name="guardianIs" options={GUARDIAN_IS} />
-                <div />
-                <Field {...fp} label="Father's Name" name="fatherName" />
-                <Field {...fp} label="Father's Phone" name="fatherPhone" />
-                <Field {...fp} label="Father's Email" name="fatherEmail" type="email" />
-                <Field {...fp} label="Father's Occupation" name="fatherOccupation" />
-                <Field {...fp} label="Mother's Name" name="motherName" />
-                <Field {...fp} label="Mother's Phone" name="motherPhone" />
-                <Field {...fp} label="Mother's Email" name="motherEmail" type="email" />
-                <Field {...fp} label="Mother's Occupation" name="motherOccupation" />
-                <Field {...fp} label="Guardian Name" name="guardianName" />
-                <Field {...fp} label="Guardian Relation" name="guardianRelation" />
-                <Field {...fp} label="Guardian Phone" name="guardianPhone" />
-                <Field {...fp} label="Guardian Email" name="guardianEmail" type="email" />
-                <Field {...fp} label="Guardian Occupation" name="guardianOccupation" />
-                <Field {...fp} label="Guardian Address" name="guardianAddress" textarea colSpan2 />
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Father</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                  <Field {...fp} label="Father's Name" name="fatherName" />
+                  <Field {...fp} label="Father's Phone" name="fatherPhone" />
+                  <Field {...fp} label="Father's Email" name="fatherEmail" type="email" />
+                  <Field {...fp} label="Father's Occupation" name="fatherOccupation" />
+                </div>
+              </div>
+              <div className="border-t border-slate-100 pt-6">
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Mother</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                  <Field {...fp} label="Mother's Name" name="motherName" />
+                  <Field {...fp} label="Mother's Phone" name="motherPhone" />
+                  <Field {...fp} label="Mother's Email" name="motherEmail" type="email" />
+                  <Field {...fp} label="Mother's Occupation" name="motherOccupation" />
+                </div>
+              </div>
+              <div className="border-t border-slate-100 pt-6">
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Guardian / Other</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                  <Field {...fp} label="Guardian Name" name="guardianName" />
+                  <Field {...fp} label="Relationship" name="guardianRelation" />
+                  <Field {...fp} label="Phone" name="guardianPhone" />
+                  <Field {...fp} label="Email" name="guardianEmail" type="email" />
+                  <Field {...fp} label="Occupation" name="guardianOccupation" />
+                  <div />
+                  <Field {...fp} label="Guardian Address" name="guardianAddress" textarea colSpan2 />
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* ── Address ── */}
         {tab === "Address" && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[15px] font-bold text-slate-900">Address Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field {...fp} label="Current Address" name="currentAddress" textarea colSpan2 />
-                <Field {...fp} label="Permanent Address" name="permanentAddress" textarea colSpan2 />
-                <Field {...fp} label="City" name="city" />
-                <Field {...fp} label="State / Region" name="state" />
-                <Field {...fp} label="Country" name="country" />
-                <Field {...fp} label="Pincode / Post Code" name="pincode" />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(99,102,241,0.06)" }}>
+            <div className="px-6 py-5 border-b border-slate-100">
+              <h2 className="text-[15px] font-black text-slate-900 tracking-tight">Address Details</h2>
+              <p className="text-[12.5px] text-slate-500 mt-0.5">Current and permanent residential address</p>
+            </div>
+            <div className="px-6 py-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+              <Field {...fp} label="Current Address" name="currentAddress" textarea colSpan2 />
+              <Field {...fp} label="Permanent Address" name="permanentAddress" textarea colSpan2 />
+              <Field {...fp} label="City" name="city" />
+              <Field {...fp} label="State / Region" name="state" />
+              <Field {...fp} label="Country" name="country" />
+              <Field {...fp} label="Postcode / Pincode" name="pincode" />
+            </div>
+          </div>
         )}
 
         {/* ── Academic ── */}
         {tab === "Academic" && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[15px] font-bold text-slate-900">Academic Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(99,102,241,0.06)" }}>
+            <div className="px-6 py-5 border-b border-slate-100">
+              <h2 className="text-[15px] font-black text-slate-900 tracking-tight">Academic Details</h2>
+              <p className="text-[12.5px] text-slate-500 mt-0.5">Session, class and previous school information</p>
+            </div>
+            <div className="px-6 py-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                 <div>
-                  <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Session</Label>
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Session</label>
                   <select className={SEL} value={form.sessionId} onChange={set("sessionId")}>
                     <option value="">— None —</option>
                     {sessions.map((s: any) => (
@@ -277,19 +295,17 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
                   </select>
                 </div>
                 <div>
-                  <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class / Section</Label>
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Class / Section</label>
                   <select className={SEL} value={form.classSectionId} onChange={set("classSectionId")}>
                     <option value="">— None —</option>
                     {classSections.map((cs: any) => (
-                      <option key={cs.id} value={cs.id}>
-                        {cs.class.name} – {cs.section.name}
-                      </option>
+                      <option key={cs.id} value={cs.id}>{cs.class.name} – {cs.section.name}</option>
                     ))}
                   </select>
                 </div>
                 <Field {...fp} label="Roll No." name="rollNo" />
                 <div>
-                  <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">School House</Label>
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">School House</label>
                   <select className={SEL} value={form.schoolHouseId} onChange={set("schoolHouseId")}>
                     <option value="">— None —</option>
                     {schoolHouses.map((h: any) => (
@@ -297,60 +313,72 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
                     ))}
                   </select>
                 </div>
-                <Field {...fp} label="Previous School" name="previousSchool" />
-                <Field {...fp} label="Previous Class" name="previousClass" />
-                <Field {...fp} label="Previous Percentage (%)" name="previousPercent" />
-                <Field {...fp} label="Previous TC No." name="previousTcNo" />
               </div>
-            </CardContent>
-          </Card>
+              <div className="border-t border-slate-100 pt-6">
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Previous School</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                  <Field {...fp} label="School Name" name="previousSchool" />
+                  <Field {...fp} label="Class" name="previousClass" />
+                  <Field {...fp} label="Percentage (%)" name="previousPercent" />
+                  <Field {...fp} label="TC Number" name="previousTc" />
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* ── Other ── */}
         {tab === "Other" && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[15px] font-bold text-slate-900">Other Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field {...fp} label="Bank Account No." name="bankAccountNo" />
-                <Field {...fp} label="Bank Name" name="bankName" />
-                <Field {...fp} label="IFSC / Sort Code" name="ifscCode" />
-                <Field {...fp} label="Bank Branch" name="bankBranch" />
-                <Field {...fp} label="Aadhar / National ID" name="aadharNo" />
-                <Field {...fp} label="Samagra ID" name="samagraId" />
-                <Field {...fp} label="Note" name="note" textarea colSpan2 />
-                <Field {...fp} label="About" name="about" textarea colSpan2 />
+          <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(99,102,241,0.06)" }}>
+            <div className="px-6 py-5 border-b border-slate-100">
+              <h2 className="text-[15px] font-black text-slate-900 tracking-tight">Other Details</h2>
+              <p className="text-[12.5px] text-slate-500 mt-0.5">Banking, identification and additional notes</p>
+            </div>
+            <div className="px-6 py-6 space-y-6">
+              <div>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Bank Details</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                  <Field {...fp} label="Account Number" name="bankAccountNo" />
+                  <Field {...fp} label="Bank Name" name="bankName" />
+                  <Field {...fp} label="IFSC / Sort Code" name="ifscCode" />
+                  <Field {...fp} label="Branch" name="bankBranch" />
+                </div>
               </div>
-            </CardContent>
-          </Card>
+              <div className="border-t border-slate-100 pt-6">
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Identification</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                  <Field {...fp} label="National ID / Aadhar" name="aadharNo" />
+                  <Field {...fp} label="Samagra ID" name="samagraId" />
+                </div>
+              </div>
+              <div className="border-t border-slate-100 pt-6">
+                <div className="grid grid-cols-1 gap-y-5">
+                  <Field {...fp} label="Note" name="note" textarea />
+                  <Field {...fp} label="About" name="about" textarea />
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
-        {/* Navigation + Save */}
+        {/* Footer nav */}
         <div className="flex items-center justify-between pb-6">
-          <div className="flex gap-2">
-            {tab !== "Basic Info" && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setTab(TABS[TABS.indexOf(tab) - 1])}
-              >
-                ← Back
+          <div className="flex items-center gap-2">
+            {tabIdx > 0 && (
+              <Button variant="outline" type="button" onClick={() => setTab(TABS[tabIdx - 1])}>
+                <ArrowLeft className="h-3.5 w-3.5" /> Back
               </Button>
             )}
-            {tab !== "Other" && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setTab(TABS[TABS.indexOf(tab) + 1])}
-              >
-                Next →
+            {tabIdx < TABS.length - 1 && (
+              <Button variant="outline" type="button" onClick={() => setTab(TABS[tabIdx + 1])}>
+                Next <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
-          <Button type="button" disabled={loading} onClick={handleSubmit}>
+          <Button size="lg" type="button" disabled={loading} onClick={handleSubmit}>
             {loading ? "Saving…" : "Add Student"}
+            {!loading && <ChevronRight className="h-4 w-4" />}
           </Button>
         </div>
       </div>
