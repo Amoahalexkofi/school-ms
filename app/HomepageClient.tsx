@@ -395,8 +395,8 @@ export function HomepageClient() {
           </div>
           {/* Right */}
           <div className="hidden md:flex items-center gap-2.5">
-            <Link href="/sign-in" className="text-[13px] font-semibold text-slate-700 hover:text-indigo-600 px-4 py-2 rounded-xl border border-slate-300 hover:border-indigo-400 transition-colors">
-              Login
+            <Link href="/demo" className="text-[13px] font-semibold text-slate-700 hover:text-indigo-600 px-4 py-2 rounded-xl border border-slate-300 hover:border-indigo-400 transition-colors">
+              View Demo
             </Link>
             <Link href="/contact" className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-bold px-5 py-2.5 rounded-xl transition-colors shadow-sm shadow-indigo-200">
               Start Free Trial <ArrowRight className="h-3.5 w-3.5" />
@@ -454,11 +454,11 @@ export function HomepageClient() {
                 {/* CTA buttons */}
                 <div className="p-3 flex flex-col gap-2">
                   <Link
-                    href="/sign-in"
+                    href="/demo"
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center justify-center h-11 rounded-xl border-2 border-slate-200 text-[14px] font-bold text-slate-700 hover:border-indigo-300 hover:text-indigo-700 transition-colors"
                   >
-                    Login
+                    View Demo
                   </Link>
                   <Link
                     href="/contact"
