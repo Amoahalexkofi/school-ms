@@ -124,6 +124,8 @@ const parentGroups: NavGroup[] = [
   },
 ];
 
+const ALL_ITEMS = [...adminGroups, ...studentGroups, ...parentGroups].flatMap(g => g.items);
+
 type Role = "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "ACCOUNTANT" | "LIBRARIAN" | "STUDENT" | "PARENT" | string;
 
 function getGroups(role: Role): NavGroup[]  { return role === "STUDENT" ? studentGroups : role === "PARENT" ? parentGroups : adminGroups; }
@@ -187,7 +189,7 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
                   href={href}
                   onClick={onNavigate}
                   className={cn(
-                    "flex items-center gap-2.5 h-8 px-2.5 rounded-lg text-[13px] font-medium transition-all duration-100 group",
+                    "flex items-center gap-2.5 h-9 px-2.5 rounded-lg text-[13px] font-medium transition-all duration-100 group",
                     active
                       ? "bg-indigo-600 text-white shadow-sm shadow-indigo-900/40"
                       : "text-slate-400 hover:bg-white/[0.07] hover:text-white"
@@ -251,33 +253,54 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
 
 export function Sidebar({ role = "ADMIN" }: { role?: Role }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const { data: session } = useSession();
+
+  const userName = (session?.user as any)?.name || session?.user?.email?.split("@")[0] || "User";
+  const userRole = ((session?.user as any)?.role ?? role ?? "").replace(/_/g, " ");
+  const initials = userName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+
+  const currentItem = ALL_ITEMS.find(item =>
+    item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href)
+  );
+  const pageTitle = currentItem?.label ?? "Dashboard";
 
   return (
     <>
       {/* Mobile topbar */}
-      <div className="lg:hidden flex items-center justify-between px-4 h-14 bg-slate-900 border-b border-white/[0.06]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-            <GraduationCap className="h-3.5 w-3.5 text-white" />
-          </div>
-          <span className="font-black text-white text-[15px]">Skula</span>
-        </div>
+      <div className="lg:hidden sticky top-0 z-30 flex items-center justify-between px-4 h-14 bg-slate-900 border-b border-white/[0.06]">
+        {/* Hamburger */}
         <button
           onClick={() => setOpen(!open)}
-          className="p-1.5 rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
+          className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
+          aria-label="Open menu"
         >
-          {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+
+        {/* Current page name — centre */}
+        <p className="text-white font-bold text-[15px] tracking-tight absolute left-1/2 -translate-x-1/2">
+          {pageTitle}
+        </p>
+
+        {/* User avatar — right */}
+        <button
+          onClick={() => setOpen(true)}
+          className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0"
+          aria-label="Open menu"
+        >
+          {initials}
         </button>
       </div>
 
       {/* Mobile drawer */}
       {open && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+          className="lg:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-60 h-full bg-slate-900 shadow-2xl flex flex-col"
+            className="w-64 h-full bg-slate-900 shadow-2xl flex flex-col"
             onClick={e => e.stopPropagation()}
           >
             <NavContent role={role} onNavigate={() => setOpen(false)} />

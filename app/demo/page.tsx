@@ -150,14 +150,28 @@ export default function DemoPage() {
       <div className="flex-1 flex flex-col bg-[#f4f5fb] overflow-y-auto">
 
         {/* Mobile nav */}
-        <div className="lg:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-slate-100">
+        <div className="lg:hidden flex items-center justify-between px-5 py-3.5 bg-white border-b border-slate-100 sticky top-0 z-10">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
               <GraduationCap className="h-3.5 w-3.5 text-white" />
             </div>
             <span className="font-black text-slate-900 text-[15px]">Skula</span>
           </Link>
-          <Link href="/" className="text-[12px] text-slate-400 hover:text-slate-600 transition-colors">← Back</Link>
+          <Link href="/" className="text-[12px] font-semibold text-slate-400 hover:text-slate-600 transition-colors">← Back</Link>
+        </div>
+
+        {/* Mobile context banner — replaces the hidden left panel */}
+        <div className="lg:hidden px-5 pt-5 pb-4">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3">
+            <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
+            Live interactive demo
+          </div>
+          <h1 className="text-[24px] font-black text-slate-900 tracking-tight leading-tight mb-1">
+            Try Skula. <span className="text-indigo-600">No sign‑up.</span>
+          </h1>
+          <p className="text-slate-500 text-[13px] leading-relaxed">
+            Pick a role, credentials fill automatically — just tap Login.
+          </p>
         </div>
 
         {/* Floating card */}
@@ -246,7 +260,7 @@ export default function DemoPage() {
                       </div>
 
                       <div className="p-4">
-                        <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                           <div>
                             <label className="block text-[10.5px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Email</label>
                             <input
