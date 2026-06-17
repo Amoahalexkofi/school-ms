@@ -49,7 +49,8 @@ export default async function SignInRoute() {
     const dark      = darken(color, 0.38);
     const initials  = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w: string) => w[0].toUpperCase()).join("");
     const subdomain = tenantRow?.subdomain;
-    const websiteUrl = subdomain ? `https://${subdomain}.novalss.com` : "/";
+    const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN?.split(",")[0]?.trim() ?? "getskula.com";
+    const websiteUrl = subdomain ? `https://${subdomain}.${appDomain}` : "/";
     const location  = [profile?.city, profile?.state, profile?.country].filter(Boolean).join(", ");
     const year      = profile?.established ?? profile?.foundedYear ?? null;
 

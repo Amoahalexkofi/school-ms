@@ -25,7 +25,8 @@ export default async function WebsitePage() {
 
   const settings = settingsRows[0] ?? { primaryColor: "#6366f1", showStats: true };
   const subdomain = tenantRows[0]?.subdomain;
-  const schoolUrl = subdomain ? `https://${subdomain}.novalss.com` : `https://${host}`;
+  const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN?.split(",")[0]?.trim() ?? "getskula.com";
+  const schoolUrl = subdomain ? `https://${subdomain}.${appDomain}` : `https://${host}`;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">

@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import { verifyPassword } from "@/lib/auth/password";
 import { neon } from "@neondatabase/serverless";
 
-const APP_DOMAINS = (process.env.NEXT_PUBLIC_APP_DOMAIN ?? "novalss.com")
+const APP_DOMAINS = (process.env.NEXT_PUBLIC_APP_DOMAIN ?? "getskula.com")
   .split(",").map(d => d.trim()).filter(Boolean);
 
 async function schemaForHost(rawHost: string): Promise<string | null> {

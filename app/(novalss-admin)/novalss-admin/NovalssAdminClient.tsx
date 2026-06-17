@@ -267,7 +267,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
             <div><Label>Subdomain *</Label>
               <div className="flex items-center gap-1">
                 <Input value={form.subdomain} onChange={e => setF("subdomain", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))} placeholder="sunshine" className="flex-1" />
-                <span className="text-xs text-gray-400 whitespace-nowrap">.novalss.com</span>
+                <span className="text-xs text-gray-400 whitespace-nowrap">.getskula.com</span>
               </div>
             </div>
             <div><Label>Admin Email *</Label>
@@ -338,7 +338,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                       <Badge label={s.status} cls={STATUS_BADGE[s.status] ?? STATUS_BADGE.active} />
                       {trialExpired && <Badge label="Trial expired" cls="bg-red-50 text-red-500 border border-red-200" />}
                     </div>
-                    <p className="text-xs text-gray-400 mt-0.5">{s.adminEmail} · {s.subdomain}.novalss.com</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{s.adminEmail} · {s.subdomain}.getskula.com</p>
                   </div>
                   {schoolStats && (
                     <div className="hidden sm:flex items-center gap-4 text-xs text-gray-500">
@@ -362,9 +362,9 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                       <Field label="Address" value={s.address} />
                       <div>
                         <p className="text-xs text-gray-400 mb-0.5">Subdomain</p>
-                        <a href={`https://${s.subdomain}.novalss.com`} target="_blank" rel="noopener noreferrer"
+                        <a href={`https://${s.subdomain}.getskula.com`} target="_blank" rel="noopener noreferrer"
                           className="text-sm text-blue-600 hover:underline flex items-center gap-1">
-                          {s.subdomain}.novalss.com <ExternalLink className="h-3 w-3" />
+                          {s.subdomain}.getskula.com <ExternalLink className="h-3 w-3" />
                         </a>
                       </div>
                       {s.customDomain && (

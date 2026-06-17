@@ -7,7 +7,7 @@ import { neon } from "@neondatabase/serverless";
 // ── Tenant detection ──────────────────────────────────────────────────────────
 
 // Comma-separated list of base domains — subdomains of any are treated as school tenants
-const APP_DOMAINS = (process.env.NEXT_PUBLIC_APP_DOMAIN ?? "novalss.com")
+const APP_DOMAINS = (process.env.NEXT_PUBLIC_APP_DOMAIN ?? "getskula.com")
   .split(",").map(d => d.trim()).filter(Boolean);
 
 // Cache subdomain → schemaName lookups for 60 s to avoid a DB hit per request
