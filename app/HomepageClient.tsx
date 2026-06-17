@@ -395,8 +395,9 @@ export function HomepageClient() {
           </div>
           {/* Right */}
           <div className="hidden md:flex items-center gap-2.5">
-            <Link href="/demo" className="text-[13px] font-semibold text-slate-700 hover:text-indigo-600 px-4 py-2 rounded-xl border border-slate-300 hover:border-indigo-400 transition-colors">
-              View Demo
+            <Link href="/demo" className="inline-flex items-center gap-1.5 text-[13px] font-bold px-5 py-2.5 rounded-xl transition-all hover:opacity-90 hover:scale-[1.02]"
+              style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff", boxShadow: "0 0 0 3px rgba(99,102,241,0.2)" }}>
+              ▶ View Demo
             </Link>
             <Link href="/contact" className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-bold px-5 py-2.5 rounded-xl transition-colors shadow-sm shadow-indigo-200">
               Start Free Trial <ArrowRight className="h-3.5 w-3.5" />
