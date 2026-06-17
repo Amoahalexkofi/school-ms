@@ -182,7 +182,7 @@ export default async function SignInRoute() {
         </div>
 
         {/* ── Right panel ────────────────────────────────────────────────── */}
-        <div className="flex-1 flex flex-col bg-white relative">
+        <div className="flex-1 flex flex-col relative" style={{ background: "#f1f5f9" }}>
 
           {/* Left accent stripe */}
           <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[3px]"
@@ -200,8 +200,9 @@ export default async function SignInRoute() {
           </div>
 
           {/* Form center */}
-          <div className="flex-1 flex flex-col items-center justify-center px-8 sm:px-12 lg:px-16 py-12">
-            <div className="w-full max-w-[400px]">
+          <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12">
+            <div className="w-full max-w-[420px] bg-white rounded-2xl px-8 py-9"
+              style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04), 0 20px 48px rgba(0,0,0,0.08)" }}>
 
               {/* School identity echo on the right */}
               <div className="flex items-center gap-3 mb-8">
@@ -222,7 +223,7 @@ export default async function SignInRoute() {
 
               {/* Heading */}
               <div className="mb-8">
-                <h2 className="text-[34px] font-black text-slate-900 tracking-tight leading-none">
+                <h2 className="text-[32px] font-black text-slate-900 tracking-tight leading-none">
                   Sign in
                 </h2>
                 <p className="text-slate-400 text-[14px] mt-2">
@@ -327,7 +328,7 @@ export default async function SignInRoute() {
       </div>
 
       {/* Right */}
-      <div className="flex-1 flex flex-col bg-white relative">
+      <div className="flex-1 flex flex-col relative" style={{ background: "#f1f5f9" }}>
         <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[3px]"
           style={{ background: "linear-gradient(to bottom, #6366f1, #8b5cf6)" }} />
         <div className="lg:hidden h-1 shrink-0"
@@ -338,8 +339,9 @@ export default async function SignInRoute() {
           <span className="font-black text-slate-900 text-[16px]">Skula</span>
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center px-8 sm:px-12 lg:px-16 py-12">
-          <div className="w-full max-w-[400px]">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12">
+          <div className="w-full max-w-[420px] bg-white rounded-2xl px-8 py-9"
+            style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04), 0 20px 48px rgba(0,0,0,0.08)" }}>
 
             <div className="flex items-center gap-3 mb-8">
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0">
