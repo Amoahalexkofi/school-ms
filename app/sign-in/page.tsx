@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { GraduationCap, ArrowLeft, CheckCircle2, Users, DollarSign, BarChart3, ArrowRight, MapPin, Phone, Mail } from "lucide-react";
+import { GraduationCap, ArrowLeft, CheckCircle2, Users, DollarSign, BarChart3, MapPin, Phone, Mail, ExternalLink } from "lucide-react";
 import { SignInPage } from "@/components/SignInPage";
 import Link from "next/link";
 import { neon } from "@neondatabase/serverless";
@@ -27,113 +27,149 @@ function formatName(raw: string): string {
   return raw;
 }
 
-// ── School-branded login left panel ─────────────────────────────────────────
-function SchoolLoginPanel({ name, initials, color, profile, websiteUrl }: {
+function darken(hex: string, amount: number): string {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const r = Math.max(0, (n >> 16) - Math.round(255 * amount));
+  const g = Math.max(0, ((n >> 8) & 0xff) - Math.round(255 * amount));
+  const b = Math.max(0, (n & 0xff) - Math.round(255 * amount));
+  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+}
+
+const ROLES = [
+  { emoji: "🎓", label: "Students",    desc: "Results, fees & timetable" },
+  { emoji: "👨‍👩‍👧", label: "Parents",     desc: "Track your child's progress" },
+  { emoji: "👩‍🏫", label: "Teachers",    desc: "Attendance, marks & lessons" },
+  { emoji: "⚙️",  label: "Admin",       desc: "Full school management" },
+];
+
+// ── School-branded left panel ────────────────────────────────────────────────
+function SchoolLeftPanel({ name, initials, color, profile, websiteUrl }: {
   name: string; initials: string; color: string;
   profile: any; websiteUrl: string;
 }) {
+  const dark1 = darken(color, 0.52);
+  const dark2 = darken(color, 0.30);
   const location = [profile?.city, profile?.state, profile?.country].filter(Boolean).join(", ");
 
   return (
     <div
-      className="hidden lg:flex lg:w-[48%] relative flex-col overflow-hidden"
-      style={{ background: `linear-gradient(135deg, ${color}ee 0%, ${color}aa 60%, ${color}70 100%)` }}
+      className="hidden lg:flex lg:w-[44%] xl:w-[42%] relative flex-col overflow-hidden"
+      style={{ background: `linear-gradient(160deg, ${dark1} 0%, ${dark2} 45%, ${color} 100%)` }}
     >
-      {/* Subtle dot grid */}
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-      {/* Radial glow */}
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse 80% 70% at 50% 110%, rgba(255,255,255,0.15) 0%, transparent 70%)" }} />
+      {/* Decorative blobs */}
+      <div className="absolute -top-32 -right-32 w-[480px] h-[480px] rounded-full pointer-events-none"
+        style={{ background: "rgba(255,255,255,0.06)" }} />
+      <div className="absolute -bottom-24 -left-24 w-[360px] h-[360px] rounded-full pointer-events-none"
+        style={{ background: "rgba(0,0,0,0.18)" }} />
 
-      <div className="relative flex flex-col h-full px-12 py-10">
+      {/* Dot grid */}
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.07) 1px, transparent 0)", backgroundSize: "36px 36px" }} />
 
-        {/* Back to website */}
+      {/* Giant watermark initial */}
+      <div className="absolute bottom-6 right-4 pointer-events-none select-none font-black text-white leading-none"
+        style={{ fontSize: 220, opacity: 0.045, lineHeight: 1 }}>
+        {initials[0]}
+      </div>
+
+      <div className="relative flex flex-col h-full px-10 xl:px-12 py-9">
+
+        {/* Back to website — top */}
         <div className="shrink-0">
           <a href={websiteUrl}
-            className="inline-flex items-center gap-2 text-white/70 hover:text-white text-[13px] font-semibold transition-colors">
-            <ArrowLeft className="h-3.5 w-3.5" /> Back to website
+            className="inline-flex items-center gap-1.5 text-white/55 hover:text-white/90 text-[13px] font-semibold transition-colors group">
+            <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
+            Back to website
           </a>
         </div>
 
-        {/* School identity — centered vertically */}
-        <div className="flex-1 flex flex-col justify-center">
+        {/* School identity — vertically centered */}
+        <div className="flex-1 flex flex-col justify-center py-6 min-h-0">
 
           {/* Logo / avatar */}
-          <div className="mb-8">
+          <div className="mb-6">
             {profile?.logo ? (
-              <img src={profile.logo} alt={name} className="w-20 h-20 rounded-2xl object-cover shadow-xl shadow-black/20" />
+              <img src={profile.logo} alt={name}
+                className="w-[88px] h-[88px] rounded-2xl object-cover"
+                style={{ boxShadow: `0 0 0 3px rgba(255,255,255,0.25), 0 12px 32px rgba(0,0,0,0.35)` }} />
             ) : (
-              <div className="w-20 h-20 rounded-2xl bg-white/20 border border-white/30 backdrop-blur-sm flex items-center justify-center shadow-xl shadow-black/10">
-                <span className="text-white font-black text-[28px] tracking-tight">{initials}</span>
+              <div className="w-[88px] h-[88px] rounded-2xl flex items-center justify-center"
+                style={{
+                  background: "rgba(255,255,255,0.12)",
+                  border: "2px solid rgba(255,255,255,0.25)",
+                  boxShadow: "0 12px 32px rgba(0,0,0,0.3)",
+                }}>
+                <span className="text-white font-black text-[32px] tracking-tight">{initials}</span>
               </div>
             )}
           </div>
 
-          {/* Name + motto */}
-          <h1 className="text-white font-black text-[clamp(24px,3vw,36px)] leading-tight tracking-tight mb-3">
+          {/* School name */}
+          <h1 className="text-white font-black leading-[1.05] tracking-tight mb-2"
+            style={{ fontSize: "clamp(26px, 3vw, 42px)" }}>
             {name}
           </h1>
+
+          {/* Motto */}
           {profile?.motto && (
-            <p className="text-white/70 text-[15px] italic font-medium mb-8 leading-relaxed">
+            <p className="text-white/60 text-[14px] italic font-medium leading-relaxed mb-6 max-w-[260px]">
               &ldquo;{profile.motto}&rdquo;
             </p>
           )}
-          {!profile?.motto && <div className="mb-8" />}
+          {!profile?.motto && <div className="mb-6" />}
 
-          {/* Contact snippets */}
-          <div className="space-y-3 mb-10">
-            {location && (
-              <div className="flex items-center gap-3 text-white/75 text-[14px]">
-                <div className="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-                  <MapPin className="h-3.5 w-3.5 text-white" />
+          {/* Contact chips */}
+          {(location || profile?.phone || profile?.email) && (
+            <div className="flex flex-col gap-2 mb-8">
+              {location && (
+                <div className="flex items-center gap-2.5 text-white/65 text-[13px]">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-white/40" />
+                  <span className="truncate">{location}</span>
                 </div>
-                {location}
-              </div>
-            )}
-            {profile?.phone && (
-              <div className="flex items-center gap-3 text-white/75 text-[14px]">
-                <div className="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-                  <Phone className="h-3.5 w-3.5 text-white" />
+              )}
+              {profile?.phone && (
+                <div className="flex items-center gap-2.5 text-white/65 text-[13px]">
+                  <Phone className="h-3.5 w-3.5 shrink-0 text-white/40" />
+                  {profile.phone}
                 </div>
-                {profile.phone}
-              </div>
-            )}
-            {profile?.email && (
-              <div className="flex items-center gap-3 text-white/75 text-[14px]">
-                <div className="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-                  <Mail className="h-3.5 w-3.5 text-white" />
+              )}
+              {profile?.email && (
+                <div className="flex items-center gap-2.5 text-white/65 text-[13px]">
+                  <Mail className="h-3.5 w-3.5 shrink-0 text-white/40" />
+                  <span className="truncate">{profile.email}</span>
                 </div>
-                {profile.email}
-              </div>
-            )}
-          </div>
-
-          {/* Who can sign in */}
-          <div className="bg-white/10 border border-white/20 rounded-2xl p-5 backdrop-blur-sm">
-            <p className="text-white/60 text-[10.5px] font-black uppercase tracking-[0.18em] mb-4">Portal Access</p>
-            <div className="space-y-3">
-              {[
-                { icon: "🎓", role: "Students",       desc: "Results, attendance, fees & timetable" },
-                { icon: "👪", role: "Parents",        desc: "Track your child's progress" },
-                { icon: "👩‍🏫", role: "Staff / Admin", desc: "Full school management dashboard" },
-              ].map(({ icon, role, desc }) => (
-                <div key={role} className="flex items-center gap-3">
-                  <span className="text-[18px] shrink-0">{icon}</span>
-                  <div>
-                    <p className="text-white text-[13px] font-bold leading-none">{role}</p>
-                    <p className="text-white/55 text-[11.5px] mt-0.5">{desc}</p>
-                  </div>
-                </div>
-              ))}
+              )}
             </div>
+          )}
+
+          {/* Divider */}
+          <div className="w-full h-px mb-7" style={{ background: "rgba(255,255,255,0.12)" }} />
+
+          {/* Portal access label */}
+          <p className="text-white/35 text-[10px] font-black uppercase tracking-[0.22em] mb-4">
+            Portal access
+          </p>
+
+          {/* Role tiles — 2×2 grid */}
+          <div className="grid grid-cols-2 gap-2.5">
+            {ROLES.map(({ emoji, label, desc }) => (
+              <div key={label}
+                className="flex items-start gap-2.5 rounded-xl p-3 transition-colors hover:bg-white/10 cursor-default"
+                style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                <span className="text-[18px] shrink-0 leading-none mt-0.5">{emoji}</span>
+                <div>
+                  <p className="text-white text-[12px] font-bold leading-none">{label}</p>
+                  <p className="text-white/45 text-[11px] mt-1 leading-snug">{desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Powered by footer */}
-        <div className="shrink-0 pt-6">
+        {/* Powered by — bottom */}
+        <div className="shrink-0">
           <a href="https://getskula.com" target="_blank" rel="noopener noreferrer"
-            className="text-white/40 hover:text-white/70 text-[11px] font-semibold tracking-widest uppercase transition-colors">
+            className="text-white/30 hover:text-white/60 text-[10.5px] font-semibold tracking-widest uppercase transition-colors">
             Powered by Skula
           </a>
         </div>
@@ -142,64 +178,96 @@ function SchoolLoginPanel({ name, initials, color, profile, websiteUrl }: {
   );
 }
 
-// ── Skula generic left panel (main domain) ────────────────────────────────────
-function SkulaLoginPanel() {
+// ── Skula main-domain left panel ─────────────────────────────────────────────
+function SkulaLeftPanel() {
   return (
-    <div className="hidden lg:flex lg:w-1/2 relative flex-col overflow-hidden border-r border-indigo-200/50"
-      style={{ background: "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 40%, #bae6fd 72%, #f8fafc 100%)" }}>
+    <div className="hidden lg:flex lg:w-[46%] relative flex-col overflow-hidden"
+      style={{ background: "linear-gradient(160deg, #13111e 0%, #1e1b4b 45%, #312e81 75%, #4338ca 100%)" }}>
 
-      <div className="absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)" }} />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)" }} />
+      {/* Decorative circles */}
+      <div className="absolute -top-40 -right-40 w-[560px] h-[560px] rounded-full pointer-events-none"
+        style={{ background: "rgba(255,255,255,0.055)" }} />
+      <div className="absolute -bottom-28 -left-28 w-[420px] h-[420px] rounded-full pointer-events-none"
+        style={{ background: "rgba(0,0,0,0.20)" }} />
+
+      {/* Dot grid */}
       <div className="absolute inset-0 pointer-events-none"
-        style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.1) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
+        style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.07) 1px, transparent 0)", backgroundSize: "36px 36px" }} />
 
-      <div className="relative flex flex-col h-full px-14 py-12">
-        <div className="flex items-center gap-4 shrink-0">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-xl shadow-indigo-300/50">
-            <GraduationCap className="h-7 w-7 text-white" />
+      {/* Watermark S */}
+      <div className="absolute bottom-4 right-2 pointer-events-none select-none font-black text-white leading-none"
+        style={{ fontSize: 220, opacity: 0.04, lineHeight: 1 }}>
+        S
+      </div>
+
+      <div className="relative flex flex-col h-full px-12 py-10">
+
+        {/* Logo mark */}
+        <div className="shrink-0 flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center">
+            <GraduationCap className="h-5.5 w-5.5 text-white" />
           </div>
           <div>
-            <span className="text-slate-900 font-black text-[32px] tracking-tight leading-none">Skula</span>
-            <p className="text-indigo-500 text-[11px] font-bold tracking-widest uppercase mt-0.5">by Novalss</p>
+            <p className="text-white font-black text-[22px] tracking-tight leading-none">Skula</p>
+            <p className="text-white/35 text-[10px] font-bold tracking-widest uppercase mt-0.5">by Novalss</p>
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col justify-center">
-          <p className="text-indigo-600 text-[11px] font-black uppercase tracking-[0.2em] mb-6">School Management Platform</p>
-          <h1 className="text-[42px] font-black text-slate-900 leading-[1.08] tracking-tight mb-5">
-            Everything your<br />school needs.<br />
-            <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              One place.
+        <div className="flex-1 flex flex-col justify-center py-8">
+
+          <p className="text-white/40 text-[10.5px] font-black uppercase tracking-[0.22em] mb-5">
+            School management platform
+          </p>
+
+          <h1 className="text-white font-black leading-[1.05] tracking-tight mb-5"
+            style={{ fontSize: "clamp(32px, 3.6vw, 52px)" }}>
+            Everything<br />your school<br />
+            <span style={{ background: "linear-gradient(90deg, #a5b4fc, #c4b5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              needs. Here.
             </span>
           </h1>
-          <p className="text-slate-600 text-[15px] leading-relaxed mb-10 max-w-sm">
-            Students, fees, attendance, exams, staff — managed from one dashboard. Live in under 30 minutes.
+
+          <p className="text-white/55 text-[14px] leading-relaxed mb-10 max-w-[300px]">
+            Students, fees, attendance, exams, and staff — managed from a single dashboard. Live in under 30 minutes.
           </p>
-          <div className="grid grid-cols-3 gap-3 mb-10">
+
+          {/* Stats row */}
+          <div className="flex gap-6 mb-10">
             {[
-              { icon: Users,      value: "50+",  label: "Schools",      color: "text-indigo-600"  },
-              { icon: DollarSign, value: "98%",  label: "Fee accuracy", color: "text-emerald-600" },
-              { icon: BarChart3,  value: "3hrs", label: "Saved / week", color: "text-violet-600"  },
-            ].map(({ icon: Icon, value, label, color }) => (
-              <div key={label} className="bg-white/70 border border-white/90 rounded-2xl p-4 backdrop-blur-sm shadow-sm">
-                <Icon className={`h-5 w-5 ${color} mb-3`} />
-                <p className={`text-2xl font-black ${color} leading-none`}>{value}</p>
-                <p className="text-slate-500 text-[11px] font-medium mt-1.5">{label}</p>
+              { value: "50+",  label: "Schools" },
+              { value: "16",   label: "Modules" },
+              { value: "30m",  label: "Setup time" },
+            ].map(({ value, label }) => (
+              <div key={label}>
+                <p className="text-white font-black text-[26px] leading-none">{value}</p>
+                <p className="text-white/40 text-[11px] font-semibold mt-1">{label}</p>
               </div>
             ))}
           </div>
-          <ul className="space-y-3.5">
-            {["Fee collection with instant printable receipts", "Digital attendance with parent SMS alerts", "Exam marks → ranked marksheets in one click", "Parent portal — results, fees, timetable"].map(item => (
-              <li key={item} className="flex items-center gap-3 text-[14px] font-medium text-slate-700">
-                <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-indigo-600" />
+
+          {/* Feature bullets */}
+          <div className="flex flex-col gap-3">
+            {[
+              "Fee collection with printable receipts",
+              "Digital attendance + parent SMS alerts",
+              "Exam marks → ranked marksheets in one click",
+              "Parent portal — results, fees, timetable",
+            ].map(item => (
+              <div key={item} className="flex items-center gap-3 text-[13px] text-white/70">
+                <div className="w-4 h-4 rounded-full shrink-0 flex items-center justify-center"
+                  style={{ background: "rgba(165,180,252,0.2)", border: "1px solid rgba(165,180,252,0.3)" }}>
+                  <CheckCircle2 className="h-2.5 w-2.5 text-indigo-300" />
                 </div>
                 {item}
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
+        </div>
+
+        <div className="shrink-0">
+          <p className="text-white/25 text-[10.5px] font-semibold tracking-widest uppercase">
+            Powered by Skula · getskula.com
+          </p>
         </div>
       </div>
     </div>
@@ -212,21 +280,19 @@ export default async function SignInRoute() {
   const tenantSchema = h.get("x-tenant-schema");
   const tenant = h.get("x-novalss-host") ?? h.get("host") ?? "";
 
-  // School subdomain — fetch branding
+  // ── School subdomain login ──────────────────────────────────────────────────
   if (tenantSchema) {
     const { profile, tenant: tenantRow, primaryColor } = await fetchSchoolData(tenantSchema);
-    const rawName   = profile?.name ?? tenantRow?.name ?? tenantSchema;
-    const name      = formatName(rawName);
-    const color     = primaryColor;
-    const initials  = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w: string) => w[0].toUpperCase()).join("");
-    const subdomain = tenantRow?.subdomain;
-    const websiteUrl = subdomain
-      ? `https://${subdomain}.novalss.com`
-      : "/";
+    const rawName    = profile?.name ?? tenantRow?.name ?? tenantSchema;
+    const name       = formatName(rawName);
+    const color      = primaryColor;
+    const initials   = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w: string) => w[0].toUpperCase()).join("");
+    const subdomain  = tenantRow?.subdomain;
+    const websiteUrl = subdomain ? `https://${subdomain}.novalss.com` : "/";
 
     return (
       <div className="min-h-screen flex">
-        <SchoolLoginPanel
+        <SchoolLeftPanel
           name={name}
           initials={initials}
           color={color}
@@ -234,61 +300,94 @@ export default async function SignInRoute() {
           websiteUrl={websiteUrl}
         />
 
-        {/* Right panel — login form */}
-        <div className="flex-1 flex flex-col relative"
-          style={{ background: "linear-gradient(145deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%)" }}>
+        {/* Right panel — pure white, no nested card */}
+        <div className="flex-1 flex flex-col relative bg-white">
 
-          {/* Dot grid */}
-          <div className="absolute inset-0 pointer-events-none opacity-40"
-            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)", backgroundSize: "24px 24px" }} />
+          {/* Left accent stripe (desktop) */}
+          <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[3px]"
+            style={{ background: `linear-gradient(180deg, transparent 0%, ${color} 30%, ${color} 70%, transparent 100%)` }} />
 
-          {/* Mobile back link */}
-          <div className="relative lg:hidden flex items-center justify-between px-6 pt-6 pb-0">
+          {/* Top accent bar (mobile) */}
+          <div className="lg:hidden h-1 w-full shrink-0" style={{ background: color }} />
+
+          {/* Mobile header */}
+          <div className="lg:hidden shrink-0 px-6 pt-5 pb-2 flex items-center justify-between">
             <a href={websiteUrl}
-              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-500 hover:text-slate-800 transition-colors">
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-400 hover:text-slate-700 transition-colors">
               <ArrowLeft className="h-3.5 w-3.5" /> Back to website
             </a>
-          </div>
-
-          {/* Mobile logo */}
-          <div className="relative lg:hidden flex items-center gap-3 px-6 pt-4 pb-0">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-[12px] font-black" style={{ background: color }}>
-              {initials}
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-[11px]"
+                style={{ background: color }}>
+                {initials}
+              </div>
+              <span className="font-black text-slate-800 text-[14px]">{name}</span>
             </div>
-            <span className="font-black text-gray-900 text-[16px]">{name}</span>
           </div>
 
-          <div className="relative flex-1 flex flex-col items-center justify-center px-8 py-10">
-            <div className="w-full max-w-[420px] bg-white rounded-3xl border border-slate-200/80 shadow-2xl shadow-slate-200/80 px-9 py-10">
+          {/* Top-right subdomain hint (desktop only) */}
+          {subdomain && (
+            <div className="hidden lg:flex absolute top-6 right-7 items-center gap-1.5">
+              <a href={websiteUrl}
+                className="inline-flex items-center gap-1 text-[12px] text-slate-300 hover:text-slate-500 font-semibold transition-colors">
+                {subdomain}.novalss.com
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          )}
 
-              {/* School avatar (small, in form card) */}
-              <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-lg text-white font-black text-[16px]"
-                style={{ background: color, boxShadow: `0 8px 24px ${color}40` }}
-              >
+          {/* Form area — vertically centered */}
+          <div className="flex-1 flex flex-col items-center justify-center px-8 sm:px-12 py-10">
+            <div className="w-full max-w-[400px]">
+
+              {/* School identity pill */}
+              <div className="hidden lg:inline-flex items-center gap-2 rounded-xl px-3.5 py-2 mb-6 text-[12px] font-bold"
+                style={{
+                  background: `${color}12`,
+                  border: `1px solid ${color}30`,
+                  color,
+                }}>
                 {profile?.logo
-                  ? <img src={profile.logo} alt={name} className="w-full h-full object-cover rounded-2xl" />
-                  : initials}
+                  ? <img src={profile.logo} alt="" className="w-5 h-5 rounded object-cover" />
+                  : <span className="w-5 h-5 rounded flex items-center justify-center text-white text-[9px] font-black" style={{ background: color }}>{initials}</span>
+                }
+                {name}
               </div>
 
-              <h2 className="text-[26px] font-black text-gray-900 tracking-tight leading-tight">Welcome back</h2>
-              <p className="text-gray-400 text-[14px] mt-1.5 mb-7">Sign in to {name} portal</p>
+              <h2 className="text-[32px] font-black text-slate-900 tracking-tight leading-tight">
+                Welcome back
+              </h2>
+              <p className="text-slate-400 text-[14px] mt-1.5 mb-8 leading-relaxed">
+                Sign in to access the <span className="text-slate-600 font-semibold">{name}</span> portal
+              </p>
 
-              <SignInPage tenant={tenant} />
+              <SignInPage tenant={tenant} accentColor={color} />
 
-              <div className="mt-7 pt-6 border-t border-gray-100 text-center">
+              {/* Back to website — below form */}
+              <div className="mt-8 pt-6 border-t border-slate-100 text-center">
                 <a href={websiteUrl}
-                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-400 hover:text-slate-700 transition-colors">
-                  <ArrowLeft className="h-3.5 w-3.5" /> Back to {name} website
+                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-350 hover:text-slate-600 transition-colors"
+                  style={{ color: "#94a3b8" }}>
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  Back to {name} website
                 </a>
               </div>
             </div>
           </div>
 
-          <div className="relative shrink-0 px-8 pb-6 text-center">
-            <p className="text-[11px] text-gray-400">
-              Powered by <span className="font-semibold text-gray-500">Skula</span>{" "}·{" "}
-              <a href="https://novalss.com" className="hover:underline">a Novalss product</a>
+          {/* Footer */}
+          <div className="shrink-0 px-8 pb-6 text-center">
+            <p className="text-[11px] text-slate-300">
+              Powered by{" "}
+              <a href="https://getskula.com" target="_blank" rel="noopener noreferrer"
+                className="font-semibold text-slate-400 hover:text-slate-600 transition-colors">
+                Skula
+              </a>
+              {" "}·{" "}
+              <a href="https://novalss.com" target="_blank" rel="noopener noreferrer"
+                className="hover:text-slate-500 transition-colors">
+                a Novalss product
+              </a>
             </p>
           </div>
         </div>
@@ -296,49 +395,78 @@ export default async function SignInRoute() {
     );
   }
 
-  // ── Main Skula domain — generic login ────────────────────────────────────────
+  // ── Main Skula domain ─────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex">
-      <SkulaLoginPanel />
+      <SkulaLeftPanel />
 
-      <div className="lg:w-1/2 flex-1 flex flex-col relative"
-        style={{ background: "linear-gradient(145deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%)" }}>
+      {/* Right panel — pure white */}
+      <div className="flex-1 lg:w-[54%] flex flex-col relative bg-white">
 
-        <div className="absolute inset-0 pointer-events-none opacity-40"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)", backgroundSize: "24px 24px" }} />
-        <div className="absolute left-0 top-0 bottom-0 w-px"
+        {/* Left accent stripe */}
+        <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[3px]"
           style={{ background: "linear-gradient(180deg, transparent 0%, #6366f1 30%, #8b5cf6 70%, transparent 100%)" }} />
 
-        <div className="relative lg:hidden flex items-center gap-2.5 px-8 pt-8 pb-0">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+        {/* Top accent bar (mobile) */}
+        <div className="lg:hidden h-1 w-full shrink-0"
+          style={{ background: "linear-gradient(90deg, #6366f1, #8b5cf6)" }} />
+
+        {/* Mobile header */}
+        <div className="lg:hidden flex items-center gap-2.5 px-6 pt-6 pb-0 shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
             <GraduationCap className="h-4 w-4 text-white" />
           </div>
-          <span className="font-black text-gray-900">Skula</span>
+          <span className="font-black text-slate-900 text-[16px]">Skula</span>
         </div>
 
-        <div className="relative flex-1 flex flex-col items-center justify-center px-8 py-10">
-          <div className="w-full max-w-[440px] bg-white rounded-3xl border border-slate-200/80 shadow-2xl shadow-slate-200/80 px-10 py-12">
-            <div className="flex w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 items-center justify-center mb-8 shadow-lg shadow-indigo-300/40">
-              <GraduationCap className="h-6 w-6 text-white" />
+        <div className="flex-1 flex flex-col items-center justify-center px-8 sm:px-12 py-10">
+          <div className="w-full max-w-[400px]">
+
+            {/* Skula identity pill */}
+            <div className="hidden lg:flex items-center gap-2 mb-6">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-300/30">
+                <GraduationCap className="h-4.5 w-4.5 text-white" />
+              </div>
+              <div>
+                <p className="text-slate-900 font-black text-[17px] leading-none">Skula</p>
+                <p className="text-slate-400 text-[11px] font-semibold leading-none mt-0.5">by Novalss</p>
+              </div>
             </div>
-            <h2 className="text-[28px] font-black text-gray-900 tracking-tight leading-tight">Welcome back</h2>
-            <p className="text-gray-400 text-[14px] mt-2 mb-8">Sign in to your school dashboard</p>
-            <SignInPage tenant={tenant} />
-            <div className="mt-8 pt-8 border-t border-gray-100 text-center">
-              <p className="text-[13px] text-gray-400">
+
+            <h2 className="text-[32px] font-black text-slate-900 tracking-tight leading-tight">
+              Welcome back
+            </h2>
+            <p className="text-slate-400 text-[14px] mt-1.5 mb-8 leading-relaxed">
+              Sign in to your school management dashboard
+            </p>
+
+            <SignInPage tenant={tenant} accentColor="#6366f1" />
+
+            <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+              <p className="text-[13px] text-slate-400">
                 New to Skula?{" "}
-                <Link href="/contact" className="text-indigo-600 font-bold hover:text-indigo-700 inline-flex items-center gap-1">
-                  Get started free <ArrowRight className="h-3.5 w-3.5" />
+                <Link href="/contact"
+                  className="font-bold transition-colors hover:opacity-75"
+                  style={{ color: "#6366f1" }}>
+                  Get started free →
                 </Link>
               </p>
             </div>
           </div>
         </div>
 
-        <div className="relative shrink-0 px-8 pb-8 text-center">
-          <p className="text-[11px] text-gray-400">
-            Powered by <span className="font-semibold text-gray-500">Skula</span>{" "}·{" "}
-            <a href="https://novalss.com" className="hover:underline">a Novalss product</a>
+        <div className="shrink-0 px-8 pb-6 text-center">
+          <p className="text-[11px] text-slate-300">
+            Powered by{" "}
+            <a href="https://getskula.com" target="_blank" rel="noopener noreferrer"
+              className="font-semibold text-slate-400 hover:text-slate-600 transition-colors">
+              Skula
+            </a>
+            {" "}·{" "}
+            <a href="https://novalss.com" target="_blank" rel="noopener noreferrer"
+              className="hover:text-slate-500 transition-colors">
+              a Novalss product
+            </a>
           </p>
         </div>
       </div>

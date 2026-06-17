@@ -5,13 +5,13 @@ import Link from "next/link";
 import { Eye, EyeOff, Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
 
 interface SignInPayload { email: string; password: string; }
-interface Props { onSubmit: (payload: SignInPayload) => Promise<void>; }
+interface Props { onSubmit: (payload: SignInPayload) => Promise<void>; accentColor?: string; }
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-export function SignInForm({ onSubmit }: Props) {
+export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
   const [email, setEmail]           = useState("");
   const [password, setPassword]     = useState("");
   const [showPw, setShowPw]         = useState(false);
@@ -69,7 +69,8 @@ export function SignInForm({ onSubmit }: Props) {
       <div>
         <div className="flex items-center justify-between mb-1.5">
           <label htmlFor="signin-password" className="block text-sm font-semibold text-slate-700">Password</label>
-          <Link href="/forgot-password" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
+          <Link href="/forgot-password" className="text-xs font-semibold transition-colors hover:opacity-75"
+            style={{ color: accentColor }}>
             Forgot password?
           </Link>
         </div>
@@ -99,7 +100,8 @@ export function SignInForm({ onSubmit }: Props) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors shadow-lg shadow-indigo-200 mt-1"
+        className="w-full flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl text-[14px] transition-all hover:opacity-90 active:scale-[0.99] mt-1"
+        style={{ background: accentColor, boxShadow: `0 4px 20px ${accentColor}45` }}
       >
         {submitting ? (
           <>

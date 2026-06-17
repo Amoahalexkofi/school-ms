@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { SignInForm } from "@/components/SignInForm";
 
-export function SignInPage({ tenant }: { tenant: string }) {
+export function SignInPage({ tenant, accentColor }: { tenant: string; accentColor?: string }) {
   const router = useRouter();
 
   async function handleSignIn({
@@ -29,5 +29,5 @@ export function SignInPage({ tenant }: { tenant: string }) {
     router.refresh();
   }
 
-  return <SignInForm onSubmit={handleSignIn} />;
+  return <SignInForm onSubmit={handleSignIn} accentColor={accentColor} />;
 }
