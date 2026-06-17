@@ -60,10 +60,7 @@ export default async function SignInRoute() {
             {/* Back to website */}
             <div className="shrink-0">
               <a href={websiteUrl}
-                className="inline-flex items-center gap-1.5 text-[13px] font-semibold transition-colors group"
-                style={{ color: "rgba(255,255,255,0.5)" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")}
-                onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}>
+                className="inline-flex items-center gap-1.5 text-[13px] font-semibold transition-colors text-white/50 hover:text-white/90 group">
                 <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
                 Back to website
               </a>
