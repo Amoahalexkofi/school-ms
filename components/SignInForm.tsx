@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, ArrowRight } from "lucide-react";
 
 interface SignInPayload { email: string; password: string; }
 interface Props { onSubmit: (payload: SignInPayload) => Promise<void>; accentColor?: string; }
@@ -22,9 +22,8 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
     e.preventDefault();
     setError(null);
     if (!email.trim())        return setError("Email is required");
-    if (!isValidEmail(email)) return setError("Please enter a valid email address");
+    if (!isValidEmail(email)) return setError("Enter a valid email address");
     if (!password)            return setError("Password is required");
-
     setSubmitting(true);
     try {
       await onSubmit({ email: email.trim(), password });
@@ -36,46 +35,44 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
 
       {error && (
-        <div role="alert" className="flex items-start gap-2.5 bg-red-50 border border-red-100 text-red-700 text-[13px] rounded-xl px-4 py-3">
+        <div role="alert" className="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700 text-[13px] rounded-lg px-4 py-3">
           <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
           {error}
         </div>
       )}
 
-      {/* Email */}
-      <div>
-        <label htmlFor="signin-email" className="block text-sm font-semibold text-slate-700 mb-1.5">
+      <div className="space-y-1.5">
+        <label htmlFor="signin-email" className="block text-[11px] font-bold text-slate-400 tracking-[0.1em] uppercase">
           Email address
         </label>
-        <div className="relative">
-          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
-          <input
-            id="signin-email"
-            type="email"
-            value={email}
-            onChange={(e) => { setEmail(e.target.value); setError(null); }}
-            autoComplete="email"
-            autoFocus
-            placeholder="you@school.edu"
-            className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-400 transition-all"
-          />
-        </div>
+        <input
+          id="signin-email"
+          type="email"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); setError(null); }}
+          autoComplete="email"
+          autoFocus
+          placeholder="you@school.edu"
+          className="w-full px-4 py-3.5 border border-slate-200 rounded-xl text-[14px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
+          style={{ "--tw-ring-color": `${accentColor}35` } as any}
+        />
       </div>
 
-      {/* Password */}
-      <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <label htmlFor="signin-password" className="block text-sm font-semibold text-slate-700">Password</label>
-          <Link href="/forgot-password" className="text-xs font-semibold transition-colors hover:opacity-75"
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <label htmlFor="signin-password" className="block text-[11px] font-bold text-slate-400 tracking-[0.1em] uppercase">
+            Password
+          </label>
+          <Link href="/forgot-password"
+            className="text-[12px] font-semibold transition-colors hover:opacity-70"
             style={{ color: accentColor }}>
-            Forgot password?
+            Forgot?
           </Link>
         </div>
         <div className="relative">
-          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
           <input
             id="signin-password"
             type={showPw ? "text" : "password"}
@@ -83,14 +80,15 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
             onChange={(e) => { setPassword(e.target.value); setError(null); }}
             autoComplete="current-password"
             placeholder="••••••••"
-            className="w-full pl-10 pr-11 py-3 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-400 transition-all"
+            className="w-full px-4 pr-11 py-3.5 border border-slate-200 rounded-xl text-[14px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
+            style={{ "--tw-ring-color": `${accentColor}35` } as any}
           />
           <button
             type="button"
             onClick={() => setShowPw(s => !s)}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
             tabIndex={-1}
             aria-label={showPw ? "Hide password" : "Show password"}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
           >
             {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
@@ -100,8 +98,8 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl text-[14px] transition-all hover:opacity-90 active:scale-[0.99] mt-1"
-        style={{ background: accentColor, boxShadow: `0 4px 20px ${accentColor}45` }}
+        className="w-full flex items-center justify-center gap-2 text-white font-bold py-3.5 rounded-xl text-[14px] transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-90 active:scale-[0.99]"
+        style={{ background: accentColor }}
       >
         {submitting ? (
           <>
