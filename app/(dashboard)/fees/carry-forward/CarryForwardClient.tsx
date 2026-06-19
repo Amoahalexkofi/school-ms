@@ -63,7 +63,7 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
   const fromCS      = classSections.find(cs => cs.id === fromClassSectionId);
 
   return (
-    <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
+    <main className="flex-1 p-4 md:p-6 max-w-4xl mx-auto space-y-6">
       <Link href="/fees" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Fees
       </Link>

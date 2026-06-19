@@ -81,7 +81,7 @@ export default async function ResultsPage() {
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Results" />
-      <main className="flex-1 p-6 space-y-6">
+      <main className="flex-1 p-4 md:p-6 space-y-6">
         {role === "STUDENT" && studentName && (
           <p className="text-sm text-gray-500">Showing results for <strong>{studentName}</strong></p>
         )}

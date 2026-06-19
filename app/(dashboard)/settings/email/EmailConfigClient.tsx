@@ -118,7 +118,7 @@ export function EmailConfigClient({ config }: { config: any }) {
   const selectedPreset = PRESETS.find(p => p.label === activePreset);
 
   return (
-    <main className="flex-1 p-6 max-w-2xl mx-auto space-y-6">
+    <main className="flex-1 p-4 md:p-6 max-w-2xl mx-auto space-y-6">
       <Link href="/settings"
         className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings

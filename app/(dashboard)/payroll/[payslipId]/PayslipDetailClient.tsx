@@ -123,7 +123,7 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
   const deductions = payslip.allowances.filter(a =>  a.isDeduction);
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+    <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50">
 
       {/* Top bar */}
       <div className="flex items-center justify-between flex-wrap gap-3">

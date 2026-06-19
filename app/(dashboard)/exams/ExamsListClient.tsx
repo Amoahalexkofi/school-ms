@@ -64,7 +64,7 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+    <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <p className="text-sm text-gray-500">{groups.length} exam group{groups.length !== 1 ? "s" : ""}</p>
         <div className="flex gap-2 flex-wrap">

@@ -56,7 +56,7 @@ export function AdmitCardClient({ examGroups, classes, school }: {
   const schoolName = school?.name ?? "Skula";
 
   return (
-    <main className="flex-1 p-6 space-y-6">
+    <main className="flex-1 p-4 md:p-6 space-y-6">
       {/* Filter panel — no-print */}
       <div className="no-print">
         <Card>

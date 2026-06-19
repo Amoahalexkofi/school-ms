@@ -39,7 +39,7 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
   }
 
   return (
-    <main className="flex-1 p-6 space-y-8">
+    <main className="flex-1 p-4 md:p-6 space-y-8">
       {/* Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Total Income</p><p className="text-2xl font-bold text-green-600">₵{totalIncome.toLocaleString()}</p></CardContent></Card>

@@ -29,7 +29,7 @@ export function ExamResultsClient({ group, classSections }: Props) {
   const cs = classSections.find((cs: any) => cs.id === classSectionId);
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+    <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <Link href={`/exams/${group.id}`} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
           <ArrowLeft className="h-4 w-4" /> Back to Schedules

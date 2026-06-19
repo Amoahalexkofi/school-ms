@@ -100,7 +100,7 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
   const lowStockItems = items.filter((i: any) => i.quantity <= i.lowStockAlert);
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+    <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50">
       {lowStockItems.length > 0 && (
         <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
           <AlertTriangle className="h-4 w-4 shrink-0" />

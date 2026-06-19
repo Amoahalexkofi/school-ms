@@ -175,7 +175,7 @@ export function ExamDetailClient({
   }[status];
 
   return (
-    <main className="flex-1 p-6 space-y-6">
+    <main className="flex-1 p-4 md:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-start gap-4 flex-wrap">
         <Link href="/online-exams">

@@ -92,7 +92,7 @@ export function DepartmentsClient({ departments }: { departments: Dept[] }) {
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5 max-w-2xl">
+    <main className="flex-1 p-4 md:p-6 space-y-5 max-w-2xl">
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-500">{departments.length} department{departments.length !== 1 ? "s" : ""}</p>
         {perm.canAdd && (

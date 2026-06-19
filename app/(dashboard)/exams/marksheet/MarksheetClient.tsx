@@ -97,7 +97,7 @@ export function MarksheetClient({ examGroups, classes, school }: {
   const printDate   = new Date().toLocaleDateString();
 
   return (
-    <main className="flex-1 p-6 space-y-6">
+    <main className="flex-1 p-4 md:p-6 space-y-6">
       {/* Filters — hidden on print */}
       <div className="no-print">
         <Card>

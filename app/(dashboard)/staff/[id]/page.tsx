@@ -44,7 +44,7 @@ export default async function StaffProfilePage({
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Staff Profile" />
-      <main className="flex-1 p-6 space-y-6 max-w-5xl">
+      <main className="flex-1 p-4 md:p-6 space-y-6 max-w-5xl">
         <Link href="/staff" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Staff
         </Link>

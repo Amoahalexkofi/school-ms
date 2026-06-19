@@ -127,7 +127,7 @@ export function TimetableClient({ classes, staff, session }: {
   const sectionName = sections.find(s => s.id === classSectionId)?.section.name ?? "";
 
   return (
-    <main className="flex-1 p-6 space-y-5">
+    <main className="flex-1 p-4 md:p-6 space-y-5">
       {/* Filters — matches Smart School: select class + section first */}
       <Card>
         <CardHeader className="pb-3">

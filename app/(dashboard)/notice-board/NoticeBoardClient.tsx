@@ -20,7 +20,7 @@ export function NoticeBoardClient({ notices }: any) {
   }
 
   return (
-    <main className="flex-1 p-6 space-y-6">
+    <main className="flex-1 p-4 md:p-6 space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">{notices.length} notice{notices.length !== 1 ? "s" : ""}</p>
         {perm.canAdd && (

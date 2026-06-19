@@ -48,7 +48,7 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
   ];
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+    <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50">
       <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}

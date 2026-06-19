@@ -85,7 +85,7 @@ export function LibraryClient({ books, issues, students, staff, members: initial
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+    <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50">
       <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
         {[
           { key: "catalog" as Tab, label: "Book Catalog" },
@@ -101,9 +101,9 @@ export function LibraryClient({ books, issues, students, staff, members: initial
 
       {tab === "catalog" && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <Input className="w-64" placeholder="Search books…" value={search} onChange={e => setSearch(e.target.value)} />
-            <div className="flex gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Input className="w-full sm:w-64" placeholder="Search books…" value={search} onChange={e => setSearch(e.target.value)} />
+            <div className="flex gap-2 shrink-0">
               {perm.canAdd && (
                 <Link href="/library/issue/new">
                   <Button variant="outline"><Plus className="h-4 w-4 mr-1.5" />Issue Book</Button>

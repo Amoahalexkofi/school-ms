@@ -73,7 +73,7 @@ export function ReportsClient({ sessions, classes, sections, classSections, depa
   }
 
   return (
-    <main className="flex-1 p-6 space-y-4">
+    <main className="flex-1 p-4 md:p-6 space-y-4">
       {/* Tab nav */}
       <div className="flex gap-1 flex-wrap border-b print:hidden">
         {TABS.map((t) => (

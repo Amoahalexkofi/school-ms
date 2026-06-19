@@ -35,7 +35,7 @@ export function MessagingClient({ logs, parentCount, staffCount, studentCount }:
   const recipientCount: Record<string, number> = { ALL_PARENTS: parentCount, ALL_STAFF: staffCount, ALL_STUDENTS: studentCount, ALL: parentCount + staffCount + studentCount };
 
   return (
-    <main className="flex-1 p-6 space-y-8">
+    <main className="flex-1 p-4 md:p-6 space-y-8">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Parents</p><p className="text-3xl font-bold">{parentCount}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Staff</p><p className="text-3xl font-bold">{staffCount}</p></CardContent></Card>

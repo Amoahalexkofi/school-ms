@@ -18,7 +18,7 @@ export default async function ParentFeesPage() {
     return (
       <div className="flex flex-col flex-1">
         <Topbar title="Fee Statement" />
-        <main className="flex-1 p-6 flex items-center justify-center">
+        <main className="flex-1 p-4 md:p-6 flex items-center justify-center">
           <div className="text-center">
             <Users className="h-10 w-10 mx-auto text-gray-300 mb-3" />
             <p className="text-gray-500">No children linked to your account.</p>

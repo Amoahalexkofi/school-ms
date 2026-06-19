@@ -91,7 +91,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Settings" />
-      <main className="flex-1 p-6 space-y-8">
+      <main className="flex-1 p-4 md:p-6 space-y-8">
 
         {/* Academic Sessions */}
         <Card>

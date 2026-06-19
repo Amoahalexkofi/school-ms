@@ -424,7 +424,7 @@ export function HomepageClient() {
         <div className="absolute top-10 right-[-80px] w-[500px] h-[500px] rounded-full pointer-events-none"
           style={{ background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)" }} />
 
-        <div className="relative max-w-7xl mx-auto px-8 w-full py-12 sm:py-20 lg:py-0">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 w-full py-12 sm:py-20 lg:py-0">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-8 items-center">
 
             {/* Left: Copy */}

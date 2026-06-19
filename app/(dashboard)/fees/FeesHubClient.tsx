@@ -28,7 +28,7 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, stu
     : [];
 
   return (
-    <main className="flex-1 p-6 space-y-6 bg-gray-50">
+    <main className="flex-1 p-4 md:p-6 space-y-6 bg-gray-50">
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

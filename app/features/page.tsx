@@ -717,15 +717,15 @@ export default function FeaturesPage() {
       <SkulaNav />
 
       {/* HERO */}
-      <section className="bg-slate-950 pt-32 pb-20 relative overflow-hidden">
+      <section className="bg-slate-950 pt-20 sm:pt-32 pb-12 sm:pb-20 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:"radial-gradient(circle at 1px 1px,rgba(255,255,255,0.04) 1px,transparent 0)", backgroundSize:"32px 32px" }} />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="relative max-w-4xl mx-auto px-6 text-center">
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <div className="inline-flex items-center gap-2 border border-white/10 bg-white/5 text-slate-400 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-8">
             <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
             {MODULES.length} modules · Everything included · No add-ons
           </div>
-          <h1 className="text-5xl sm:text-6xl font-black text-white tracking-tight leading-[1.02]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.02]">
             Every feature your<br />
             <span className="text-indigo-400">school will ever need.</span>
           </h1>
@@ -745,17 +745,17 @@ export default function FeaturesPage() {
       </section>
 
       {/* MODULE SECTIONS */}
-      <div className="max-w-7xl mx-auto px-6 py-20 space-y-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 space-y-16 sm:space-y-32">
         {categories.map(cat => (
           <div key={cat} id={cat.toLowerCase()}>
             {/* Category header */}
-            <div className="flex items-center gap-4 mb-14">
+            <div className="flex items-center gap-4 mb-8 sm:mb-14">
               <div className="h-px flex-1 bg-gray-100" />
               <span className="text-xs font-black text-gray-400 uppercase tracking-widest px-2">{cat}</span>
               <div className="h-px flex-1 bg-gray-100" />
             </div>
 
-            <div className="space-y-24">
+            <div className="space-y-14 sm:space-y-24">
               {MODULES.filter(m => m.category === cat).map((mod, idx) => {
                 const Icon = mod.icon;
                 const c = COLOR_MAP[mod.color] ?? COLOR_MAP.indigo;
@@ -792,7 +792,7 @@ export default function FeaturesPage() {
                     </div>
 
                     {/* Mockup */}
-                    <div className={`${c.light} ${c.border} border rounded-3xl p-8`}>
+                    <div className={`${c.light} ${c.border} border rounded-3xl p-4 sm:p-8`}>
                       {mod.mockup}
                     </div>
 
@@ -805,8 +805,8 @@ export default function FeaturesPage() {
       </div>
 
       {/* BOTTOM CTA */}
-      <section className="bg-slate-950 py-24 border-t border-slate-800">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+      <section className="bg-slate-950 py-14 sm:py-24 border-t border-slate-800">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
             All {MODULES.length} modules.<br />
             <span className="text-indigo-400">One price. Live in 2 minutes.</span>

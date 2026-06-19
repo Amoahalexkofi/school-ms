@@ -59,7 +59,7 @@ export function AddItemForm({ categories, suppliers, stores }: Props) {
   }
 
   return (
-    <main className="flex-1 p-6 max-w-4xl mx-auto w-full">
+    <main className="flex-1 p-4 md:p-6 max-w-4xl mx-auto w-full">
       <Link href="/inventory" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-6">
         <ArrowLeft className="h-3.5 w-3.5" /> Back
       </Link>

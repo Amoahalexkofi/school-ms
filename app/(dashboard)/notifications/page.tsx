@@ -58,7 +58,7 @@ export default function NotificationsPage() {
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Notifications" />
-      <main className="flex-1 p-6 space-y-4 max-w-2xl">
+      <main className="flex-1 p-4 md:p-6 space-y-4 max-w-2xl">
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}

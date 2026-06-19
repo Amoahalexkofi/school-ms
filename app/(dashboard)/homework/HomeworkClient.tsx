@@ -98,7 +98,7 @@ export function HomeworkClient({ classes, staff, session }: {
   const canCreate = (role === "SUPER_ADMIN" || role === "ADMIN" || role === "TEACHER") && perm.canAdd;
 
   return (
-    <main className="flex-1 p-6 space-y-5">
+    <main className="flex-1 p-4 md:p-6 space-y-5">
       {/* Filters */}
       <Card>
         <CardContent className="pt-4">

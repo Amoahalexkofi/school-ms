@@ -108,7 +108,7 @@ export default function AlumniEventsPage() {
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Alumni Events" />
-      <main className="flex-1 p-6 space-y-6">
+      <main className="flex-1 p-4 md:p-6 space-y-6">
         <div className="flex items-center justify-between">
           <Link href="/alumni" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Alumni

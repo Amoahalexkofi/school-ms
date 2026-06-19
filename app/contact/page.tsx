@@ -150,22 +150,22 @@ export default function ContactPage() {
           style={{ background: "linear-gradient(180deg, transparent 5%, #6366f1 35%, #8b5cf6 65%, transparent 95%)" }} />
 
         {/* Back link */}
-        <div className="relative shrink-0 flex justify-end px-8 pt-6">
+        <div className="relative shrink-0 flex justify-end px-4 pt-5 sm:px-8 sm:pt-6">
           <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-slate-400 hover:text-slate-700 transition-colors">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to home
           </Link>
         </div>
 
         {/* Mobile logo */}
-        <div className="relative lg:hidden flex items-center gap-3 px-8 pt-4 pb-0">
+        <div className="relative lg:hidden flex items-center gap-3 px-4 pt-4 pb-0 sm:px-8">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
             <GraduationCap className="h-5 w-5 text-white" />
           </div>
           <span className="font-black text-gray-900 text-xl">Skula</span>
         </div>
 
-        <div className="relative flex-1 flex flex-col items-center justify-center px-10 py-8">
-          <div className="w-full max-w-[520px] bg-white rounded-3xl border border-slate-200/80 px-10 py-10"
+        <div className="relative flex-1 flex flex-col items-center justify-center px-4 py-6 sm:px-10 sm:py-8">
+          <div className="w-full max-w-[520px] bg-white rounded-3xl border border-slate-200/80 px-5 py-8 sm:px-10 sm:py-10"
             style={{ boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 8px 28px rgba(99,102,241,0.10), 0 32px 64px rgba(0,0,0,0.07)" }}>
 
             {sent ? (
@@ -273,7 +273,7 @@ export default function ContactPage() {
         </div>
 
         {/* Footer */}
-        <div className="relative shrink-0 px-8 pb-6 text-center">
+        <div className="relative shrink-0 px-4 pb-6 text-center sm:px-8">
           <p className="text-[11px] text-gray-400">
             Powered by <span className="font-semibold text-gray-500">Skula</span>{" "}·{" "}
             <a href="https://novalss.com" className="hover:underline">a Novalss product</a>

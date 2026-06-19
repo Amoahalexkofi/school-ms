@@ -91,7 +91,7 @@ export function PayrollClient({ departments }: Props) {
   const noPayslipCount  = rows.filter(r => !r.payslip && r.staff.basicSalary).length;
 
   return (
-    <main className="flex-1 p-6 space-y-5 bg-gray-50">
+    <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50">
 
       {/* Filter bar */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">

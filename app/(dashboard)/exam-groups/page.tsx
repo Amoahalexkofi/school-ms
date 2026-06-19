@@ -120,7 +120,7 @@ export default function ExamGroupsPage() {
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Exams & Marks" />
-      <main className="flex-1 p-6 space-y-4">
+      <main className="flex-1 p-4 md:p-6 space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">{groups.length} exam group{groups.length !== 1 ? "s" : ""}</p>
           <Button size="sm" onClick={() => { setCreateDialog(true); setError(""); }}>

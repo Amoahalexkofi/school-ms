@@ -135,7 +135,7 @@ export function SubjectGroupsClient({ sessions, groups: init, subjects, classSec
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5 max-w-5xl mx-auto">
+    <main className="flex-1 p-4 md:p-6 space-y-5 max-w-5xl mx-auto">
       {/* Top bar */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">

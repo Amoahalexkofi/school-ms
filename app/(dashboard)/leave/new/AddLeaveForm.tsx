@@ -71,7 +71,7 @@ export function AddLeaveForm({ leaveTypes, staff, students }: Props) {
   }
 
   return (
-    <main className="flex-1 p-6 max-w-4xl mx-auto space-y-6">
+    <main className="flex-1 p-4 md:p-6 max-w-4xl mx-auto space-y-6">
       <Link href="/leave" className="text-sm text-blue-600 hover:underline">
         ← Back to Leave Management
       </Link>
