@@ -48,7 +48,7 @@ export default function ResetPasswordPage() {
       {/* Top bar */}
       <div className="flex items-center justify-between px-8 pt-8">
         <Link href="/" className="flex items-center">
-          <img src="/images/skula-logo.png" alt="Skula" className="h-9 object-contain" />
+          <img src="/images/skula-logomark.png" alt="Skula" className="h-9 object-contain" />
         </Link>
         <Link
           href="/sign-in"

@@ -827,7 +827,7 @@ export default function FeaturesPage() {
       <footer className="bg-gray-950 border-t border-gray-800 py-8">
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="inline-block bg-white rounded-lg px-2.5 py-1.5">
-            <img src="/images/skula-logo.png" alt="Skula" className="h-7 object-contain" />
+            <img src="/images/skula-logomark.png" alt="Skula" className="h-7 object-contain" />
           </div>
           <p className="text-xs text-gray-700">© {new Date().getFullYear()} Novalss. All rights reserved.</p>
           <div className="flex gap-5">

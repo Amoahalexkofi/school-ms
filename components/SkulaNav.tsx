@@ -30,7 +30,7 @@ export function SkulaNav() {
     }`}>
       <div className="max-w-6xl mx-auto px-6 h-[60px] flex items-center justify-between">
         <Link href="/" className="flex items-center shrink-0">
-          <img src="/images/skula-logo.png" alt="Skula" className="h-9 object-contain" />
+          <img src="/images/skula-logomark.png" alt="Skula" className="h-10 object-contain" />
         </Link>
 
         <div className="hidden md:flex items-center gap-0.5">

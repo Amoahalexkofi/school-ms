@@ -1028,7 +1028,7 @@ export function HomepageClient() {
             <div className="col-span-2">
               <div className="mb-4">
                 <div className="inline-block bg-white rounded-xl px-3 py-2">
-                  <img src="/images/skula-logo.png" alt="Skula" className="h-8 object-contain" />
+                  <img src="/images/skula-logomark.png" alt="Skula" className="h-8 object-contain" />
                 </div>
               </div>
               <p className="text-[13px] leading-relaxed max-w-[200px] text-slate-500 mb-6">

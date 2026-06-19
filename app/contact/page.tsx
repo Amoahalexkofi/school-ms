@@ -76,7 +76,7 @@ export default function ContactPage() {
           {/* Logo */}
           <div className="shrink-0">
             <Link href="/">
-              <img src="/images/skula-logo.png" alt="Skula" className="h-12 object-contain" />
+              <img src="/images/skula-logomark.png" alt="Skula" className="h-12 object-contain" />
             </Link>
           </div>
 
@@ -152,7 +152,7 @@ export default function ContactPage() {
 
         {/* Mobile logo */}
         <div className="relative lg:hidden px-4 pt-4 pb-0 sm:px-8">
-          <img src="/images/skula-logo.png" alt="Skula" className="h-9 object-contain" />
+          <img src="/images/skula-logomark.png" alt="Skula" className="h-9 object-contain" />
         </div>
 
         <div className="relative flex-1 flex flex-col items-center justify-center px-4 py-6 sm:px-10 sm:py-8">
@@ -173,7 +173,7 @@ export default function ContactPage() {
             ) : (
               <>
                 {/* Header */}
-                <img src="/images/skula-logo.png" alt="Skula" className="h-10 object-contain mb-6" />
+                <img src="/images/skula-logomark.png" alt="Skula" className="h-10 object-contain mb-6" />
                 <h2 className="text-[28px] font-black text-slate-900 tracking-tight leading-tight">Talk to us</h2>
                 <p className="text-slate-400 text-[14px] mt-1.5 mb-7">We reply within the hour on WhatsApp.</p>
 

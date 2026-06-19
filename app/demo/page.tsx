@@ -72,7 +72,7 @@ export default function DemoPage() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0 w-fit">
-            <img src="/images/skula-logo.png" alt="Skula" className="h-10 object-contain" />
+            <img src="/images/skula-logomark.png" alt="Skula" className="h-10 object-contain" />
           </Link>
 
           {/* Centre copy */}
@@ -149,7 +149,7 @@ export default function DemoPage() {
         {/* Mobile nav */}
         <div className="lg:hidden flex items-center justify-between px-5 py-3.5 bg-white border-b border-slate-100 sticky top-0 z-10">
           <Link href="/">
-            <img src="/images/skula-logo.png" alt="Skula" className="h-7 object-contain" />
+            <img src="/images/skula-logomark.png" alt="Skula" className="h-8 object-contain" />
           </Link>
           <Link href="/" className="text-[12px] font-semibold text-slate-400 hover:text-slate-600 transition-colors">← Back</Link>
         </div>
