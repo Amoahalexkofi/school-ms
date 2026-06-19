@@ -44,8 +44,8 @@ export const metadata: Metadata = {
     description: "The modern school management platform. Students, fees, attendance, exams and more — all in one place.",
   },
   icons: {
-    icon: "/icons/icon.svg",
-    apple: "/icons/icon.svg",
+    icon: "/icons/icon-192.png",
+    apple: "/icons/icon-192.png",
   },
 };
 
@@ -58,7 +58,7 @@ export default function RootLayout({
     <html lang="en" className={`${plusJakartaSans.variable} ${montserrat.variable} h-full`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/icons/icon.svg" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
