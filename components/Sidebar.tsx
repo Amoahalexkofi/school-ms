@@ -11,7 +11,7 @@ import {
   Bell, ChevronDown, Globe,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { usePermissions } from "@/components/PermissionsProvider";
@@ -253,17 +253,28 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
 
 export function Sidebar({ role = "ADMIN" }: { role?: Role }) {
   const [open, setOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
   const pathname = usePathname();
   const { data: session } = useSession();
 
   const userName = (session?.user as any)?.name || session?.user?.email?.split("@")[0] || "User";
   const userRole = ((session?.user as any)?.role ?? role ?? "").replace(/_/g, " ");
   const initials = userName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+  const userId   = (session?.user as any)?.id ?? "";
 
   const currentItem = ALL_ITEMS.find(item =>
     item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href)
   );
   const pageTitle = currentItem?.label ?? "Dashboard";
+
+  // Fetch unread notification count for mobile bell
+  useEffect(() => {
+    if (!userId) return;
+    fetch(`/api/notifications?userId=${userId}&pageSize=1`)
+      .then(r => r.json())
+      .then(d => setUnread(d.unreadCount ?? 0))
+      .catch(() => {});
+  }, [userId]);
 
   return (
     <>
@@ -283,14 +294,26 @@ export function Sidebar({ role = "ADMIN" }: { role?: Role }) {
           {pageTitle}
         </p>
 
-        {/* User avatar — right */}
-        <button
-          onClick={() => setOpen(true)}
-          className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-          aria-label="Open menu"
-        >
-          {initials}
-        </button>
+        {/* Right: bell + avatar */}
+        <div className="flex items-center gap-1">
+          <Link
+            href="/notifications"
+            className="relative w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
+            aria-label="Notifications"
+          >
+            <Bell className="h-[18px] w-[18px]" />
+            {unread > 0 && (
+              <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full ring-2 ring-slate-900" />
+            )}
+          </Link>
+          <button
+            onClick={() => setOpen(true)}
+            className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0"
+            aria-label="Open menu"
+          >
+            {initials}
+          </button>
+        </div>
       </div>
 
       {/* Mobile drawer */}

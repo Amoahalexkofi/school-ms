@@ -70,21 +70,21 @@ export function StaffClient({
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5">
+    <main className="flex-1 p-4 md:p-6 space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-3">
-          <div className="relative">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
-              className="pl-9 w-64"
+              className="pl-9 w-full sm:w-64"
               placeholder="Search staff…"
               value={search}
               onChange={e => handleSearch(e.target.value)}
             />
           </div>
           <select
-            className="h-9 rounded-md border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+            className="h-9 rounded-md border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 flex-1 sm:flex-none"
             value={deptId}
             onChange={e => handleDept(e.target.value)}
           >
@@ -93,19 +93,19 @@ export function StaffClient({
               <option key={d.id} value={d.id}>{d.name}</option>
             ))}
           </select>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 shrink-0">
             {total} member{total !== 1 ? "s" : ""}
           </span>
         </div>
         <div className="flex gap-2">
           <Link href="/staff/id-card">
-            <Button variant="outline">
-              <CreditCard className="h-4 w-4 mr-1.5" /> ID Card Setup
+            <Button variant="outline" size="sm">
+              <CreditCard className="h-4 w-4 mr-1.5" /> ID Cards
             </Button>
           </Link>
           {perm.canAdd && (
             <Link href="/staff/new">
-              <Button>
+              <Button size="sm">
                 <Plus className="h-4 w-4 mr-1.5" /> Add Staff
               </Button>
             </Link>

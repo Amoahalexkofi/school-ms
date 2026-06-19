@@ -390,9 +390,17 @@ This is the multi-tenant hosting layer that wraps the school management system.
 ## What's Left (Priority Order)
 
 1. ~~Domain — connected~~ ✅
-2. Landing page redesign — dark hero, demo login, contact page (plan: bright-booping-spark.md)
-3. Server-side pagination — student/staff/fee lists load all records at once
-4. Timetable ↔ SubjectGroup audit
+2. ~~Landing page redesign~~ ✅
+3. ~~Server-side pagination (students + staff)~~ ✅
+4. ~~Timetable ↔ SubjectGroup audit~~ ✅
+5. ~~Email gateway UI + test-send~~ ✅
+
+**Remaining (nice-to-have):**
+- Multi-language support
+- Dark mode
+- Mobile PWA / app wrapper
+- Server-side pagination for fees list
+- Broader student search (guardian name, blood group, address — matches Smart School)
 
 ---
 

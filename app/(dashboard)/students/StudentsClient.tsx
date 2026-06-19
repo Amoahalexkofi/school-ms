@@ -52,35 +52,35 @@ export function StudentsClient({ students, total, page, totalPages, limit, initi
   }
 
   return (
-    <main className="flex-1 p-6 space-y-5">
+    <main className="flex-1 p-4 md:p-6 space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="relative">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
-              className="pl-9 w-64"
+              className="pl-9 w-full sm:w-64"
               placeholder="Search students…"
               value={search}
               onChange={e => handleSearch(e.target.value)}
             />
           </div>
-          <span className="text-sm text-gray-500">{total} student{total !== 1 ? "s" : ""}</span>
+          <span className="text-sm text-gray-500 shrink-0">{total} student{total !== 1 ? "s" : ""}</span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Link href="/students/id-card">
-            <Button variant="outline">
-              <CreditCard className="h-4 w-4 mr-1" /> ID Card Setup
+            <Button variant="outline" size="sm">
+              <CreditCard className="h-4 w-4 mr-1" /> ID Cards
             </Button>
           </Link>
           <Link href="/students/promote">
-            <Button variant="outline">
+            <Button variant="outline" size="sm">
               <GraduationCap className="h-4 w-4 mr-1" /> Promote
             </Button>
           </Link>
           {perm.canAdd && (
             <Link href="/students/new">
-              <Button>
+              <Button size="sm">
                 <Plus className="h-4 w-4 mr-1" /> Add Student
               </Button>
             </Link>

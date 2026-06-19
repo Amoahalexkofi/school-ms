@@ -65,7 +65,7 @@ export function Topbar({ title }: { title: string }) {
 
   return (
     <header
-      className="h-14 flex items-center justify-between px-5 md:px-6 bg-white border-b border-slate-100 shrink-0 sticky top-0 z-10"
+      className="hidden lg:flex h-14 items-center justify-between px-5 md:px-6 bg-white border-b border-slate-100 shrink-0 sticky top-0 z-10"
       style={{ boxShadow: "0 1px 0 #e2e8f0, 0 2px 8px rgba(0,0,0,0.04)" }}
     >
       {/* Left: page title */}
