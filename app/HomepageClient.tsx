@@ -404,6 +404,48 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+/* ─── HOME CONTACT FORM ─── */
+function HomeContactForm() {
+  const [form, setForm] = useState({ name: "", school: "", phone: "" });
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const name = form.name.trim();
+  const school = form.school.trim();
+  const phone = form.phone.trim();
+  const msg = name || school
+    ? `Hi Skula! I'm ${name || "(name)"}${school ? ` from ${school}` : ""}. I'd like to set up Skula for my school.${phone ? ` My number: ${phone}` : ""}`
+    : "Hi! I'd like to learn more about Skula for my school.";
+  const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+
+  const fields: { key: keyof typeof form; label: string; placeholder: string; type: string }[] = [
+    { key: "name",   label: "Your name",       placeholder: "e.g. Kofi Mensah",     type: "text" },
+    { key: "school", label: "School name",     placeholder: "e.g. Lincoln Academy", type: "text" },
+    { key: "phone",  label: "WhatsApp number", placeholder: "+233 XX XXX XXXX",      type: "tel"  },
+  ];
+
+  return (
+    <>
+      <h3 className="text-[20px] font-black tracking-tight text-slate-900 mb-1">Send us a message</h3>
+      <p className="text-slate-500 text-[13px] mb-7">We reply within the hour on WhatsApp.</p>
+      <div className="space-y-4">
+        {fields.map(({ key, label, placeholder, type }) => (
+          <div key={key}>
+            <label htmlFor={`home-${key}`} className="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-widest">{label}</label>
+            <input id={`home-${key}`} type={type} placeholder={placeholder} value={form[key]} onChange={set(key)}
+              className="w-full h-12 rounded-xl border border-slate-200 bg-white px-4 text-[14px] text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all" />
+          </div>
+        ))}
+        <a href={waHref} target="_blank" rel="noopener noreferrer"
+          className="flex w-full items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1fba5a] text-white font-bold py-3.5 rounded-xl text-[15px] transition-all mt-2"
+          style={{ boxShadow: "0 4px 16px rgba(37,211,102,0.25)" }}>
+          <WhatsAppIcon className="h-5 w-5" /> Chat on WhatsApp
+        </a>
+      </div>
+    </>
+  );
+}
+
 /* ─── MAIN COMPONENT ─── */
 export function HomepageClient() {
   return (
@@ -457,7 +499,7 @@ export function HomepageClient() {
                 </Link>
                 <Link href="/demo"
                   className="inline-flex items-center justify-center gap-2 bg-white/80 backdrop-blur border-2 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 font-bold px-7 py-4 rounded-xl text-[15px] transition-all hover:bg-indigo-50/50">
-                  Book Demo
+                  <Zap className="h-4 w-4 text-indigo-500" /> Try Live Demo
                 </Link>
               </motion.div>
 
@@ -505,7 +547,7 @@ export function HomepageClient() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section id="features" className="py-16 md:py-24 bg-white">
+      <section id="features" className="scroll-mt-20 py-16 md:py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}
             variants={stagger} className="mb-10 md:mb-16">
@@ -594,7 +636,7 @@ export function HomepageClient() {
       </section>
 
       {/* ── DASHBOARD SHOWCASE ── */}
-      <section id="solutions" className="py-16 md:py-24 bg-white border-t border-slate-900/[0.06]">
+      <section id="solutions" className="scroll-mt-20 py-16 md:py-24 bg-white border-t border-slate-900/[0.06]">
         <div className="max-w-6xl mx-auto px-6 space-y-16 md:space-y-28">
           {[
             { eyebrow: "Student Information System",   title: "Every student. Every detail. One place.",      desc: "Enroll students, manage profiles, track BECE candidates, issue ID cards and promote entire classes in minutes — not days.", bullets: ["Bulk enrollment & promotion","BECE candidate management","Digital ID card generation","Parent portal access"], flip: false, accent: "#6366f1", accentBg: "#eef2ff", Mockup: StudentsMockup },
@@ -821,7 +863,7 @@ export function HomepageClient() {
       </section>
 
       {/* ── PRICING ── */}
-      <section id="pricing" className="py-16 md:py-24 bg-white border-t border-slate-900/[0.06]">
+      <section id="pricing" className="scroll-mt-20 py-16 md:py-24 bg-white border-t border-slate-900/[0.06]">
         <div className="max-w-5xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
             <motion.p variants={fadeUp} className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.14em] mb-4">Pricing</motion.p>
@@ -886,7 +928,7 @@ export function HomepageClient() {
       </section>
 
       {/* ── FAQ ── */}
-      <section id="faq" className="py-16 md:py-24 border-t border-slate-900/[0.06]" style={{ background: "#F8F9FA" }}>
+      <section id="faq" className="scroll-mt-20 py-16 md:py-24 border-t border-slate-900/[0.06]" style={{ background: "#F8F9FA" }}>
         <div className="max-w-3xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
             <motion.p variants={fadeUp} className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.14em] mb-4">FAQ</motion.p>
@@ -954,26 +996,7 @@ export function HomepageClient() {
               viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
               className="bg-white rounded-2xl border border-slate-900/[0.07] p-8"
               style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
-              <h3 className="text-[20px] font-black tracking-tight text-slate-900 mb-1">Send us a message</h3>
-              <p className="text-slate-400 text-[13px] mb-7">We reply within the hour on WhatsApp.</p>
-              <div className="space-y-4">
-                {[
-                  { label: "Your name",       placeholder: "e.g. Kofi Mensah",     type: "text" },
-                  { label: "School name",     placeholder: "e.g. Lincoln Academy", type: "text" },
-                  { label: "WhatsApp number", placeholder: "+233 XX XXX XXXX",      type: "tel"  },
-                ].map(({ label, placeholder, type }) => (
-                  <div key={label}>
-                    <label className="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-widest">{label}</label>
-                    <input type={type} placeholder={placeholder}
-                      className="w-full h-12 rounded-xl border border-slate-200 bg-white px-4 text-[14px] text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all" />
-                  </div>
-                ))}
-                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-                  className="flex w-full items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1fba5a] text-white font-bold py-3.5 rounded-xl text-[15px] transition-all mt-2"
-                  style={{ boxShadow: "0 4px 16px rgba(37,211,102,0.25)" }}>
-                  <WhatsAppIcon className="h-5 w-5" /> Chat on WhatsApp
-                </a>
-              </div>
+              <HomeContactForm />
             </motion.div>
           </div>
         </div>
