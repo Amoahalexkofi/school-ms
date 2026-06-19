@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { GraduationCap, ArrowLeft, Mail, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Mail, CheckCircle2 } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail]     = useState("");
@@ -37,11 +37,8 @@ export default function ForgotPasswordPage() {
 
       {/* Top bar */}
       <div className="flex items-center justify-between px-8 pt-8">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-sm shadow-indigo-200 group-hover:bg-indigo-700 transition-colors">
-            <GraduationCap className="h-[18px] w-[18px] text-white" />
-          </div>
-          <span className="font-black text-slate-900 text-[15px] tracking-tight">Skula</span>
+        <Link href="/" className="flex items-center">
+          <img src="/images/skula-logo.png" alt="Skula" className="h-9 object-contain" />
         </Link>
         <Link
           href="/sign-in"

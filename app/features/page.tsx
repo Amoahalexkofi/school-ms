@@ -826,9 +826,8 @@ export default function FeaturesPage() {
       {/* FOOTER */}
       <footer className="bg-gray-950 border-t border-gray-800 py-8">
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center"><GraduationCap className="h-4 w-4 text-white"/></div>
-            <span className="font-black text-white text-sm">Skula</span>
+          <div className="inline-block bg-white rounded-lg px-2.5 py-1.5">
+            <img src="/images/skula-logo.png" alt="Skula" className="h-7 object-contain" />
           </div>
           <p className="text-xs text-gray-700">© {new Date().getFullYear()} Novalss. All rights reserved.</p>
           <div className="flex gap-5">

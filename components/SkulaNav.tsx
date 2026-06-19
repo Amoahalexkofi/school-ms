@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, ArrowRight, ChevronRight, X, Menu } from "lucide-react";
+import { ArrowRight, ChevronRight, X, Menu } from "lucide-react";
 
 export function SkulaNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -29,11 +29,8 @@ export function SkulaNav() {
       scrolled ? "bg-white/95 backdrop-blur-xl border-b border-slate-900/[0.06]" : "bg-transparent"
     }`}>
       <div className="max-w-6xl mx-auto px-6 h-[60px] flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <div className="w-8 h-8 bg-slate-900 rounded-[10px] flex items-center justify-center">
-            <GraduationCap className="h-[17px] w-[17px] text-white" />
-          </div>
-          <span className="font-black text-slate-900 text-[15px] tracking-tight">Skula</span>
+        <Link href="/" className="flex items-center shrink-0">
+          <img src="/images/skula-logo.png" alt="Skula" className="h-9 object-contain" />
         </Link>
 
         <div className="hidden md:flex items-center gap-0.5">

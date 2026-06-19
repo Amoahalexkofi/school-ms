@@ -1026,11 +1026,10 @@ export function HomepageClient() {
         <div className="max-w-6xl mx-auto px-6 py-16">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-14">
             <div className="col-span-2">
-              <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-8 h-8 bg-white/[0.08] rounded-xl flex items-center justify-center">
-                  <GraduationCap className="h-4 w-4 text-white" />
+              <div className="mb-4">
+                <div className="inline-block bg-white rounded-xl px-3 py-2">
+                  <img src="/images/skula-logo.png" alt="Skula" className="h-8 object-contain" />
                 </div>
-                <span className="text-white font-black text-[16px] tracking-tight">Skula</span>
               </div>
               <p className="text-[13px] leading-relaxed max-w-[200px] text-slate-500 mb-6">
                 The modern school management platform for schools worldwide.

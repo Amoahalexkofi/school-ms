@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  GraduationCap, ArrowLeft, MessageCircle, Mail, Check,
+  ArrowLeft, MessageCircle, Mail, Check,
   Clock, Shield, Users, ChevronRight,
 } from "lucide-react";
 
@@ -74,15 +74,9 @@ export default function ContactPage() {
         <div className="relative flex flex-col h-full px-12 py-12 max-w-[600px]">
 
           {/* Logo */}
-          <div className="flex items-center gap-4 shrink-0">
-            <Link href="/" className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-xl shadow-indigo-300/40">
-                <GraduationCap className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <span className="text-slate-900 font-black text-[28px] tracking-tight leading-none">Skula</span>
-                <p className="text-indigo-500 text-[10.5px] font-bold tracking-widest uppercase mt-0.5">by Novalss</p>
-              </div>
+          <div className="shrink-0">
+            <Link href="/">
+              <img src="/images/skula-logo.png" alt="Skula" className="h-12 object-contain" />
             </Link>
           </div>
 
@@ -157,11 +151,8 @@ export default function ContactPage() {
         </div>
 
         {/* Mobile logo */}
-        <div className="relative lg:hidden flex items-center gap-3 px-4 pt-4 pb-0 sm:px-8">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-            <GraduationCap className="h-5 w-5 text-white" />
-          </div>
-          <span className="font-black text-gray-900 text-xl">Skula</span>
+        <div className="relative lg:hidden px-4 pt-4 pb-0 sm:px-8">
+          <img src="/images/skula-logo.png" alt="Skula" className="h-9 object-contain" />
         </div>
 
         <div className="relative flex-1 flex flex-col items-center justify-center px-4 py-6 sm:px-10 sm:py-8">
@@ -182,9 +173,7 @@ export default function ContactPage() {
             ) : (
               <>
                 {/* Header */}
-                <div className="flex w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 items-center justify-center mb-7 shadow-lg shadow-indigo-300/40">
-                  <GraduationCap className="h-6 w-6 text-white" />
-                </div>
+                <img src="/images/skula-logo.png" alt="Skula" className="h-10 object-contain mb-6" />
                 <h2 className="text-[28px] font-black text-slate-900 tracking-tight leading-tight">Talk to us</h2>
                 <p className="text-slate-400 text-[14px] mt-1.5 mb-7">We reply within the hour on WhatsApp.</p>
 

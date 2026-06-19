@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import {
-  GraduationCap, ShieldCheck, Shield, BookOpen, Wallet,
+  ShieldCheck, Shield, BookOpen, Wallet,
   Library, UserCircle, Users, Eye, EyeOff, ArrowRight,
   CheckCircle2, Database, Zap, RefreshCw,
 } from "lucide-react";
@@ -71,11 +71,8 @@ export default function DemoPage() {
         <div className="relative flex flex-col h-full px-10 py-10">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 w-fit">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-              <GraduationCap className="h-[18px] w-[18px] text-white" />
-            </div>
-            <span className="text-slate-900 font-black text-[17px] tracking-tight">Skula</span>
+          <Link href="/" className="flex items-center shrink-0 w-fit">
+            <img src="/images/skula-logo.png" alt="Skula" className="h-10 object-contain" />
           </Link>
 
           {/* Centre copy */}
@@ -151,11 +148,8 @@ export default function DemoPage() {
 
         {/* Mobile nav */}
         <div className="lg:hidden flex items-center justify-between px-5 py-3.5 bg-white border-b border-slate-100 sticky top-0 z-10">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
-              <GraduationCap className="h-3.5 w-3.5 text-white" />
-            </div>
-            <span className="font-black text-slate-900 text-[15px]">Skula</span>
+          <Link href="/">
+            <img src="/images/skula-logo.png" alt="Skula" className="h-7 object-contain" />
           </Link>
           <Link href="/" className="text-[12px] font-semibold text-slate-400 hover:text-slate-600 transition-colors">← Back</Link>
         </div>
