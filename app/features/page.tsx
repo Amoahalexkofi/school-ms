@@ -3,8 +3,9 @@ import {
   GraduationCap, ArrowRight, Users, DollarSign, ClipboardList,
   BookOpen, Bus, Building2, Package, PhoneCall, Clock, FileText,
   MessageSquare, Bell, BarChart3, UserCheck, Award, Calendar,
-  CreditCard, Laptop, Home, CheckCircle2, ChevronRight,
+  CreditCard, Laptop, Home, CheckCircle2,
 } from "lucide-react";
+import { SkulaNav } from "@/components/SkulaNav";
 
 const MODULES = [
   {
@@ -713,29 +714,7 @@ export default function FeaturesPage() {
   return (
     <div className="min-h-screen bg-white antialiased">
 
-      {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-10">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <GraduationCap className="h-5 w-5 text-white" />
-              </div>
-              <span className="font-black text-gray-900 text-base tracking-tight">Skula</span>
-            </Link>
-            <div className="hidden lg:flex items-center gap-7">
-              <Link href="/#pricing" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Pricing</Link>
-              <Link href="/#faq" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">FAQ</Link>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/sign-in" className="hidden sm:block text-sm font-semibold text-gray-500 hover:text-gray-900 px-3 py-2 transition-colors">Sign in</Link>
-            <Link href="/contact" className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/25">
-              Get started free <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <SkulaNav />
 
       {/* HERO */}
       <section className="bg-slate-950 pt-32 pb-20 relative overflow-hidden">

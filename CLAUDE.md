@@ -26,5 +26,5 @@ Before continuing any work, read these files:
 - `/lib/services/[module].ts` — business logic
 
 ## Live URLs
-- Production: https://school-ms-kappa.vercel.app
+- Production: https://getskula.com
 - Repo: https://github.com/Amoahalexkofi/school-ms

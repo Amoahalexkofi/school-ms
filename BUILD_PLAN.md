@@ -1,7 +1,7 @@
 # School Management System — Build Plan
 **Reference:** Smart School v7.1.0 (source at `~/Downloads/smart-school-school-7.1.0 (1)/`)
 **Stack:** Next.js 16 (App Router) · TypeScript · Prisma · PostgreSQL (Neon) · Tailwind · shadcn/ui
-**Live URL:** https://school-ms-kappa.vercel.app
+**Live URL:** https://getskula.com
 **Repo:** https://github.com/Amoahalexkofi/school-ms
 **Last updated:** 2026-06-05
 
@@ -285,7 +285,7 @@ Before implementing any school feature, read the corresponding PHP model in:
 - [x] Bulk messaging — UI at `/messaging`, API at `/api/messaging` (schedule, group/class/individual targeting)
 - [x] Notification bell — polling on load in Topbar, mark read/all-read, badge count
 - [x] SMS gateway integration — Africa's Talking + Twilio wired; fires on bulk message sends + fee receipt; test-SMS from settings
-- [ ] Email gateway integration — actual send via SMTP/SendGrid (config exists, send not wired)
+- [x] Email gateway integration — SMTP via nodemailer; polished config UI with provider presets + test-send
 
 ---
 
@@ -389,8 +389,10 @@ This is the multi-tenant hosting layer that wraps the school management system.
 
 ## What's Left (Priority Order)
 
-1. SMS/Email gateway — wire actual sends (Africa's Talking / SMTP)
-2. Domain — connect a subdomain (e.g. sms.novalss.com) to this Vercel deployment — manual Vercel dashboard step. NOTE: novalss.com is the company's main website, NOT this app.
+1. ~~Domain — connected~~ ✅
+2. Landing page redesign — dark hero, demo login, contact page (plan: bright-booping-spark.md)
+3. Server-side pagination — student/staff/fee lists load all records at once
+4. Timetable ↔ SubjectGroup audit
 
 ---
 

@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
-import { GraduationCap, ArrowLeft, MapPin, Phone, Mail } from "lucide-react";
+import { redirect } from "next/navigation";
+import { ArrowLeft, Phone, Mail } from "lucide-react";
 import { SignInPage } from "@/components/SignInPage";
-import Link from "next/link";
 import { neon } from "@neondatabase/serverless";
 
 async function fetchSchoolData(schema: string) {
@@ -265,128 +265,6 @@ export default async function SignInRoute() {
     );
   }
 
-  // ── Skula main domain ─────────────────────────────────────────────────────
-  return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
-
-      {/* Left */}
-      <div className="lg:w-[44%] xl:w-[40%] flex flex-col relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #0d0b1a 0%, #1e1b4b 55%, #312e81 100%)" }}>
-
-        <div className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none"
-          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.3), transparent)" }} />
-        <div className="absolute -bottom-6 -right-4 pointer-events-none select-none font-black text-white leading-none"
-          style={{ fontSize: 180, opacity: 0.05 }}>S</div>
-
-        <div className="relative flex flex-col h-full px-10 xl:px-12 py-10 min-h-[520px] lg:min-h-0">
-
-          {/* Logo mark */}
-          <div className="shrink-0 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(165,180,252,0.15)", border: "1.5px solid rgba(165,180,252,0.3)" }}>
-              <GraduationCap className="h-5 w-5 text-indigo-300" />
-            </div>
-            <div>
-              <p className="text-white font-black text-[20px] tracking-tight leading-none">Skula</p>
-              <p className="text-[10px] font-bold tracking-widest uppercase mt-0.5" style={{ color: "rgba(165,180,252,0.5)" }}>
-                by Novalss
-              </p>
-            </div>
-          </div>
-
-          <div className="flex-1 flex flex-col justify-center py-8">
-            <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] mb-5"
-              style={{ color: "rgba(165,180,252,0.55)" }}>
-              School management platform
-            </p>
-            <h1 className="text-white font-black leading-[1.04] tracking-tight mb-5"
-              style={{ fontSize: "clamp(32px, 3.6vw, 50px)" }}>
-              Everything your<br />school needs.<br />
-              <span style={{ color: "#a5b4fc" }}>One place.</span>
-            </h1>
-            <div className="w-10 h-[2px] rounded-full mb-6" style={{ background: "rgba(165,180,252,0.3)" }} />
-            <p className="text-[14px] leading-relaxed mb-10 max-w-[280px]"
-              style={{ color: "rgba(255,255,255,0.48)" }}>
-              Students, fees, attendance, exams, and staff — managed from a single dashboard. Live in under 30 minutes.
-            </p>
-            <div className="flex gap-8">
-              {[["50+", "Schools"], ["16", "Modules"], ["30m", "To go live"]].map(([n, l]) => (
-                <div key={l}>
-                  <p className="text-white font-black text-[26px] leading-none">{n}</p>
-                  <p className="text-[11px] font-semibold mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>{l}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="shrink-0">
-            <p className="text-[10.5px] font-bold tracking-[0.15em] uppercase"
-              style={{ color: "rgba(255,255,255,0.2)" }}>
-              getskula.com
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Right */}
-      <div className="flex-1 flex flex-col relative" style={{ background: "#f1f5f9" }}>
-        <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[3px]"
-          style={{ background: "linear-gradient(to bottom, #6366f1, #8b5cf6)" }} />
-        <div className="lg:hidden h-1 shrink-0"
-          style={{ background: "linear-gradient(to right, #6366f1, #8b5cf6)" }} />
-
-        <div className="lg:hidden flex items-center gap-2.5 px-6 pt-5 pb-0 shrink-0">
-          <GraduationCap className="h-5 w-5 text-indigo-500" />
-          <span className="font-black text-slate-900 text-[16px]">Skula</span>
-        </div>
-
-        <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12">
-          <div className="w-full max-w-[420px] bg-white rounded-2xl px-8 py-9"
-            style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04), 0 20px 48px rgba(0,0,0,0.08)" }}>
-
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0">
-                <GraduationCap className="h-4.5 w-4.5 text-white" />
-              </div>
-              <div>
-                <p className="text-slate-800 font-bold text-[14px] leading-tight">Skula</p>
-                <p className="text-slate-400 text-[11px] mt-0.5">School Management Platform</p>
-              </div>
-            </div>
-
-            <div className="mb-8">
-              <h2 className="text-[34px] font-black text-slate-900 tracking-tight leading-none">
-                Sign in
-              </h2>
-              <p className="text-slate-400 text-[14px] mt-2">
-                Access your school management dashboard
-              </p>
-            </div>
-
-            <SignInPage tenant={tenant} accentColor="#6366f1" />
-
-            <div className="mt-8 pt-6 border-t border-slate-100">
-              <p className="text-[13px] text-slate-400">
-                New to Skula?{" "}
-                <Link href="/contact" className="font-bold text-indigo-600 hover:text-indigo-700 transition-colors">
-                  Get started →
-                </Link>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="shrink-0 px-8 sm:px-12 lg:px-16 pb-7">
-          <p className="text-[11px] text-slate-300">
-            Powered by{" "}
-            <a href="https://getskula.com" target="_blank" rel="noopener noreferrer"
-              className="font-semibold text-slate-400 hover:text-slate-600 transition-colors">Skula</a>
-            {" · "}
-            <a href="https://novalss.com" target="_blank" rel="noopener noreferrer"
-              className="hover:text-slate-500 transition-colors">a Novalss product</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+  // No tenant — main domain. Send visitors to the homepage.
+  redirect("/");
 }

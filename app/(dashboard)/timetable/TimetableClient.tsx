@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, X, Calendar, Printer } from "lucide-react";
+import { Plus, Trash2, X, Calendar, Printer, AlertTriangle } from "lucide-react";
 
 const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 const DAY_LABEL: Record<string, string> = {
@@ -54,22 +54,26 @@ export function TimetableClient({ classes, staff, session }: {
   const [form, setForm] = useState<any>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [hasGroup, setHasGroup] = useState(true);
 
   const selectedClass = classes.find(c => c.id === classId);
   const sections = selectedClass?.classSections ?? [];
 
-  // Load subjects when class changes
+  // Load subjects via SubjectGroup assigned to this class/section (matches Smart School)
   useEffect(() => {
-    if (!classId || !session?.id) { setSubjects([]); return; }
-    fetch(`/api/subjects?classId=${classId}&sessionId=${session.id}`)
+    if (!classSectionId) { setSubjects([]); setHasGroup(true); return; }
+    fetch(`/api/subject-groups/subjects?classSectionId=${classSectionId}`)
       .then(r => r.json())
-      .then(d => setSubjects(Array.isArray(d) ? d : []))
+      .then(d => {
+        setSubjects(Array.isArray(d.subjects) ? d.subjects : []);
+        setHasGroup(d.hasGroup ?? true);
+      })
       .catch(() => {});
-  }, [classId, session?.id]);
+  }, [classSectionId]);
 
   // Load slots when class-section changes
   useEffect(() => {
-    if (!classSectionId) { setSlots([]); return; }
+    if (!classSectionId) { setSlots([]); setHasGroup(true); return; }
     setLoading(true);
     fetch(`/api/timetable?classSectionId=${classSectionId}`)
       .then(r => r.json())
@@ -158,6 +162,18 @@ export function TimetableClient({ classes, staff, session }: {
         <div className="text-center py-16 text-gray-400 border-2 border-dashed rounded-xl">
           <Calendar className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p className="font-medium">Select a class and section to view or edit the timetable</p>
+        </div>
+      )}
+
+      {classSectionId && !hasGroup && (
+        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
+          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-amber-500" />
+          <div>
+            <p className="font-semibold">No Subject Group assigned to this class/section</p>
+            <p className="text-amber-700 mt-0.5">
+              Go to <a href="/settings?tab=subject-groups" className="underline font-medium">Settings → Subject Groups</a> and assign a subject group to this class section before building the timetable.
+            </p>
+          </div>
         </div>
       )}
 
