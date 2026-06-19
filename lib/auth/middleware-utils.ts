@@ -17,6 +17,10 @@ const PUBLIC_PREFIXES = [
   "/reset-password",   // password reset flow
   "/contact",          // contact form
   "/demo",             // demo auto-login
+  "/manifest.json",    // PWA manifest
+  "/sw.js",            // service worker
+  "/offline.html",     // offline fallback
+  "/icons/",           // PWA icons
 ];
 
 export function isPublicRoute(pathname: string): boolean {
