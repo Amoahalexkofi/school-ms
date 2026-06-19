@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- Graduation cap -->
+  <g transform="translate(256,256)" fill="white">
+    <!-- Cap board -->
+    <polygon points="0,-100 130,0 0,60 -130,0" opacity="1"/>
+    <!-- Cap top (tassel base) -->
+    <rect x="-18" y="-108" width="36" height="18" rx="4"/>
+    <!-- Left side of mortarboard (hanging down) -->
+    <path d="M -130,0 L -130,55 Q -130,75 -110,80 L -50,95 Q -30,100 -20,85 L -20,40 Z" opacity="0.85"/>
+    <!-- Right side -->
+    <path d="M 130,0 L 130,55 Q 130,75 110,80 L 50,95 Q 30,100 20,85 L 20,40 Z" opacity="0.85"/>
+    <!-- Stem going down from centre -->
+    <rect x="-6" y="60" width="12" height="70" rx="4" opacity="0.9"/>
+    <!-- Tassel ball -->
+    <circle cx="0" cy="140" r="14" opacity="0.9"/>
+  </g>
+</svg>

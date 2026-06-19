@@ -1,0 +1,43 @@
+{
+  "name": "Skula — School Management",
+  "short_name": "Skula",
+  "description": "Modern school management — students, fees, attendance, exams and more.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Students",
+      "url": "/students",
+      "description": "View student list"
+    },
+    {
+      "name": "Attendance",
+      "url": "/attendance",
+      "description": "Mark attendance"
+    },
+    {
+      "name": "Fees",
+      "url": "/fees",
+      "description": "Fee management"
+    }
+  ]
+}

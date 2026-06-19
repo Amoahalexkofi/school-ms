@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skula — No Connection</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #fff;
+      padding: 24px;
+    }
+    .card {
+      text-align: center;
+      max-width: 360px;
+      width: 100%;
+    }
+    .icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #3b82f6, #4f46e5);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+      box-shadow: 0 8px 32px rgba(79,70,229,0.4);
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+    p {
+      font-size: 15px;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    button {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.15s;
+    }
+    button:hover { background: #4338ca; }
+    .dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .status {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">
+      <svg width="40" height="40" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="256,156 386,256 256,316 126,256" fill="white"/>
+        <rect x="238" y="148" width="36" height="18" rx="4" fill="white"/>
+        <path d="M126,256 L126,311 Q126,331 146,336 L206,351 Q226,356 236,341 L236,296 Z" fill="white" opacity="0.85"/>
+        <path d="M386,256 L386,311 Q386,331 366,336 L306,351 Q286,356 276,341 L276,296 Z" fill="white" opacity="0.85"/>
+        <rect x="250" y="316" width="12" height="70" rx="4" fill="white" opacity="0.9"/>
+        <circle cx="256" cy="396" r="14" fill="white" opacity="0.9"/>
+      </svg>
+    </div>
+    <h1>You're offline</h1>
+    <p>Skula needs an internet connection to load. Please check your connection and try again.</p>
+    <button onclick="window.location.reload()">Try again</button>
+    <p class="status"><span class="dot"></span>No internet connection</p>
+  </div>
+</body>
+</html>
