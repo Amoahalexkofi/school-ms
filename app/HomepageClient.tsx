@@ -1036,7 +1036,7 @@ export function HomepageClient() {
                   <WhatsAppIcon className="h-5 w-5" /> WhatsApp Us
                 </a>
               </motion.div>
-              <motion.p variants={fadeUp} className="text-white/30 text-[12px] mt-7">
+              <motion.p variants={fadeUp} className="text-white/55 text-[12px] mt-7">
                 Free 30-day trial · GH₵ 199/mo after · Cancel anytime
               </motion.p>
             </div>
@@ -1054,8 +1054,8 @@ export function HomepageClient() {
                   <img src="/images/skula-logomark.png" alt="Skula" className="h-8 object-contain" />
                 </div>
               </div>
-              <p className="text-[13px] leading-relaxed max-w-[200px] text-slate-500 mb-6">
-                The modern school management platform for schools worldwide.
+              <p className="text-[13px] leading-relaxed max-w-[210px] text-slate-500 mb-6">
+                The all-in-one school management platform, built for African schools.
               </p>
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-[#4ade80] text-[12px] font-semibold px-4 py-2 rounded-xl transition-colors border border-[#25D366]/20 hover:border-[#25D366]/40 bg-[#25D366]/[0.07] hover:bg-[#25D366]/[0.12]">
@@ -1063,9 +1063,9 @@ export function HomepageClient() {
               </a>
             </div>
             {[
-              { title: "Product", links: [["Features","#features"],["Pricing","#pricing"],["Demo","/demo"],["Changelog","/"]] },
-              { title: "Company", links: [["About","/"],["Blog","/"],["Contact","/contact"],["Novalss","https://novalss.com"]] },
-              { title: "Legal",   links: [["Privacy","/"],["Terms","/"],["Security","/"]] },
+              { title: "Product",     links: [["Features","#features"],["Pricing","#pricing"],["All features","/features"],["Sign in","/sign-in"]] },
+              { title: "Get started", links: [["Live demo","/demo"],["Start free","/contact"],["WhatsApp us",WHATSAPP_URL]] },
+              { title: "Company",     links: [["Contact","/contact"],["Novalss","https://novalss.com"]] },
             ].map(({ title, links }) => (
               <div key={title}>
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600 mb-5">{title}</p>
@@ -1080,7 +1080,7 @@ export function HomepageClient() {
           </div>
           <div className="border-t border-white/[0.05] pt-7 flex flex-col sm:flex-row justify-between items-center gap-3">
             <p className="text-[12px] text-slate-600">© {new Date().getFullYear()} Novalss Ltd. All rights reserved.</p>
-            <p className="text-[12px] text-slate-600">Made with ♥ for schools everywhere</p>
+            <p className="text-[12px] text-slate-600">Made with ♥ for African schools</p>
           </div>
         </div>
       </footer>
