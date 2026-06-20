@@ -20,6 +20,11 @@ function NoProfile() {
   );
 }
 
+function depositPaid(d: any): number {
+  const detail = Array.isArray(d.amountDetail) ? d.amountDetail : Object.values(d.amountDetail ?? {});
+  return detail.reduce((s: number, dd: any) => s + Number(dd?.amount ?? 0), 0);
+}
+
 export default async function MyFeesPage() {
   const session = await auth();
   if (!session) redirect("/sign-in");
@@ -30,28 +35,14 @@ export default async function MyFeesPage() {
 
   try {
     const db = await getDb();
-    student = await (db as any).student.findUnique({
-      where: { userId },
-      include: {
-        studentSessions: {
-          include: { session: true, classSection: { include: { class: true, section: true } } },
-          orderBy: { createdAt: "desc" },
-        },
-      },
-    }).catch(() => null);
-
+    student = await (db as any).student.findUnique({ where: { userId } }).catch(() => null);
     if (!student) return <NoProfile />;
 
     feeMasters = await (db as any).studentFeesMaster.findMany({
       where: { studentId: student.id, isSystem: false },
       include: {
-        feeGroupItem: {
-          include: {
-            feeType: { include: { feeCategory: true } },
-            feeSessionGroup: { include: { session: true } },
-          },
-        },
-        feeDeposits: { orderBy: { createdAt: "desc" } },
+        feeSessionGroup: { include: { session: true, feeGroup: true } },
+        deposits: { orderBy: { createdAt: "desc" } },
       },
       orderBy: { createdAt: "desc" },
     }).catch(() => []);
@@ -63,8 +54,8 @@ export default async function MyFeesPage() {
 
   let totalInvoiced = 0, totalPaid = 0;
   for (const fm of feeMasters) {
-    totalInvoiced += fm.amount ?? 0;
-    totalPaid += fm.feeDeposits.reduce((s: number, d: any) => s + (d.amount ?? 0), 0);
+    totalInvoiced += Number(fm.amount ?? 0);
+    totalPaid += fm.deposits.reduce((s: number, d: any) => s + depositPaid(d), 0);
   }
   const totalDue = totalInvoiced - totalPaid;
 
@@ -108,10 +99,12 @@ export default async function MyFeesPage() {
         ) : (
           <div className="space-y-3">
             {feeMasters.map((fm: any) => {
-              const paid = fm.feeDeposits.reduce((s: number, d: any) => s + (d.amount ?? 0), 0);
-              const due  = (fm.amount ?? 0) - paid;
+              const paid = fm.deposits.reduce((s: number, d: any) => s + depositPaid(d), 0);
+              const amt  = Number(fm.amount ?? 0);
+              const due  = amt - paid;
               const fullyPaid = due <= 0;
-              const sess = fm.feeGroupItem?.feeSessionGroup?.session?.session ?? "—";
+              const label = fm.feeSessionGroup?.feeGroup?.name ?? "Fee Invoice";
+              const sess = fm.feeSessionGroup?.session?.session ?? "—";
               return (
                 <div key={fm.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
                   <div className="flex items-center justify-between px-5 py-4 gap-4">
@@ -120,30 +113,30 @@ export default async function MyFeesPage() {
                         {fullyPaid ? <CheckCircle2 className="h-5 w-5 text-emerald-600" /> : <AlertCircle className="h-5 w-5 text-rose-500" />}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-semibold text-slate-900 text-sm truncate">{fm.feeGroupItem?.feeType?.name ?? "Fee Invoice"}</p>
-                        <p className="text-xs text-slate-400">{fm.feeGroupItem?.feeType?.feeCategory?.name ?? ""} · {sess}</p>
+                        <p className="font-semibold text-slate-900 text-sm truncate">{label}</p>
+                        <p className="text-xs text-slate-400">{sess}</p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-lg font-semibold text-slate-900 tabular-nums">₵{(fm.amount ?? 0).toLocaleString()}</p>
+                      <p className="text-lg font-semibold text-slate-900 tabular-nums">₵{amt.toLocaleString()}</p>
                       {fullyPaid
                         ? <p className="text-xs text-emerald-600 font-semibold">Fully Paid</p>
                         : <p className="text-xs text-rose-600 font-semibold">Due: ₵{due.toLocaleString()}</p>}
                     </div>
                   </div>
-                  {fm.feeDeposits.length > 0 && (
+                  {fm.deposits.length > 0 && (
                     <div className="border-t border-slate-200 bg-slate-50 divide-y divide-slate-100">
-                      {fm.feeDeposits.map((dep: any) => {
-                        const detail = Array.isArray(dep.amountDetail) ? dep.amountDetail : [];
+                      {fm.deposits.map((dep: any) => {
+                        const detail = Array.isArray(dep.amountDetail) ? dep.amountDetail : Object.values(dep.amountDetail ?? {});
                         return detail.map((d: any, i: number) => (
                           <div key={`${dep.id}-${i}`} className="flex items-center justify-between px-5 py-2.5 text-xs">
                             <div className="flex items-center gap-2 text-slate-500">
                               <Receipt className="h-3.5 w-3.5 shrink-0" />
-                              <span>{new Date(dep.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}{dep.paymentMode ? ` · ${dep.paymentMode}` : ""}</span>
+                              <span>{new Date(dep.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}{d?.payment_mode ? ` · ${d.payment_mode}` : ""}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="font-semibold text-emerald-700">₵{(d.amount ?? dep.amount ?? 0).toLocaleString()}</span>
-                              <Link href={`/fees/receipt/${dep.id}/${d.subId ?? i}`} className="text-indigo-600 hover:underline text-[10px] font-semibold">Receipt</Link>
+                              <span className="font-semibold text-emerald-700">₵{Number(d?.amount ?? 0).toLocaleString()}</span>
+                              <Link href={`/fees/receipt/${dep.id}/${d?.subId ?? i}`} className="text-indigo-600 hover:underline text-[10px] font-semibold">Receipt</Link>
                             </div>
                           </div>
                         ));

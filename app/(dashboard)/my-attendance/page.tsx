@@ -32,7 +32,7 @@ export default async function MyAttendancePage() {
     student = await (db as any).student.findUnique({
       where: { userId },
       include: {
-        studentSessions: {
+        sessions: {
           include: { session: true, classSection: { include: { class: true, section: true } } },
           orderBy: { createdAt: "desc" },
           take: 1,
@@ -42,7 +42,7 @@ export default async function MyAttendancePage() {
 
     if (!student) return <NoProfile />;
 
-    const currentSession = student.studentSessions[0];
+    const currentSession = student.sessions[0];
     if (currentSession) {
       attendanceRecords = await (db as any).studentAttendance.findMany({
         where: { studentSessionId: currentSession.id },
@@ -56,7 +56,7 @@ export default async function MyAttendancePage() {
 
   if (!student) return <NoProfile />;
 
-  const currentSession = student.studentSessions[0];
+  const currentSession = student.sessions[0];
 
   const stats = { P: 0, A: 0, L: 0, H: 0, F: 0 };
   for (const r of attendanceRecords) {
