@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { generateAdmissionNumber } from "@/lib/domain/students";
 import { getActiveBranchId } from "@/lib/branch";
 import { resolveBranchForCreate } from "@/lib/services/branches";
+import { generateTempPassword } from "@/lib/auth/passwords";
 import bcrypt from "bcryptjs";
 
 export async function GET(req: NextRequest) {
@@ -77,7 +78,10 @@ export async function POST(req: NextRequest) {
     const admissionNo = body.admissionNo?.trim() || generateAdmissionNumber({ sessionYear: year, sequenceNumber: count + 1 });
     const email    = body.email || `${admissionNo.toLowerCase().replace(/\//g, ".")}@school.local`;
     const username = `stu_${admissionNo.toLowerCase().replace(/\//g, "_")}`;
-    const password = await bcrypt.hash("Student@1234", 12);
+    // Unique random password per account (no shared default like "Student@1234").
+    // Returned once as tempPassword so the admin can hand it over.
+    const tempPassword = generateTempPassword();
+    const password = await bcrypt.hash(tempPassword, 12);
 
     // Multi Branch: tag new student to the chosen branch (body) or active branch.
     const branchId = body.branchId || (await resolveBranchForCreate(await getActiveBranchId()));
@@ -167,7 +171,7 @@ export async function POST(req: NextRequest) {
       return s;
     });
 
-    return NextResponse.json(student, { status: 201 });
+    return NextResponse.json({ ...student, tempPassword }, { status: 201 });
   } catch (err: any) {
     console.error(err);
     return NextResponse.json({ error: err.message || "Failed to create student" }, { status: 500 });

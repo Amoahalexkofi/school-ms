@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { getActiveBranchId } from "@/lib/branch";
 import { resolveBranchForCreate } from "@/lib/services/branches";
+import { generateTempPassword } from "@/lib/auth/passwords";
 import bcrypt from "bcryptjs";
 
 function generateEmployeeId(count: number) {
@@ -75,7 +76,9 @@ export async function POST(req: NextRequest) {
     const existingUser = await (db as any).user.findUnique({ where: { email } });
     if (existingUser) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
 
-    const password = await bcrypt.hash("Staff@1234", 12);
+    // Unique random password per account (no shared default like "Staff@1234").
+    const tempPassword = generateTempPassword();
+    const password = await bcrypt.hash(tempPassword, 12);
     // Whitelist assignable staff roles — never allow minting SUPER_ADMIN here.
     const ALLOWED_STAFF_ROLES = ["ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN"];
     const role = ALLOWED_STAFF_ROLES.includes(body.role) ? body.role : "TEACHER";
@@ -149,7 +152,7 @@ export async function POST(req: NextRequest) {
       return s;
     });
 
-    return NextResponse.json(staff, { status: 201 });
+    return NextResponse.json({ ...staff, tempPassword }, { status: 201 });
   } catch (err: any) {
     console.error(err);
     return NextResponse.json({ error: err.message || "Failed to create staff" }, { status: 500 });

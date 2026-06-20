@@ -27,19 +27,23 @@ export async function POST(req: NextRequest) {
   const schoolProfile = await (db as any).schoolProfile.findFirst();
   const schoolName    = schoolProfile?.name ?? "Skula";
 
-  const host     = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "localhost:3000";
+  // Build the reset link from a TRUSTED host only. The Host header is
+  // attacker-controllable (reset-link poisoning), so validate it against our
+  // allowed app domains and fall back to the primary domain otherwise.
+  const appDomains = (process.env.NEXT_PUBLIC_APP_DOMAIN ?? "getskula.com")
+    .split(",").map((d) => d.trim()).filter(Boolean);
+  const rawHost = (req.headers.get("x-novalss-host") ?? req.headers.get("host") ?? "").split(":")[0];
+  const hostOk = appDomains.some((d) => rawHost === d || rawHost.endsWith(`.${d}`));
+  const host = hostOk && rawHost ? rawHost : appDomains[0];
   const protocol = host.includes("localhost") ? "http" : "https";
   const resetUrl = `${protocol}://${host}/reset-password/${token}`;
 
-  const result = await sendEmail(db, {
+  await sendEmail(db, {
     to: user.email,
     subject: `Reset your password — ${schoolName}`,
     html: passwordResetEmail({ username: user.username, resetUrl, schoolName }),
   });
 
-  if (!result.ok) {
-    console.log(`[DEV] Password reset token for ${email}: ${token}`);
-  }
-
+  // Never log the reset token (it grants account access).
   return NextResponse.json({ ok: true });
 }

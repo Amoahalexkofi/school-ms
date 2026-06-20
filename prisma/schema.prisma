@@ -296,6 +296,8 @@ model Staff {
   questions             Question[]
   appRole               StaffAppRole?
   timelines             StaffTimeline[]
+
+  @@index([branchId])
 }
 
 model TeacherSubject {
@@ -444,6 +446,8 @@ model Student {
   appliedDiscounts         StudentAppliedDiscount[]
   alumni                   Alumni?
   timelines                StudentTimeline[]
+
+  @@index([branchId])
 }
 
 model StudentSession {
@@ -477,6 +481,8 @@ model StudentSession {
   subjectAttendances      StudentSubjectAttendance[]
 
   @@unique([studentId, sessionId, classSectionId])
+  @@index([sessionId])
+  @@index([classSectionId])
 }
 
 // ─── Fees Module (mirrors Smart School exactly) ───────────────────────────────
@@ -551,6 +557,7 @@ model FeeSessionGroup {
   studentFeesMasters StudentFeesMaster[]
 
   @@unique([feeGroupId, sessionId])
+  @@index([sessionId])
 }
 
 enum FineType {
@@ -621,6 +628,9 @@ model FeeDeposit {
   amountDetail          Json
   isActive              Boolean              @default(true)
   createdAt             DateTime             @default(now())
+
+  @@index([studentFeesMasterId])
+  @@index([createdAt])
 }
 
 // fee_discounts — discount definitions
@@ -737,6 +747,7 @@ model AttendanceDay {
   studentAttendances StudentAttendance[]
 
   @@unique([date, classSectionId])
+  @@index([sessionId])
 }
 
 model StudentAttendance {
@@ -755,6 +766,8 @@ model StudentAttendance {
   createdAt        DateTime       @default(now())
 
   @@unique([studentSessionId, attendanceDayId])
+  @@index([studentId])
+  @@index([attendanceDayId])
 }
 
 model StaffAttendanceType {
@@ -935,6 +948,7 @@ model MarkEntry {
   subjectId      String?
 
   @@unique([examScheduleId, studentId])
+  @@index([studentId])
 }
 
 // ─── Payroll ──────────────────────────────────────────────────────────────────
@@ -1072,6 +1086,8 @@ model Homework {
   createdAt       DateTime        @default(now())
 
   acknowledgements HomeworkAcknowledgement[]
+
+  @@index([classSectionId, sessionId])
 }
 
 model HomeworkAcknowledgement {
@@ -1361,6 +1377,9 @@ model BookIssue {
   returnedAt DateTime?
   status     BookIssueStatus @default(ISSUED)
   fine       Decimal?        @db.Decimal(10, 2)
+
+  @@index([studentId])
+  @@index([returnedAt])
 }
 
 // ─── Inventory ────────────────────────────────────────────────────────────────
@@ -1475,6 +1494,8 @@ model Notification {
   message   String
   isRead    Boolean          @default(false)
   createdAt DateTime         @default(now())
+
+  @@index([userId])
 }
 
 // Mirrors Smart School messages table — bulk/scheduled messaging
@@ -1919,6 +1940,9 @@ model Transaction {
   expenseHead   ExpenseHead?    @relation(fields: [expenseHeadId], references: [id])
   isActive      Boolean         @default(true)
   createdAt     DateTime        @default(now())
+
+  @@index([date])
+  @@index([type])
 }
 
 // ─── School Profile & System Settings ────────────────────────────────────────
@@ -2051,6 +2075,9 @@ model AuditLog {
   entityId  String?
   metadata  Json?
   createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([entity])
 }
 
 // ─── RBAC (Roles & Permissions) ───────────────────────────────────────────────

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import {
   getUserNotifications,
   getUnreadCount,
@@ -6,13 +7,14 @@ import {
   markAllAsRead,
 } from "@/lib/services/notifications";
 
+// Notifications are always scoped to the authenticated user — never trust a
+// client-supplied userId (that was an IDOR: any user could read another's feed).
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const userId = searchParams.get("userId");
-  if (!userId) {
-    return NextResponse.json({ error: "userId is required" }, { status: 400 });
-  }
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { searchParams } = new URL(request.url);
   const page = Number(searchParams.get("page") ?? "1");
   const pageSize = Number(searchParams.get("pageSize") ?? "20");
 
@@ -28,6 +30,10 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   let body: Record<string, unknown>;
   try {
     body = await request.json();
@@ -36,11 +42,8 @@ export async function PATCH(request: Request) {
   }
 
   if (body.markAll) {
-    if (!body.userId) {
-      return NextResponse.json({ error: "userId is required when markAll is true" }, { status: 400 });
-    }
     try {
-      const result = await markAllAsRead(body.userId as string);
+      const result = await markAllAsRead(userId);
       return NextResponse.json(result, { status: 200 });
     } catch {
       return NextResponse.json({ error: "internal server error" }, { status: 500 });
@@ -57,7 +60,7 @@ export async function PATCH(request: Request) {
   }
 
   return NextResponse.json(
-    { error: "provide id to mark one, or markAll + userId to mark all" },
+    { error: "provide id to mark one, or markAll to mark all" },
     { status: 400 }
   );
 }
