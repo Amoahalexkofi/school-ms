@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
+import { resolveBranchForCreate } from "@/lib/services/branches";
 import bcrypt from "bcryptjs";
 
 function generateEmployeeId(count: number) {
@@ -76,6 +78,9 @@ export async function POST(req: NextRequest) {
     const password = await bcrypt.hash("Staff@1234", 12);
     const role     = body.role || "TEACHER";
 
+    // Multi Branch: tag new staff to the chosen branch (body) or active branch.
+    const branchId = body.branchId || (await resolveBranchForCreate(await getActiveBranchId()));
+
     // Fetch all active leave types to auto-create leave balances (mirrors batchInsert)
     const leaveTypes = await (db as any).leaveType.findMany({ where: { isActive: true } });
 
@@ -122,6 +127,7 @@ export async function POST(req: NextRequest) {
           linkedin:         body.linkedin          || null,
           instagram:        body.instagram         || null,
           note:             body.note              || null,
+          branchId,
         },
       });
 

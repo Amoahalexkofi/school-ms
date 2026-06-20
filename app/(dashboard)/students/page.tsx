@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
 import { Topbar } from "@/components/Topbar";
 import { StudentsClient } from "./StudentsClient";
 
@@ -14,6 +15,7 @@ export default async function StudentsPage({
   const skip = (page - 1) * LIMIT;
 
   const db = await getDb();
+  const activeBranchId = await getActiveBranchId();
 
   const where: any = search
     ? {
@@ -25,6 +27,7 @@ export default async function StudentsPage({
         ],
       }
     : {};
+  if (activeBranchId) where.branchId = activeBranchId;
 
   const [students, total, sessions, classSections, schoolHouses] = await Promise.all([
     (db as any).student.findMany({
@@ -39,6 +42,7 @@ export default async function StudentsPage({
           take: 1,
         },
         schoolHouse: true,
+        branch: { select: { name: true } },
       },
       orderBy: { firstName: "asc" },
       skip,

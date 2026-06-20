@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { generateAdmissionNumber } from "@/lib/domain/students";
+import { getActiveBranchId } from "@/lib/branch";
+import { resolveBranchForCreate } from "@/lib/services/branches";
 import bcrypt from "bcryptjs";
 
 export async function GET(req: NextRequest) {
@@ -75,6 +77,9 @@ export async function POST(req: NextRequest) {
     const username = `stu_${admissionNo.toLowerCase().replace(/\//g, "_")}`;
     const password = await bcrypt.hash("Student@1234", 12);
 
+    // Multi Branch: tag new student to the chosen branch (body) or active branch.
+    const branchId = body.branchId || (await resolveBranchForCreate(await getActiveBranchId()));
+
     const student = await (db as any).$transaction(async (tx: any) => {
       const user = await tx.user.create({ data: { email, username, password, role: "STUDENT" } });
 
@@ -131,6 +136,7 @@ export async function POST(req: NextRequest) {
           aadharNo:           body.aadharNo                 || null,
           note:               body.note                     || null,
           about:              body.about                    || null,
+          branchId,
         },
       });
 

@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
 import { Topbar } from "@/components/Topbar";
 import { StaffClient } from "./StaffClient";
 
@@ -14,9 +15,11 @@ export default async function StaffPage({
   const skip = (page - 1) * LIMIT;
 
   const db = await getDb();
+  const activeBranchId = await getActiveBranchId();
 
   const where: any = {};
   if (departmentId) where.departmentId = departmentId;
+  if (activeBranchId) where.branchId = activeBranchId;
   if (search) {
     where.OR = [
       { firstName:  { contains: search, mode: "insensitive" } },
@@ -33,6 +36,7 @@ export default async function StaffPage({
         user:        { select: { email: true, role: true } },
         department:  { select: { name: true } },
         designation: { select: { name: true } },
+        branch:      { select: { name: true } },
       },
       orderBy: { firstName: "asc" },
       skip,

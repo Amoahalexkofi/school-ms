@@ -272,6 +272,9 @@ model Staff {
   otherDocumentName String?
   otherDocumentFile String?
   note              String?
+  // Branch (Multi Branch add-on)
+  branchId          String?
+  branch            Branch?        @relation(fields: [branchId], references: [id])
   isActive          Boolean        @default(true)
   disabledAt        DateTime?
   createdAt         DateTime       @default(now())
@@ -314,6 +317,26 @@ model SchoolHouse {
   createdAt DateTime @default(now())
 
   students Student[]
+}
+
+// ─── Branch (Multi Branch add-on) ─────────────────────────────────────────────
+// A campus/branch within a single school. Students & staff are scoped to a
+// branch; admins switch the active branch to work within it.
+
+model Branch {
+  id        String   @id @default(cuid())
+  name      String
+  code      String?
+  email     String?
+  phone     String?
+  address   String?
+  isMain    Boolean  @default(false)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  students Student[]
+  staff    Staff[]
 }
 
 // ─── Students ─────────────────────────────────────────────────────────────────
@@ -391,6 +414,9 @@ model Student {
   parentId           String?
   // Student designation/title (mirrors students.designation)
   designation        String?
+  // Branch (Multi Branch add-on)
+  branchId           String?
+  branch             Branch?      @relation(fields: [branchId], references: [id])
   // Status
   note               String?
   about              String?

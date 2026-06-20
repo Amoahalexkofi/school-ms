@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { usePermissions } from "@/components/PermissionsProvider";
+import { BranchSwitcher } from "@/components/BranchSwitcher";
 
 type StaffRole = "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "ACCOUNTANT" | "LIBRARIAN";
 type NavItem  = { href: string; label: string; icon: React.ElementType; roles?: StaffRole[]; perm?: string };
@@ -85,6 +86,7 @@ const adminGroups: NavGroup[] = [
     label: "System",
     items: [
       { href: "/reports",   label: "Reports",   icon: BarChart2,   roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT"], perm: "reports" },
+      { href: "/branches",  label: "Branches",  icon: Building,    roles: ["SUPER_ADMIN","ADMIN"],                         perm: "system_settings" },
       { href: "/audit-log", label: "Audit Log", icon: ShieldCheck, roles: ["SUPER_ADMIN","ADMIN"],                         perm: "system_settings" },
       { href: "/settings",  label: "Settings",  icon: Settings,    roles: ["SUPER_ADMIN","ADMIN"],                         perm: "system_settings" },
     ],
@@ -169,6 +171,9 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
           </span>
         )}
       </div>
+
+      {/* Branch switcher (Multi Branch add-on) — admins only */}
+      {(role === "SUPER_ADMIN" || role === "ADMIN") && <BranchSwitcher />}
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5 scrollbar-none">
