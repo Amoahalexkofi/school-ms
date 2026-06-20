@@ -10,9 +10,9 @@ function NoProfile() {
       <Topbar title="My Homework" />
       <main className="flex-1 flex items-center justify-center p-8">
         <div className="text-center">
-          <BookOpen className="h-10 w-10 mx-auto text-gray-300 mb-3" />
-          <p className="font-semibold text-gray-500">No student profile linked</p>
-          <p className="text-sm text-gray-400 mt-1">This demo account is not connected to a student record.</p>
+          <BookOpen className="h-10 w-10 mx-auto text-slate-300 mb-3" />
+          <p className="font-semibold text-slate-500">No student profile linked</p>
+          <p className="text-sm text-slate-400 mt-1">This demo account is not connected to a student record.</p>
         </div>
       </main>
     </div>
@@ -72,21 +72,22 @@ export default async function MyHomeworkPage() {
       <Topbar title="My Homework" />
       <main className="flex-1 p-4 md:p-6 space-y-6 max-w-4xl mx-auto w-full">
 
-        <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-white">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-              <CheckSquare className="h-6 w-6" />
+        {/* Header */}
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-11 h-11 bg-slate-100 rounded-xl flex items-center justify-center shrink-0">
+              <CheckSquare className="h-5 w-5 text-slate-500" />
             </div>
             <div>
-              <p className="font-black text-xl">My Homework</p>
-              <p className="text-amber-200 text-sm">{cs?.class?.name} {cs?.section?.name}</p>
+              <p className="font-semibold text-[17px] text-slate-900">My Homework</p>
+              <p className="text-slate-500 text-sm mt-0.5">{cs?.class?.name} {cs?.section?.name}</p>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
-            {[{ l: "Pending", v: pending.length, col: "text-white" }, { l: "Submitted", v: submitted.length, col: "text-emerald-300" }, { l: "Overdue", v: overdue.length, col: overdue.length > 0 ? "text-rose-300" : "text-white" }].map(s => (
-              <div key={s.l} className="bg-white/15 rounded-xl p-3 text-center">
-                <p className={`text-2xl font-black ${s.col}`}>{s.v}</p>
-                <p className="text-xs text-white/70 mt-0.5">{s.l}</p>
+            {[{ l: "Pending", v: pending.length, col: "text-slate-900" }, { l: "Submitted", v: submitted.length, col: "text-emerald-600" }, { l: "Overdue", v: overdue.length, col: overdue.length > 0 ? "text-rose-600" : "text-slate-900" }].map(s => (
+              <div key={s.l} className="bg-slate-50 rounded-lg p-3 text-center">
+                <p className={`text-2xl font-semibold tabular-nums ${s.col}`}>{s.v}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{s.l}</p>
               </div>
             ))}
           </div>
@@ -97,9 +98,9 @@ export default async function MyHomeworkPage() {
         {submitted.length > 0 && <HomeworkList title="Submitted" items={submitted} variant="submitted" studentId={student.id} />}
 
         {homework.length === 0 && (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-            <BookOpen className="h-10 w-10 mx-auto text-gray-300 mb-3" />
-            <p className="text-gray-500 font-medium">No homework assigned yet</p>
+          <div className="text-center py-16 bg-white rounded-xl border border-slate-200">
+            <BookOpen className="h-10 w-10 mx-auto text-slate-300 mb-3" />
+            <p className="text-slate-500 font-medium">No homework assigned yet</p>
           </div>
         )}
       </main>
@@ -111,19 +112,19 @@ function HomeworkList({ title, items, variant, studentId }: {
   title: string; items: any[]; variant: "pending" | "submitted" | "overdue"; studentId: string;
 }) {
   const colors = {
-    pending:   { dot: "bg-amber-500",  badge: "bg-amber-50 text-amber-700",     heading: "text-amber-700" },
-    submitted: { dot: "bg-emerald-500",badge: "bg-emerald-50 text-emerald-700", heading: "text-emerald-700" },
-    overdue:   { dot: "bg-rose-500",   badge: "bg-rose-50 text-rose-700",       heading: "text-rose-700" },
+    pending:   { dot: "bg-amber-500",  badge: "bg-amber-50 text-amber-700",     heading: "text-slate-800" },
+    submitted: { dot: "bg-emerald-500",badge: "bg-emerald-50 text-emerald-700", heading: "text-slate-800" },
+    overdue:   { dot: "bg-rose-500",   badge: "bg-rose-50 text-rose-700",       heading: "text-slate-800" },
   };
   const c = colors[variant];
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b bg-gray-50">
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-slate-200 bg-slate-50">
         <div className={`w-2 h-2 rounded-full ${c.dot}`} />
-        <p className={`font-bold text-sm ${c.heading}`}>{title}</p>
-        <span className="ml-auto text-xs text-gray-400">{items.length} item{items.length !== 1 ? "s" : ""}</span>
+        <p className={`font-semibold text-sm ${c.heading}`}>{title}</p>
+        <span className="ml-auto text-xs text-slate-400">{items.length} item{items.length !== 1 ? "s" : ""}</span>
       </div>
-      <div className="divide-y">
+      <div className="divide-y divide-slate-100">
         {items.map((h: any) => {
           const sub = h.submissions[0];
           return (
@@ -131,25 +132,25 @@ function HomeworkList({ title, items, variant, studentId }: {
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{h.subject?.name}</span>
+                    <span className="text-[10px] font-semibold text-indigo-600 uppercase tracking-widest">{h.subject?.name}</span>
                   </div>
-                  <p className="text-sm font-bold text-gray-900">{h.homeworkTitle ?? h.description?.slice(0, 80)}</p>
-                  {h.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{h.description}</p>}
-                  <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                  <p className="text-sm font-semibold text-slate-900">{h.homeworkTitle ?? h.description?.slice(0, 80)}</p>
+                  {h.description && <p className="text-xs text-slate-500 mt-1 line-clamp-2">{h.description}</p>}
+                  <div className="flex items-center gap-3 mt-2 text-xs text-slate-400">
                     <span>Assigned: {new Date(h.homeworkDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
                     <span>·</span>
-                    <span className={variant === "overdue" ? "text-rose-500 font-bold" : ""}>
+                    <span className={variant === "overdue" ? "text-rose-500 font-semibold" : ""}>
                       Due: {new Date(h.submissionDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
                     </span>
                     {h.staff && <span>· By {h.staff.firstName} {h.staff.lastName}</span>}
                   </div>
                   {sub?.remarks && (
                     <div className="mt-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-1.5">
-                      <p className="text-xs text-emerald-700"><span className="font-bold">Teacher feedback:</span> {sub.remarks}</p>
+                      <p className="text-xs text-emerald-700"><span className="font-semibold">Teacher feedback:</span> {sub.remarks}</p>
                     </div>
                   )}
                 </div>
-                <span className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 ${c.badge}`}>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${c.badge}`}>
                   {variant === "submitted" ? "✓ Submitted" : variant === "overdue" ? "Overdue" : "Pending"}
                 </span>
               </div>

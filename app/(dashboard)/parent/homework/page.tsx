@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
-import { CheckSquare, Users, BookOpen } from "lucide-react";
+import { Users, BookOpen } from "lucide-react";
 
 export default async function ParentHomeworkPage() {
   const session = await auth();
@@ -18,7 +18,7 @@ export default async function ParentHomeworkPage() {
       <div className="flex flex-col flex-1">
         <Topbar title="Homework" />
         <main className="flex-1 p-4 md:p-6 flex items-center justify-center">
-          <div className="text-center"><Users className="h-10 w-10 mx-auto text-gray-300 mb-3" /><p className="text-gray-500">No children linked.</p></div>
+          <div className="text-center"><Users className="h-10 w-10 mx-auto text-slate-300 mb-3" /><p className="text-slate-500">No children linked.</p></div>
         </main>
       </div>
     );
@@ -66,26 +66,26 @@ export default async function ParentHomeworkPage() {
           const { student, cs, homework } = data;
           return (
             <div key={childIds[idx]}>
-              <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-5 text-white mb-4">
+              <div className="bg-white rounded-xl border border-slate-200 p-5 mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center font-black text-sm">{student.firstName[0]}{student.lastName?.[0]}</div>
+                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center font-semibold text-sm text-slate-600 shrink-0">{student.firstName[0]}{student.lastName?.[0]}</div>
                   <div>
-                    <p className="font-black text-lg">{student.firstName} {student.lastName}</p>
-                    <p className="text-amber-200 text-sm">{cs?.classSection?.class?.name} {cs?.classSection?.section?.name}</p>
+                    <p className="font-semibold text-[17px] text-slate-900">{student.firstName} {student.lastName}</p>
+                    <p className="text-slate-500 text-sm mt-0.5">{cs?.classSection?.class?.name} {cs?.classSection?.section?.name}</p>
                   </div>
                   <div className="ml-auto text-right">
-                    <p className="text-2xl font-black">{homework.filter((h: any) => h.acknowledgements.length === 0 && new Date(h.dueDate) >= today).length}</p>
-                    <p className="text-amber-200 text-xs">pending</p>
+                    <p className="text-2xl font-semibold text-slate-900 tabular-nums">{homework.filter((h: any) => h.acknowledgements.length === 0 && new Date(h.dueDate) >= today).length}</p>
+                    <p className="text-slate-400 text-xs">pending</p>
                   </div>
                 </div>
               </div>
               {homework.length === 0 ? (
-                <div className="text-center py-8 bg-white rounded-2xl border border-gray-100">
-                  <BookOpen className="h-8 w-8 mx-auto text-gray-300 mb-2" />
-                  <p className="text-sm text-gray-400">No homework found.</p>
+                <div className="text-center py-8 bg-white rounded-xl border border-slate-200">
+                  <BookOpen className="h-8 w-8 mx-auto text-slate-300 mb-2" />
+                  <p className="text-sm text-slate-400">No homework found.</p>
                 </div>
               ) : (
-                <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden divide-y">
+                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden divide-y divide-slate-100">
                   {homework.map((h: any) => {
                     const submitted = h.acknowledgements.length > 0;
                     const overdue   = !submitted && new Date(h.dueDate) < today;
@@ -95,14 +95,14 @@ export default async function ParentHomeworkPage() {
                       <div key={h.id} className="px-5 py-4">
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
-                            <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{h.subject?.name}</span>
-                            <p className="text-sm font-bold text-gray-900 mt-0.5">{h.title ?? h.description?.slice(0, 60)}</p>
-                            <p className="text-xs text-gray-400 mt-1">
+                            <span className="text-[10px] font-semibold text-indigo-600 uppercase tracking-widest">{h.subject?.name}</span>
+                            <p className="text-sm font-semibold text-slate-900 mt-0.5">{h.title ?? h.description?.slice(0, 60)}</p>
+                            <p className="text-xs text-slate-400 mt-1">
                               Due: {new Date(h.dueDate).toLocaleDateString("en-GB", { day:"numeric", month:"short" })}
                               {h.staff && ` · ${h.staff.firstName} ${h.staff.lastName}`}
                             </p>
                           </div>
-                          <span className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 ${s.badge}`}>
+                          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${s.badge}`}>
                             {submitted ? "✓ Submitted" : overdue ? "Overdue" : "Pending"}
                           </span>
                         </div>

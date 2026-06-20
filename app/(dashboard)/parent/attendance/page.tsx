@@ -19,15 +19,15 @@ export default async function ParentAttendancePage() {
         <Topbar title="Attendance" />
         <main className="flex-1 p-4 md:p-6 flex items-center justify-center">
           <div className="text-center">
-            <Users className="h-10 w-10 mx-auto text-gray-300 mb-3" />
-            <p className="text-gray-500">No children linked to your account.</p>
+            <Users className="h-10 w-10 mx-auto text-slate-300 mb-3" />
+            <p className="text-slate-500">No children linked to your account.</p>
           </div>
         </main>
       </div>
     );
   }
 
-  const typeStyle: Record<string, string> = { P:"bg-emerald-100 text-emerald-700", A:"bg-rose-100 text-rose-700", L:"bg-amber-100 text-amber-700", H:"bg-blue-100 text-blue-700", F:"bg-purple-100 text-purple-700" };
+  const typeStyle: Record<string, string> = { P:"bg-emerald-50 text-emerald-700", A:"bg-rose-50 text-rose-700", L:"bg-amber-50 text-amber-700", H:"bg-slate-100 text-slate-600", F:"bg-indigo-50 text-indigo-700" };
   const typeLabel: Record<string, string> = { P:"Present", A:"Absent", L:"Late", H:"Holiday", F:"Half Day" };
 
   const children = await Promise.all(childIds.map(async (id: string) => {
@@ -65,40 +65,40 @@ export default async function ParentAttendancePage() {
           const { student, cs, records, stats, pct } = data;
           return (
             <div key={childIds[idx]}>
-              <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-5 text-white mb-4">
+              <div className="bg-white rounded-xl border border-slate-200 p-5 mb-4">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center font-black text-sm">{student.firstName[0]}{student.lastName?.[0]}</div>
+                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center font-semibold text-sm text-slate-600 shrink-0">{student.firstName[0]}{student.lastName?.[0]}</div>
                   <div>
-                    <p className="font-black text-lg">{student.firstName} {student.lastName}</p>
-                    <p className="text-emerald-200 text-sm">{cs?.classSection?.class?.name} {cs?.classSection?.section?.name}</p>
+                    <p className="font-semibold text-[17px] text-slate-900">{student.firstName} {student.lastName}</p>
+                    <p className="text-slate-500 text-sm mt-0.5">{cs?.classSection?.class?.name} {cs?.classSection?.section?.name}</p>
                   </div>
-                  <div className={`ml-auto text-right`}>
-                    <p className={`text-3xl font-black ${pct >= 75 ? "text-white" : "text-rose-300"}`}>{pct}%</p>
-                    <p className="text-emerald-200 text-xs">Attendance</p>
+                  <div className="ml-auto text-right">
+                    <p className={`text-3xl font-semibold tabular-nums ${pct >= 75 ? "text-slate-900" : "text-rose-600"}`}>{pct}%</p>
+                    <p className="text-slate-400 text-xs">Attendance</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-5 gap-2">
                   {(["P","A","L","H","F"] as const).map(k => (
-                    <div key={k} className="bg-white/15 rounded-lg p-2 text-center">
-                      <p className="font-black text-lg">{stats[k]}</p>
-                      <p className="text-[10px] text-white/70">{typeLabel[k]}</p>
+                    <div key={k} className="bg-slate-50 rounded-lg p-2 text-center">
+                      <p className="font-semibold text-lg text-slate-900 tabular-nums">{stats[k]}</p>
+                      <p className="text-[10px] text-slate-500">{typeLabel[k]}</p>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                <p className="px-5 py-3 text-sm font-bold text-gray-700 border-b bg-gray-50">Last 30 days</p>
-                <div className="divide-y max-h-80 overflow-y-auto">
+              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                <p className="px-5 py-3 text-sm font-semibold text-slate-700 border-b border-slate-200 bg-slate-50">Last 30 days</p>
+                <div className="divide-y divide-slate-100 max-h-80 overflow-y-auto">
                   {records.length === 0 ? (
-                    <p className="px-5 py-4 text-sm text-gray-400">No records found.</p>
+                    <p className="px-5 py-4 text-sm text-slate-400">No records found.</p>
                   ) : records.map((r: any) => {
                     const kv = r.attendanceType?.keyValue ?? "P";
                     return (
                       <div key={r.id} className="flex items-center justify-between px-5 py-3">
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-slate-700">
                           {new Date(r.attendanceDay.date).toLocaleDateString("en-GB", { weekday:"short", day:"numeric", month:"short" })}
                         </p>
-                        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${typeStyle[kv] ?? "bg-gray-100 text-gray-600"}`}>{typeLabel[kv] ?? kv}</span>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${typeStyle[kv] ?? "bg-slate-100 text-slate-600"}`}>{typeLabel[kv] ?? kv}</span>
                       </div>
                     );
                   })}
