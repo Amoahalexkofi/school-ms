@@ -23,6 +23,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://getskula.com"),
   title: "Skula — School Management System",
   description: "The all-in-one school management platform built for African schools — admissions, fees, attendance, exams, payroll and parent communication in one place.",
   manifest: "/manifest.json",
@@ -39,13 +40,9 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Skula — School Management System",
     description: "The modern school management platform. Students, fees, attendance, exams and more — all in one place.",
-  },
-  icons: {
-    icon: "/icons/icon-192.png",
-    apple: "/icons/icon-192.png",
   },
 };
 
