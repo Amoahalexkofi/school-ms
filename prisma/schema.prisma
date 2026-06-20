@@ -335,8 +335,12 @@ model Branch {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  students Student[]
-  staff    Staff[]
+  students        Student[]
+  staff           Staff[]
+  feeCategories   FeeCategory[]
+  feeTypes        FeeType[]
+  feeGroups       FeeGroup[]
+  feeDiscounts    FeeDiscount[]
 }
 
 // ─── Students ─────────────────────────────────────────────────────────────────
@@ -479,18 +483,22 @@ model StudentSession {
 
 model FeeCategory {
   id          String   @id @default(cuid())
-  name        String   @unique
+  name        String
   description String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
+  branchId    String?
+  branch      Branch?  @relation(fields: [branchId], references: [id])
 
   feeTypes FeeType[]
+
+  @@unique([branchId, name])
 }
 
 model FeeType {
   id               String       @id @default(cuid())
   name             String
-  code             String       @unique
+  code             String
   feeCategoryId    String?
   feeCategory      FeeCategory? @relation(fields: [feeCategoryId], references: [id])
   nature           String?      // "custom" for per-student custom fees
@@ -499,9 +507,13 @@ model FeeType {
   description      String?
   isActive         Boolean      @default(true)
   createdAt        DateTime     @default(now())
+  branchId         String?
+  branch           Branch?      @relation(fields: [branchId], references: [id])
 
   feeGroupItems FeeGroupItem[]
   feeMasters    FeeMaster[]
+
+  @@unique([branchId, code])
 }
 
 enum FeeGroupNature {
@@ -512,14 +524,18 @@ enum FeeGroupNature {
 
 model FeeGroup {
   id          String         @id @default(cuid())
-  name        String         @unique
+  name        String
   nature      FeeGroupNature @default(REGULAR)
   isSystem    Boolean        @default(false)
   description String?
   isActive    Boolean        @default(true)
   createdAt   DateTime       @default(now())
+  branchId    String?
+  branch      Branch?        @relation(fields: [branchId], references: [id])
 
   sessionGroups FeeSessionGroup[]
+
+  @@unique([branchId, name])
 }
 
 model FeeSessionGroup {
@@ -611,7 +627,7 @@ model FeeDeposit {
 model FeeDiscount {
   id            String    @id @default(cuid())
   name          String
-  code          String    @unique
+  code          String
   type          String // "percentage" or "amount"
   percentage    Decimal   @default(0) @db.Decimal(5, 2)
   amount        Decimal   @default(0) @db.Decimal(10, 2)
@@ -621,8 +637,12 @@ model FeeDiscount {
   isActive      Boolean   @default(true)
   sessionId     String?
   createdAt     DateTime  @default(now())
+  branchId      String?
+  branch        Branch?   @relation(fields: [branchId], references: [id])
 
   studentDiscounts StudentFeeDiscount[]
+
+  @@unique([branchId, code])
 }
 
 // student_fees_discounts — discount assigned to a student

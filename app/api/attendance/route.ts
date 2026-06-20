@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { markAttendance } from "@/lib/services/attendance";
+import { getActiveBranchId } from "@/lib/branch";
 
 // GET — returns enrolled students + existing attendance for a given day
 export async function GET(req: NextRequest) {
@@ -13,9 +14,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "classSectionId, sessionId and date are required" }, { status: 400 });
   }
 
-  // Students enrolled in this classSection for this session
+  const branchId = await getActiveBranchId();
+
+  // Students enrolled in this classSection for this session (scoped to active branch)
   const enrollments = await ((await getDb()) as any).studentSession.findMany({
-    where: { classSectionId, sessionId, isActive: true },
+    where: { classSectionId, sessionId, isActive: true, ...(branchId ? { student: { branchId } } : {}) },
     include: {
       student: { select: { id: true, firstName: true, middleName: true, lastName: true, admissionNo: true, gender: true } },
     },

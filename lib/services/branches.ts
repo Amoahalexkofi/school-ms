@@ -11,6 +11,10 @@ export async function ensureBranchSetup(): Promise<string> {
   await Promise.all([
     (db as any).student.updateMany({ where: { branchId: null }, data: { branchId: mainId } }),
     (db as any).staff.updateMany({ where: { branchId: null }, data: { branchId: mainId } }),
+    (db as any).feeCategory.updateMany({ where: { branchId: null }, data: { branchId: mainId } }),
+    (db as any).feeType.updateMany({ where: { branchId: null }, data: { branchId: mainId } }),
+    (db as any).feeGroup.updateMany({ where: { branchId: null }, data: { branchId: mainId } }),
+    (db as any).feeDiscount.updateMany({ where: { branchId: null }, data: { branchId: mainId } }),
   ]);
   return mainId;
 }

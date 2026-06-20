@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -16,6 +17,7 @@ export async function GET(req: NextRequest) {
   const toDate = new Date(to);
   toDate.setHours(23, 59, 59, 999);
 
+  const branchId = await getActiveBranchId();
   const dayWhere: any = {
     sessionId,
     date: { gte: fromDate, lte: toDate },
@@ -26,6 +28,7 @@ export async function GET(req: NextRequest) {
     where: dayWhere,
     include: {
       studentAttendances: {
+        where: branchId ? { student: { branchId } } : undefined,
         include: {
           student: { select: { id: true, firstName: true, lastName: true, admissionNo: true } },
           attendanceType: { select: { keyValue: true } },

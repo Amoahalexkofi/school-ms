@@ -16,6 +16,8 @@ export async function GET(req: NextRequest) {
 
   const where: any = {};
   if (isActive !== null) where.isActive = isActive === "true";
+  const activeBranchId = await getActiveBranchId();
+  if (activeBranchId) where.branchId = activeBranchId;
   if (search) {
     where.OR = [
       { firstName:   { contains: search, mode: "insensitive" } },

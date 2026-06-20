@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const sessionId = searchParams.get("sessionId");
 
+  const branchId = await getActiveBranchId();
   const where: any = { isActive: true };
   if (sessionId) {
     where.studentSession = { sessionId };
+  }
+  if (branchId) {
+    where.student = { branchId };
   }
 
   const masters = await ((await getDb()) as any).studentFeesMaster.findMany({

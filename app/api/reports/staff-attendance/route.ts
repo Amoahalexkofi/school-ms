@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -15,9 +16,10 @@ export async function GET(req: NextRequest) {
   const toDate = new Date(to);
   toDate.setHours(23, 59, 59, 999);
 
+  const branchId = await getActiveBranchId();
   const where: any = { date: { gte: fromDate, lte: toDate } };
-  if (departmentId) {
-    where.staff = { departmentId };
+  if (departmentId || branchId) {
+    where.staff = { ...(departmentId ? { departmentId } : {}), ...(branchId ? { branchId } : {}) };
   }
 
   const records = await ((await getDb()) as any).staffAttendance.findMany({

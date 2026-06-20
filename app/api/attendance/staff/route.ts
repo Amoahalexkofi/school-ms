@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
 
 // GET — staff list + existing attendance for a date
 export async function GET(req: NextRequest) {
@@ -9,8 +10,10 @@ export async function GET(req: NextRequest) {
 
   if (!date) return NextResponse.json({ error: "date is required" }, { status: 400 });
 
+  const branchId = await getActiveBranchId();
   const where: any = { isActive: true };
   if (departmentId) where.departmentId = departmentId;
+  if (branchId) where.branchId = branchId;
 
   const [staff, existing] = await Promise.all([
     ((await getDb()) as any).staff.findMany({
