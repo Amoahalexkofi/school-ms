@@ -22,7 +22,7 @@ const STEPS: [string, string][] = [
   ["MarkEntry",                `DELETE FROM public."MarkEntry" WHERE "createdAt" > $1::timestamptz`],
   ["FeeDeposit",               `DELETE FROM public."FeeDeposit" WHERE "createdAt" > $1::timestamptz`],
   ["HomeworkAcknowledgement",  `DELETE FROM public."HomeworkAcknowledgement" WHERE "createdAt" > $1::timestamptz`],
-  ["BookIssue",                `DELETE FROM public."BookIssue" WHERE "createdAt" > $1::timestamptz`],
+  ["BookIssue",                `DELETE FROM public."BookIssue" WHERE "issuedAt" > $1::timestamptz`],
   // Exam structures
   ["ExamSchedule",             `DELETE FROM public."ExamSchedule" WHERE "createdAt" > $1::timestamptz`],
   ["ExamGroup",                `DELETE FROM public."ExamGroup" WHERE "createdAt" > $1::timestamptz`],
@@ -31,7 +31,7 @@ const STEPS: [string, string][] = [
   ["AttendanceDay",            `DELETE FROM public."AttendanceDay" WHERE "createdAt" > $1::timestamptz`],
   // Fee structures
   ["CumulativeFine",           `DELETE FROM public."CumulativeFine" WHERE "createdAt" > $1::timestamptz`],
-  ["StudentAppliedDiscount",   `DELETE FROM public."StudentAppliedDiscount" WHERE "createdAt" > $1::timestamptz`],
+  ["StudentAppliedDiscount",   `DELETE FROM public."StudentAppliedDiscount" WHERE "date" > $1::timestamptz`],
   ["StudentFeeDiscount",       `DELETE FROM public."StudentFeeDiscount" WHERE "createdAt" > $1::timestamptz`],
   ["FeeGroupItem",             `DELETE FROM public."FeeGroupItem" WHERE "createdAt" > $1::timestamptz`],
   ["StudentFeesMaster",        `DELETE FROM public."StudentFeesMaster" WHERE "createdAt" > $1::timestamptz`],
