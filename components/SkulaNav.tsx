@@ -43,6 +43,14 @@ export function SkulaNav() {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  // Close the mobile menu on Escape (a11y / keyboard support)
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMobileOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
   const links: [string, string][] = [
     ["Features",     "#features"],
     ["Solutions",    "#solutions"],

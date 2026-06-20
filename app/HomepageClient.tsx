@@ -324,7 +324,7 @@ function HeroProduct() {
     <div className="relative flex items-end justify-center h-[520px]">
       {/* Student image */}
       <div className="relative z-10 w-full max-w-[460px] h-full flex items-end justify-center">
-        <img src="/images/hero image1.png" alt="Student using Skula"
+        <img src="/images/hero-1.jpg" alt="Student using Skula"
           className="w-full h-full object-contain object-bottom drop-shadow-2xl" />
       </div>
 
@@ -387,7 +387,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border-b border-slate-100 last:border-0">
-      <button onClick={() => setOpen(o => !o)}
+      <button onClick={() => setOpen(o => !o)} aria-expanded={open}
         className="w-full flex items-center justify-between gap-4 py-5 text-left hover:text-slate-900 transition-colors">
         <span className="text-slate-800 font-semibold text-[15px]">{q}</span>
         <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
@@ -515,7 +515,7 @@ export function HomepageClient() {
 
             {/* Mobile hero image */}
             <motion.div variants={fadeUp} className="lg:hidden flex justify-center -mt-2">
-              <img src="/images/hero image1.png" alt="Student using Skula"
+              <img src="/images/hero-1.jpg" alt="Student using Skula"
                 className="h-56 sm:h-72 object-contain drop-shadow-xl" />
             </motion.div>
           </div>
@@ -995,7 +995,7 @@ export function HomepageClient() {
                   <img src="/images/skula-logomark.png" alt="Skula" className="h-8 object-contain" />
                 </div>
               </div>
-              <p className="text-[13px] leading-relaxed max-w-[210px] text-slate-500 mb-6">
+              <p className="text-[13px] leading-relaxed max-w-[210px] text-slate-400 mb-6">
                 The all-in-one school management platform, built for African schools.
               </p>
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
@@ -1009,19 +1009,19 @@ export function HomepageClient() {
               { title: "Company",     links: [["Contact","/contact"],["Novalss","https://novalss.com"]] },
             ].map(({ title, links }) => (
               <div key={title}>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600 mb-5">{title}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 mb-5">{title}</p>
                 <div className="flex flex-col gap-3">
                   {links.map(([l,h]) => (
                     <a key={l} href={h} target={h.startsWith("https") ? "_blank" : undefined} rel="noopener noreferrer"
-                      className="text-[13px] text-slate-500 hover:text-white transition-colors w-fit">{l}</a>
+                      className="text-[13px] text-slate-400 hover:text-white transition-colors w-fit">{l}</a>
                   ))}
                 </div>
               </div>
             ))}
           </div>
           <div className="border-t border-white/[0.05] pt-7 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <p className="text-[12px] text-slate-600">© {new Date().getFullYear()} Novalss Ltd. All rights reserved.</p>
-            <p className="text-[12px] text-slate-600">Made with ♥ for African schools</p>
+            <p className="text-[12px] text-slate-500">© {new Date().getFullYear()} Novalss Ltd. All rights reserved.</p>
+            <p className="text-[12px] text-slate-500">Made with ♥ for African schools</p>
           </div>
         </div>
       </footer>

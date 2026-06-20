@@ -182,10 +182,11 @@ export default function ContactPage() {
                 <div className="space-y-4">
                   {/* Name */}
                   <div>
-                    <label className="block text-[13px] font-bold text-slate-700 mb-1.5">
+                    <label htmlFor="contact-name" className="block text-[13px] font-bold text-slate-700 mb-1.5">
                       Your name <span className="text-red-400">*</span>
                     </label>
                     <input
+                      id="contact-name"
                       type="text" value={form.name} onChange={set("name")}
                       placeholder="e.g. Kofi Mensah"
                       className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all"
@@ -195,10 +196,11 @@ export default function ContactPage() {
 
                   {/* School */}
                   <div>
-                    <label className="block text-[13px] font-bold text-slate-700 mb-1.5">
+                    <label htmlFor="contact-school" className="block text-[13px] font-bold text-slate-700 mb-1.5">
                       School name <span className="text-red-400">*</span>
                     </label>
                     <input
+                      id="contact-school"
                       type="text" value={form.school} onChange={set("school")}
                       placeholder="e.g. Lincoln International School"
                       className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all"
@@ -208,8 +210,9 @@ export default function ContactPage() {
 
                   {/* Role */}
                   <div>
-                    <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Your role</label>
+                    <label htmlFor="contact-role" className="block text-[13px] font-bold text-slate-700 mb-1.5">Your role</label>
                     <select
+                      id="contact-role"
                       value={form.role} onChange={set("role")}
                       className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all appearance-none"
                       style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 14px center", paddingRight: "40px" }}
@@ -225,10 +228,11 @@ export default function ContactPage() {
 
                   {/* Phone */}
                   <div>
-                    <label className="block text-[13px] font-bold text-slate-700 mb-1.5">
+                    <label htmlFor="contact-phone" className="block text-[13px] font-bold text-slate-700 mb-1.5">
                       WhatsApp number <span className="text-slate-400 font-normal">(optional)</span>
                     </label>
                     <input
+                      id="contact-phone"
                       type="tel" value={form.phone} onChange={set("phone")}
                       placeholder="+233 XX XXX XXXX"
                       className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all"
