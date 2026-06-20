@@ -10,6 +10,7 @@ export type UserRole =
 // Routes accessible without authentication
 const PUBLIC_PREFIXES = [
   "/api/auth", "/sign-in", "/apply", "/_next", "/favicon",
+  "/api/cron",          // scheduled jobs — secured by CRON_SECRET internally
   "/novalss-admin", "/api/admin",
   "/images",           // static public assets
   "/features",         // public marketing page
