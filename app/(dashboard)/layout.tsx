@@ -28,7 +28,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <PermissionsProvider permissions={permissions}>
-      <div className="flex min-h-screen bg-[#f4f5fb]">
+      <div className="flex flex-col lg:flex-row min-h-screen bg-[#f4f5fb]">
         <Sidebar role={role} />
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {isDemo && <DemoBanner />}
