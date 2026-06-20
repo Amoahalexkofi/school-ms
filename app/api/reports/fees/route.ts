@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
               firstName: true,
               lastName: true,
               admissionNo: true,
+              branch: { select: { name: true } },
             },
           },
           studentSession: {
@@ -81,6 +82,7 @@ export async function GET(req: NextRequest) {
     return {
       id: d.id,
       student: d.studentFeesMaster.student,
+      branch: d.studentFeesMaster.student?.branch?.name ?? "—",
       session: d.studentFeesMaster.studentSession.session.name,
       class: d.studentFeesMaster.studentSession.classSection?.class?.name ?? "",
       section: d.studentFeesMaster.studentSession.classSection?.section?.name ?? "",

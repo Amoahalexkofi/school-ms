@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
       studentAttendances: {
         where: branchId ? { student: { branchId } } : undefined,
         include: {
-          student: { select: { id: true, firstName: true, lastName: true, admissionNo: true } },
+          student: { select: { id: true, firstName: true, lastName: true, admissionNo: true, branch: { select: { name: true } } } },
           attendanceType: { select: { keyValue: true } },
         },
       },

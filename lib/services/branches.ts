@@ -63,6 +63,56 @@ export async function resolveBranchForCreate(activeBranchId: string | null): Pro
   return ensureMainBranchId();
 }
 
+/**
+ * Per-branch breakdown for the head-office "All Branches" dashboard view:
+ * each active branch's students, staff, fees collected this month, and today's
+ * attendance %. Used only when the Multi Branch add-on is on.
+ */
+export async function getBranchBreakdown() {
+  const db = await getDb();
+  const branches = await (db as any).branch.findMany({
+    where: { isActive: true },
+    orderBy: [{ isMain: "desc" }, { name: "asc" }],
+  });
+  if (branches.length === 0) return [];
+
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const presentType = await (db as any).attendanceType.findUnique({ where: { keyValue: "P" } }).catch(() => null);
+
+  return Promise.all(
+    branches.map(async (b: any) => {
+      const [students, staff, deposits, presentToday, markedToday] = await Promise.all([
+        (db as any).student.count({ where: { isActive: true, branchId: b.id } }),
+        (db as any).staff.count({ where: { isActive: true, branchId: b.id } }),
+        (db as any).feeDeposit.findMany({
+          where: { isActive: true, createdAt: { gte: monthStart }, studentFeesMaster: { student: { branchId: b.id } } },
+          select: { amountDetail: true },
+        }),
+        presentType
+          ? (db as any).studentAttendance.count({ where: { attendanceTypeId: presentType.id, attendanceDay: { date: today }, student: { branchId: b.id } } })
+          : 0,
+        (db as any).studentAttendance.count({ where: { attendanceDay: { date: today }, student: { branchId: b.id } } }),
+      ]);
+      let collected = 0;
+      for (const d of deposits) {
+        const detail = (d.amountDetail ?? {}) as Record<string, any>;
+        collected += Object.values(detail).reduce((s: number, v: any) => s + Number(v?.amount ?? 0), 0);
+      }
+      return {
+        id: b.id,
+        name: b.name,
+        isMain: b.isMain,
+        students,
+        staff,
+        collected,
+        attendancePct: markedToday > 0 ? Math.round((presentToday / markedToday) * 100) : null,
+      };
+    })
+  );
+}
+
 const BRANCH_FIELDS = ["name", "code", "email", "phone", "address", "isActive"] as const;
 
 export async function createBranch(raw: Record<string, unknown>) {

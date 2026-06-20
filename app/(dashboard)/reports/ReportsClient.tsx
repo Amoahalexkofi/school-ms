@@ -61,6 +61,27 @@ function downloadCSV(rows: Record<string, any>[], filename: string) {
   URL.revokeObjectURL(url);
 }
 
+// ─── Per-branch subtotal chips (Multi Branch) ─────────────────────────────────
+// Shows "Branch: total" chips, only when rows span more than one branch.
+function BranchSummary({ rows, valueKey, prefix = "" }: { rows: any[]; valueKey: string; prefix?: string }) {
+  const byBranch: Record<string, number> = {};
+  for (const r of rows) {
+    const b = r.branch || "—";
+    byBranch[b] = (byBranch[b] ?? 0) + Number(r[valueKey] ?? 0);
+  }
+  const entries = Object.entries(byBranch).sort((a, b) => b[1] - a[1]);
+  if (entries.length <= 1) return null;
+  return (
+    <div className="flex items-center gap-1.5 flex-wrap print:hidden">
+      {entries.map(([b, v]) => (
+        <span key={b} className="text-[11px] font-medium px-2 py-1 rounded-full bg-white border border-gray-200 text-gray-600">
+          {b}: <span className="font-semibold text-gray-800">{prefix}{v.toLocaleString(undefined, { minimumFractionDigits: prefix ? 2 : 0 })}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function ReportsClient({ sessions, classes, sections, classSections, departments, examGroups }: Props) {
@@ -329,6 +350,7 @@ function AttendanceReport({ sessions, classSections, onPrint }: {
     downloadCSV(data.rows.map((r) => ({
       "Admission No": r.student.admissionNo,
       "Name": `${r.student.firstName} ${r.student.lastName}`,
+      "Branch": r.student.branch?.name ?? "",
       "Class": r.classSection?.class?.name ?? "",
       "Section": r.classSection?.section?.name ?? "",
       P: r.P, A: r.A, L: r.L, H: r.H, "Half Day": r.F,
@@ -393,6 +415,7 @@ function AttendanceReport({ sessions, classSections, onPrint }: {
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">#</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Student</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Admission</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Branch</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Class</th>
                   <th className="text-center px-3 py-2.5 font-medium text-green-600">P</th>
                   <th className="text-center px-3 py-2.5 font-medium text-red-600">A</th>
@@ -409,6 +432,7 @@ function AttendanceReport({ sessions, classSections, onPrint }: {
                     <td className="px-4 py-2.5 text-gray-400">{i + 1}</td>
                     <td className="px-4 py-2.5 font-medium">{r.student.firstName} {r.student.lastName}</td>
                     <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{r.student.admissionNo}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{r.student.branch?.name ?? "—"}</td>
                     <td className="px-4 py-2.5 text-gray-500">
                       {r.classSection?.class?.name ?? ""} {r.classSection?.section?.name ?? ""}
                     </td>
@@ -572,6 +596,7 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
     downloadCSV(data.rows.map((r) => ({
       "Admission No": r.student.admissionNo,
       "Name": `${r.student.firstName} ${r.student.lastName}`,
+      "Branch": r.branch ?? "",
       "Class": r.class, "Section": r.section, "Session": r.session,
       "Fee Group": r.feeGroup, "Fee Type": r.feeType,
       "Amount": r.amount.toFixed(2), "Payment Mode": r.paymentMode,
@@ -612,10 +637,11 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
         <div className="text-center py-10 text-gray-400 text-sm">No payments found in this period.</div>
       ) : (
         <div className="bg-white border rounded-lg overflow-hidden">
-          <div className="px-4 py-3 border-b bg-gray-50 flex items-center justify-between">
+          <div className="px-4 py-3 border-b bg-gray-50 flex items-center justify-between flex-wrap gap-2">
             <span className="text-sm font-medium">
               Total Collected: <span className="text-green-600 font-bold">₵{data.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
             </span>
+            <BranchSummary rows={data.rows} valueKey="amount" prefix="₵" />
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -623,6 +649,7 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
                 <tr>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">#</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Student</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Branch</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Class</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Fee Group</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Fee Type</th>
@@ -639,6 +666,7 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
                       <p className="font-medium">{r.student.firstName} {r.student.lastName}</p>
                       <p className="text-xs text-gray-400">{r.student.admissionNo}</p>
                     </td>
+                    <td className="px-4 py-2.5 text-gray-500">{r.branch || "—"}</td>
                     <td className="px-4 py-2.5 text-gray-500">{r.class} {r.section}</td>
                     <td className="px-4 py-2.5 text-gray-500">{r.feeGroup || "—"}</td>
                     <td className="px-4 py-2.5 text-gray-500">{r.feeType}</td>
@@ -654,7 +682,7 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
               </tbody>
               <tfoot className="border-t bg-gray-50">
                 <tr>
-                  <td colSpan={5} className="px-4 py-2.5 text-right font-semibold text-sm">Total:</td>
+                  <td colSpan={6} className="px-4 py-2.5 text-right font-semibold text-sm">Total:</td>
                   <td className="px-4 py-2.5 text-right font-bold text-green-700">
                     ₵{data.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </td>
@@ -692,6 +720,7 @@ function DueFeesReport({ sessions, onPrint }: { sessions: Props["sessions"]; onP
     downloadCSV(rows.map((r) => ({
       "Admission No": r.student.admissionNo,
       "Name": `${r.student.firstName} ${r.student.lastName}`,
+      "Branch": r.branch ?? "",
       "Class": r.class, "Section": r.section,
       "Session": r.session, "Fee Group": r.feeGroup,
       "Total Fee": r.totalFee.toFixed(2),
@@ -725,11 +754,14 @@ function DueFeesReport({ sessions, onPrint }: { sessions: Props["sessions"]; onP
         <div className="text-center py-10 text-gray-400 text-sm">No outstanding fees found.</div>
       ) : (
         <div className="bg-white border rounded-lg overflow-hidden">
-          <div className="px-4 py-3 border-b bg-red-50 flex items-center justify-between">
+          <div className="px-4 py-3 border-b bg-red-50 flex items-center justify-between flex-wrap gap-2">
             <span className="text-sm font-medium text-red-700">
               Total Outstanding: <span className="font-bold">₵{totalDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
             </span>
-            <span className="text-xs text-red-500">{rows.length} defaulter{rows.length !== 1 ? "s" : ""}</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <BranchSummary rows={rows} valueKey="due" prefix="₵" />
+              <span className="text-xs text-red-500">{rows.length} defaulter{rows.length !== 1 ? "s" : ""}</span>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -737,6 +769,7 @@ function DueFeesReport({ sessions, onPrint }: { sessions: Props["sessions"]; onP
                 <tr>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">#</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Student</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Branch</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Class</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Session</th>
                   <th className="text-left px-4 py-2.5 font-medium text-gray-600">Fee Group</th>
@@ -753,6 +786,7 @@ function DueFeesReport({ sessions, onPrint }: { sessions: Props["sessions"]; onP
                       <p className="font-medium">{r.student.firstName} {r.student.lastName}</p>
                       <p className="text-xs text-gray-400">{r.student.admissionNo}</p>
                     </td>
+                    <td className="px-4 py-2.5 text-gray-500">{r.branch || "—"}</td>
                     <td className="px-4 py-2.5 text-gray-500">{r.class} {r.section}</td>
                     <td className="px-4 py-2.5 text-gray-500">{r.session}</td>
                     <td className="px-4 py-2.5 text-gray-500">{r.feeGroup || "—"}</td>
@@ -766,7 +800,7 @@ function DueFeesReport({ sessions, onPrint }: { sessions: Props["sessions"]; onP
               </tbody>
               <tfoot className="border-t bg-gray-50">
                 <tr>
-                  <td colSpan={7} className="px-4 py-2.5 text-right font-semibold text-sm">Total Outstanding:</td>
+                  <td colSpan={8} className="px-4 py-2.5 text-right font-semibold text-sm">Total Outstanding:</td>
                   <td className="px-4 py-2.5 text-right font-bold text-red-600">
                     ₵{totalDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </td>

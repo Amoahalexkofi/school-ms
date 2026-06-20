@@ -2,10 +2,13 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getDashboardStats } from "@/lib/services/dashboard";
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
+import { isAddonEnabled } from "@/lib/addons";
+import { getBranchBreakdown } from "@/lib/services/branches";
 import { Topbar } from "@/components/Topbar";
 import {
   ArrowRight, AlertCircle, Users, UserCog, Banknote, TrendingDown,
-  ClipboardList, DollarSign, BookOpen, BarChart2, UserPlus,
+  ClipboardList, DollarSign, BookOpen, BarChart2, UserPlus, Building,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -76,6 +79,17 @@ export default async function DashboardPage() {
   const dayLabel = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const userName = (session?.user as any)?.name || session?.user?.email?.split("@")[0] || "";
 
+  // Multi Branch: when an admin is viewing "All Branches", show a per-branch breakdown.
+  const isAdmin       = role === "ADMIN" || role === "SUPER_ADMIN";
+  const mbEnabled     = isAdmin ? await isAddonEnabled("multi_branch").catch(() => false) : false;
+  const activeBranch  = await getActiveBranchId().catch(() => null);
+  const branchRows    = mbEnabled && !activeBranch ? await getBranchBreakdown().catch(() => []) : [];
+  const showBreakdown = branchRows.length > 1;
+  const branchTotals  = branchRows.reduce(
+    (t: any, b: any) => ({ students: t.students + b.students, staff: t.staff + b.staff, collected: t.collected + b.collected }),
+    { students: 0, staff: 0, collected: 0 }
+  );
+
   return (
     <div className="flex flex-col flex-1 min-h-screen">
       <Topbar title="Dashboard" />
@@ -100,6 +114,53 @@ export default async function DashboardPage() {
           </div>
           <p className="text-[13px] text-slate-400 hidden md:block shrink-0">{dayLabel}</p>
         </div>
+
+        {/* ── All-branches breakdown (head office view) ── */}
+        {showBreakdown && (
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
+              <Building className="h-4 w-4 text-slate-400" />
+              <h2 className="text-[14px] font-semibold text-slate-900">All branches</h2>
+              <span className="text-[12px] text-slate-400">· {branchRows.length} branches · select one in the sidebar to drill in</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-[11px] text-slate-400 font-medium uppercase tracking-wider border-b border-slate-100">
+                    <th className="text-left px-5 py-2.5">Branch</th>
+                    <th className="text-right px-4 py-2.5">Students</th>
+                    <th className="text-right px-4 py-2.5">Staff</th>
+                    <th className="text-right px-4 py-2.5">Collected (mo)</th>
+                    <th className="text-right px-5 py-2.5">Attendance</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {branchRows.map((b: any) => (
+                    <tr key={b.id} className="hover:bg-slate-50/60">
+                      <td className="px-5 py-3 font-medium text-slate-800">
+                        {b.name}
+                        {b.isMain && <span className="ml-1.5 text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded">Main</span>}
+                      </td>
+                      <td className="text-right px-4 py-3 tabular-nums text-slate-700">{b.students}</td>
+                      <td className="text-right px-4 py-3 tabular-nums text-slate-700">{b.staff}</td>
+                      <td className="text-right px-4 py-3 tabular-nums text-slate-700">{currency}{b.collected.toLocaleString()}</td>
+                      <td className="text-right px-5 py-3 tabular-nums text-slate-700">{b.attendancePct != null ? `${b.attendancePct}%` : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t border-slate-200 bg-slate-50 font-semibold text-slate-900">
+                    <td className="px-5 py-3">Total</td>
+                    <td className="text-right px-4 py-3 tabular-nums">{branchTotals.students}</td>
+                    <td className="text-right px-4 py-3 tabular-nums">{branchTotals.staff}</td>
+                    <td className="text-right px-4 py-3 tabular-nums">{currency}{branchTotals.collected.toLocaleString()}</td>
+                    <td className="px-5 py-3" />
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        )}
 
         {!stats ? (
           <div className="bg-white rounded-xl border border-slate-200 border-dashed py-20 text-center">

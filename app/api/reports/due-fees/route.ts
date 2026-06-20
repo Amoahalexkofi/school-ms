@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
           lastName: true,
           admissionNo: true,
           isActive: true,
+          branch: { select: { name: true } },
         },
       },
       studentSession: {
@@ -61,6 +62,7 @@ export async function GET(req: NextRequest) {
       const due = totalFee - paid;
       return {
         student: m.student,
+        branch: m.student?.branch?.name ?? "—",
         session: m.studentSession.session.name,
         class: m.studentSession.classSection?.class?.name ?? "",
         section: m.studentSession.classSection?.section?.name ?? "",
