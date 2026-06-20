@@ -811,6 +811,29 @@ export default function FeaturesPage() {
         ))}
       </div>
 
+      {/* OPTIONAL ADD-ONS */}
+      <section className="bg-white py-14 sm:py-20 border-t border-slate-100">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8">
+            <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.14em] mb-3">Optional add-ons</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Extend Skula as you grow</h2>
+          </div>
+          <div className="max-w-3xl mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center shrink-0">
+              <Building2 className="h-6 w-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-[16px] font-bold text-slate-900">Multi Branch</h3>
+              <p className="text-[14px] text-slate-500 mt-1 leading-relaxed">
+                Manage multiple campuses under one account. Each branch runs separately — its own students, staff,
+                fees and attendance — while head office gets a consolidated view across every branch. Available as
+                an add-on on any paid plan.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* BOTTOM CTA */}
       <section className="bg-slate-950 py-14 sm:py-24 border-t border-slate-800">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">

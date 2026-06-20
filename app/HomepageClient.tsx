@@ -865,6 +865,22 @@ export function HomepageClient() {
               </motion.div>
             ))}
           </motion.div>
+
+          {/* Add-ons */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+            className="mt-8 bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-4 text-center sm:text-left">
+            <div className="flex-1">
+              <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.12em] mb-1">Add-on</p>
+              <p className="text-[15px] font-bold text-slate-900">Multi Branch — manage multiple campuses</p>
+              <p className="text-[13px] text-slate-500 mt-1 max-w-2xl">
+                Run each branch separately — its own students, staff, fees and attendance — while head office sees every branch broken out and combined in one view. Available as an optional add-on on any paid plan.
+              </p>
+            </div>
+            <Link href="/contact"
+              className="shrink-0 inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[13px] font-semibold transition-colors">
+              Ask about add-ons
+            </Link>
+          </motion.div>
         </div>
       </section>
 
