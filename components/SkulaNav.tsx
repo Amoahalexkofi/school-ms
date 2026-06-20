@@ -3,7 +3,34 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ChevronRight, X, Menu } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
+
+/* Animated hamburger — three bars morph into an X */
+function MenuToggle({ open }: { open: boolean }) {
+  const bar = "absolute left-0 right-0 h-[1.75px] rounded-full bg-current";
+  return (
+    <span className="relative block w-[18px] h-[12px]">
+      <motion.span
+        className={bar}
+        style={{ top: 0 }}
+        animate={open ? { top: 5, rotate: 45 } : { top: 0, rotate: 0 }}
+        transition={{ duration: 0.22, ease: "easeInOut" }}
+      />
+      <motion.span
+        className={bar}
+        style={{ top: 5 }}
+        animate={open ? { opacity: 0, scaleX: 0.4 } : { opacity: 1, scaleX: 1 }}
+        transition={{ duration: 0.15, ease: "easeInOut" }}
+      />
+      <motion.span
+        className={bar}
+        style={{ top: 10 }}
+        animate={open ? { top: 5, rotate: -45 } : { top: 10, rotate: 0 }}
+        transition={{ duration: 0.22, ease: "easeInOut" }}
+      />
+    </span>
+  );
+}
 
 export function SkulaNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -55,9 +82,17 @@ export function SkulaNav() {
         </div>
 
         <button
-          className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 text-slate-600"
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
+          className={`md:hidden w-10 h-10 flex items-center justify-center rounded-xl transition-colors duration-200 active:scale-95 ${
+            mobileOpen
+              ? "bg-slate-900 text-white"
+              : scrolled
+                ? "text-slate-700 hover:bg-slate-100"
+                : "bg-white/60 text-slate-800 border border-white/70 backdrop-blur-sm hover:bg-white/80"
+          }`}
           onClick={() => setMobileOpen(o => !o)}>
-          {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          <MenuToggle open={mobileOpen} />
         </button>
       </div>
 
@@ -75,9 +110,9 @@ export function SkulaNav() {
               <div className="p-2">
                 {links.map(([label, href]) => (
                   <a key={label} href={href} onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-between px-4 py-3 rounded-xl text-[14px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
+                    className="group flex items-center justify-between px-4 py-3 rounded-xl text-[14px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
                     {label}
-                    <ChevronRight className="h-4 w-4 text-slate-300" />
+                    <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
                   </a>
                 ))}
               </div>
