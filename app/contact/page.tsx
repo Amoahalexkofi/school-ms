@@ -71,39 +71,40 @@ export default function ContactPage() {
         <div className="absolute inset-0 pointer-events-none"
           style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.1) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
 
-        <div className="relative flex flex-col h-full px-12 py-12 max-w-[600px]">
+        <div className="relative flex flex-col h-full px-12 py-10 max-w-[600px]">
 
           {/* Logo */}
           <div className="shrink-0">
             <Link href="/">
-              <img src="/images/skula-logomark.png" alt="Skula" className="h-12 object-contain" />
+              <img src="/images/skula-logomark.png" alt="Skula" className="h-11 object-contain" />
             </Link>
           </div>
 
           {/* Content */}
-          <div className="flex-1 flex flex-col justify-center">
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="flex flex-col justify-center min-h-full">
 
-            <div className="inline-flex items-center gap-2 bg-white/65 border border-white/80 text-indigo-700 text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-7 w-fit backdrop-blur-sm shadow-sm">
+            <div className="inline-flex items-center gap-2 bg-white/65 border border-white/80 text-indigo-700 text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-6 w-fit backdrop-blur-sm shadow-sm">
               <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
               Trusted by schools worldwide
             </div>
 
-            <h1 className="font-black text-slate-900 leading-[1.06] tracking-tight mb-5" style={{ fontSize: "clamp(36px, 3.2vw, 48px)" }}>
+            <h1 className="font-black text-slate-900 leading-[1.05] tracking-tight mb-4" style={{ fontSize: "clamp(34px, 3vw, 44px)" }}>
               Get your school<br />running on{" "}
               <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 Skula today.
               </span>
             </h1>
 
-            <p className="text-slate-600 text-[15.5px] leading-relaxed mb-10 max-w-[420px]">
+            <p className="text-slate-600 text-[15px] leading-relaxed mb-7 max-w-[420px]">
               We'll set everything up together — classes, students, fees, timetables. Most schools are live the same day.
             </p>
 
             {/* Benefits */}
-            <ul className="space-y-4 mb-10">
+            <ul className="space-y-3.5 mb-8">
               {BENEFITS.map(({ icon: Icon, text }) => (
                 <li key={text} className="flex items-center gap-4 text-[14.5px] font-medium text-slate-700">
-                  <div className="w-9 h-9 rounded-xl bg-white/70 border border-white/90 flex items-center justify-center shrink-0 backdrop-blur-sm shadow-sm">
+                  <div className="w-8 h-8 rounded-xl bg-white/70 border border-white/90 flex items-center justify-center shrink-0 backdrop-blur-sm shadow-sm">
                     <Icon className="h-4 w-4 text-indigo-600" />
                   </div>
                   {text}
@@ -112,9 +113,9 @@ export default function ContactPage() {
             </ul>
 
             {/* Steps */}
-            <div className="bg-white/55 border border-white/80 rounded-2xl p-6 backdrop-blur-sm max-w-[460px]">
-              <p className="text-[10.5px] font-black text-slate-400 uppercase tracking-[0.15em] mb-5">What happens next</p>
-              <div className="space-y-5">
+            <div className="bg-white/55 border border-white/80 rounded-2xl p-5 backdrop-blur-sm max-w-[460px]">
+              <p className="text-[10.5px] font-black text-slate-400 uppercase tracking-[0.15em] mb-4">What happens next</p>
+              <div className="space-y-4">
                 {STEPS.map(({ n, label, sub }, i) => (
                   <div key={n} className="flex items-start gap-4">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0 text-white text-[12px] font-black shadow-md shadow-indigo-300/30">{n}</div>
@@ -126,6 +127,7 @@ export default function ContactPage() {
                   </div>
                 ))}
               </div>
+            </div>
             </div>
           </div>
         </div>
