@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { registry } from "@/lib/registry";
 import { deprovisionSchool } from "@/lib/provisioning";
+import { requireNovalssAdmin } from "@/lib/auth/novalss";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const denied = requireNovalssAdmin(req);
+  if (denied) return denied;
   const { id } = await params;
   try {
     const { name, plan, status, adminEmail, adminName, phone, address, country, trialEndsAt, notes, customDomain, addons } = await req.json();
@@ -26,7 +29,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const denied = requireNovalssAdmin(req);
+  if (denied) return denied;
   const { id } = await params;
   try {
     const school = await (registry as any).schoolTenant.findUnique({ where: { id } });

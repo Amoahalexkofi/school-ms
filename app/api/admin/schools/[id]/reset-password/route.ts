@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { registry } from "@/lib/registry";
 import { Pool } from "pg";
 import bcrypt from "bcryptjs";
+import { requireNovalssAdmin } from "@/lib/auth/novalss";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const denied = requireNovalssAdmin(req);
+  if (denied) return denied;
   const { id } = await params;
   try {
     const { newPassword } = await req.json();

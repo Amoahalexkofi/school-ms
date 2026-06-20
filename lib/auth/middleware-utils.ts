@@ -345,3 +345,21 @@ export function canAccessRoute(pathname: string, role: UserRole): boolean {
   if (!match) return false;
   return match.roles.includes(role);
 }
+
+/**
+ * Authorization for API routes. An /api/<x> endpoint requires the SAME role as
+ * its resource: we match against both the literal API path (for explicit
+ * "/api/..." rules) AND the page-equivalent path (strip the leading "/api"),
+ * taking the most specific (longest-prefix) matching rule. Unmatched API routes
+ * fall back to "any authenticated user" so obscure read endpoints don't break;
+ * every sensitive write resource has a rule (page or API) that gates it.
+ */
+export function canAccessApiRoute(pathname: string, role: UserRole): boolean {
+  const stripped = pathname.replace(/^\/api/, "") || "/";
+  const matches = ROUTE_PERMISSIONS.filter(
+    (rule) => pathname.startsWith(rule.prefix) || stripped.startsWith(rule.prefix)
+  );
+  if (matches.length === 0) return true; // no rule → allow any authenticated user
+  const best = matches.sort((a, b) => b.prefix.length - a.prefix.length)[0];
+  return best.roles.includes(role);
+}

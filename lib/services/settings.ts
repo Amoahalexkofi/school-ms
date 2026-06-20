@@ -60,9 +60,22 @@ export async function listSubjects(classId?: string, sessionId?: string) {
   });
 }
 
-export async function createSubject(input: { name: string; code: string; classId: string }) {
+export async function createSubject(input: { name: string; code: string; classId: string; sessionId?: string }) {
   if (!input.name.trim()) throw Object.assign(new Error("Subject name is required"), { code: "VALIDATION" });
   if (!input.code.trim()) throw Object.assign(new Error("Subject code is required"), { code: "VALIDATION" });
+  if (!input.classId) throw Object.assign(new Error("Class is required"), { code: "VALIDATION" });
   const prisma = await getDb();
-  return (prisma as any).subject.create({ data: { name: input.name.trim(), code: input.code.trim().toUpperCase(), classId: input.classId } });
+  // Subject.sessionId is required — default to the active academic session.
+  let sessionId = input.sessionId;
+  if (!sessionId) {
+    const session = await (prisma as any).academicSession.findFirst({
+      where: { isActive: true },
+      orderBy: { startDate: "desc" },
+    });
+    if (!session) throw Object.assign(new Error("No active academic session. Create one first."), { code: "VALIDATION" });
+    sessionId = session.id;
+  }
+  return (prisma as any).subject.create({
+    data: { name: input.name.trim(), code: input.code.trim().toUpperCase(), classId: input.classId, sessionId },
+  });
 }

@@ -1,8 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Pool } from "pg";
 import { migrateEnumsForSchema } from "@/lib/provisioning";
+import { requireNovalssAdmin } from "@/lib/auth/novalss";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
+  const denied = requireNovalssAdmin(req);
+  if (denied) return denied;
   const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
   const client = await pool.connect();
   const results: Record<string, string> = {};

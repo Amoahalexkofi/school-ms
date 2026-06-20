@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { registry } from "@/lib/registry";
 import { provisionSchool, makeSchemaName } from "@/lib/provisioning";
+import { requireNovalssAdmin } from "@/lib/auth/novalss";
 
-// GET — list all schools
-export async function GET() {
+// GET — list all schools (platform admin only)
+export async function GET(req: NextRequest) {
+  const denied = requireNovalssAdmin(req);
+  if (denied) return denied;
   try {
     const schools = await (registry as any).schoolTenant.findMany({
       orderBy: { createdAt: "desc" },

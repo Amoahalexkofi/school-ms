@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { isPublicRoute, canAccessRoute, type UserRole } from "@/lib/auth/middleware-utils";
+import { isPublicRoute, canAccessRoute, canAccessApiRoute, type UserRole } from "@/lib/auth/middleware-utils";
 import { neon } from "@neondatabase/serverless";
 
 // ── Tenant detection ──────────────────────────────────────────────────────────
@@ -61,7 +61,10 @@ export async function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   // Expose pathname for server components (used by dashboard layout for onboarding check)
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
-  // Strip any client-supplied add-on header (set authoritatively below)
+  // Strip any client-supplied tenant headers (set authoritatively below).
+  // Without this, a crafted request could spoof x-tenant-schema and read
+  // another school's data, or x-tenant-addons to unlock paid add-ons.
+  requestHeaders.delete("x-tenant-schema");
   requestHeaders.delete("x-tenant-addons");
   // Apex/non-tenant context (e.g. getskula.com demo) → all add-ons available
   requestHeaders.set("x-tenant-addons", "*");
@@ -106,12 +109,16 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(signIn);
   }
 
-  // API routes: any authenticated user can reach them
+  const role = token.role as UserRole | undefined;
+
+  // API routes: enforce role-based access (resource permission), 403 if denied.
   if (pathname.startsWith("/api/")) {
+    if (!role || !canAccessApiRoute(pathname, role)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  const role = token.role as UserRole | undefined;
   if (!role || !canAccessRoute(pathname, role)) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }

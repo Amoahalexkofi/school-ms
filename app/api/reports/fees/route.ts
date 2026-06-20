@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
           },
           studentSession: {
             include: {
-              session: { select: { id: true, name: true } },
+              session: { select: { id: true, session: true } },
               classSection: {
                 include: {
                   class: { select: { name: true } },
@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
       id: d.id,
       student: d.studentFeesMaster.student,
       branch: d.studentFeesMaster.student?.branch?.name ?? "—",
-      session: d.studentFeesMaster.studentSession.session.name,
+      session: d.studentFeesMaster.studentSession.session.session,
       class: d.studentFeesMaster.studentSession.classSection?.class?.name ?? "",
       section: d.studentFeesMaster.studentSession.classSection?.section?.name ?? "",
       feeGroup: d.studentFeesMaster.feeSessionGroup?.feeGroup?.name ?? "",

@@ -76,7 +76,9 @@ export async function POST(req: NextRequest) {
     if (existingUser) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
 
     const password = await bcrypt.hash("Staff@1234", 12);
-    const role     = body.role || "TEACHER";
+    // Whitelist assignable staff roles — never allow minting SUPER_ADMIN here.
+    const ALLOWED_STAFF_ROLES = ["ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN"];
+    const role = ALLOWED_STAFF_ROLES.includes(body.role) ? body.role : "TEACHER";
 
     // Multi Branch: tag new staff to the chosen branch (body) or active branch.
     const branchId = body.branchId || (await resolveBranchForCreate(await getActiveBranchId()));

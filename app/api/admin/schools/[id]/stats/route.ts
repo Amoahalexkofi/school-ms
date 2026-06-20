@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { registry } from "@/lib/registry";
 import { Pool } from "pg";
+import { requireNovalssAdmin } from "@/lib/auth/novalss";
 
-export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const denied = requireNovalssAdmin(req);
+  if (denied) return denied;
   const { id } = await params;
   try {
     const school = await (registry as any).schoolTenant.findUnique({ where: { id } });

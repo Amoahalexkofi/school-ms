@@ -209,7 +209,7 @@ function StudentReport({ sessions, classes, sections, classSections, onPrint }: 
       "Gender": s.gender ?? "",
       "Class": s.sessions?.[0]?.classSection?.class?.name ?? "",
       "Section": s.sessions?.[0]?.classSection?.section?.name ?? "",
-      "Session": s.sessions?.[0]?.session?.name ?? "",
+      "Session": s.sessions?.[0]?.session?.session ?? "",
       "Status": s.isActive ? "Active" : "Inactive",
       "Mobile": s.mobile ?? "",
       "Date of Birth": s.dob ? new Date(s.dob).toLocaleDateString() : "",
@@ -302,7 +302,7 @@ function StudentReport({ sessions, classes, sections, classSections, onPrint }: 
                       <td className="px-4 py-2.5 text-gray-500">{s.gender ?? "—"}</td>
                       <td className="px-4 py-2.5">{sess?.classSection?.class?.name ?? "—"}</td>
                       <td className="px-4 py-2.5">{sess?.classSection?.section?.name ?? "—"}</td>
-                      <td className="px-4 py-2.5 text-gray-500">{sess?.session?.name ?? "—"}</td>
+                      <td className="px-4 py-2.5 text-gray-500">{sess?.session?.session ?? "—"}</td>
                       <td className="px-4 py-2.5">
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                           {s.isActive ? "Active" : "Inactive"}

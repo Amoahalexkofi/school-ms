@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
       sessions: {
         where: Object.keys(sessionFilter).length > 0 ? sessionFilter : undefined,
         include: {
-          session: { select: { name: true } },
+          session: { select: { session: true } },
           classSection: {
             include: {
               class: { select: { name: true } },

@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
         studentSession: {
           select: {
             studentId: true,
-            student: { select: { firstName: true, lastName: true, phone: true, parentMobile: true, email: true, guardianEmail: true } },
+            student: { select: { firstName: true, lastName: true, mobileNo: true, guardianPhone: true, fatherPhone: true, email: true, guardianEmail: true } },
           },
         },
       },
@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
       const schoolName  = profile?.name ?? "School";
 
       // SMS
-      const phones = [student.phone, student.parentMobile].filter(Boolean) as string[];
+      const phones = [student.mobileNo, student.guardianPhone, student.fatherPhone].filter(Boolean) as string[];
       if (phones.length) {
         sendSms(phones, feeReceiptSms({ studentName, amount: amountStr, currency, receiptNo, schoolName })).catch(() => null);
         // WhatsApp receipt (fire-and-forget, silently skips if no WhatsApp provider configured)
