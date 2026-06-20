@@ -26,6 +26,15 @@ async function safe(fn: () => Promise<any>, fallback: any): Promise<any> {
   try { return await fn(); } catch (e) { console.error("[dashboard]", e); return fallback; }
 }
 
+// FeeDeposit stores money in the amountDetail JSON ({ "1": { amount, ... } }),
+// NOT a scalar `amount`. Sum it the same way the fee hub/reports do.
+function sumDeposit(d: any): number {
+  const detail = d?.amountDetail;
+  if (!detail) return 0;
+  const vals = Array.isArray(detail) ? detail : Object.values(detail);
+  return vals.reduce((s: number, v: any) => s + Number(v?.amount ?? 0), 0);
+}
+
 export async function getDashboardStats(): Promise<DashboardStats> {
   const prisma = await getDb();
 
@@ -84,9 +93,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         })
       : [], []),
 
-    safe(() => (prisma as any).feeDeposit.count({
+    safe(() => (prisma as any).feeDeposit.findMany({
       where: { createdAt: { gte: monthStart, lte: monthEnd }, isActive: true, ...depWhere },
-    }), 0),
+      select: { amountDetail: true },
+    }), []),
 
     safe(() => presentType
       ? (prisma as any).studentAttendance.count({ where: { attendanceTypeId: presentType.id, attendanceDay: { date: today }, ...studWhere } })
@@ -144,6 +154,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
   const feesPaid   = allFeesMasters.filter((fm: any) => fm.deposits?.length > 0).length;
   const feesUnpaid = allFeesMasters.length - feesPaid;
+  const monthCollection = depositsThisMonth.reduce((s: number, d: any) => s + sumDeposit(d), 0);
   const studTotal  = studPresent + studAbsent + studLate + studHalf;
   const totalBooks = Number(totalBooksAgg._sum?.quantity ?? 0);
 
@@ -154,7 +165,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const [weekFeeDeposits, weekExpenses] = await Promise.all([
     safe(() => (prisma as any).feeDeposit.findMany({
       where: { createdAt: { gte: sevenDaysAgo }, isActive: true, ...depWhere },
-      select: { createdAt: true, amount: true },
+      select: { createdAt: true, amountDetail: true },
     }), []),
     safe(() => (prisma as any).transaction.findMany({
       where: { type: "EXPENSE", date: { gte: sevenDaysAgo } },
@@ -167,7 +178,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     const d = new Date(today); d.setDate(today.getDate() - (6 - i));
     const k = dayKey(d);
     return weekFeeDeposits.filter((r: any) => dayKey(new Date(r.createdAt)) === k)
-      .reduce((s: number, r: any) => s + Number(r.amount ?? 0), 0);
+      .reduce((s: number, r: any) => s + sumDeposit(r), 0);
   });
   const expensesByDay = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(today); d.setDate(today.getDate() - (6 - i));
@@ -179,7 +190,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   return {
     totalStudents,
     staffByRole,
-    monthCollection: depositsThisMonth,
+    monthCollection,
     monthExpense: Number(expenseThisMonth._sum?.amount ?? 0),
     feesTotal: allFeesMasters.length,
     feesPaid,
@@ -193,7 +204,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     todayPayments: todayDeposits.map((d: any) => ({
       studentName: `${d.studentFeesMaster?.student?.firstName ?? ""} ${d.studentFeesMaster?.student?.lastName ?? ""}`.trim(),
       createdAt: d.createdAt,
-      amount: Number(d.amount ?? 0),
+      amount: sumDeposit(d),
     })),
     currentSession: currentSession?.session ?? "No active session",
     currentSessionId: sid,

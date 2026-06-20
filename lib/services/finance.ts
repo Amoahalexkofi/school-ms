@@ -58,21 +58,26 @@ export async function generatePayroll(month: number, year: number) {
   const existing = await (prisma as any).payroll.findUnique({ where: { month_year: { month, year } } });
   if (existing) throw Object.assign(new Error("Payroll already generated for this month"), { code: "CONFLICT" });
 
-  const staffList = await (prisma as any).staff.findMany();
-  if (staffList.length === 0) throw Object.assign(new Error("No staff found"), { code: "VALIDATION" });
+  const staffList = await (prisma as any).staff.findMany({ where: { isActive: true } });
+  if (staffList.length === 0) throw Object.assign(new Error("No active staff found"), { code: "VALIDATION" });
 
+  // Staff has no allowances/deductions columns — bulk payroll uses basic salary
+  // as net. (Per-staff allowance line items live in the StaffPayslip flow.)
   return (prisma as any).payroll.create({
     data: {
       month,
       year,
       entries: {
-        create: staffList.map((s: any) => ({
-          staffId: s.id,
-          basicSalary: s.basicSalary ?? 0,
-          allowances: s.allowances ?? 0,
-          deductions: s.deductions ?? 0,
-          netSalary: (Number(s.basicSalary ?? 0) + Number(s.allowances ?? 0)) - Number(s.deductions ?? 0),
-        })),
+        create: staffList.map((s: any) => {
+          const basic = Number(s.basicSalary ?? 0);
+          return {
+            staffId: s.id,
+            basicSalary: basic,
+            allowances: 0,
+            deductions: 0,
+            netSalary: basic,
+          };
+        }),
       },
     },
     include: { entries: { include: { staff: true } } },
