@@ -3,7 +3,7 @@
 **Stack:** Next.js 16 (App Router) · TypeScript · Prisma · PostgreSQL (Neon) · Tailwind · shadcn/ui
 **Live URL:** https://getskula.com
 **Repo:** https://github.com/Amoahalexkofi/school-ms
-**Last updated:** 2026-06-05
+**Last updated:** 2026-06-20
 
 ---
 
@@ -438,6 +438,46 @@ This is the multi-tenant hosting layer that wraps the school management system.
 - [x] Footer with links
 - [x] Authenticated users auto-redirect to /dashboard
 - [x] Root "/" made public in middleware (isPublicRoute exact match)
+
+---
+
+### ✅ Phase 23 — Multi Branch Add-on (COMPLETE)
+
+Smart School's **Multi Branch** add-on: one school managing multiple campuses/branches.
+**Architecture decision:** `branchId` row-scoping *within* each tenant schema — NOT schema-per-branch (which is how real Smart School does it, via separate DBs). Row-scoping was chosen because it (a) fits our existing per-school SaaS tenancy and (b) makes combined cross-branch reporting trivial — the exact thing separate-DBs do badly.
+
+**23a. Core model & people scoping**
+- [x] `Branch` model (name, code, email, phone, address, isMain, isActive)
+- [x] `branchId` on `Student` and `Staff`
+- [x] Branch CRUD — `/branches` page + `/api/branches`, `/api/branches/[id]`
+- [x] Active-branch cookie switcher in sidebar (admins) — `/api/branches/active`; `lib/branch.ts` `getActiveBranchId()`
+- [x] Students & staff lists filter by active branch; new records auto-tag to it (or Main Branch)
+- [x] `ensureBranchSetup()` — auto-creates Main Branch + backfills unassigned people (per tenant, on first use)
+
+**23b. Per-branch fees & attendance (separate, like Smart School)**
+- [x] Per-branch **fee structures** — `branchId` + per-branch unique constraints on `FeeCategory`/`FeeType`/`FeeGroup`/`FeeDiscount`; `/fees/setup` filters + tags by branch
+- [x] Branch-scoped fee data — hub stats, collection student search, fee/due-fees/fee-report
+- [x] Branch-scoped attendance — marking lists, student attendance report; staff attendance + report by staff branch
+- [x] Dashboard student/staff/fee/attendance widgets scoped to active branch
+
+**23c. Combined cross-branch views (head office)**
+- [x] Dashboard per-branch breakdown table (students/staff/fees/attendance + total) when "All Branches" selected — `getBranchBreakdown()`
+- [x] Reports: Branch column + per-branch subtotal chips + Branch in CSV (fee collection, due-fees, attendance)
+
+**23d. Add-on gating (paid, released per-school)**
+- [x] `SchoolTenant.addons` (CSV of enabled keys) in public registry
+- [x] Novalss admin UI — per-school Multi Branch on/off toggle; `PATCH /api/admin/schools/[id]` accepts `addons`
+- [x] `proxy.ts` resolves tenant addons → `x-tenant-addons` header (apex/demo = `*` = all; strips client-supplied header)
+- [x] `lib/addons.ts` — `getEnabledAddons()` / `isAddonEnabled()`
+- [x] When disabled: nav/switcher hidden, `/branches` redirects, `/api/branches` 403, and `getActiveBranchId()`/`resolveBranchForCreate()` return null → all scoping reverts to single-branch (even with a stale cookie)
+
+**Migrations:** `prisma db push` covers `public`; existing tenant schemas (`school_stmary`, `school_demo`) migrated manually (Branch table + `branchId` columns + swapped fee unique constraints). New schools inherit automatically via `lib/provisioning.ts` (`CREATE TABLE LIKE public.x INCLUDING ALL`).
+
+**Verified end-to-end on production** (getskula.com demo): branch creation, isolation (each branch sees only its own students), combined views, backfill, delete protection, and add-on gating.
+
+**Not branch-scoped (shared across branches):** academic structure — classes, sections, sessions, subjects — plus exams/marks, transport, hostel, library, inventory. Separating those is a possible v2 (only needed if a campus has a genuinely different class lineup).
+
+**Adding more add-ons later:** register the key in `ADDONS` (`lib/addons.ts`) + `ADDON_CATALOG` (NovalssAdminClient). See memory `project-multi-branch.md`.
 
 ---
 
