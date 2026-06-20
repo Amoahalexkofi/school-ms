@@ -9,6 +9,8 @@ export async function GET(req: NextRequest) {
   const classSectionId = searchParams.get("classSectionId");
   const search         = searchParams.get("search");
   const isActive       = searchParams.get("isActive");
+  const limitParam     = parseInt(searchParams.get("limit") ?? "");
+  const take           = Number.isFinite(limitParam) && limitParam > 0 ? Math.min(limitParam, 100) : undefined;
 
   const where: any = {};
   if (isActive !== null) where.isActive = isActive === "true";
@@ -45,6 +47,7 @@ export async function GET(req: NextRequest) {
       schoolHouse: true,
     },
     orderBy: { firstName: "asc" },
+    ...(take ? { take } : {}),
   });
 
   return NextResponse.json(students);

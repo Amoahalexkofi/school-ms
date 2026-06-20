@@ -399,7 +399,7 @@ This is the multi-tenant hosting layer that wraps the school management system.
 - Multi-language support
 - Dark mode
 - Mobile PWA / app wrapper
-- Server-side pagination for fees list
+- ~~Server-side pagination for fees list~~ ✅ (fees hub now uses debounced server-side student typeahead via `/api/students?search=&limit=`, no longer ships all students)
 - Broader student search (guardian name, blood group, address — matches Smart School)
 
 ---

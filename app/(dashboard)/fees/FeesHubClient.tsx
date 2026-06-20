@@ -1,31 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DollarSign, Settings, Users, Search, ArrowRight, BarChart3, ArrowRightLeft, Tag } from "lucide-react";
+import { DollarSign, Settings, Users, Search, ArrowRight, BarChart3, ArrowRightLeft, Tag, Loader2 } from "lucide-react";
 import { usePermission } from "@/components/PermissionsProvider";
 
-type Props = { totalStudents: number; totalMasters: number; totalCollected: number; students: any[] };
+type Props = { totalStudents: number; totalMasters: number; totalCollected: number };
 
-export function FeesHubClient({ totalStudents, totalMasters, totalCollected, students }: Props) {
+export function FeesHubClient({ totalStudents, totalMasters, totalCollected }: Props) {
   const router = useRouter();
   const perm = usePermission("fees_collection");
   const [search, setSearch] = useState("");
+  const [filtered, setFiltered] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const filtered = search.length > 1
-    ? students.filter(s => {
-        const q = search.toLowerCase();
-        return (
-          s.firstName?.toLowerCase().includes(q) ||
-          s.lastName?.toLowerCase().includes(q) ||
-          s.admissionNo?.toLowerCase().includes(q)
+  useEffect(() => {
+    const q = search.trim();
+    if (q.length < 2) {
+      setFiltered([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const ctrl = new AbortController();
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/students?isActive=true&limit=8&search=${encodeURIComponent(q)}`,
+          { signal: ctrl.signal }
         );
-      }).slice(0, 8)
-    : [];
+        if (!res.ok) throw new Error("search failed");
+        setFiltered(await res.json());
+      } catch (e) {
+        if ((e as any)?.name !== "AbortError") setFiltered([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 250);
+    return () => {
+      ctrl.abort();
+      clearTimeout(t);
+    };
+  }, [search]);
 
   return (
     <main className="flex-1 p-4 md:p-6 space-y-6 bg-gray-50">
@@ -64,6 +83,7 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, stu
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input className="pl-9" placeholder="Name or admission number…"
                   value={search} onChange={e => setSearch(e.target.value)} />
+                {loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 animate-spin" />}
               </div>
               {filtered.length > 0 && (
                 <div className="border rounded-lg divide-y overflow-hidden">
@@ -80,7 +100,7 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, stu
                   ))}
                 </div>
               )}
-              {search.length > 1 && filtered.length === 0 && (
+              {search.trim().length > 1 && !loading && filtered.length === 0 && (
                 <p className="text-xs text-gray-400 text-center py-2">No students found.</p>
               )}
             </CardContent>
