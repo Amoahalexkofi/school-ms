@@ -324,7 +324,7 @@ function HeroProduct() {
     <div className="relative flex items-end justify-center h-[520px]">
       {/* Student image */}
       <div className="relative z-10 w-full max-w-[460px] h-full flex items-end justify-center">
-        <img src="/images/hero-1.jpg" alt="Student using Skula"
+        <img src="/images/hero-1.webp" alt="Student using Skula"
           className="w-full h-full object-contain object-bottom drop-shadow-2xl" />
       </div>
 
@@ -515,7 +515,7 @@ export function HomepageClient() {
 
             {/* Mobile hero image */}
             <motion.div variants={fadeUp} className="lg:hidden flex justify-center -mt-2">
-              <img src="/images/hero-1.jpg" alt="Student using Skula"
+              <img src="/images/hero-1.webp" alt="Student using Skula"
                 className="h-56 sm:h-72 object-contain drop-shadow-xl" />
             </motion.div>
           </div>
