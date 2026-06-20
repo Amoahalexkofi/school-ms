@@ -866,20 +866,34 @@ export function HomepageClient() {
             ))}
           </motion.div>
 
-          {/* Add-ons */}
+          {/* Add-on — Multi Branch (prominent band) */}
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
-            className="mt-8 bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-4 text-center sm:text-left">
-            <div className="flex-1">
-              <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.12em] mb-1">Add-on</p>
-              <p className="text-[15px] font-bold text-slate-900">Multi Branch — manage multiple campuses</p>
-              <p className="text-[13px] text-slate-500 mt-1 max-w-2xl">
-                Run each branch separately — its own students, staff, fees and attendance — while head office sees every branch broken out and combined in one view. Available as an optional add-on on any paid plan.
-              </p>
+            className="mt-12 relative overflow-hidden rounded-3xl px-7 py-8 sm:px-10 sm:py-9"
+            style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #6366f1 100%)" }}>
+            <div className="absolute -top-16 -right-10 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-violet-300/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
+              <div className="w-14 h-14 rounded-2xl bg-white/15 border border-white/25 backdrop-blur flex items-center justify-center shrink-0">
+                <Building2 className="h-7 w-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <span className="inline-flex items-center gap-1.5 bg-white/15 border border-white/25 text-white text-[10.5px] font-bold uppercase tracking-[0.16em] px-2.5 py-1 rounded-full mb-3">
+                  <Zap className="h-3 w-3" /> Add-on
+                </span>
+                <h3 className="text-[23px] sm:text-[27px] font-black text-white tracking-tight leading-tight font-[family-name:var(--font-montserrat)]">
+                  Running more than one campus?
+                </h3>
+                <p className="text-indigo-100 text-[14px] sm:text-[15px] mt-2 max-w-2xl leading-relaxed">
+                  <span className="font-bold text-white">Multi Branch</span> lets each branch run on its own — students, staff,
+                  fees and attendance — while head office sees every branch separately <em>and</em> combined in one view.
+                  Optional add-on on any paid plan.
+                </p>
+              </div>
+              <Link href="/contact"
+                className="shrink-0 inline-flex items-center justify-center gap-2 bg-white text-indigo-700 hover:bg-indigo-50 px-6 py-3.5 rounded-xl text-[14px] font-bold transition-all hover:scale-[1.03] active:scale-[0.98] shadow-lg shadow-indigo-900/25">
+                Ask about add-ons <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
-            <Link href="/contact"
-              className="shrink-0 inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[13px] font-semibold transition-colors">
-              Ask about add-ons
-            </Link>
           </motion.div>
         </div>
       </section>
