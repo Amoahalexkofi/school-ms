@@ -6,6 +6,13 @@ import {
   CreditCard, Laptop, Home, CheckCircle2,
 } from "lucide-react";
 import { SkulaNav } from "@/components/SkulaNav";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Features — Skula School Management",
+  description: "Every module African schools need: admissions, students, attendance, fees, exams, payroll, transport, hostel, library, online exams and parent communication.",
+  alternates: { canonical: "/features" },
+};
 
 const MODULES = [
   {

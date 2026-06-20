@@ -18,6 +18,8 @@ const PUBLIC_PREFIXES = [
   "/reset-password",   // password reset flow
   "/contact",          // contact form
   "/demo",             // demo auto-login
+  "/robots.txt",       // SEO crawl directives
+  "/sitemap.xml",      // SEO sitemap
   "/manifest.json",    // PWA manifest
   "/sw.js",            // service worker
   "/offline.html",     // offline fallback

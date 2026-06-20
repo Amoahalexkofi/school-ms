@@ -19,11 +19,11 @@ export const viewport: Viewport = {
   themeColor: "#4f46e5",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://getskula.com"),
+  alternates: { canonical: "/" },
   title: "Skula — School Management System",
   description: "The all-in-one school management platform built for African schools — admissions, fees, attendance, exams, payroll and parent communication in one place.",
   manifest: "/manifest.json",

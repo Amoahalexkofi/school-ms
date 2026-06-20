@@ -86,7 +86,7 @@ export default function ContactPage() {
 
             <div className="inline-flex items-center gap-2 bg-white/65 border border-white/80 text-indigo-700 text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-6 w-fit backdrop-blur-sm shadow-sm">
               <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
-              Trusted by schools worldwide
+              Built for African schools
             </div>
 
             <h1 className="font-black text-slate-900 leading-[1.05] tracking-tight mb-4" style={{ fontSize: "clamp(34px, 3vw, 44px)" }}>

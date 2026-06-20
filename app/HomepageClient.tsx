@@ -475,7 +475,7 @@ export function HomepageClient() {
                 <span className="inline-flex items-center gap-2 bg-white/80 backdrop-blur border border-indigo-100 text-indigo-700 text-[12px] font-semibold px-4 py-1.5 rounded-full"
                   style={{ boxShadow: "0 1px 4px rgba(99,102,241,0.12)" }}>
                   <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                  Live in 500+ schools across West Africa
+                  Built for schools across Africa
                 </span>
               </motion.div>
 
@@ -495,7 +495,7 @@ export function HomepageClient() {
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 pt-1">
                 <Link href="/contact"
                   className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-7 py-4 rounded-xl text-[15px] transition-all shadow-lg shadow-indigo-300/40 hover:shadow-indigo-300/60 hover:scale-[1.02] active:scale-[0.98]">
-                  Start Free Trial <ArrowRight className="h-4 w-4" />
+                  Get Started <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link href="/demo"
                   className="inline-flex items-center justify-center gap-2 bg-white/80 backdrop-blur border-2 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 font-bold px-7 py-4 rounded-xl text-[15px] transition-all hover:bg-indigo-50/50">
@@ -503,23 +503,6 @@ export function HomepageClient() {
                 </Link>
               </motion.div>
 
-              <motion.div variants={fadeUp} className="flex items-center gap-4 pt-1">
-                <div className="flex -space-x-2">
-                  {["#4f46e5","#7c3aed","#0ea5e9","#10b981","#f59e0b"].map((c,i) => (
-                    <div key={i} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-[9px] font-black" style={{ backgroundColor: c }}>
-                      {["GH","KE","NG","RW","ZA"][i]}
-                    </div>
-                  ))}
-                </div>
-                <div>
-                  <div className="flex gap-0.5 mb-0.5">
-                    {[0,1,2,3,4].map(i => <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />)}
-                  </div>
-                  <p className="text-[12px] text-slate-500">
-                    <span className="font-bold text-slate-700">500+ schools</span> trust Skula
-                  </p>
-                </div>
-              </motion.div>
             </motion.div>
 
             {/* Right: Product composition — desktop */}
@@ -768,7 +751,7 @@ export function HomepageClient() {
                   ["Communication","WhatsApp groups, chaotic","Structured channels, bulk SMS, portal"],
                   ["Analytics","None — end of term only","Live dashboards, trend analysis"],
                   ["Access","Office only, office hours","Any device, anywhere, 24/7"],
-                  ["Data Safety","Physical files, fire risk","Cloud backup, 99.9% uptime, encrypted"],
+                  ["Data Safety","Physical files, fire risk","Cloud-hosted, encrypted, backed up"],
                 ].map(([cap,trad,skula]) => (
                   <div key={cap} className="grid grid-cols-3 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.015] transition-colors">
                     <div className="px-6 py-4 text-[13px] font-semibold text-slate-300">{cap}</div>
@@ -796,10 +779,10 @@ export function HomepageClient() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
             className="grid grid-cols-2 md:grid-cols-4">
             {[
-              { n: "10,000+", l: "Students Managed", icon: Users },
-              { n: "500+",    l: "Schools Active",    icon: GraduationCap },
-              { n: "99.9%",   l: "Uptime SLA",        icon: Shield },
-              { n: "30 min",  l: "To Go Live",        icon: Clock },
+              { n: "15+",  l: "Modules",        icon: GraduationCap },
+              { n: "7",    l: "User roles",     icon: Users },
+              { n: "24/7", l: "Cloud access",   icon: Shield },
+              { n: "Same day", l: "To go live", icon: Clock },
             ].map(({ n, l, icon: Icon }, i) => (
               <motion.div key={l} variants={fadeUp}
                 className={`text-center py-10 px-4 border-white/15 ${
@@ -818,49 +801,7 @@ export function HomepageClient() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
-      <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: "#0a0a0f" }}>
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.018) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] pointer-events-none"
-          style={{ background: "radial-gradient(ellipse, rgba(99,102,241,0.10) 0%, transparent 65%)" }} />
-        <div className="relative max-w-6xl mx-auto px-6">
-          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
-            <motion.p variants={fadeUp} className="text-[11px] font-bold text-indigo-400 uppercase tracking-[0.14em] mb-4">Testimonials</motion.p>
-            <motion.h2 variants={fadeUp}
-              className="text-[36px] sm:text-[48px] font-black tracking-tight text-white font-[family-name:var(--font-montserrat)]">
-              Loved by school leaders.
-            </motion.h2>
-          </motion.div>
-          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {[
-              { quote: "Before Skula, I spent every Friday printing fee receipts by hand. Now my accountant handles everything digitally and I just review the monthly report. Life-changing.", name: "Mrs. Adjoa A.", role: "Headmistress", school: "Private School, Accra",           init: "AA", color: "#6366f1" },
-              { quote: "The exam module alone saved us an entire week every term. We used to type report cards in Word and retype after every correction. Now we enter marks once and Skula does the rest.", name: "Mr. Kofi A.",   role: "Director",     school: "Basic School, Greater Accra",   init: "KA", color: "#8b5cf6" },
-              { quote: "Parents pay faster because they get a WhatsApp receipt the moment the accountant records payment. Our fee collections improved by nearly 30% after switching.",                         name: "Mrs. Ama B.",  role: "Principal",    school: "International School, Kumasi", init: "AB", color: "#10b981" },
-            ].map(({ quote, name, role, school, init, color }) => (
-              <motion.div key={name} variants={fadeUp}
-                className="relative p-7 rounded-2xl flex flex-col"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <span className="absolute top-4 right-6 text-[72px] leading-none font-black pointer-events-none select-none"
-                  style={{ color: color + "15" }}>"</span>
-                <div className="flex gap-0.5 mb-5">
-                  {[0,1,2,3,4].map(i => <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
-                </div>
-                <p className="text-slate-300 text-[14px] leading-relaxed flex-1 relative z-10">"{quote}"</p>
-                <div className="flex items-center gap-3 mt-6 pt-5 border-t border-white/[0.06]">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[11px] font-black shrink-0"
-                    style={{ backgroundColor: color }}>{init}</div>
-                  <div>
-                    <p className="text-white text-[13px] font-bold">{name}</p>
-                    <p className="text-slate-500 text-[11px]">{role} · {school}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      {/* Testimonials intentionally omitted until we have real, attributable customer quotes. */}
 
       {/* ── PRICING ── */}
       <section id="pricing" className="scroll-mt-20 py-16 md:py-24 bg-white border-t border-slate-900/[0.06]">
@@ -879,7 +820,7 @@ export function HomepageClient() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
             className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
             {[
-              { name: "Starter",      price: "Free",    sub: "30 days · no card needed",   hl: false, cta: "Try for free",  href: "/demo",    features: ["All 15 modules","Up to 200 students","Community support","Skula subdomain"] },
+              { name: "Starter",      price: "Free",    sub: "explore the live demo",      hl: false, cta: "Try the demo",  href: "/demo",    features: ["All 15 modules","Up to 200 students","Community support","Skula subdomain"] },
               { name: "Professional", price: "GH₵ 199", sub: "/ month, billed monthly",    hl: true,  cta: "Get started →", href: "/contact", features: ["Everything in Starter","Unlimited students","Priority WhatsApp support","Custom domain","Parent SMS alerts","Daily backups","Advanced analytics"] },
               { name: "Enterprise",   price: "Custom",  sub: "let's talk",                  hl: false, cta: "Contact sales", href: "/contact", features: ["Everything in Pro","Dedicated infrastructure","SLA guarantee","On-site training","Custom integrations","Dedicated account manager"] },
             ].map(({ name, price, sub, hl, features, cta, href }) => (
@@ -1064,7 +1005,7 @@ export function HomepageClient() {
             </div>
             {[
               { title: "Product",     links: [["Features","#features"],["Pricing","#pricing"],["All features","/features"],["Sign in","/sign-in"]] },
-              { title: "Get started", links: [["Live demo","/demo"],["Start free","/contact"],["WhatsApp us",WHATSAPP_URL]] },
+              { title: "Get started", links: [["Live demo","/demo"],["Get started","/contact"],["WhatsApp us",WHATSAPP_URL]] },
               { title: "Company",     links: [["Contact","/contact"],["Novalss","https://novalss.com"]] },
             ].map(({ title, links }) => (
               <div key={title}>
