@@ -2431,6 +2431,7 @@ model SchoolTenant {
   country      String    @default("Ghana")
   trialEndsAt  DateTime?
   notes        String?
+  addons       String?   @default("") // CSV of enabled add-on keys, e.g. "multi_branch"
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }

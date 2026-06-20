@@ -5,8 +5,9 @@ import { deprovisionSchool } from "@/lib/provisioning";
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    const { name, plan, status, adminEmail, adminName, phone, address, country, trialEndsAt, notes, customDomain } = await req.json();
+    const { name, plan, status, adminEmail, adminName, phone, address, country, trialEndsAt, notes, customDomain, addons } = await req.json();
     const data: any = {};
+    if (addons       !== undefined) data.addons       = Array.isArray(addons) ? addons.join(",") : (addons || "");
     if (name         !== undefined) data.name         = name         || null;
     if (plan         !== undefined) data.plan         = plan         || null;
     if (status       !== undefined) data.status       = status       || null;

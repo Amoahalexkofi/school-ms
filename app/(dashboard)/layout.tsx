@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { DemoBanner } from "@/components/DemoBanner";
 import { PermissionsProvider } from "@/components/PermissionsProvider";
 import { getUserPermissions } from "@/lib/services/permissions";
+import { getEnabledAddons } from "@/lib/addons";
 
 const DEMO_EMAILS = new Set([
   "demo@getskula.com",
@@ -25,11 +26,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   // Load custom app-role permissions for this user (null = no custom role, full access)
   const permissions = await getUserPermissions(userId).catch(() => null);
+  const addons = await getEnabledAddons().catch(() => []);
 
   return (
     <PermissionsProvider permissions={permissions}>
       <div className="flex flex-col lg:flex-row min-h-screen bg-[#f4f5fb]">
-        <Sidebar role={role} />
+        <Sidebar role={role} addons={addons} />
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {isDemo && <DemoBanner />}
           {children}

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateBranch, deleteBranch } from "@/lib/services/branches";
+import { isAddonEnabled } from "@/lib/addons";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    if (!(await isAddonEnabled("multi_branch"))) return NextResponse.json({ error: "Multi Branch is not enabled" }, { status: 403 });
     const { id } = await params;
     const body = await req.json();
     const branch = await updateBranch(id, body);
@@ -14,6 +16,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    if (!(await isAddonEnabled("multi_branch"))) return NextResponse.json({ error: "Multi Branch is not enabled" }, { status: 403 });
     const { id } = await params;
     await deleteBranch(id);
     return NextResponse.json({ ok: true });

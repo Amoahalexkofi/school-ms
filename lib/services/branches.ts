@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { isAddonEnabled } from "@/lib/addons";
 
 /**
  * Idempotent: ensure a Main Branch exists and assign any students/staff that
@@ -55,8 +56,10 @@ export async function ensureMainBranchId(): Promise<string> {
  * Branch a new student/staff record should belong to: the active branch if
  * one is selected, otherwise the Main Branch (created on demand).
  */
-export async function resolveBranchForCreate(activeBranchId: string | null): Promise<string> {
+export async function resolveBranchForCreate(activeBranchId: string | null): Promise<string | null> {
   if (activeBranchId) return activeBranchId;
+  // No branch tagging when the add-on isn't enabled (single-branch mode).
+  if (!(await isAddonEnabled("multi_branch"))) return null;
   return ensureMainBranchId();
 }
 

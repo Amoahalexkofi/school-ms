@@ -18,8 +18,13 @@ type School = {
   id: string; name: string; subdomain: string; customDomain?: string;
   schemaName: string; plan: string; status: string; adminEmail: string;
   adminName?: string; phone?: string; address?: string; country: string;
-  trialEndsAt?: string; notes?: string; createdAt: string;
+  trialEndsAt?: string; notes?: string; addons?: string; createdAt: string;
 };
+
+// Purchasable add-ons that can be released to a school.
+const ADDON_CATALOG: { key: string; label: string }[] = [
+  { key: "multi_branch", label: "Multi Branch" },
+];
 
 type Stats = { students: number; staff: number; sessions: number; lastActive: string | null };
 
@@ -435,6 +440,33 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                           {STATUSES.map(st => <option key={st} value={st}>{st}</option>)}
                         </select>
                       </div>
+                    </div>
+
+                    {/* Add-ons — release paid features to this school */}
+                    <div className="flex flex-wrap items-center gap-3 pt-1">
+                      <Label className="text-xs">Add-ons</Label>
+                      {ADDON_CATALOG.map(addon => {
+                        const enabled = (s.addons ?? "").split(",").map(x => x.trim()).filter(Boolean);
+                        const on = enabled.includes(addon.key);
+                        return (
+                          <button
+                            key={addon.key}
+                            type="button"
+                            onClick={() => {
+                              const next = on ? enabled.filter(k => k !== addon.key) : [...enabled, addon.key];
+                              patch(s.id, { addons: next });
+                            }}
+                            className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border transition-colors ${
+                              on
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300"
+                            }`}
+                          >
+                            <span className={`w-1.5 h-1.5 rounded-full ${on ? "bg-emerald-500" : "bg-gray-300"}`} />
+                            {addon.label} {on ? "· On" : "· Off"}
+                          </button>
+                        );
+                      })}
                     </div>
 
                     {/* Action buttons */}

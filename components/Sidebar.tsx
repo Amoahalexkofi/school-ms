@@ -18,7 +18,7 @@ import { usePermissions } from "@/components/PermissionsProvider";
 import { BranchSwitcher } from "@/components/BranchSwitcher";
 
 type StaffRole = "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "ACCOUNTANT" | "LIBRARIAN";
-type NavItem  = { href: string; label: string; icon: React.ElementType; roles?: StaffRole[]; perm?: string };
+type NavItem  = { href: string; label: string; icon: React.ElementType; roles?: StaffRole[]; perm?: string; addon?: string };
 type NavGroup = { label: string; items: NavItem[] };
 
 const adminGroups: NavGroup[] = [
@@ -86,7 +86,7 @@ const adminGroups: NavGroup[] = [
     label: "System",
     items: [
       { href: "/reports",   label: "Reports",   icon: BarChart2,   roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT"], perm: "reports" },
-      { href: "/branches",  label: "Branches",  icon: Building,    roles: ["SUPER_ADMIN","ADMIN"],                         perm: "system_settings" },
+      { href: "/branches",  label: "Branches",  icon: Building,    roles: ["SUPER_ADMIN","ADMIN"],                         perm: "system_settings", addon: "multi_branch" },
       { href: "/audit-log", label: "Audit Log", icon: ShieldCheck, roles: ["SUPER_ADMIN","ADMIN"],                         perm: "system_settings" },
       { href: "/settings",  label: "Settings",  icon: Settings,    roles: ["SUPER_ADMIN","ADMIN"],                         perm: "system_settings" },
     ],
@@ -133,7 +133,7 @@ type Role = "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "ACCOUNTANT" | "LIBRARIAN" | "
 function getGroups(role: Role): NavGroup[]  { return role === "STUDENT" ? studentGroups : role === "PARENT" ? parentGroups : adminGroups; }
 function getPortalLabel(role: Role)         { return role === "STUDENT" ? "Student" : role === "PARENT" ? "Parent" : null; }
 
-function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void }) {
+function NavContent({ role, onNavigate, addons = [] }: { role: Role; onNavigate?: () => void; addons?: string[] }) {
   const pathname  = usePathname();
   const { data: session } = useSession();
   const [showUser, setShowUser] = useState(false);
@@ -144,11 +144,14 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
   const groups      = rawGroups.map(g => ({
     ...g,
     items: g.items.filter(item => {
+      if (item.addon && !addons.includes(item.addon)) return false;
       if (item.roles && !item.roles.includes(staffRole)) return false;
       if (perms && item.perm) return perms[item.perm]?.canView === true;
       return true;
     }),
   })).filter(g => g.items.length > 0);
+
+  const showBranchSwitcher = (role === "SUPER_ADMIN" || role === "ADMIN") && addons.includes("multi_branch");
 
   const portalLabel = getPortalLabel(role);
   const userName    = (session?.user as any)?.name || session?.user?.email?.split("@")[0] || "User";
@@ -172,8 +175,8 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
         )}
       </div>
 
-      {/* Branch switcher (Multi Branch add-on) — admins only */}
-      {(role === "SUPER_ADMIN" || role === "ADMIN") && <BranchSwitcher />}
+      {/* Branch switcher (Multi Branch add-on) — admins only, when enabled */}
+      {showBranchSwitcher && <BranchSwitcher />}
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5 scrollbar-none">
@@ -256,7 +259,7 @@ function NavContent({ role, onNavigate }: { role: Role; onNavigate?: () => void 
   );
 }
 
-export function Sidebar({ role = "ADMIN" }: { role?: Role }) {
+export function Sidebar({ role = "ADMIN", addons = [] }: { role?: Role; addons?: string[] }) {
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
   const pathname = usePathname();
@@ -331,14 +334,14 @@ export function Sidebar({ role = "ADMIN" }: { role?: Role }) {
             className="w-64 h-full bg-slate-900 shadow-2xl flex flex-col"
             onClick={e => e.stopPropagation()}
           >
-            <NavContent role={role} onNavigate={() => setOpen(false)} />
+            <NavContent role={role} addons={addons} onNavigate={() => setOpen(false)} />
           </div>
         </div>
       )}
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-56 shrink-0 bg-slate-900 min-h-screen">
-        <NavContent role={role} />
+        <NavContent role={role} addons={addons} />
       </aside>
     </>
   );

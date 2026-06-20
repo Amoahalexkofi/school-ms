@@ -10,25 +10,26 @@ import { neon } from "@neondatabase/serverless";
 const APP_DOMAINS = (process.env.NEXT_PUBLIC_APP_DOMAIN ?? "getskula.com")
   .split(",").map(d => d.trim()).filter(Boolean);
 
-// Cache subdomain → schemaName lookups for 60 s to avoid a DB hit per request
-const tenantCache = new Map<string, { schema: string; expiresAt: number }>();
+// Cache subdomain → {schema, addons} lookups for 60 s to avoid a DB hit per request
+type Tenant = { schema: string; addons: string };
+const tenantCache = new Map<string, { tenant: Tenant; expiresAt: number }>();
 
-async function getSchemaForSubdomain(subdomain: string): Promise<string | null> {
+async function getTenantForSubdomain(subdomain: string): Promise<Tenant | null> {
   const now = Date.now();
   const cached = tenantCache.get(subdomain);
-  if (cached && cached.expiresAt > now) return cached.schema;
+  if (cached && cached.expiresAt > now) return cached.tenant;
 
   try {
     const sql = neon(process.env.DATABASE_URL!);
     const rows = await sql`
-      SELECT "schemaName" FROM "SchoolTenant"
+      SELECT "schemaName", "addons" FROM "SchoolTenant"
       WHERE subdomain = ${subdomain} AND status != 'suspended'
       LIMIT 1
     `;
     if (!rows.length) return null;
-    const schema = rows[0].schemaName as string;
-    tenantCache.set(subdomain, { schema, expiresAt: now + 60_000 });
-    return schema;
+    const tenant: Tenant = { schema: rows[0].schemaName as string, addons: (rows[0].addons as string) ?? "" };
+    tenantCache.set(subdomain, { tenant, expiresAt: now + 60_000 });
+    return tenant;
   } catch {
     return null;
   }
@@ -60,11 +61,15 @@ export async function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   // Expose pathname for server components (used by dashboard layout for onboarding check)
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  // Strip any client-supplied add-on header (set authoritatively below)
+  requestHeaders.delete("x-tenant-addons");
+  // Apex/non-tenant context (e.g. getskula.com demo) → all add-ons available
+  requestHeaders.set("x-tenant-addons", "*");
 
-  // Resolve tenant schema from subdomain
+  // Resolve tenant schema + enabled add-ons from subdomain
   if (subdomain) {
-    const schema = await getSchemaForSubdomain(subdomain);
-    if (!schema) {
+    const tenant = await getTenantForSubdomain(subdomain);
+    if (!tenant) {
       return new NextResponse(
         `<html><body style="font-family:sans-serif;text-align:center;padding:80px;color:#374151">
           <h2 style="font-size:1.5rem;font-weight:700">School not found</h2>
@@ -74,7 +79,8 @@ export async function proxy(request: NextRequest) {
         { status: 404, headers: { "content-type": "text/html" } }
       );
     }
-    requestHeaders.set("x-tenant-schema", schema);
+    requestHeaders.set("x-tenant-schema", tenant.schema);
+    requestHeaders.set("x-tenant-addons", tenant.addons);
   }
 
   // Public routes bypass auth (schema header still forwarded)
