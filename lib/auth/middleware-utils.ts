@@ -21,6 +21,10 @@ const PUBLIC_PREFIXES = [
   "/sw.js",            // service worker
   "/offline.html",     // offline fallback
   "/icons/",           // PWA icons
+  "/opengraph-image",  // social share card (Next metadata route)
+  "/twitter-image",    // social share card (Next metadata route)
+  "/icon",             // favicon (app/icon.png → /icon.png)
+  "/apple-icon",       // apple touch icon (app/apple-icon.png)
 ];
 
 export function isPublicRoute(pathname: string): boolean {
