@@ -816,7 +816,7 @@ export default function FeaturesPage() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
             All {MODULES.length} modules.<br />
-            <span className="text-indigo-400">One price. Live in 2 minutes.</span>
+            <span className="text-indigo-400">One price. Live in 30 minutes.</span>
           </h2>
           <p className="mt-5 text-slate-400 text-lg">No feature is locked behind a higher plan. Everything you read on this page is available from day one.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">

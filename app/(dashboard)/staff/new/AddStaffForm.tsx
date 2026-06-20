@@ -78,6 +78,7 @@ export function AddStaffForm({ departments, designations }: Props) {
   const [section, setSection] = useState<Section>("Personal Info");
   const [saving, setSaving]   = useState(false);
   const [error, setError]     = useState("");
+  const [created, setCreated] = useState<{ name: string; tempPassword: string } | null>(null);
 
   const set = (k: keyof typeof empty) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -102,12 +103,41 @@ export function AddStaffForm({ departments, designations }: Props) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed");
-      router.push("/staff");
+      setCreated({ name: `${form.firstName} ${form.lastName}`.trim(), tempPassword: data.tempPassword ?? "" });
       router.refresh();
     } catch (e: any) {
       setError(e.message);
       setSaving(false);
     }
+  }
+
+  if (created) {
+    return (
+      <main className="flex-1 bg-gray-50 min-h-0">
+        <div className="max-w-md mx-auto mt-10 bg-white rounded-xl border border-slate-200 p-6 text-center">
+          <div className="w-12 h-12 rounded-full bg-emerald-50 mx-auto flex items-center justify-center mb-3">
+            <span className="text-emerald-600 text-2xl leading-none">✓</span>
+          </div>
+          <h1 className="text-[18px] font-semibold text-slate-900">Staff member created</h1>
+          <p className="text-[13px] text-slate-500 mt-1">{created.name} has been added.</p>
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 my-5 text-left">
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Temporary password</p>
+            <p className="text-[18px] font-bold text-slate-900 font-mono mt-1 select-all">{created.tempPassword || "—"}</p>
+            <p className="text-[12px] text-slate-500 mt-2">Share this with the staff member to log in. They can change it anytime via “Forgot password”.</p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => { setCreated(null); window.location.reload(); }}
+              className="flex-1 h-10 rounded-lg border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+              Add another
+            </button>
+            <Link href="/staff"
+              className="flex-1 h-10 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-medium flex items-center justify-center transition-colors">
+              Go to Staff
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   return (
