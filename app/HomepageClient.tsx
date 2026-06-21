@@ -561,6 +561,7 @@ export function HomepageClient() {
               { icon: Home,          color: "#8b5cf6", bg: "#f3e8ff", title: "Hostel",                 desc: "Boarding house rooms, allocations, room types and hostel fee management." },
               { icon: Smartphone,    color: "#0ea5e9", bg: "#e0f2fe", title: "Online Exams",           desc: "Set MCQ/theory exams. Students attempt online. Auto-grading with instant results." },
               { icon: Building2,     color: "#64748b", bg: "#f1f5f9", title: "Front Office",           desc: "Visitor log, complaints, parent enquiries, dispatch records and reception management." },
+              { icon: Globe,         color: "#6366f1", bg: "#eef2ff", title: "Free School Website",     desc: "Every school gets a public, branded website — hero, about, news, staff, events, contact and a one-click parent/student portal login." },
             ].map(({ icon: Icon, color, bg, title, desc }, i) => (
               <motion.div key={title} variants={fadeUp}
                 className="group p-6 rounded-2xl bg-white border border-slate-900/[0.06] hover:border-slate-900/[0.1] hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all cursor-default">
