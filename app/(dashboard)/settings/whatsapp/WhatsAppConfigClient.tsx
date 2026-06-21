@@ -272,7 +272,7 @@ export function WhatsAppConfigClient({ configs: initial }: { configs: any[] }) {
                               type={showPass[`${prov.value}_${field}`] ? "text" : "password"}
                               value={(cfg as any)[field] ?? ""}
                               onChange={e => update(prov.value, field, e.target.value)}
-                              placeholder={`Enter ${(prov.labels as any)[field]}`}
+                              placeholder={(cfg as any)[`${field}Set`] ? "•••••• saved — leave blank to keep" : `Enter ${(prov.labels as any)[field]}`}
                             />
                             <button
                               type="button"

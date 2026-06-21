@@ -24,7 +24,7 @@ async function sendViaTwilioWhatsApp(
   );
 
   try {
-    await Promise.all(
+    const responses = await Promise.all(
       recipients.map(phone =>
         fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
           method: "POST",
@@ -36,6 +36,11 @@ async function sendViaTwilioWhatsApp(
         })
       )
     );
+    const failed = responses.find(r => !r.ok);
+    if (failed) {
+      const data = await failed.json().catch(() => ({}));
+      return { success: false, provider: "twilio_whatsapp", error: data?.message ?? `HTTP ${failed.status}` };
+    }
     return { success: true, provider: "twilio_whatsapp" };
   } catch (err: any) {
     return { success: false, provider: "twilio_whatsapp", error: err.message };
@@ -55,7 +60,7 @@ async function sendViaWati(
   const recipients = (Array.isArray(to) ? to : [to]).map(n => n.replace(/\D/g, ""));
 
   try {
-    await Promise.all(
+    const responses = await Promise.all(
       recipients.map(phone =>
         fetch(`${base}/api/v1/sendSessionMessage/${phone}`, {
           method: "POST",
@@ -67,6 +72,11 @@ async function sendViaWati(
         })
       )
     );
+    const failed = responses.find(r => !r.ok);
+    if (failed) {
+      const data = await failed.json().catch(() => ({}));
+      return { success: false, provider: "wati", error: data?.message ?? `HTTP ${failed.status}` };
+    }
     return { success: true, provider: "wati" };
   } catch (err: any) {
     return { success: false, provider: "wati", error: err.message };
@@ -85,7 +95,7 @@ async function sendViaMetaCloudApi(
   const recipients    = (Array.isArray(to) ? to : [to]).map(n => n.replace(/\D/g, ""));
 
   try {
-    await Promise.all(
+    const responses = await Promise.all(
       recipients.map(phone =>
         fetch(`https://graph.facebook.com/v19.0/${phoneNumberId}/messages`, {
           method: "POST",
@@ -102,6 +112,11 @@ async function sendViaMetaCloudApi(
         })
       )
     );
+    const failed = responses.find(r => !r.ok);
+    if (failed) {
+      const data = await failed.json().catch(() => ({}));
+      return { success: false, provider: "meta", error: data?.error?.message ?? `HTTP ${failed.status}` };
+    }
     return { success: true, provider: "meta" };
   } catch (err: any) {
     return { success: false, provider: "meta", error: err.message };

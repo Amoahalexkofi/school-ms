@@ -55,6 +55,12 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
     return (g?.[field] ?? "") as string;
   };
 
+  // Whether a (redacted) secret is already stored on the server.
+  const isSecretSet = (type: string, field: string) => {
+    const g = gateways.find(g => g.paymentType === type) as any;
+    return !!g?.[`${field}Set`];
+  };
+
   const setValue = (type: string, field: keyof Gateway, val: string | boolean) => {
     setGateways(prev => {
       const exists = prev.find(g => g.paymentType === type);
@@ -150,7 +156,7 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
                         type={show ? "text" : "password"}
                         value={val}
                         onChange={e => setValue(def.key, field as keyof Gateway, e.target.value)}
-                        placeholder={`Enter ${label}`}
+                        placeholder={field === "apiSecretKey" && isSecretSet(def.key, field) ? "•••••• saved — leave blank to keep" : `Enter ${label}`}
                         className="pr-10"
                       />
                       <button type="button"

@@ -333,6 +333,8 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/api/marksheets",         roles: ["SUPER_ADMIN", "ADMIN"] },
   // Staff ID card templates
   { prefix: "/api/staff-id-cards",     roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Student ID card templates
+  { prefix: "/api/id-card",            roles: ["SUPER_ADMIN", "ADMIN"] },
   // Student & staff timelines
   { prefix: "/api/timelines",          roles: ["SUPER_ADMIN", "ADMIN"] },
   // Subject-level attendance
@@ -361,16 +363,19 @@ export function canAccessRoute(pathname: string, role: UserRole): boolean {
  * Authorization for API routes. An /api/<x> endpoint requires the SAME role as
  * its resource: we match against both the literal API path (for explicit
  * "/api/..." rules) AND the page-equivalent path (strip the leading "/api"),
- * taking the most specific (longest-prefix) matching rule. Unmatched API routes
- * fall back to "any authenticated user" so obscure read endpoints don't break;
- * every sensitive write resource has a rule (page or API) that gates it.
+ * taking the most specific (longest-prefix) matching rule.
+ *
+ * DENY-BY-DEFAULT: an API route with no matching rule is rejected. Public
+ * endpoints (auth, cron, public application submit) are handled earlier by
+ * isPublicRoute() and never reach here, so they are unaffected. Any new
+ * authenticated API route MUST add a rule above or it will 403.
  */
 export function canAccessApiRoute(pathname: string, role: UserRole): boolean {
   const stripped = pathname.replace(/^\/api/, "") || "/";
   const matches = ROUTE_PERMISSIONS.filter(
     (rule) => pathname.startsWith(rule.prefix) || stripped.startsWith(rule.prefix)
   );
-  if (matches.length === 0) return true; // no rule → allow any authenticated user
+  if (matches.length === 0) return false; // no rule → deny (was: allow-any, a fail-open hole)
   const best = matches.sort((a, b) => b.prefix.length - a.prefix.length)[0];
   return best.roles.includes(role);
 }

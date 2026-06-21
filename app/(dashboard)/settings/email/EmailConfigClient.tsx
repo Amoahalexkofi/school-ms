@@ -235,7 +235,7 @@ export function EmailConfigClient({ config }: { config: any }) {
                   type={showPass ? "text" : "password"}
                   value={form.smtpPassword}
                   onChange={e => set("smtpPassword", e.target.value)}
-                  placeholder="••••••••••••" />
+                  placeholder={config?.smtpPasswordSet ? "•••••• saved — leave blank to keep" : "••••••••••••"} />
                 <button type="button" onClick={() => setShowPass(v => !v)}
                   className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 transition-colors">
                   {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

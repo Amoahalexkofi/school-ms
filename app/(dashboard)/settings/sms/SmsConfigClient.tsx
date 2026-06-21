@@ -158,7 +158,7 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
                         type={showPass[prov.value] ? "text" : "password"}
                         value={cfg.apiKey ?? ""}
                         onChange={(e) => update(prov.value, "apiKey", e.target.value)}
-                        placeholder="Enter API key"
+                        placeholder={cfg.apiKeySet ? "•••••• saved — leave blank to keep" : "Enter API key"}
                       />
                       <button type="button" onClick={() => setShowPass(s => ({ ...s, [prov.value]: !s[prov.value] }))} className="absolute right-2 top-2.5 text-gray-400">
                         {showPass[prov.value] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -175,7 +175,7 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
                 {prov.fields.includes("password") && (
                   <div>
                     <Label>API Secret</Label>
-                    <Input type="password" value={cfg.password ?? ""} onChange={(e) => update(prov.value, "password", e.target.value)} placeholder="API secret" />
+                    <Input type="password" value={cfg.password ?? ""} onChange={(e) => update(prov.value, "password", e.target.value)} placeholder={cfg.passwordSet ? "•••••• saved — leave blank to keep" : "API secret"} />
                   </div>
                 )}
                 {prov.fields.includes("senderId") && (

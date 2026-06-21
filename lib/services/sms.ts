@@ -56,7 +56,7 @@ async function sendViaTwilio(
   const recipients = Array.isArray(to) ? to : [to];
 
   try {
-    await Promise.all(
+    const responses = await Promise.all(
       recipients.map((phone) =>
         fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
           method: "POST",
@@ -68,6 +68,11 @@ async function sendViaTwilio(
         })
       )
     );
+    const failed = responses.find((r) => !r.ok);
+    if (failed) {
+      const data = await failed.json().catch(() => ({}));
+      return { success: false, provider: "twilio", error: data?.message ?? `HTTP ${failed.status}` };
+    }
     return { success: true, provider: "twilio" };
   } catch (err: any) {
     return { success: false, provider: "twilio", error: err.message };
