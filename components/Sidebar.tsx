@@ -302,8 +302,17 @@ export function Sidebar({ role = "ADMIN", addons = [] }: { role?: Role; addons?:
           {pageTitle}
         </p>
 
-        {/* Right: bell + avatar */}
+        {/* Right: website + bell + avatar */}
         <div className="flex items-center gap-1">
+          <a
+            href="/?preview=1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
+            aria-label="View your public website"
+          >
+            <Globe className="h-[18px] w-[18px]" />
+          </a>
           <Link
             href="/notifications"
             className="relative w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-colors"

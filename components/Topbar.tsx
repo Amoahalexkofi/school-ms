@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
-import { Bell, Search, ChevronDown, Settings, LogOut } from "lucide-react";
+import { Bell, Search, ChevronDown, Settings, LogOut, Globe } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
@@ -80,6 +80,18 @@ export function Topbar({ title }: { title: string }) {
           <span className="text-slate-400">Search</span>
           <kbd className="ml-1 text-[10px] border border-slate-200 rounded px-1 py-0.5 font-mono text-slate-300 bg-white">⌘K</kbd>
         </button>
+
+        {/* View public website */}
+        <a
+          href="/?preview=1"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="View your public website"
+          aria-label="View your public website"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors"
+        >
+          <Globe className="h-[18px] w-[18px]" />
+        </a>
 
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
