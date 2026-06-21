@@ -844,7 +844,7 @@ export default function FeaturesPage() {
           <p className="mt-5 text-slate-400 text-lg">No feature is locked behind a higher plan. Everything you read on this page is available from day one.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">
             <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-4 rounded-xl font-black hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-600/30">
-              Get started free <ArrowRight className="h-4 w-4" />
+              Get started <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/" className="inline-flex items-center justify-center gap-2 border border-slate-700 text-slate-400 px-8 py-4 rounded-xl font-semibold hover:bg-slate-800 hover:text-white transition-colors">
               Back to home

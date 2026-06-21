@@ -481,21 +481,20 @@ export function HomepageClient() {
 
               <motion.h1 variants={fadeUp}
                 className="text-[40px] sm:text-[56px] lg:text-[60px] xl:text-[68px] font-black leading-[1.05] tracking-[-0.03em] text-slate-900 font-[family-name:var(--font-montserrat)]">
-                Run Your Entire School From One{" "}
+                Everything your school runs on,{" "}
                 <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                  Intelligent
-                </span>{" "}
-                Platform.
+                  in one place
+                </span>.
               </motion.h1>
 
               <motion.p variants={fadeUp} className="text-[16px] sm:text-[17px] text-slate-500 leading-relaxed max-w-[480px]">
-                Admissions, attendance, fees, exams, payroll and communication — unified in one platform built for African schools.
+                Admissions, attendance, fees, exams, payroll and parent communication — built for African schools. Most go live the same day.
               </motion.p>
 
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 pt-1">
                 <Link href="/contact"
                   className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-7 py-4 rounded-xl text-[15px] transition-all shadow-lg shadow-indigo-300/40 hover:shadow-indigo-300/60 hover:scale-[1.02] active:scale-[0.98]">
-                  Get Started <ArrowRight className="h-4 w-4" />
+                  Get your school online <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link href="/demo"
                   className="inline-flex items-center justify-center gap-2 bg-white/80 backdrop-blur border-2 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 font-bold px-7 py-4 rounded-xl text-[15px] transition-all hover:bg-indigo-50/50">
@@ -919,7 +918,7 @@ export function HomepageClient() {
               { q: "Can multiple staff use it simultaneously?",   a: "Yes. Each staff member gets their own login with role-based access — accountant sees fees, teacher sees classes, admin sees everything — all at the same time." },
               { q: "Is my school data kept private?",             a: "Completely. Every school runs in a fully isolated database. No other institution can ever access your students, fees, or records." },
               { q: "Does it work for Basic, JHS and SHS?",        a: "Yes. Skula supports all levels — Basic, JHS and SHS — including BECE candidate tracking, JHS grading scales, and term-based academic calendars." },
-              { q: "What happens when the free trial ends?",      a: "We reach out before anything changes. Your data is never deleted. Upgrade anytime or we'll find a plan that works — we won't leave you stranded." },
+              { q: "Do we need to install anything?",             a: "No. Skula runs in any web browser on phone, tablet or computer — nothing to install, no servers to maintain. We host, secure and back up everything for you." },
             ].map(({ q, a }) => (
               <motion.div key={q} variants={fadeUp}>
                 <FaqItem q={q} a={a} />
