@@ -26,7 +26,10 @@ export default async function WebsitePage() {
   const settings = settingsRows[0] ?? { primaryColor: "#6366f1", showStats: true };
   const subdomain = tenantRows[0]?.subdomain;
   const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN?.split(",")[0]?.trim() ?? "getskula.com";
-  const schoolUrl = subdomain ? `https://${subdomain}.${appDomain}` : `https://${host}`;
+  // ?preview=1 lets a logged-in admin view the public site instead of being
+  // redirected to the dashboard.
+  const baseUrl = subdomain ? `https://${subdomain}.${appDomain}` : `https://${host}`;
+  const schoolUrl = `${baseUrl}/?preview=1`;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">

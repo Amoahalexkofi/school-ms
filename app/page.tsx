@@ -22,14 +22,22 @@ export async function generateMetadata() {
   return { title: `${name} — Student & Staff Portal`, description: `Sign in to your ${name} dashboard. Students, staff and parents.` };
 }
 
-export default async function LandingPage() {
+export default async function LandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const h = await headers();
   const schema = h.get("x-tenant-schema");
+  const sp = await searchParams;
+  // Logged-in admins can preview their public site with ?preview=1 instead of
+  // being bounced to the dashboard.
+  const preview = sp?.preview === "1" || sp?.preview === "true";
 
   // ── School subdomain ─────────────────────────────────────────────────────────
   if (schema) {
     const session = await auth();
-    if (session?.user) redirect("/dashboard");
+    if (session?.user && !preview) redirect("/dashboard");
 
     const sql = neon(process.env.DATABASE_URL!);
 
@@ -59,6 +67,7 @@ export default async function LandingPage() {
           staff:    parseInt(staffCount[0]?.cnt    ?? 0),
           classes:  parseInt(classCount[0]?.cnt    ?? 0),
         }}
+        preview={preview && !!session?.user}
       />
     );
   }

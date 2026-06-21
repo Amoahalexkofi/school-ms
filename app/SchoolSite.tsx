@@ -38,9 +38,9 @@ const NOTICE_LABEL: Record<string, string> = {
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
-export function SchoolSite({ profile, schoolName, slides, notices, settings, stats }: {
+export function SchoolSite({ profile, schoolName, slides, notices, settings, stats, preview = false }: {
   profile: Profile | null; schoolName: string;
-  slides: Slide[]; notices: Notice[]; settings: Settings; stats: Stats;
+  slides: Slide[]; notices: Notice[]; settings: Settings; stats: Stats; preview?: boolean;
 }) {
   const rawName = profile?.name ?? schoolName;
   const name    = formatName(rawName);
@@ -65,6 +65,13 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: "var(--font-plus-jakarta-sans, system-ui, sans-serif)" }}>
+
+      {preview && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[80] flex items-center gap-3 bg-slate-900 text-white text-[12.5px] px-4 py-2.5 rounded-full shadow-xl">
+          <span className="opacity-90">Previewing your public website</span>
+          <Link href="/dashboard" className="font-semibold underline underline-offset-2 hover:text-indigo-300">Back to dashboard</Link>
+        </div>
+      )}
 
       {/* ── Fixed transparent-to-solid navbar ── */}
       <SchoolSiteNav
