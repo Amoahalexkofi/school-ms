@@ -1,6 +1,7 @@
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { NewQuestionForm } from "./NewQuestionForm";
+import { requireStaffPage } from "@/lib/auth/guards";
 
 async function getData() {
   const [classes, subjects] = await Promise.all([
@@ -11,6 +12,7 @@ async function getData() {
 }
 
 export default async function NewQuestionPage() {
+  await requireStaffPage("/online-exams");
   const data = await getData();
   return (
     <div className="flex flex-col flex-1">

@@ -2,6 +2,7 @@ import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { ExamDetailClient } from "./ExamDetailClient";
 import { notFound } from "next/navigation";
+import { requireStaffPage } from "@/lib/auth/guards";
 
 async function getData(id: string) {
   const [exam, allQuestions, classes, subjects] = await Promise.all([
@@ -42,6 +43,7 @@ async function getData(id: string) {
 }
 
 export default async function ExamDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireStaffPage("/online-exams");
   const { id } = await params;
   const { exam, allQuestions, classes, subjects } = await getData(id);
   if (!exam) notFound();

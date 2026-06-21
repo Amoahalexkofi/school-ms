@@ -116,6 +116,22 @@ export async function proxy(request: NextRequest) {
     if (!role || !canAccessApiRoute(pathname, role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
+    // Online exams: students/parents may read exams and start/submit their OWN
+    // attempt, but must never create, edit, publish or delete an exam. The
+    // resource rule above lets STUDENT reach /api/online-exams (needed to take
+    // exams), so gate mutations here by method. (/api/questions already excludes
+    // students entirely.)
+    if (
+      pathname.startsWith("/api/online-exams") &&
+      (role === "STUDENT" || role === "PARENT")
+    ) {
+      const method = request.method.toUpperCase();
+      const isRead = method === "GET" || method === "HEAD" || method === "OPTIONS";
+      const isOwnAttempt = pathname.includes("/attempt"); // start/submit own answers
+      if (!isRead && !isOwnAttempt) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    }
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
