@@ -171,7 +171,7 @@ export function TimetableClient({ classes, staff, session }: {
           <div>
             <p className="font-semibold">No Subject Group assigned to this class/section</p>
             <p className="text-amber-700 mt-0.5">
-              Go to <a href="/settings?tab=subject-groups" className="underline font-medium">Settings → Subject Groups</a> and assign a subject group to this class section before building the timetable.
+              Go to <a href="/subject-groups" className="underline font-medium">Subject Groups</a> and assign a subject group to this class section before building the timetable.
             </p>
           </div>
         </div>

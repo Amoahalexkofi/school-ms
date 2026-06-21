@@ -23,7 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (data.isReturned === true && !existing.isReturned) {
       await (db as any).item.update({
         where: { id: existing.itemId },
-        data: { available: { increment: existing.quantity } },
+        data: { quantity: { increment: existing.quantity } },
       });
     }
     return NextResponse.json(issue);
@@ -43,7 +43,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
       // Restore availability if not already returned
       ...(existing.isReturned ? [] : [(db as any).item.update({
         where: { id: existing.itemId },
-        data: { available: { increment: existing.quantity } },
+        data: { quantity: { increment: existing.quantity } },
       })]),
     ]);
     return NextResponse.json({ ok: true });

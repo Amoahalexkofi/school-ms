@@ -65,7 +65,9 @@ export async function GET(req: NextRequest) {
   const rows = Object.values(studentMap).map((r: any) => ({
     ...r,
     schoolDays: r.P + r.A + r.L + r.F,
-    pct: r.total > 0 ? Math.round(((r.P + r.L + r.F) / r.total) * 100) : 0,
+    // Half-day (F) counts as 0.5 — must match lib/services/attendance.ts so admin
+    // reports and the student/parent portals show the same percentage.
+    pct: r.total > 0 ? Math.round(((r.P + r.L + r.F * 0.5) / r.total) * 100) : 0,
   }));
 
   rows.sort((a: any, b: any) =>

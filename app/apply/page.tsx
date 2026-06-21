@@ -25,7 +25,7 @@ export default function ApplyPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admissions", {
+      const res = await fetch("/api/admissions/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, dateOfBirth: new Date(form.dateOfBirth) }),

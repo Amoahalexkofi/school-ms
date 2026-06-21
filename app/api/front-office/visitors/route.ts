@@ -25,7 +25,6 @@ export async function POST(req: NextRequest) {
     const {
       name, phone, email, purposeId, host, idProof, numVisitors,
       note, meetingWith, source, date, image,
-      studentSessionId, staffId,
     } = await req.json();
     if (!name?.trim()) return NextResponse.json({ error: "Visitor name required" }, { status: 422 });
 
@@ -43,8 +42,6 @@ export async function POST(req: NextRequest) {
         source:           source           || null,
         date:             date ? new Date(date) : new Date(),
         image:            image            || null,
-        studentSessionId: studentSessionId || null,
-        staffId:          staffId          || null,
       },
     });
     return NextResponse.json(v, { status: 201 });

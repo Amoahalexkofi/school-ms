@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
   const issues = await ((await getDb()) as any).itemIssue.findMany({
     where,
-    include: { item: { select: { name: true, quantity: true, available: true } } },
+    include: { item: { select: { name: true, quantity: true } } },
     orderBy: { issuedAt: "desc" },
   });
   return NextResponse.json(issues);
@@ -29,8 +29,8 @@ export async function POST(req: NextRequest) {
     const db = await getDb();
     const item = await (db as any).item.findUnique({ where: { id: itemId } });
     if (!item) return NextResponse.json({ error: "Item not found" }, { status: 404 });
-    if (item.available < parseInt(quantity)) {
-      return NextResponse.json({ error: `Only ${item.available} available` }, { status: 422 });
+    if (item.quantity < parseInt(quantity)) {
+      return NextResponse.json({ error: `Only ${item.quantity} in stock` }, { status: 422 });
     }
     const [issue] = await (db as any).$transaction([
       (db as any).itemIssue.create({
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       }),
       (db as any).item.update({
         where: { id: itemId },
-        data: { available: { decrement: parseInt(quantity) } },
+        data: { quantity: { decrement: parseInt(quantity) } },
       }),
     ]);
     return NextResponse.json(issue, { status: 201 });

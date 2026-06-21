@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import { Topbar } from "@/components/Topbar";
 import { Send, MessageCircle, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -46,6 +47,13 @@ export default function ChatPage() {
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { data: session } = useSession();
+
+  // Identify the current user so own messages align right / show as "me"
+  useEffect(() => {
+    const id = (session?.user as any)?.id;
+    if (id) setMyId(id);
+  }, [session]);
 
   // Load rooms
   useEffect(() => {

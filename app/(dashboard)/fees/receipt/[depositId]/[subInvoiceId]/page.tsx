@@ -1,6 +1,8 @@
 import { getDb } from "@/lib/db";
 import { notFound } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { ReceiptClient } from "../../ReceiptClient";
+import { assertCanViewReceipt } from "../../ownership";
 
 export default async function ReceiptPage({
   params,
@@ -39,6 +41,11 @@ export default async function ReceiptPage({
   ]);
 
   if (!deposit) notFound();
+
+  // Students/parents may only view their own (or their child's) receipt.
+  const session = await auth();
+  const ok = await assertCanViewReceipt(db, session, deposit.studentFeesMaster.student.id);
+  if (!ok) notFound();
 
   const allDetail = deposit.amountDetail as Record<string, any>;
   const entry = allDetail[subInvoiceId];

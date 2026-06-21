@@ -11,6 +11,7 @@ export type UserRole =
 const PUBLIC_PREFIXES = [
   "/api/auth", "/sign-in", "/apply", "/_next", "/favicon",
   "/api/cron",          // scheduled jobs — secured by CRON_SECRET internally
+  "/api/admissions/apply", // public admission application submission (POST only)
   "/novalss-admin", "/api/admin",
   "/images",           // static public assets
   "/features",         // public marketing page
@@ -69,6 +70,12 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   {
     prefix: "/fees/invoices",
     roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],
+  },
+  {
+    // Students & parents may view THEIR OWN receipt (ownership enforced in the
+    // page). Longest-prefix match makes this win over the staff-only /fees rule.
+    prefix: "/fees/receipt",
+    roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "STUDENT", "PARENT"],
   },
   {
     prefix: "/fees",

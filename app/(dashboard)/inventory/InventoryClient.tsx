@@ -249,7 +249,7 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
                   <label className="block text-sm font-medium text-gray-700 mb-1">Item *</label>
                   <select className={SEL} value={issueForm.itemId} onChange={e => setIssueForm(f => ({ ...f, itemId: e.target.value }))}>
                     <option value="">— Select Item —</option>
-                    {items.filter((i: any) => i.available > 0).map((i: any) => <option key={i.id} value={i.id}>{i.name} (avail: {i.available})</option>)}
+                    {items.filter((i: any) => i.quantity > 0).map((i: any) => <option key={i.id} value={i.id}>{i.name} (in stock: {i.quantity})</option>)}
                   </select>
                 </div>
                 <div>

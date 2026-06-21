@@ -20,19 +20,36 @@ export function MessagingClient({ logs, parentCount, staffCount, studentCount }:
   const [error, setError] = useState("");
   const [form, setForm] = useState({ subject: "", message: "", channel: "IN_APP", recipientType: "ALL" });
 
-  const totalSent = logs.reduce((s: number, l: any) => s + l.recipientCount, 0);
+  const recipientCount: Record<string, number> = { ALL_PARENTS: parentCount, ALL_STAFF: staffCount, ALL_STUDENTS: studentCount, ALL: parentCount + staffCount + studentCount };
+
+  // The schema stores title / sendMail / sendSms / sendTo — derive the display
+  // shape the UI expects (subject / channel / recipientType / count).
+  const SEND_TO: Record<string, string> = { ALL: "all", ALL_PARENTS: "all_parents", ALL_STAFF: "all_staff", ALL_STUDENTS: "all_students" };
+  function view(log: any) {
+    const channel = log.sendMail ? "EMAIL" : log.sendSms ? "SMS" : "IN_APP";
+    const recipientType = (log.sendTo || "all").toUpperCase();
+    return { subject: log.title || "(no subject)", channel, recipientType, count: recipientCount[recipientType] ?? 0 };
+  }
+
+  const totalSent = logs.reduce((s: number, l: any) => s + (recipientCount[(l.sendTo || "all").toUpperCase()] ?? 0), 0);
 
   async function send() {
     setLoading(true); setError("");
     try {
-      const res = await fetch("/api/messaging", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const payload = {
+        title:       form.subject,
+        message:     form.message,
+        sendThrough: form.channel === "EMAIL" ? "email" : form.channel === "SMS" ? "sms" : null,
+        sendMail:    form.channel === "EMAIL",
+        sendSms:     form.channel === "SMS",
+        sendTo:      SEND_TO[form.recipientType] ?? "all",
+      };
+      const res = await fetch("/api/messaging", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error ?? "Failed"); }
       setOpen(false); setForm({ subject: "", message: "", channel: "IN_APP", recipientType: "ALL" }); router.refresh();
     } catch (e: any) { setError(e.message); }
     finally { setLoading(false); }
   }
-
-  const recipientCount: Record<string, number> = { ALL_PARENTS: parentCount, ALL_STAFF: staffCount, ALL_STUDENTS: studentCount, ALL: parentCount + staffCount + studentCount };
 
   return (
     <main className="flex-1 p-4 md:p-6 space-y-8">
@@ -52,28 +69,31 @@ export function MessagingClient({ logs, parentCount, staffCount, studentCount }:
         <CardContent>
           {logs.length === 0 ? <p className="text-sm text-gray-500 text-center py-8">No messages sent yet.</p> : (
             <div className="space-y-3">
-              {logs.map((log: any) => (
+              {logs.map((log: any) => {
+                const v = view(log);
+                return (
                 <div key={log.id} className="border rounded-lg p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="font-semibold text-sm">{log.subject}</p>
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${channelColor[log.channel]}`}>{log.channel}</span>
+                        <p className="font-semibold text-sm">{v.subject}</p>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${channelColor[v.channel]}`}>{v.channel}</span>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{log.message}</p>
                       <div className="flex flex-wrap gap-3 text-xs text-gray-400">
-                        <span>To: <span className="text-gray-600 font-medium">{recipientLabel[log.recipientType] ?? log.recipientType}</span></span>
-                        <span>{log.recipientCount} recipients</span>
+                        <span>To: <span className="text-gray-600 font-medium">{recipientLabel[v.recipientType] ?? v.recipientType}</span></span>
+                        <span>{v.count} recipients</span>
                         <span>{new Date(log.createdAt).toLocaleString()}</span>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-2xl font-bold text-blue-600">{log.recipientCount}</p>
+                      <p className="text-2xl font-bold text-blue-600">{v.count}</p>
                       <p className="text-xs text-gray-400">sent</p>
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>

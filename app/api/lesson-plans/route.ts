@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const plans = await ((await getDb()) as any).lessonPlan.findMany({
     where,
     include: {
-      staff:        { select: { name: true } },
+      staff:        { select: { firstName: true, lastName: true } },
       subject:      { select: { name: true } },
       classSection: { include: { class: { select: { name: true } }, section: { select: { name: true } } } },
       session:      { select: { session: true } },
