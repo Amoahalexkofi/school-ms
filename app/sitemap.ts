@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://getskula.com";
   const now = new Date();
-  const routes = ["", "/features", "/contact", "/demo", "/terms", "/sign-in"];
+  const routes = ["", "/features", "/contact", "/demo", "/terms", "/privacy", "/sign-in"];
   return routes.map((path) => ({
     url: `${base}${path}`,
     lastModified: now,

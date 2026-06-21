@@ -18,6 +18,7 @@ const PUBLIC_PREFIXES = [
   "/reset-password",   // password reset flow
   "/contact",          // contact form
   "/terms",            // public terms & conditions
+  "/privacy",          // public privacy policy
   "/demo",             // demo auto-login
   "/robots.txt",       // SEO crawl directives
   "/sitemap.xml",      // SEO sitemap

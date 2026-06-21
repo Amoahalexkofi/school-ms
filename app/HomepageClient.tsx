@@ -1046,7 +1046,7 @@ All 15 modules + a free school website · GH₵199/mo or GH₵1,990/yr · Cancel
             {[
               { title: "Product",     links: [["Features","#features"],["Pricing","#pricing"],["All features","/features"],["Sign in","/sign-in"]] },
               { title: "Get started", links: [["Live demo","/demo"],["Get started","/contact"],["WhatsApp us",WHATSAPP_URL]] },
-              { title: "Company",     links: [["Contact","/contact"],["Terms","/terms"],["Novalss","https://novalss.com"]] },
+              { title: "Company",     links: [["Contact","/contact"],["Terms","/terms"],["Privacy","/privacy"],["Novalss","https://novalss.com"]] },
             ].map(({ title, links }) => (
               <div key={title}>
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 mb-5">{title}</p>

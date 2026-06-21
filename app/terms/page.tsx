@@ -158,7 +158,10 @@ export default function TermsPage() {
       <footer className="border-t border-slate-100">
         <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <Link href="/" className="text-[13px] font-semibold text-indigo-600 hover:underline">← Back to home</Link>
-          <p className="text-[12px] text-slate-400">© {new Date().getFullYear()} Novalss Technology Solutions. All rights reserved.</p>
+          <div className="flex items-center gap-4 text-[12px] text-slate-400">
+            <Link href="/privacy" className="hover:text-slate-600">Privacy</Link>
+            <span>© {new Date().getFullYear()} Novalss Technology Solutions</span>
+          </div>
         </div>
       </footer>
     </div>
