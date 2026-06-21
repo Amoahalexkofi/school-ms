@@ -185,7 +185,7 @@ export default async function DashboardPage() {
               />
               <KpiCard
                 label="Fees collected" value={`${currency}${(stats.monthCollection ?? 0).toLocaleString()}`}
-                sub="This month" href="/fees/collect" icon={Banknote}
+                sub="This month" href="/fees" icon={Banknote}
               />
               <KpiCard
                 label="Expenses" value={`${currency}${(stats.monthExpense ?? 0).toLocaleString()}`}
@@ -250,7 +250,7 @@ export default async function DashboardPage() {
                     <h2 className="text-[15px] font-semibold text-slate-900">Fee collection</h2>
                     <p className="text-[12px] text-slate-400 mt-0.5">Current session</p>
                   </div>
-                  <Link href="/fees/collect"
+                  <Link href="/fees"
                     className="inline-flex items-center gap-1.5 text-[12px] font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
                     <DollarSign className="h-3.5 w-3.5" /> Collect
                   </Link>
@@ -296,7 +296,7 @@ export default async function DashboardPage() {
                       {stats.todayPayments.length} transaction{stats.todayPayments.length !== 1 ? "s" : ""}
                     </p>
                   </div>
-                  <Link href="/fees/collect"
+                  <Link href="/fees"
                     className="text-[12px] text-indigo-600 font-medium hover:text-indigo-700 flex items-center gap-0.5 transition-colors">
                     View all <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
@@ -308,7 +308,7 @@ export default async function DashboardPage() {
                       <DollarSign className="h-5 w-5 text-slate-300" />
                     </div>
                     <p className="text-[14px] font-medium text-slate-500">No payments yet today</p>
-                    <Link href="/fees/collect" className="mt-2 text-[13px] text-indigo-600 font-medium hover:underline">
+                    <Link href="/fees" className="mt-2 text-[13px] text-indigo-600 font-medium hover:underline">
                       Collect a fee →
                     </Link>
                   </div>
@@ -339,7 +339,7 @@ export default async function DashboardPage() {
                     </div>
                     {stats.todayPayments.length > 8 && (
                       <div className="pt-3 text-center">
-                        <Link href="/fees/collect" className="text-[12px] text-slate-400 hover:text-indigo-600 transition-colors font-medium">
+                        <Link href="/fees" className="text-[12px] text-slate-400 hover:text-indigo-600 transition-colors font-medium">
                           + {stats.todayPayments.length - 8} more payments today
                         </Link>
                       </div>
@@ -357,7 +357,7 @@ export default async function DashboardPage() {
                   <div className="space-y-0.5">
                     {[
                       { href: "/attendance",   label: "Mark attendance",  show: ["ADMIN","SUPER_ADMIN","TEACHER"],    icon: ClipboardList },
-                      { href: "/fees/collect", label: "Collect fees",     show: ["ADMIN","SUPER_ADMIN","ACCOUNTANT"], icon: DollarSign },
+                      { href: "/fees", label: "Collect fees",     show: ["ADMIN","SUPER_ADMIN","ACCOUNTANT"], icon: DollarSign },
                       { href: "/students/new", label: "Add student",      show: ["ADMIN","SUPER_ADMIN"],              icon: UserPlus },
                       { href: "/exam-groups",  label: "Enter marks",      show: ["ADMIN","SUPER_ADMIN","TEACHER"],    icon: BookOpen },
                       { href: "/staff/new",    label: "Add staff",        show: ["ADMIN","SUPER_ADMIN"],              icon: UserCog },
