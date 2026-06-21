@@ -821,13 +821,11 @@ export function HomepageClient() {
           </motion.div>
 
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+            className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start max-w-3xl mx-auto">
             {[
-              { name: "Starter",    price: "GH₵149", sub: "/mo · up to 300 students", hl: false, cta: "Get started →", href: "/contact", features: ["All 15 modules","Free school website","WhatsApp & SMS alerts","Online fee payments","Email support"] },
-              { name: "Standard",   price: "GH₵349", sub: "/mo · up to 800 students", hl: true,  cta: "Get started →", href: "/contact", features: ["Everything in Starter","Custom domain","Priority WhatsApp support","Daily backups","Advanced analytics"] },
-              { name: "Pro",        price: "GH₵699", sub: "/mo · unlimited students", hl: false, cta: "Get started →", href: "/contact", features: ["Everything in Standard","Unlimited students","Dedicated onboarding","Phone & WhatsApp support"] },
-              { name: "Enterprise", price: "Custom", sub: "multi-branch & more",      hl: false, cta: "Contact sales", href: "/contact", features: ["Everything in Pro","Dedicated infrastructure","Enhanced SLA","On-site training","Account manager"] },
-            ].map(({ name, price, sub, hl, features, cta, href }) => (
+              { name: "Complete",   price: "GH₵199", sub: "per month, billed monthly", annual: "or GH₵1,990/year — save 17% (2 months free)", hl: true,  cta: "Get started →", href: "/contact", features: ["All 15 modules","Free school website","Unlimited students","WhatsApp & SMS alerts","Online fee payments","Custom domain","Daily backups & analytics","Priority support"] },
+              { name: "Enterprise", price: "Custom", sub: "for school groups & large institutions", annual: "", hl: false, cta: "Contact sales", href: "/contact", features: ["Everything in Complete","Dedicated infrastructure","Enhanced SLA & uptime","On-site training","Custom integrations","Dedicated account manager"] },
+            ].map(({ name, price, sub, annual, hl, features, cta, href }) => (
               <motion.div key={name} variants={fadeUp}
                 className={`rounded-2xl p-6 border relative flex flex-col ${hl
                   ? "border-slate-900/[0.0] lg:scale-[1.03] z-10"
@@ -845,8 +843,11 @@ export function HomepageClient() {
                 )}
                 <div className="mb-6">
                   <p className={`text-[10px] font-bold uppercase tracking-widest mb-3 ${hl ? "text-indigo-400" : "text-slate-400"}`}>{name}</p>
-                  <p className={`text-[30px] font-black leading-none mb-2 ${hl ? "text-white" : "text-slate-900"}`}>{price}</p>
-                  <p className={`text-[12px] ${hl ? "text-slate-400" : "text-slate-400"}`}>{sub}</p>
+                  <p className={`text-[42px] font-black leading-none mb-2 ${hl ? "text-white" : "text-slate-900"}`}>{price}</p>
+                  <p className="text-[12px] text-slate-400">{sub}</p>
+                  {annual && (
+                    <p className={`text-[12.5px] font-semibold mt-2 ${hl ? "text-emerald-400" : "text-emerald-600"}`}>{annual}</p>
+                  )}
                 </div>
                 <ul className="space-y-3 flex-1 mb-8">
                   {features.map(f => (
@@ -1012,7 +1013,7 @@ export function HomepageClient() {
                 </a>
               </motion.div>
               <motion.p variants={fadeUp} className="text-white/55 text-[12px] mt-7">
-                All 15 modules + a free school website · From GH₵149/mo · Cancel anytime
+All 15 modules + a free school website · GH₵199/mo or GH₵1,990/yr · Cancel anytime
               </motion.p>
             </div>
           </motion.div>
