@@ -1060,7 +1060,7 @@ All 15 modules + a free school website · GH₵199/mo or GH₵1,990/yr · Cancel
             ))}
           </div>
           <div className="border-t border-white/[0.05] pt-7 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <p className="text-[12px] text-slate-500">© {new Date().getFullYear()} Novalss Ltd. All rights reserved.</p>
+            <p className="text-[12px] text-slate-500">© {new Date().getFullYear()} Novalss Technology Solutions. All rights reserved.</p>
             <p className="text-[12px] text-slate-500">Made with ♥ for African schools</p>
           </div>
         </div>
