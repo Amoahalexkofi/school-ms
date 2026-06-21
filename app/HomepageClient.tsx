@@ -805,7 +805,7 @@ export function HomepageClient() {
 
       {/* ── PRICING ── */}
       <section id="pricing" className="scroll-mt-20 py-16 md:py-24 bg-white border-t border-slate-900/[0.06]">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
             <motion.p variants={fadeUp} className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.14em] mb-4">Pricing</motion.p>
             <motion.h2 variants={fadeUp}
@@ -813,20 +813,24 @@ export function HomepageClient() {
               Simple, transparent pricing.
             </motion.h2>
             <motion.p variants={fadeUp} className="text-slate-500 text-[15px] mt-4">
-              Every plan includes all 15 modules. No per-feature fees.
+              Every plan includes all 15 modules and a free school website. Save 2 months when you pay annually.
+            </motion.p>
+            <motion.p variants={fadeUp} className="text-[13px] text-slate-400 mt-3">
+              Just exploring? <Link href="/demo" className="text-indigo-600 font-semibold hover:underline">Try the live demo free →</Link>
             </motion.p>
           </motion.div>
 
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
             {[
-              { name: "Starter",      price: "Free",    sub: "explore the live demo",      hl: false, cta: "Try the demo",  href: "/demo",    features: ["All 15 modules","Up to 200 students","Community support","Skula subdomain"] },
-              { name: "Professional", price: "GH₵ 199", sub: "/ month, billed monthly",    hl: true,  cta: "Get started →", href: "/contact", features: ["Everything in Starter","Unlimited students","Priority WhatsApp support","Custom domain","Parent SMS alerts","Daily backups","Advanced analytics"] },
-              { name: "Enterprise",   price: "Custom",  sub: "let's talk",                  hl: false, cta: "Contact sales", href: "/contact", features: ["Everything in Pro","Dedicated infrastructure","SLA guarantee","On-site training","Custom integrations","Dedicated account manager"] },
+              { name: "Starter",    price: "GH₵149", sub: "/mo · up to 300 students", hl: false, cta: "Get started →", href: "/contact", features: ["All 15 modules","Free school website","WhatsApp & SMS alerts","Online fee payments","Email support"] },
+              { name: "Standard",   price: "GH₵349", sub: "/mo · up to 800 students", hl: true,  cta: "Get started →", href: "/contact", features: ["Everything in Starter","Custom domain","Priority WhatsApp support","Daily backups","Advanced analytics"] },
+              { name: "Pro",        price: "GH₵699", sub: "/mo · unlimited students", hl: false, cta: "Get started →", href: "/contact", features: ["Everything in Standard","Unlimited students","Dedicated onboarding","Phone & WhatsApp support"] },
+              { name: "Enterprise", price: "Custom", sub: "multi-branch & more",      hl: false, cta: "Contact sales", href: "/contact", features: ["Everything in Pro","Dedicated infrastructure","Enhanced SLA","On-site training","Account manager"] },
             ].map(({ name, price, sub, hl, features, cta, href }) => (
               <motion.div key={name} variants={fadeUp}
-                className={`rounded-2xl p-8 border relative flex flex-col ${hl
-                  ? "border-slate-900/[0.0] md:scale-[1.03] z-10"
+                className={`rounded-2xl p-6 border relative flex flex-col ${hl
+                  ? "border-slate-900/[0.0] lg:scale-[1.03] z-10"
                   : "bg-white border-slate-900/[0.07]"
                 }`}
                 style={hl ? {
@@ -839,9 +843,9 @@ export function HomepageClient() {
                     ✦ MOST POPULAR
                   </div>
                 )}
-                <div className="mb-7">
+                <div className="mb-6">
                   <p className={`text-[10px] font-bold uppercase tracking-widest mb-3 ${hl ? "text-indigo-400" : "text-slate-400"}`}>{name}</p>
-                  <p className={`text-5xl font-black leading-none mb-2 ${hl ? "text-white" : "text-slate-900"}`}>{price}</p>
+                  <p className={`text-[30px] font-black leading-none mb-2 ${hl ? "text-white" : "text-slate-900"}`}>{price}</p>
                   <p className={`text-[12px] ${hl ? "text-slate-400" : "text-slate-400"}`}>{sub}</p>
                 </div>
                 <ul className="space-y-3 flex-1 mb-8">
@@ -1008,7 +1012,7 @@ export function HomepageClient() {
                 </a>
               </motion.div>
               <motion.p variants={fadeUp} className="text-white/55 text-[12px] mt-7">
-                Free 30-day trial · GH₵ 199/mo after · Cancel anytime
+                All 15 modules + a free school website · From GH₵149/mo · Cancel anytime
               </motion.p>
             </div>
           </motion.div>
