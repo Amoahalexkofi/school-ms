@@ -871,6 +871,10 @@ export function HomepageClient() {
             ))}
           </motion.div>
 
+          <motion.p variants={fadeUp} className="text-center text-[12px] text-slate-400 mt-6">
+            Prices in GH₵, exclusive of taxes. Launch pricing — <Link href="/terms" className="text-slate-500 hover:text-indigo-600 underline underline-offset-2">terms &amp; conditions apply</Link>.
+          </motion.p>
+
           {/* Add-on — Multi Branch (prominent band) */}
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
             className="mt-12 relative overflow-hidden rounded-3xl px-7 py-8 sm:px-10 sm:py-9"
@@ -1041,7 +1045,7 @@ All 15 modules + a free school website · GH₵199/mo or GH₵1,990/yr · Cancel
             {[
               { title: "Product",     links: [["Features","#features"],["Pricing","#pricing"],["All features","/features"],["Sign in","/sign-in"]] },
               { title: "Get started", links: [["Live demo","/demo"],["Get started","/contact"],["WhatsApp us",WHATSAPP_URL]] },
-              { title: "Company",     links: [["Contact","/contact"],["Novalss","https://novalss.com"]] },
+              { title: "Company",     links: [["Contact","/contact"],["Terms","/terms"],["Novalss","https://novalss.com"]] },
             ].map(({ title, links }) => (
               <div key={title}>
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 mb-5">{title}</p>
