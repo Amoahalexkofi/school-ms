@@ -27,6 +27,15 @@ function computePaid(deposits: any[]) {
   }, 0);
 }
 
+// Amount paid against ONE fee type (deposits keyed by feeGroupItemId) — Smart
+// School collects per fee_groups_feetype.
+function paidForItem(deposits: any[], itemId: string) {
+  return deposits
+    .filter((d) => d.feeGroupItemId === itemId)
+    .reduce((s, d) => s + Object.values(d.amountDetail as Record<string, any>)
+      .reduce((ds: number, v: any) => ds + Number(v?.amount ?? 0), 0), 0);
+}
+
 type Discount = { id: string; name: string; type: string; percentage: number; amount: number };
 type Props = {
   student: any;
@@ -39,7 +48,7 @@ const todayStr = () => new Date().toISOString().slice(0, 10);
 
 export function FeeCollectClient({ student, masters, gateway, discounts = [] }: Props) {
   const router = useRouter();
-  const [payDialog,       setPayDialog]       = useState<{ master: Master } | null>(null);
+  const [payDialog,       setPayDialog]       = useState<{ master: Master; item: any; idx: number } | null>(null);
   const [amount,          setAmount]          = useState("");
   const [fine,            setFine]            = useState("");
   const [payDate,         setPayDate]         = useState(todayStr());
@@ -60,13 +69,12 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
     if (!payDialog || !amount || Number(amount) <= 0) { setError("Enter a valid amount"); return; }
     setLoading(true); setError("");
     try {
-      // Pass the first feeGroupItemId (Smart School fee_deposit uses item-level keying)
-    const firstItemId = payDialog.master.feeSessionGroup.items[0]?.id ?? null;
-    const res  = await fetch("/api/fees/collect", {
+      // Deposit is keyed by the specific fee type (Smart School fee_groups_feetype_id)
+      const res  = await fetch("/api/fees/collect", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           studentFeesMasterId: payDialog.master.id,
-          feeGroupItemId: firstItemId,
+          feeGroupItemId: payDialog.item?.id ?? null,
           amount: Number(amount),
           fine: Number(fine) || 0,
           paymentDate: payDate,
@@ -85,12 +93,16 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
     finally { setLoading(false); }
   }
 
-  function openPay(master: Master) {
-    const paid    = computePaid(master.deposits);
-    const balance = Number(master.amount) - paid;
+  function itemAmount(master: Master, item: any, idx: number) {
+    // Carry-forward (system) masters store the whole balance on item[0]
+    return master.isSystem && idx === 0 ? Number(master.amount) : Number(item.amount);
+  }
+
+  function openPayItem(master: Master, item: any, idx: number) {
+    const balance = itemAmount(master, item, idx) - paidForItem(master.deposits, item.id);
     setAmount(balance > 0 ? String(balance.toFixed(2)) : "");
     setFine(""); setPayDate(todayStr()); setSelDiscounts([]);
-    setMode("CASH"); setDesc(""); setError(""); setPayDialog({ master });
+    setMode("CASH"); setDesc(""); setError(""); setPayDialog({ master, item, idx });
   }
 
   function toggleDiscount(id: string) {
@@ -207,20 +219,13 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
                     <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${isPaid ? "bg-green-100 text-green-700" : balance === Number(master.amount) ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>
                       {isPaid ? "PAID" : paid > 0 ? "PARTIAL" : "UNPAID"}
                     </span>
-                    {!isPaid && (
-                      <>
-                        <Button size="sm" onClick={() => openPay(master)}>
-                          <Receipt className="h-3.5 w-3.5 mr-1" /> Collect
-                        </Button>
-                        {gateway && (
-                          <Button size="sm" variant="outline" disabled={onlineLoading}
-                            onClick={() => handlePayOnline(master)}
-                            title={`Pay online via ${gateway.paymentType}${gateway.isSandbox ? " (test)" : ""}`}>
-                            <CreditCard className="h-3.5 w-3.5 mr-1" />
-                            {onlineLoading ? "…" : "Pay Online"}
-                          </Button>
-                        )}
-                      </>
+                    {!isPaid && gateway && (
+                      <Button size="sm" variant="outline" disabled={onlineLoading}
+                        onClick={() => handlePayOnline(master)}
+                        title={`Pay online via ${gateway.paymentType}${gateway.isSandbox ? " (test)" : ""}`}>
+                        <CreditCard className="h-3.5 w-3.5 mr-1" />
+                        {onlineLoading ? "…" : "Pay Online"}
+                      </Button>
                     )}
                   </div>
                 </CardHeader>
@@ -238,26 +243,40 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
                     </div>
                   </div>
 
-                  {/* Fee items breakdown */}
+                  {/* Fee items breakdown — each fee type collected individually */}
                   <table className="w-full text-xs">
                     <thead className="text-gray-400">
                       <tr>
                         <th className="text-left py-1">Fee Type</th>
                         <th className="text-right py-1">Amount</th>
+                        <th className="text-right py-1">Paid</th>
+                        <th className="text-right py-1">Balance</th>
                         <th className="text-right py-1">Due</th>
+                        <th className="py-1" />
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                      {master.feeSessionGroup.items.map((item, idx) => (
-                        <tr key={item.id}>
-                          <td className="py-1.5 text-gray-700">{item.feeType.name}</td>
-                          <td className="py-1.5 text-right font-medium text-gray-900">
-                            {/* Smart School: for system (carry-forward) masters, item[0].amount = master.amount */}
-                            ₵{(master.isSystem && idx === 0 ? Number(master.amount) : Number(item.amount)).toLocaleString()}
-                          </td>
-                          <td className="py-1.5 text-right text-gray-400">{item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "—"}</td>
-                        </tr>
-                      ))}
+                      {master.feeSessionGroup.items.map((item, idx) => {
+                        const amt   = itemAmount(master, item, idx);
+                        const paidI = paidForItem(master.deposits, item.id);
+                        const balI  = amt - paidI;
+                        return (
+                          <tr key={item.id}>
+                            <td className="py-1.5 text-gray-700">{item.feeType.name}</td>
+                            <td className="py-1.5 text-right font-medium text-gray-900">₵{amt.toLocaleString()}</td>
+                            <td className="py-1.5 text-right text-green-600">₵{paidI.toLocaleString()}</td>
+                            <td className={`py-1.5 text-right font-medium ${balI > 0 ? "text-red-600" : "text-green-600"}`}>₵{balI.toLocaleString()}</td>
+                            <td className="py-1.5 text-right text-gray-400">{item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "—"}</td>
+                            <td className="py-1.5 text-right">
+                              {balI > 0 && (
+                                <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => openPayItem(master, item, idx)}>
+                                  <Receipt className="h-3 w-3 mr-1" /> Collect
+                                </Button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
 
@@ -294,9 +313,12 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
           {payDialog && (
             <div className="space-y-4">
               <div className="bg-gray-50 rounded-lg p-3 text-sm">
-                <p className="font-medium text-gray-800">{payDialog.master.feeSessionGroup.feeGroup.name}</p>
+                <p className="font-medium text-gray-800">
+                  {payDialog.item?.feeType?.name ?? payDialog.master.feeSessionGroup.feeGroup.name}
+                </p>
+                <p className="text-xs text-gray-400">{payDialog.master.feeSessionGroup.feeGroup.name}</p>
                 <p className="text-xs text-gray-500 mt-0.5">
-                  Balance: ₵{(Number(payDialog.master.amount) - computePaid(payDialog.master.deposits)).toLocaleString()}
+                  Balance: ₵{(itemAmount(payDialog.master, payDialog.item, payDialog.idx) - paidForItem(payDialog.master.deposits, payDialog.item.id)).toLocaleString()}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-3">
