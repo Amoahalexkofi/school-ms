@@ -11,7 +11,7 @@ const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[
 type MarkEntry = {
   student: {
     id: string; firstName: string; lastName: string; admissionNo: string;
-    rollNo?: string; dob?: string; gender?: string; image?: string;
+    rollNo?: string; dateOfBirth?: string; gender?: string; image?: string;
     fatherName?: string; motherName?: string; currentAddress?: string;
   };
   marksObtained: number | null; grade: string | null; isPassing: boolean; note?: string;
@@ -27,19 +27,36 @@ type Schedule = {
 type ExamGroup = { id: string; name: string; schedules: Schedule[] };
 type ClassData = { id: string; name: string; classSections: { id: string; section: { id: string; name: string } }[] };
 
-function getGradeDivision(pct: number) {
-  if (pct >= 80) return { div: "Distinction", color: "text-purple-700" };
-  if (pct >= 60) return { div: "First Class",  color: "text-green-700"  };
-  if (pct >= 45) return { div: "Second Class", color: "text-blue-700"   };
-  if (pct >= 33) return { div: "Pass",         color: "text-yellow-700" };
-  return { div: "Fail", color: "text-red-700" };
+type Division = { name: string; from: number; to: number };
+
+// Colour the division by its position (top band → purple, fail → red).
+const DIV_COLORS = ["text-purple-700", "text-green-700", "text-blue-700", "text-yellow-700", "text-red-700"];
+
+function makeDivisionFn(divisions: Division[]) {
+  // Fall back to sensible defaults only if the school configured none.
+  const bands = divisions.length
+    ? divisions
+    : [
+        { name: "Distinction", from: 80, to: 100 },
+        { name: "First Class", from: 60, to: 79.99 },
+        { name: "Second Class", from: 45, to: 59.99 },
+        { name: "Pass", from: 40, to: 44.99 },
+        { name: "Fail", from: 0, to: 39.99 },
+      ];
+  return (pct: number) => {
+    const idx = bands.findIndex((d) => pct >= d.from && pct <= d.to);
+    if (idx === -1) return { div: "—", color: "text-gray-500" };
+    return { div: bands[idx].name, color: DIV_COLORS[Math.min(idx, DIV_COLORS.length - 1)] };
+  };
 }
 
-export function MarksheetClient({ examGroups, classes, school }: {
+export function MarksheetClient({ examGroups, classes, school, divisions = [] }: {
   examGroups: ExamGroup[];
   classes: ClassData[];
   school: { name: string; address?: string; phone?: string } | null;
+  divisions?: Division[];
 }) {
+  const getGradeDivision = useMemo(() => makeDivisionFn(divisions), [divisions]);
   const [examGroupId, setExamGroupId] = useState("");
   const [classId, setClassId]         = useState("");
   const [classSectionId, setClassSectionId] = useState("");
@@ -177,7 +194,7 @@ export function MarksheetClient({ examGroups, classes, school }: {
                   <Field label="Class"          value={`${selectedClass?.name} — ${sectionName}`} />
                   <Field label="Father's Name"  value={ms.student.fatherName ?? "—"} />
                   <Field label="Mother's Name"  value={ms.student.motherName ?? "—"} />
-                  <Field label="Date of Birth"  value={ms.student.dob ? new Date(ms.student.dob).toLocaleDateString() : "—"} />
+                  <Field label="Date of Birth"  value={ms.student.dateOfBirth ? new Date(ms.student.dateOfBirth).toLocaleDateString() : "—"} />
                   <Field label="Gender"         value={ms.student.gender ?? "—"} />
                   <Field label="Issue Date"     value={printDate} />
                 </div>

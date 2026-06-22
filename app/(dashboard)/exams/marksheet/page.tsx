@@ -3,7 +3,7 @@ import { Topbar } from "@/components/Topbar";
 import { MarksheetClient } from "./MarksheetClient";
 
 async function getData() {
-  const [examGroups, classes, school] = await Promise.all([
+  const [examGroups, classes, school, divisions] = await Promise.all([
     ((await getDb()) as any).examGroup.findMany({
       where: { isPublished: true },
       orderBy: { createdAt: "desc" },
@@ -17,7 +17,7 @@ async function getData() {
                 student: {
                   select: {
                     id: true, firstName: true, lastName: true, admissionNo: true,
-                    rollNo: true, dob: true, gender: true, image: true,
+                    rollNo: true, dateOfBirth: true, gender: true, image: true,
                     fatherName: true, motherName: true, currentAddress: true,
                   },
                 },
@@ -38,8 +38,16 @@ async function getData() {
       },
     }),
     ((await getDb()) as any).schoolProfile.findFirst(),
+    ((await getDb()) as any).markDivision.findMany({
+      where: { isActive: true },
+      orderBy: { percentageFrom: "desc" },
+    }).catch(() => []),
   ]);
-  return { examGroups, classes, school };
+  // Plain objects (Decimal → number) for the client
+  const divs = (divisions ?? []).map((d: any) => ({
+    name: d.name, from: Number(d.percentageFrom), to: Number(d.percentageTo),
+  }));
+  return { examGroups, classes, school, divisions: divs };
 }
 
 export default async function MarksheetPage() {
