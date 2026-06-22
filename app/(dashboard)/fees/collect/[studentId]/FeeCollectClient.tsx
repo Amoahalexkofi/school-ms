@@ -27,16 +27,23 @@ function computePaid(deposits: any[]) {
   }, 0);
 }
 
+type Discount = { id: string; name: string; type: string; percentage: number; amount: number };
 type Props = {
   student: any;
   masters: Master[];
   gateway: { paymentType: string; isSandbox: boolean } | null;
+  discounts?: Discount[];
 };
 
-export function FeeCollectClient({ student, masters, gateway }: Props) {
+const todayStr = () => new Date().toISOString().slice(0, 10);
+
+export function FeeCollectClient({ student, masters, gateway, discounts = [] }: Props) {
   const router = useRouter();
   const [payDialog,       setPayDialog]       = useState<{ master: Master } | null>(null);
   const [amount,          setAmount]          = useState("");
+  const [fine,            setFine]            = useState("");
+  const [payDate,         setPayDate]         = useState(todayStr());
+  const [selDiscounts,    setSelDiscounts]    = useState<string[]>([]);
   const [mode,            setMode]            = useState("CASH");
   const [desc,            setDesc]            = useState("");
   const [loading,         setLoading]         = useState(false);
@@ -61,8 +68,11 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
           studentFeesMasterId: payDialog.master.id,
           feeGroupItemId: firstItemId,
           amount: Number(amount),
+          fine: Number(fine) || 0,
+          paymentDate: payDate,
           paymentMode: mode,
           description: desc,
+          discountIds: selDiscounts,
         }),
       });
       const data = await res.json();
@@ -79,8 +89,20 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
     const paid    = computePaid(master.deposits);
     const balance = Number(master.amount) - paid;
     setAmount(balance > 0 ? String(balance.toFixed(2)) : "");
+    setFine(""); setPayDate(todayStr()); setSelDiscounts([]);
     setMode("CASH"); setDesc(""); setError(""); setPayDialog({ master });
   }
+
+  function toggleDiscount(id: string) {
+    setSelDiscounts((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
+  }
+
+  // Preview the discount total for the entered amount (mirrors the API math)
+  const discountPreview = selDiscounts.reduce((sum, id) => {
+    const d = discounts.find((x) => x.id === id);
+    if (!d) return sum;
+    return sum + (d.type === "percentage" ? (Number(amount) || 0) * d.percentage / 100 : d.amount);
+  }, 0);
 
   async function handlePayOnline(master: Master) {
     const paid    = computePaid(master.deposits);
@@ -277,17 +299,48 @@ export function FeeCollectClient({ student, masters, gateway }: Props) {
                   Balance: ₵{(Number(payDialog.master.amount) - computePaid(payDialog.master.deposits)).toLocaleString()}
                 </p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₵) *</label>
-                <Input type="number" min="0.01" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₵) *</label>
+                  <Input type="number" min="0.01" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Fine / Late Fee (₵)</label>
+                  <Input type="number" min="0" step="0.01" value={fine} onChange={e => setFine(e.target.value)} placeholder="0.00" />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
-                <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-                  value={mode} onChange={e => setMode(e.target.value)}>
-                  {PAYMENT_MODES.map(m => <option key={m} value={m}>{m.replace(/_/g, " ")}</option>)}
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Payment Date *</label>
+                  <Input type="date" value={payDate} onChange={e => setPayDate(e.target.value)} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
+                  <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+                    value={mode} onChange={e => setMode(e.target.value)}>
+                    {PAYMENT_MODES.map(m => <option key={m} value={m}>{m.replace(/_/g, " ")}</option>)}
+                  </select>
+                </div>
               </div>
+
+              {discounts.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Discounts</label>
+                  <div className="space-y-1.5 border border-slate-200 rounded-lg p-2.5 max-h-32 overflow-y-auto">
+                    {discounts.map((d) => (
+                      <label key={d.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" checked={selDiscounts.includes(d.id)} onChange={() => toggleDiscount(d.id)} />
+                        <span className="text-gray-700">{d.name}</span>
+                        <span className="text-xs text-gray-400 ml-auto">{d.type === "percentage" ? `${d.percentage}%` : `₵${d.amount}`}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {discountPreview > 0 && (
+                    <p className="text-xs text-green-600 mt-1">Discount applied: ₵{discountPreview.toFixed(2)}</p>
+                  )}
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description / Reference</label>
                 <Input value={desc} onChange={e => setDesc(e.target.value)} placeholder="Optional" />

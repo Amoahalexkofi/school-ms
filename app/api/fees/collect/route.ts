@@ -14,6 +14,8 @@ export async function POST(req: NextRequest) {
       studentFeesMasterId,
       feeGroupItemId,
       amount,
+      fine,          // optional: late-fee (Smart School amount_fine)
+      paymentDate,   // optional: collection date (Smart School date)
       paymentMode,
       description,
       discountIds,   // optional: string[]
@@ -23,7 +25,10 @@ export async function POST(req: NextRequest) {
     if (!amount || Number(amount) <= 0) return NextResponse.json({ error: "Amount must be positive" }, { status: 422 });
 
     const db = await getDb();
-    const date = new Date().toISOString().slice(0, 10);
+    const date = paymentDate
+      ? new Date(paymentDate).toISOString().slice(0, 10)
+      : new Date().toISOString().slice(0, 10);
+    const fineAmount = Number(fine) > 0 ? Number(fine) : 0;
 
     // Resolve discount amount from discountIds (mirrors $fee_discounts loop in Smart School)
     let totalDiscount = 0;
@@ -62,7 +67,7 @@ export async function POST(req: NextRequest) {
     const newEntry = {
       amount:       Number(amount),
       discount:     totalDiscount,
-      fine:         0,
+      fine:         fineAmount,
       date,
       payment_mode: paymentMode || "CASH",
       description:  description || "",
