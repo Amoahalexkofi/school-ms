@@ -248,7 +248,7 @@ async function main() {
   for (const subj of subjects) {
     let sched = await prisma.examSchedule.findFirst({ where: { examGroupId: examGroup.id, subjectId: subj.id } });
     if (!sched) sched = await prisma.examSchedule.create({
-      data: { examGroupId: examGroup.id, sessionId: session.id, subjectId: subj.id, fullMarks: 100, passingMarks: 40, dateOfExam: new Date("2026-06-10"), isPublished: true },
+      data: { examGroupId: examGroup.id, sessionId: session.id, subjectId: subj.id, classSectionId: csA.id, fullMarks: 100, passingMarks: 40, dateOfExam: new Date("2026-06-10"), isPublished: true },
     });
     for (const s of created) {
       const exists = await prisma.markEntry.findFirst({ where: { examScheduleId: sched.id, studentId: s.id } });

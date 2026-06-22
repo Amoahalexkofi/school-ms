@@ -22,13 +22,17 @@ export default async function MarkEntryPage({
   if (!schedule) notFound();
 
   const [enrollments, existingMarks, gradingScale] = await Promise.all([
-    ((await getDb()) as any).studentSession.findMany({
-      where: { classSectionId: schedule.classSectionId, sessionId: schedule.sessionId, isActive: true },
-      include: {
-        student: { select: { id: true, firstName: true, middleName: true, lastName: true, admissionNo: true } },
-      },
-      orderBy: [{ rollNo: "asc" }, { student: { firstName: "asc" } }],
-    }),
+    // A schedule may be unassigned (no class section) — don't pass null to
+    // Prisma (it rejects null filters and crashes the page).
+    schedule.classSectionId
+      ? ((await getDb()) as any).studentSession.findMany({
+          where: { classSectionId: schedule.classSectionId, sessionId: schedule.sessionId, isActive: true },
+          include: {
+            student: { select: { id: true, firstName: true, middleName: true, lastName: true, admissionNo: true } },
+          },
+          orderBy: [{ rollNo: "asc" }, { student: { firstName: "asc" } }],
+        })
+      : [],
     ((await getDb()) as any).markEntry.findMany({ where: { examScheduleId: scheduleId } }),
     ((await getDb()) as any).gradingScale.findFirst({
       include: { ranges: { where: { isActive: true }, orderBy: { markFrom: "desc" } } },
