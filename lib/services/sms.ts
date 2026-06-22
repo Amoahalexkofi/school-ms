@@ -83,9 +83,10 @@ async function sendViaTwilio(
 
 export async function sendSms(
   to: string | string[],
-  message: string
+  message: string,
+  dbClient?: any
 ): Promise<SmsResult> {
-  const db = await getDb();
+  const db = dbClient ?? (await getDb());
   const config = await (db as any).smsConfig.findFirst({ where: { isActive: true } });
 
   if (!config) {

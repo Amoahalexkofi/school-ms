@@ -127,9 +127,10 @@ async function sendViaMetaCloudApi(
 
 export async function sendWhatsApp(
   to: string | string[],
-  message: string
+  message: string,
+  dbClient?: any
 ): Promise<WhatsAppResult> {
-  const db     = await getDb();
+  const db     = dbClient ?? (await getDb());
   const config = await (db as any).whatsAppConfig.findFirst({ where: { isActive: true } });
 
   if (!config) return { success: false, provider: "none", error: "No active WhatsApp provider configured" };
