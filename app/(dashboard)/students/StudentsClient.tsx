@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Users, Plus, Search, Eye, GraduationCap, CreditCard } from "lucide-react";
+import { Users, Plus, Search, Eye, GraduationCap, CreditCard, Upload } from "lucide-react";
 import { usePermission } from "@/components/PermissionsProvider";
 import { Pagination } from "@/components/Pagination";
 
@@ -110,6 +110,13 @@ export function StudentsClient({ students, classSections, total, page, totalPage
               <GraduationCap className="h-4 w-4 mr-1" /> Promote
             </Button>
           </Link>
+          {perm.canAdd && (
+            <Link href="/students/import">
+              <Button variant="outline" size="sm">
+                <Upload className="h-4 w-4 mr-1" /> Import
+              </Button>
+            </Link>
+          )}
           {perm.canAdd && (
             <Link href="/students/new">
               <Button size="sm">
