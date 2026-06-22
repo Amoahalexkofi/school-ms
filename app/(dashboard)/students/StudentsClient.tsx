@@ -6,7 +6,8 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Users, Plus, Search, Eye, GraduationCap, CreditCard, Upload, UserX } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Users, Plus, Search, Eye, GraduationCap, CreditCard, Upload, UserX, Mail, Trash2 } from "lucide-react";
 import { usePermission } from "@/components/PermissionsProvider";
 import { Pagination } from "@/components/Pagination";
 
@@ -73,6 +74,61 @@ export function StudentsClient({ students, classSections, total, page, totalPage
     debounceTimer = setTimeout(() => pushSearch(value), 400);
   }
 
+  // ── Bulk select / delete / email (Smart School bulkdelete + sendbulkmail) ──
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [emailForm, setEmailForm] = useState({ subject: "", message: "", target: "both" });
+  const [busy, setBusy] = useState(false);
+
+  const allOnPage = students.length > 0 && students.every((s: any) => selected.has(s.id));
+  function toggle(id: string) {
+    setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  }
+  function toggleAll() {
+    setSelected((s) => {
+      const n = new Set(s);
+      if (allOnPage) students.forEach((x: any) => n.delete(x.id));
+      else students.forEach((x: any) => n.add(x.id));
+      return n;
+    });
+  }
+
+  async function bulkDelete() {
+    const ids = [...selected];
+    if (!ids.length) return;
+    if (!confirm(`Delete ${ids.length} student(s)? Students with active enrollments will be skipped.`)) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/students/bulk", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete", ids }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error);
+      alert(`Deleted ${d.deleted}${d.skipped ? `, skipped ${d.skipped} (active enrollment)` : ""}.`);
+      setSelected(new Set());
+      router.refresh();
+    } catch (e: any) { alert(e.message); }
+    finally { setBusy(false); }
+  }
+
+  async function sendBulkEmail() {
+    const ids = [...selected];
+    if (!ids.length || !emailForm.message.trim()) { alert("Enter a message"); return; }
+    setBusy(true);
+    try {
+      const res = await fetch("/api/students/bulk", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "email", ids, ...emailForm }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error);
+      alert(`Email queued to ${d.sent} recipient group(s).`);
+      setEmailOpen(false); setEmailForm({ subject: "", message: "", target: "both" }); setSelected(new Set());
+    } catch (e: any) { alert(e.message); }
+    finally { setBusy(false); }
+  }
+
   return (
     <main className="flex-1 p-4 md:p-6 space-y-5">
       {/* Header */}
@@ -132,6 +188,20 @@ export function StudentsClient({ students, classSections, total, page, totalPage
         </div>
       </div>
 
+      {/* Bulk action bar */}
+      {selected.size > 0 && perm.canEdit && (
+        <div className="flex items-center gap-3 bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-2.5">
+          <span className="text-sm font-medium text-indigo-700">{selected.size} selected</span>
+          <Button size="sm" variant="outline" onClick={() => setEmailOpen(true)}>
+            <Mail className="h-3.5 w-3.5 mr-1" /> Email
+          </Button>
+          <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" disabled={busy} onClick={bulkDelete}>
+            <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+          </Button>
+          <button className="text-xs text-gray-500 hover:underline ml-auto" onClick={() => setSelected(new Set())}>Clear</button>
+        </div>
+      )}
+
       {/* Table */}
       <Card>
         <CardContent className="p-0">
@@ -146,6 +216,7 @@ export function StudentsClient({ students, classSections, total, page, totalPage
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50 border-b">
                     <tr>
+                      <th className="px-4 py-3 w-8"><input type="checkbox" checked={allOnPage} onChange={toggleAll} aria-label="Select all" /></th>
                       <th className="text-left px-4 py-3 font-medium text-gray-600">Adm No.</th>
                       <th className="text-left px-4 py-3 font-medium text-gray-600">Student Name</th>
                       <th className="text-left px-4 py-3 font-medium text-gray-600">Class / Section</th>
@@ -162,6 +233,7 @@ export function StudentsClient({ students, classSections, total, page, totalPage
                       const cls    = enroll?.classSection;
                       return (
                         <tr key={s.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3"><input type="checkbox" checked={selected.has(s.id)} onChange={() => toggle(s.id)} aria-label={`Select ${s.firstName}`} /></td>
                           <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.admissionNo}</td>
                           <td className="px-4 py-3">
                             <div className="font-medium">
@@ -200,6 +272,36 @@ export function StudentsClient({ students, classSections, total, page, totalPage
           )}
         </CardContent>
       </Card>
+
+      {/* Bulk email dialog */}
+      <Dialog open={emailOpen} onOpenChange={(o) => !o && setEmailOpen(false)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Email {selected.size} student{selected.size !== 1 ? "s" : ""}</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Send to</label>
+              <select className={FSEL + " w-full"} value={emailForm.target} onChange={(e) => setEmailForm((f) => ({ ...f, target: e.target.value }))}>
+                <option value="both">Student & Guardian</option>
+                <option value="student">Student only</option>
+                <option value="guardian">Guardian only</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+              <Input value={emailForm.subject} onChange={(e) => setEmailForm((f) => ({ ...f, subject: e.target.value }))} placeholder="Optional" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
+              <textarea className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 resize-none"
+                rows={4} value={emailForm.message} onChange={(e) => setEmailForm((f) => ({ ...f, message: e.target.value }))} />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setEmailOpen(false)}>Cancel</Button>
+              <Button disabled={busy} onClick={sendBulkEmail}>{busy ? "Sending…" : "Send Email"}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
