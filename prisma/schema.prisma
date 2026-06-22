@@ -108,6 +108,7 @@ model ClassSection {
   attendanceSchedules  StudentAttendanceSchedule[]
   subjectGroupSections SubjectGroupSection[]
   classSectionTimes    ClassSectionTime[]
+  examSchedules        ExamSchedule[]
 
   @@unique([classId, sectionId])
 }
@@ -889,6 +890,7 @@ model ExamSchedule {
   subjectId      String
   subject        Subject         @relation(fields: [subjectId], references: [id])
   classSectionId String?
+  classSection   ClassSection?   @relation(fields: [classSectionId], references: [id])
   dateOfExam     DateTime?       @db.Date
   startTime      String?
   endTime        String?
