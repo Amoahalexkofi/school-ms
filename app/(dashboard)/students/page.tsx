@@ -8,9 +8,9 @@ const LIMIT = 25;
 export default async function StudentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; classId?: string; sectionId?: string }>;
 }) {
-  const { page: pageStr, search = "" } = await searchParams;
+  const { page: pageStr, search = "", classId = "", sectionId = "" } = await searchParams;
   const page = Math.max(1, parseInt(pageStr ?? "1") || 1);
   const skip = (page - 1) * LIMIT;
 
@@ -28,6 +28,11 @@ export default async function StudentsPage({
       }
     : {};
   if (activeBranchId) where.branchId = activeBranchId;
+  // Class / Section filter (mirrors Smart School class_search) — via the
+  // student's current-session classSection.
+  if (classId) {
+    where.sessions = { some: { classSection: { classId, ...(sectionId ? { sectionId } : {}) } } };
+  }
 
   const [students, total, sessions, classSections, schoolHouses] = await Promise.all([
     (db as any).student.findMany({
@@ -70,6 +75,8 @@ export default async function StudentsPage({
         totalPages={Math.ceil(total / LIMIT)}
         limit={LIMIT}
         initialSearch={search}
+        initialClassId={classId}
+        initialSectionId={sectionId}
       />
     </div>
   );

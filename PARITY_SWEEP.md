@@ -55,14 +55,17 @@ Legend: ✅ match · 🟡 partial · ❌ missing
 
 | Screen | Smart School has | Ours | Verdict |
 |---|---|---|---|
-| Collect search | class+section roster AND keyword | **both (fixed dea82fd)** | ✅ |
-| **Collect page fields** | amount, **discount**, **fine**, payment mode, **date**, note, balance, print | amount, payment mode, description, balance, print receipt | 🟡 **no fine, no discount picker, no date** |
-| Discount applied at collection | `student_applied_discounts` (discountIds) | API supports `discountIds` but **UI never sends them** | 🟡 |
-| Fee setup (type/group/master) | CRUD | present (`/fees/setup`, `/assign`) | ✅ |
-| Discount assign + **approval** | assign + approve requests | assign only | 🟡 |
-| Fee reminder | config + **sends** | config only (no cron send) | 🟡 |
+| Collect search | class+section roster AND keyword | **both** ✅ | ✅ |
+| Collect page fields | amount, discount, fine, payment mode, date, note, balance, print | **all present** ✅ | ✅ |
+| Per-fee-type line collection | each fee_groups_feetype collected separately | **per-type Collect + balance** ✅ | ✅ |
+| Discount applied at collection | `student_applied_discounts` (discountIds) | **discount picker sends discountIds** ✅ | ✅ |
+| Fee setup (type/group/master) | CRUD | present | ✅ |
+| Discount assign | assign (NO approval in base v7.1.0 — earlier "approval" gap was a false alarm) | assign | ✅ |
+| Fee reminder | config + sends | **config + tenant-aware sending cron** ✅ | ✅ |
 | Carry forward | yes | present | ✅ |
-| Reports | daily collection, class-wise, type-wise, balance, online | one balance report | 🟡 |
+| Reports | due, daily collection, balance, online-fees | **Balance/Due + Daily Collection** ✅; online-fees list still marginal (online shows in Daily by mode) | 🟡 (minor) |
+
+**FEES MODULE: ~100% parity.** Only marginal remaining: a dedicated online-fees-only report (online payments already appear in the Daily report by payment mode).
 
 ---
 

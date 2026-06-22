@@ -20,14 +20,36 @@ type Props = {
   totalPages: number;
   limit: number;
   initialSearch: string;
+  initialClassId?: string;
+  initialSectionId?: string;
 };
 
-export function StudentsClient({ students, total, page, totalPages, limit, initialSearch }: Props) {
+const FSEL = "h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400";
+
+export function StudentsClient({ students, classSections, total, page, totalPages, limit, initialSearch, initialClassId = "", initialSectionId = "" }: Props) {
   const [search, setSearch]   = useState(initialSearch);
   const perm                  = usePermission("student_information");
   const router                = useRouter();
   const pathname              = usePathname();
   const searchParams          = useSearchParams();
+
+  // Distinct classes + sections for the selected class (Class/Section filter)
+  const classes = Array.from(
+    new Map((classSections ?? []).map((cs: any) => [cs.class.id, cs.class])).values()
+  ) as any[];
+  const sections = (classSections ?? []).filter((cs: any) => cs.class.id === initialClassId).map((cs: any) => cs.section);
+
+  const setParam = useCallback(
+    (updates: Record<string, string>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      for (const [k, v] of Object.entries(updates)) {
+        if (v) params.set(k, v); else params.delete(k);
+      }
+      params.set("page", "1");
+      router.push(`${pathname}?${params}`);
+    },
+    [router, pathname, searchParams],
+  );
 
   const pushSearch = useCallback(
     (value: string) => {
@@ -65,6 +87,16 @@ export function StudentsClient({ students, total, page, totalPages, limit, initi
               onChange={e => handleSearch(e.target.value)}
             />
           </div>
+          <select className={FSEL} value={initialClassId}
+            onChange={e => setParam({ classId: e.target.value, sectionId: "" })}>
+            <option value="">All classes</option>
+            {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+          <select className={FSEL} value={initialSectionId} disabled={!initialClassId}
+            onChange={e => setParam({ sectionId: e.target.value })}>
+            <option value="">All sections</option>
+            {sections.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
           <span className="text-sm text-gray-500 shrink-0">{total} student{total !== 1 ? "s" : ""}</span>
         </div>
         <div className="flex gap-2 flex-wrap">
