@@ -294,6 +294,34 @@ async function main() {
   }
   console.log(`✓ Homework: ${hwCount} items`);
 
+  // ── Lesson Plans ─────────────────────────────────────────────────────────────
+  const lpDefs = [
+    { subj: 0, topic: "Place value to 1000",            days: -5, status: "APPROVED"  },
+    { subj: 0, topic: "Addition with regrouping",       days: -1, status: "SUBMITTED" },
+    { subj: 1, topic: "Comprehension: short stories",   days: -3, status: "APPROVED"  },
+    { subj: 1, topic: "Parts of speech — nouns & verbs", days: 2,  status: "DRAFT"     },
+    { subj: 2, topic: "States of matter",               days: -2, status: "SUBMITTED" },
+    { subj: 3, topic: "Regions of Ghana",               days: 4,  status: "DRAFT"     },
+  ];
+  let lpCount = 0;
+  for (const def of lpDefs) {
+    const subj = subjects[def.subj];
+    if (!subj) continue;
+    const date = new Date(today0); date.setDate(date.getDate() + def.days);
+    const exists = await prisma.lessonPlan.findFirst({ where: { classSectionId: csA.id, subjectId: subj.id, topic: def.topic } });
+    if (exists) continue;
+    await prisma.lessonPlan.create({
+      data: {
+        staffId: demoTeacher.id, subjectId: subj.id, classSectionId: csA.id, sessionId: session.id,
+        date, topic: def.topic,
+        description: `Lesson plan for ${subj.name}: ${def.topic}. Objectives, activities and assessment.`,
+        status: def.status as any,
+      },
+    });
+    lpCount++;
+  }
+  console.log(`✓ Lesson Plans: ${lpCount} items`);
+
   // ── Library ────────────────────────────────────────────────────────────────
   const books = [
     ["The Very Hungry Caterpillar", "Eric Carle", "978-0241003008"],
