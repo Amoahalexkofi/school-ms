@@ -27,10 +27,14 @@ async function getStats() {
 
 export default async function FeesPage() {
   const data = await getStats();
+  const classSections = await ((await getDb()) as any).classSection.findMany({
+    include: { class: true, section: true },
+    orderBy: [{ class: { name: "asc" } }, { section: { name: "asc" } }],
+  });
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Fees" />
-      <FeesHubClient {...data} />
+      <FeesHubClient {...data} classSections={classSections} />
     </div>
   );
 }

@@ -10,6 +10,8 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const sessionId      = searchParams.get("sessionId");
   const classSectionId = searchParams.get("classSectionId");
+  const classId        = searchParams.get("classId");
+  const sectionId      = searchParams.get("sectionId");
   const search         = searchParams.get("search");
   const isActive       = searchParams.get("isActive");
   const limitParam     = parseInt(searchParams.get("limit") ?? "");
@@ -31,6 +33,10 @@ export async function GET(req: NextRequest) {
   const sessionFilter: any = {};
   if (sessionId)      sessionFilter.sessionId      = sessionId;
   if (classSectionId) sessionFilter.classSectionId = classSectionId;
+  // Fee collection "by class": filter via the classSection relation so a whole
+  // class (optionally a specific section) roster can be loaded — mirrors Smart
+  // School's class_search.
+  if (classId) sessionFilter.classSection = { classId, ...(sectionId ? { sectionId } : {}) };
 
   const students = await ((await getDb()) as any).student.findMany({
     where: {
