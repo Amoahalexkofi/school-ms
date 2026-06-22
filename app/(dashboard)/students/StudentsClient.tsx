@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Users, Plus, Search, Eye, GraduationCap, CreditCard, Upload } from "lucide-react";
+import { Users, Plus, Search, Eye, GraduationCap, CreditCard, Upload, UserX } from "lucide-react";
 import { usePermission } from "@/components/PermissionsProvider";
 import { Pagination } from "@/components/Pagination";
 
@@ -103,6 +103,11 @@ export function StudentsClient({ students, classSections, total, page, totalPage
           <Link href="/students/id-card">
             <Button variant="outline" size="sm">
               <CreditCard className="h-4 w-4 mr-1" /> ID Cards
+            </Button>
+          </Link>
+          <Link href="/students/disabled">
+            <Button variant="outline" size="sm">
+              <UserX className="h-4 w-4 mr-1" /> Disabled
             </Button>
           </Link>
           <Link href="/students/promote">
