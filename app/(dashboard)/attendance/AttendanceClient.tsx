@@ -36,6 +36,7 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
   const [saveState,  setSaveState]  = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [error,      setError]      = useState("");
   const [alreadySaved, setAlreadySaved] = useState(false);
+  const [notify,     setNotify]     = useState(false);
 
   const presentType = attendanceTypes.find(t => t.keyValue === "P");
 
@@ -83,7 +84,7 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
       const res = await fetch("/api/attendance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ classSectionId, sessionId, date, records }),
+        body: JSON.stringify({ classSectionId, sessionId, date, records, notify }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -261,13 +262,19 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
               </table>
 
               {/* Sticky footer save */}
-              <div className="border-t bg-gray-50 px-4 py-3 flex items-center justify-between">
+              <div className="border-t bg-gray-50 px-4 py-3 flex items-center justify-between gap-3">
                 <span className="text-xs text-gray-400">{enrollments.length} students</span>
                 {perm.canEdit && (
-                  <Button onClick={handleSave} disabled={saveState === "saving"}>
-                    <Save className="h-4 w-4 mr-1.5" />
-                    {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Attendance"}
-                  </Button>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
+                      <input type="checkbox" checked={notify} onChange={e => setNotify(e.target.checked)} />
+                      Notify guardians of absentees
+                    </label>
+                    <Button onClick={handleSave} disabled={saveState === "saving"}>
+                      <Save className="h-4 w-4 mr-1.5" />
+                      {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Attendance"}
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
