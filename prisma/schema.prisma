@@ -1691,6 +1691,20 @@ model Dispatch {
   createdAt  DateTime @default(now())
 }
 
+// Front office phone-call log (Smart School general_call)
+model PhoneCallLog {
+  id           String    @id @default(cuid())
+  name         String
+  phone        String?
+  callType     String    @default("incoming") // "incoming" or "outgoing"
+  date         DateTime
+  description  String?
+  callDuration String?
+  nextFollowUp DateTime?
+  note         String?
+  createdAt    DateTime  @default(now())
+}
+
 // ─── Online Exams ─────────────────────────────────────────────────────────────
 
 enum QuestionType {

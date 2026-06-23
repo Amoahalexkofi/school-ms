@@ -8,8 +8,8 @@ import { usePermission } from "@/components/PermissionsProvider";import { Input 
 import { Label } from "@/components/ui/label";
 import { Plus, CheckCircle2, UserCheck, X, Pencil, Trash2, Send, Inbox } from "lucide-react";
 
-type Props = { purposes: any[]; visitors: any[]; complaintTypes: any[]; complaints: any[]; enquiries: any[]; dispatches: any[] };
-type Tab = "visitors" | "complaints" | "enquiries" | "complaint-types" | "dispatch";
+type Props = { purposes: any[]; visitors: any[]; complaintTypes: any[]; complaints: any[]; enquiries: any[]; dispatches: any[]; calls: any[] };
+type Tab = "visitors" | "complaints" | "enquiries" | "complaint-types" | "dispatch" | "calls";
 
 const COMPLAINT_STATUS_STYLE: Record<string, string> = {
   OPEN:        "bg-red-100 text-red-700",
@@ -23,11 +23,31 @@ const ENQ_STATUS_STYLE: Record<string, string> = {
   CLOSED:    "bg-gray-100 text-gray-600",
 };
 
-export function FrontOfficeClient({ purposes, visitors, complaintTypes: initTypes, complaints, enquiries, dispatches: initialDispatches }: Props) {
+export function FrontOfficeClient({ purposes, visitors, complaintTypes: initTypes, complaints, enquiries, dispatches: initialDispatches, calls: initialCalls }: Props) {
   const perm = usePermission("front_office");
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("visitors");
   const [checkedOut, setCheckedOut] = useState<string | null>(null);
+
+  // Phone call log state
+  const [calls,       setCalls]       = useState(initialCalls);
+  const [callPanel,   setCallPanel]   = useState(false);
+  const [callFilter,  setCallFilter]  = useState<"all" | "incoming" | "outgoing">("all");
+  const [callForm,    setCallForm]    = useState({ name: "", phone: "", callType: "incoming", date: new Date().toISOString().slice(0, 10), description: "", callDuration: "", nextFollowUp: "" });
+  const [callLoad,    setCallLoad]    = useState(false);
+  const [callErr,     setCallErr]     = useState("");
+
+  async function saveCall() {
+    if (!callForm.name.trim() || !callForm.date) { setCallErr("Name and date are required"); return; }
+    setCallLoad(true); setCallErr("");
+    try {
+      const res = await fetch("/api/front-office/calls", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(callForm) });
+      const d = await res.json(); if (!res.ok) throw new Error(d.error);
+      setCalls(c => [d, ...c]);
+      setCallPanel(false);
+      setCallForm({ name: "", phone: "", callType: "incoming", date: new Date().toISOString().slice(0, 10), description: "", callDuration: "", nextFollowUp: "" });
+    } catch (e: any) { setCallErr(e.message); } finally { setCallLoad(false); }
+  }
 
   // Dispatch state
   const [dispatches,    setDispatches]    = useState(initialDispatches);
@@ -144,6 +164,7 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
     { key: "complaints"      as Tab, label: `Complaints (${complaints.filter(c => c.status === "OPEN").length} open)` },
     { key: "enquiries"       as Tab, label: `Enquiries (${enquiries.filter(e => e.status === "NEW").length} new)` },
     { key: "dispatch"        as Tab, label: `Dispatch (${dispatches.length})` },
+    { key: "calls"           as Tab, label: `Phone Calls (${calls.length})` },
     { key: "complaint-types" as Tab, label: "Complaint Types" },
   ];
 
@@ -375,6 +396,104 @@ export function FrontOfficeClient({ purposes, visitors, complaintTypes: initType
                       <td className="px-4 py-3 text-gray-600 max-w-[150px] truncate">{d.fromTo ?? "—"}</td>
                       <td className="px-4 py-3 text-xs text-gray-500">{new Date(d.date).toLocaleDateString()}</td>
                       <td className="px-4 py-3 text-xs text-gray-400 max-w-[200px] truncate">{d.note ?? "—"}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ── Phone Call Log ── */}
+      {tab === "calls" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex gap-1">
+              {(["all", "incoming", "outgoing"] as const).map(f => (
+                <button key={f} onClick={() => setCallFilter(f)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${callFilter === f ? "bg-blue-600 text-white" : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
+                  {f === "all" ? "All" : f === "incoming" ? "Incoming" : "Outgoing"}
+                </button>
+              ))}
+            </div>
+            {perm.canAdd && (
+              <Button onClick={() => { setCallPanel(true); setCallErr(""); }}>
+                <Plus className="h-4 w-4 mr-1.5" /> Add Call
+              </Button>
+            )}
+          </div>
+
+          {callPanel && (
+            <div className="bg-white rounded-xl border border-blue-200 p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-blue-800">New Phone Call</p>
+                <button onClick={() => setCallPanel(false)}><X className="h-4 w-4 text-gray-400" /></button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Type *</label>
+                  <select className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+                    value={callForm.callType} onChange={e => setCallForm(f => ({ ...f, callType: e.target.value }))}>
+                    <option value="incoming">Incoming</option>
+                    <option value="outgoing">Outgoing</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Name *</label>
+                  <Input value={callForm.name} onChange={e => setCallForm(f => ({ ...f, name: e.target.value }))} placeholder="Caller name" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
+                  <Input value={callForm.phone} onChange={e => setCallForm(f => ({ ...f, phone: e.target.value }))} placeholder="Phone number" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Date *</label>
+                  <input type="date" value={callForm.date} onChange={e => setCallForm(f => ({ ...f, date: e.target.value }))}
+                    className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Duration</label>
+                  <Input value={callForm.callDuration} onChange={e => setCallForm(f => ({ ...f, callDuration: e.target.value }))} placeholder="e.g. 5 min" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Next Follow-up</label>
+                  <input type="date" value={callForm.nextFollowUp} onChange={e => setCallForm(f => ({ ...f, nextFollowUp: e.target.value }))}
+                    className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400" />
+                </div>
+                <div className="sm:col-span-2 lg:col-span-3">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
+                  <Input value={callForm.description} onChange={e => setCallForm(f => ({ ...f, description: e.target.value }))} placeholder="Purpose / notes" />
+                </div>
+              </div>
+              {callErr && <p className="text-sm text-red-600">{callErr}</p>}
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setCallPanel(false)}>Cancel</Button>
+                <Button disabled={callLoad} onClick={saveCall}>{callLoad ? "Saving…" : "Save"}</Button>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Type","Name","Phone","Date","Duration","Next Follow-up","Description"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600 text-xs">{h}</th>)}</tr>
+              </thead>
+              <tbody className="divide-y">
+                {calls.filter(c => callFilter === "all" || c.callType === callFilter).length === 0
+                  ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-400">No phone calls logged.</td></tr>
+                  : calls.filter(c => callFilter === "all" || c.callType === callFilter).map((c: any) => (
+                    <tr key={c.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${c.callType === "incoming" ? "bg-blue-100 text-blue-700" : "bg-amber-100 text-amber-700"}`}>
+                          {c.callType === "incoming" ? <Inbox className="h-3 w-3" /> : <Send className="h-3 w-3" />}{c.callType}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-medium text-gray-900">{c.name}</td>
+                      <td className="px-4 py-3 text-gray-600 font-mono text-xs">{c.phone ?? "—"}</td>
+                      <td className="px-4 py-3 text-xs text-gray-500">{new Date(c.date).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-xs text-gray-500">{c.callDuration ?? "—"}</td>
+                      <td className="px-4 py-3 text-xs text-gray-500">{c.nextFollowUp ? new Date(c.nextFollowUp).toLocaleDateString() : "—"}</td>
+                      <td className="px-4 py-3 text-xs text-gray-400 max-w-[200px] truncate">{c.description ?? "—"}</td>
                     </tr>
                   ))}
               </tbody>

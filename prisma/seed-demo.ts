@@ -322,6 +322,23 @@ async function main() {
   }
   console.log(`✓ Lesson Plans: ${lpCount} items`);
 
+  // ── Front Office: phone call log ─────────────────────────────────────────────
+  const callDefs = [
+    { name: "Ama Owusu (parent)", phone: "0244000111", callType: "incoming", days: -1, description: "Asked about Term 2 fees deadline", callDuration: "4 min", follow: 2 },
+    { name: "GES District Office", phone: "0302000222", callType: "incoming", days: -2, description: "BECE registration reminder", callDuration: "8 min", follow: 0 },
+    { name: "Kwame Mensah (supplier)", phone: "0208000333", callType: "outgoing", days: -3, description: "Followed up on textbook delivery", callDuration: "6 min", follow: 5 },
+  ];
+  let callCount = 0;
+  for (const c of callDefs) {
+    const exists = await prisma.phoneCallLog.findFirst({ where: { name: c.name, description: c.description } });
+    if (exists) continue;
+    const date = new Date(today0); date.setDate(date.getDate() + c.days);
+    const nf = c.follow ? new Date(Date.now() + c.follow * 86400000) : null;
+    await prisma.phoneCallLog.create({ data: { name: c.name, phone: c.phone, callType: c.callType, date, description: c.description, callDuration: c.callDuration, nextFollowUp: nf } });
+    callCount++;
+  }
+  console.log(`✓ Phone Calls: ${callCount} logged`);
+
   // ── Library ────────────────────────────────────────────────────────────────
   const books = [
     ["The Very Hungry Caterpillar", "Eric Carle", "978-0241003008"],
