@@ -5,11 +5,21 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const sessionId      = searchParams.get("sessionId");
   const classSectionId = searchParams.get("classSectionId");
-  const from           = searchParams.get("from");
-  const to             = searchParams.get("to");
+  const month          = searchParams.get("month"); // "YYYY-MM" → monthly grid mode
+  let   from           = searchParams.get("from");
+  let   to             = searchParams.get("to");
 
   if (!sessionId || !classSectionId)
     return NextResponse.json({ error: "sessionId and classSectionId required" }, { status: 400 });
+
+  // Monthly grid: derive the date range from the chosen month
+  let daysInMonth = 0;
+  if (month) {
+    const [y, m] = month.split("-").map(Number);
+    daysInMonth = new Date(y, m, 0).getDate();
+    from = `${month}-01`;
+    to   = `${month}-${String(daysInMonth).padStart(2, "0")}`;
+  }
 
   // All enrolled students for this session+class
   const enrollments = await ((await getDb()) as any).studentSession.findMany({
@@ -30,7 +40,7 @@ export async function GET(req: NextRequest) {
       studentSessionId: { in: enrollments.map((e: any) => e.id) },
       ...(Object.keys(dateFilter).length > 0 ? { attendanceDay: { date: dateFilter } } : {}),
     },
-    include: { attendanceType: true },
+    include: { attendanceType: true, attendanceDay: { select: { date: true } } },
   });
 
   // Group by studentSessionId
@@ -52,12 +62,23 @@ export async function GET(req: NextRequest) {
     const effectivePresent = present + late + halfDay * 0.5;
     const percentage = schoolDays > 0 ? Math.round((effectivePresent / schoolDays) * 100) : 0;
 
+    // Monthly grid: day-of-month → status key
+    let days: Record<number, string> | undefined;
+    if (month) {
+      days = {};
+      for (const r of records) {
+        const d = r.attendanceDay?.date ? new Date(r.attendanceDay.date).getUTCDate() : null;
+        if (d) days[d] = r.attendanceType?.keyValue ?? "";
+      }
+    }
+
     return {
       student:    enr.student,
       rollNo:     enr.rollNo,
       total, present, late, absent, halfDay, holiday, schoolDays, percentage,
+      ...(days ? { days } : {}),
     };
   });
 
-  return NextResponse.json(rows);
+  return NextResponse.json(month ? { rows, daysInMonth } : rows);
 }
