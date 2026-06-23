@@ -269,6 +269,8 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/api/inventory", roles: ["SUPER_ADMIN", "ADMIN"] },
   // Mark divisions API
   { prefix: "/api/mark-divisions", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
+  // Grade ranges (canonical grading scale)
+  { prefix: "/api/grade-ranges",   roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Front office APIs
   { prefix: "/api/front-office", roles: ["SUPER_ADMIN", "ADMIN"] },
   // Attendance types (read-only, used by attendance forms)

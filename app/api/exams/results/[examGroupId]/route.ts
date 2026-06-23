@@ -8,7 +8,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
   const scheduleWhere: any = { examGroupId, isActive: true };
   if (classSectionId) scheduleWhere.classSectionId = classSectionId;
 
-  const schedules = await ((await getDb()) as any).examSchedule.findMany({
+  const db = await getDb();
+  const schedules = await (db as any).examSchedule.findMany({
     where: scheduleWhere,
     include: {
       subject: { select: { name: true, code: true } },
@@ -20,6 +21,17 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
     },
     orderBy: { dateOfExam: "asc" },
   });
+
+  // Division bands from the school's configured table (not hardcoded)
+  const divisions = await (db as any).markDivision
+    .findMany({ where: { isActive: true }, orderBy: { percentageFrom: "desc" } })
+    .catch(() => []);
+  const divisionFor = (pct: number): string => {
+    for (const d of divisions) {
+      if (pct >= Number(d.percentageFrom) && pct <= Number(d.percentageTo)) return d.name;
+    }
+    return divisions.length ? "—" : "";
+  };
 
   // Pivot: studentId → { subjectId: markEntry }
   const studentMap: Record<string, any> = {};
@@ -45,7 +57,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
     const totalFull  = Object.values(subjects).reduce((s: number, v: any) => s + v.fullMarks, 0);
     const pct        = totalFull > 0 ? Math.round((totalObt / totalFull) * 100) : 0;
     const allPassing = Object.values(subjects).every((v: any) => v.absent ? false : v.isPassing);
-    return { ...row, totalObt, totalFull, pct, allPassing };
+    const division   = allPassing ? divisionFor(pct) : (divisions.length ? "Fail" : "");
+    return { ...row, totalObt, totalFull, pct, allPassing, division };
   });
 
   // Rank by percentage descending

@@ -95,6 +95,7 @@ export function ExamResultsClient({ group, classSections }: Props) {
                     ))}
                     <th className="text-center px-3 py-3 font-medium text-gray-600">Total</th>
                     <th className="text-center px-3 py-3 font-medium text-gray-600">%</th>
+                    <th className="text-center px-3 py-3 font-medium text-gray-600">Division</th>
                     <th className="text-center px-3 py-3 font-medium text-gray-600">Result</th>
                   </tr>
                 </thead>
@@ -140,6 +141,7 @@ export function ExamResultsClient({ group, classSections }: Props) {
                           {row.pct}%
                         </span>
                       </td>
+                      <td className="px-3 py-3 text-center text-xs font-medium text-gray-700">{row.division || "—"}</td>
                       <td className="px-3 py-3 text-center">
                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${row.allPassing ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                           {row.allPassing ? "PASS" : "FAIL"}

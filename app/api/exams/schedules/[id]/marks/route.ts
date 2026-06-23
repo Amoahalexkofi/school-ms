@@ -23,6 +23,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       where: { examScheduleId: scheduleId },
     }),
     ((await getDb()) as any).gradingScale.findFirst({
+      orderBy: { createdAt: "asc" }, // canonical scale = first created (deterministic)
       include: { ranges: { where: { isActive: true }, orderBy: { markFrom: "desc" } } },
     }),
   ]);
@@ -47,8 +48,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     });
     if (!schedule) return NextResponse.json({ error: "Schedule not found" }, { status: 404 });
 
-    // Fetch grading scale for grade computation
+    // Fetch grading scale for grade computation (canonical = first created)
     const gradingScale = await (db as any).gradingScale.findFirst({
+      orderBy: { createdAt: "asc" },
       include: { ranges: { where: { isActive: true }, orderBy: { markFrom: "desc" } } },
     });
 

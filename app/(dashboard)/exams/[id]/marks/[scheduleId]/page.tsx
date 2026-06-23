@@ -35,6 +35,7 @@ export default async function MarkEntryPage({
       : [],
     ((await getDb()) as any).markEntry.findMany({ where: { examScheduleId: scheduleId } }),
     ((await getDb()) as any).gradingScale.findFirst({
+      orderBy: { createdAt: "asc" }, // canonical scale = first created (deterministic)
       include: { ranges: { where: { isActive: true }, orderBy: { markFrom: "desc" } } },
     }),
   ]);
