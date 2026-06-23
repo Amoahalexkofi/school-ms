@@ -6,11 +6,11 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
-import { Plus, TrendingUp, TrendingDown, AlertTriangle, X, ArrowUpRight } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, AlertTriangle, X, ArrowUpRight, Trash2 } from "lucide-react";
 
 type Props = { categories: any[]; suppliers: any[]; stores: any[]; items: any[]; issues: any[]; staff: any[] };
-type Tab = "items" | "categories" | "issues";
-type Panel = "category" | "stockIn" | "stockOut" | "issueItem" | null;
+type Tab = "items" | "categories" | "suppliers" | "stores" | "issues";
+type Panel = "category" | "supplier" | "store" | "stockIn" | "stockOut" | "issueItem" | null;
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
@@ -32,6 +32,28 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
   // Stock movement panel state
   const [stockForm, setStockForm] = useState({ itemId: "", type: "IN", quantity: "1", note: "", issuedTo: "" });
   const [stockLoad, setStockLoad] = useState(false);
+
+  // Supplier / Store panel state
+  const [supForm, setSupForm] = useState({ name: "", phone: "", email: "", address: "" });
+  const [storeForm, setStoreForm] = useState({ name: "", location: "" });
+  const [miscLoad, setMiscLoad] = useState(false);
+
+  async function saveSupplier() {
+    if (!supForm.name.trim()) { alert("Supplier name is required"); return; }
+    setMiscLoad(true);
+    try { await post("/api/inventory/suppliers", supForm); setSupForm({ name: "", phone: "", email: "", address: "" }); setPanel(null); router.refresh(); }
+    catch (e: any) { alert(e.message); } finally { setMiscLoad(false); }
+  }
+  async function saveStore() {
+    if (!storeForm.name.trim()) { alert("Store name is required"); return; }
+    setMiscLoad(true);
+    try { await post("/api/inventory/stores", storeForm); setStoreForm({ name: "", location: "" }); setPanel(null); router.refresh(); }
+    catch (e: any) { alert(e.message); } finally { setMiscLoad(false); }
+  }
+  async function delMisc(url: string) {
+    if (!confirm("Delete this record?")) return;
+    try { await fetch(url, { method: "DELETE" }); router.refresh(); } catch { alert("Failed"); }
+  }
 
   async function post(url: string, body: object) {
     const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -112,6 +134,8 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
         {[
           { key: "items"      as Tab, label: `Items (${items.length})` },
           { key: "categories" as Tab, label: `Categories (${categories.length})` },
+          { key: "suppliers"  as Tab, label: `Suppliers (${suppliers.length})` },
+          { key: "stores"     as Tab, label: `Stores (${stores.length})` },
           { key: "issues"     as Tab, label: `Issues (${issues.filter((i: any) => !i.isReturned).length} active)` },
         ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
@@ -350,6 +374,75 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
               </CardContent></Card>
             ))}
             {categories.length === 0 && <p className="text-sm text-gray-400 col-span-full text-center py-6">No categories yet.</p>}
+          </div>
+        </div>
+      )}
+
+      {/* ── Suppliers ── */}
+      {tab === "suppliers" && (
+        <div className="space-y-4">
+          <div className="flex justify-between">
+            <p className="text-sm text-gray-500">{suppliers.length} supplier{suppliers.length !== 1 ? "s" : ""}</p>
+            {perm.canAdd && <Button onClick={() => setPanel(panel === "supplier" ? null : "supplier")}><Plus className="h-4 w-4 mr-1.5" />Add Supplier</Button>}
+          </div>
+          {panel === "supplier" && (
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between"><h3 className="font-medium text-gray-800">Add Supplier</h3><button onClick={() => setPanel(null)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input value={supForm.name} onChange={e => setSupForm(f => ({ ...f, name: e.target.value }))} placeholder="Supplier name *" />
+                <Input value={supForm.phone} onChange={e => setSupForm(f => ({ ...f, phone: e.target.value }))} placeholder="Phone" />
+                <Input value={supForm.email} onChange={e => setSupForm(f => ({ ...f, email: e.target.value }))} placeholder="Email" />
+                <Input value={supForm.address} onChange={e => setSupForm(f => ({ ...f, address: e.target.value }))} placeholder="Address" />
+              </div>
+              <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setPanel(null)}>Cancel</Button><Button disabled={miscLoad} onClick={saveSupplier}>{miscLoad ? "Saving…" : "Add"}</Button></div>
+            </div>
+          )}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            {suppliers.length === 0 ? <p className="text-center text-sm text-gray-400 py-10">No suppliers yet.</p> : (
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b"><tr>{["Name","Phone","Email","Address",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr></thead>
+                <tbody className="divide-y">
+                  {suppliers.map((s: any) => (
+                    <tr key={s.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium text-gray-800">{s.name}</td>
+                      <td className="px-4 py-3 text-gray-500">{s.phone ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-500">{s.email ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-500">{s.address ?? "—"}</td>
+                      <td className="px-4 py-3 text-right">{perm.canDelete && <button onClick={() => delMisc(`/api/inventory/suppliers/${s.id}`)} className="text-gray-300 hover:text-red-500" title="Delete"><Trash2 className="h-4 w-4" /></button>}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Stores ── */}
+      {tab === "stores" && (
+        <div className="space-y-4">
+          <div className="flex justify-between">
+            <p className="text-sm text-gray-500">{stores.length} store{stores.length !== 1 ? "s" : ""}</p>
+            {perm.canAdd && <Button onClick={() => setPanel(panel === "store" ? null : "store")}><Plus className="h-4 w-4 mr-1.5" />Add Store</Button>}
+          </div>
+          {panel === "store" && (
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between"><h3 className="font-medium text-gray-800">Add Store</h3><button onClick={() => setPanel(null)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input value={storeForm.name} onChange={e => setStoreForm(f => ({ ...f, name: e.target.value }))} placeholder="Store name *" />
+                <Input value={storeForm.location} onChange={e => setStoreForm(f => ({ ...f, location: e.target.value }))} placeholder="Location" />
+              </div>
+              <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setPanel(null)}>Cancel</Button><Button disabled={miscLoad} onClick={saveStore}>{miscLoad ? "Saving…" : "Add"}</Button></div>
+            </div>
+          )}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {stores.map((s: any) => (
+              <Card key={s.id}><CardContent className="pt-4 flex items-start justify-between">
+                <div><p className="font-medium text-gray-900">{s.name}</p><p className="text-xs text-gray-400 mt-0.5">{s.location ?? "—"}</p></div>
+                {perm.canDelete && <button onClick={() => delMisc(`/api/inventory/stores/${s.id}`)} className="text-gray-300 hover:text-red-500" title="Delete"><Trash2 className="h-4 w-4" /></button>}
+              </CardContent></Card>
+            ))}
+            {stores.length === 0 && <p className="text-sm text-gray-400 col-span-full text-center py-6">No stores yet.</p>}
           </div>
         </div>
       )}
