@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, RotateCcw, Trash2, X } from "lucide-react";
+import { Plus, RotateCcw, Trash2, X, Upload } from "lucide-react";
 import { usePermission } from "@/components/PermissionsProvider";
 
 type Props = { books: any[]; issues: any[]; students: any[]; staff: any[]; members: any[] };
@@ -107,6 +107,11 @@ export function LibraryClient({ books, issues, students, staff, members: initial
               {perm.canAdd && (
                 <Link href="/library/issue/new">
                   <Button variant="outline"><Plus className="h-4 w-4 mr-1.5" />Issue Book</Button>
+                </Link>
+              )}
+              {perm.canAdd && (
+                <Link href="/library/books/import">
+                  <Button variant="outline"><Upload className="h-4 w-4 mr-1.5" />Import</Button>
                 </Link>
               )}
               {perm.canAdd && (
