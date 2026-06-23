@@ -6,17 +6,41 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bus, MapPin, Users, Plus, X, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { Bus, MapPin, Users, Plus, X, ChevronDown, ChevronUp, Trash2, Banknote } from "lucide-react";
+
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 import { usePermission } from "@/components/PermissionsProvider";
 
-type Props = { vehicles: any[]; routes: any[]; pickupPoints: any[]; students: any[] };
-type Tab = "vehicles" | "routes" | "points" | "students";
+type Props = { vehicles: any[]; routes: any[]; pickupPoints: any[]; students: any[]; sessions: any[]; feemasters: any[] };
+type Tab = "vehicles" | "routes" | "points" | "students" | "fees";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
-export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints: initialPoints, students: initialStudents }: Props) {
+export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints: initialPoints, students: initialStudents, sessions, feemasters: initialFees }: Props) {
   const router = useRouter();
   const perm = usePermission("transport");
+
+  // Transport fee schedule (TransportFeemaster) state
+  const [fees, setFees] = useState(initialFees);
+  const [showAddFee, setShowAddFee] = useState(false);
+  const [feeForm, setFeeForm] = useState({ sessionId: sessions[0]?.id ?? "", month: "January", dueDate: "", fineType: "none", fineAmount: "", finePercentage: "" });
+  const [feeLoad, setFeeLoad] = useState(false);
+
+  async function saveFeemaster() {
+    if (!feeForm.sessionId || !feeForm.month) { alert("Session and month required"); return; }
+    setFeeLoad(true);
+    try {
+      const res = await fetch("/api/transport/feemaster", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(feeForm) });
+      const d = await res.json(); if (!res.ok) throw new Error(d.error);
+      setFees(f => [d, ...f]); setShowAddFee(false);
+      setFeeForm({ sessionId: sessions[0]?.id ?? "", month: "January", dueDate: "", fineType: "none", fineAmount: "", finePercentage: "" });
+    } catch (e: any) { alert(e.message); } finally { setFeeLoad(false); }
+  }
+  async function deleteFeemaster(id: string) {
+    if (!confirm("Remove this fee-schedule month?")) return;
+    try { await fetch(`/api/transport/feemaster/${id}`, { method: "DELETE" }); setFees(f => f.filter(x => x.id !== id)); }
+    catch { alert("Failed"); }
+  }
   const [tab, setTab] = useState<Tab>("vehicles");
 
   // Local copies so we can optimistically update without full page refresh
@@ -136,6 +160,7 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
     { key: "routes"   as Tab, label: "Routes",         icon: MapPin },
     { key: "points"   as Tab, label: "Pickup Points",  icon: MapPin },
     { key: "students" as Tab, label: "Assignments",    icon: Users },
+    { key: "fees"     as Tab, label: "Fee Schedule",   icon: Banknote },
   ];
 
   return (
@@ -463,6 +488,93 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* ── Transport Fee Schedule ── */}
+      {tab === "fees" && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-500">Monthly fee schedule. The fee amount comes from each route&apos;s pickup-point fee; this sets which months are billed and any late fine.</p>
+            {perm.canAdd && (
+              <Button onClick={() => setShowAddFee(!showAddFee)}><Plus className="h-4 w-4 mr-1.5" /> Add Month</Button>
+            )}
+          </div>
+
+          {showAddFee && (
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-gray-800">New Fee-Schedule Month</h3>
+                <button onClick={() => setShowAddFee(false)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Session *</label>
+                  <select className={SEL} value={feeForm.sessionId} onChange={e => setFeeForm(f => ({ ...f, sessionId: e.target.value }))}>
+                    {sessions.map((s: any) => <option key={s.id} value={s.id}>{s.session}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Month *</label>
+                  <select className={SEL} value={feeForm.month} onChange={e => setFeeForm(f => ({ ...f, month: e.target.value }))}>
+                    {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Due Date</label>
+                  <input type="date" className={SEL} value={feeForm.dueDate} onChange={e => setFeeForm(f => ({ ...f, dueDate: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Late Fine Type</label>
+                  <select className={SEL} value={feeForm.fineType} onChange={e => setFeeForm(f => ({ ...f, fineType: e.target.value }))}>
+                    <option value="none">None</option>
+                    <option value="fixed">Fixed (₵)</option>
+                    <option value="percentage">Percentage (%)</option>
+                  </select>
+                </div>
+                {feeForm.fineType === "fixed" && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Fine Amount (₵)</label>
+                    <Input type="number" value={feeForm.fineAmount} onChange={e => setFeeForm(f => ({ ...f, fineAmount: e.target.value }))} />
+                  </div>
+                )}
+                {feeForm.fineType === "percentage" && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Fine %</label>
+                    <Input type="number" value={feeForm.finePercentage} onChange={e => setFeeForm(f => ({ ...f, finePercentage: e.target.value }))} />
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowAddFee(false)}>Cancel</Button>
+                <Button disabled={feeLoad} onClick={saveFeemaster}>{feeLoad ? "Saving…" : "Add"}</Button>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            {fees.length === 0 ? (
+              <p className="text-center text-sm text-gray-400 py-10">No fee-schedule months yet. Add the months you bill transport for.</p>
+            ) : (
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>{["Month", "Due Date", "Late Fine", ""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+                </thead>
+                <tbody className="divide-y">
+                  {fees.map((m: any) => (
+                    <tr key={m.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium text-gray-800">{m.month}</td>
+                      <td className="px-4 py-3 text-gray-500">{m.dueDate ? new Date(m.dueDate).toLocaleDateString() : "—"}</td>
+                      <td className="px-4 py-3 text-gray-500">{m.fineType === "fixed" ? `₵${Number(m.fineAmount)}` : m.fineType === "percentage" ? `${Number(m.finePercentage)}%` : "—"}</td>
+                      <td className="px-4 py-3 text-right">
+                        {perm.canDelete && <button onClick={() => deleteFeemaster(m.id)} className="text-gray-300 hover:text-red-500 transition-colors" title="Delete"><Trash2 className="h-4 w-4" /></button>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       )}

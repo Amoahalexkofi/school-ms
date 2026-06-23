@@ -23,10 +23,14 @@ export default async function TransportPage() {
       orderBy: { firstName: "asc" },
     }),
   ]);
+  const [sessions, feemasters] = await Promise.all([
+    ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
+    ((await getDb()) as any).transportFeemaster.findMany({ where: { isActive: true }, orderBy: { createdAt: "desc" } }).catch(() => []),
+  ]);
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Transport" />
-      <TransportClient vehicles={vehicles} routes={routes} pickupPoints={pickupPoints} students={students} />
+      <TransportClient vehicles={vehicles} routes={routes} pickupPoints={pickupPoints} students={students} sessions={sessions} feemasters={feemasters} />
     </div>
   );
 }
