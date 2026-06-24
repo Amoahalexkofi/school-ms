@@ -164,3 +164,41 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
+// DELETE a single recorded payment (Smart School deleteFee). Removes one
+// sub-invoice entry from the deposit's amountDetail; if it was the last entry
+// the deposit row is removed. The collector then re-collects with the correct
+// figure. Any applied discount for that entry is reversed too.
+export async function DELETE(req: NextRequest) {
+  try {
+    const { depositId, subInvoiceId } = await req.json();
+    if (!depositId || subInvoiceId === undefined || subInvoiceId === null)
+      return NextResponse.json({ error: "depositId and subInvoiceId required" }, { status: 422 });
+
+    const db = await getDb();
+    const deposit = await (db as any).feeDeposit.findUnique({ where: { id: depositId } });
+    if (!deposit) return NextResponse.json({ error: "Payment not found" }, { status: 404 });
+
+    const detail = { ...(deposit.amountDetail as Record<string, any>) };
+    const key = String(subInvoiceId);
+    if (!(key in detail)) return NextResponse.json({ error: "Payment entry not found" }, { status: 404 });
+    delete detail[key];
+
+    await (db as any).$transaction(async (tx: any) => {
+      // Reverse any discount applied with this exact payment
+      await tx.studentAppliedDiscount.deleteMany({
+        where: { feeDepositId: depositId, subInvoiceId: Number(subInvoiceId) },
+      }).catch(() => null);
+
+      if (Object.keys(detail).length === 0) {
+        await tx.feeDeposit.delete({ where: { id: depositId } });
+      } else {
+        await tx.feeDeposit.update({ where: { id: depositId }, data: { amountDetail: detail } });
+      }
+    });
+
+    return NextResponse.json({ ok: true });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}

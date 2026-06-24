@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, DollarSign, CheckCircle2, AlertCircle, Receipt, CreditCard, ExternalLink } from "lucide-react";
+import { ArrowLeft, DollarSign, CheckCircle2, AlertCircle, Receipt, CreditCard, ExternalLink, Trash2 } from "lucide-react";
 
 const PAYMENT_MODES = ["CASH", "BANK_TRANSFER", "CHEQUE", "MOBILE_MONEY", "ONLINE"];
 
@@ -107,6 +107,20 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
 
   function toggleDiscount(id: string) {
     setSelDiscounts((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
+  }
+
+  // Delete a wrong payment entry, then the collector can re-collect correctly.
+  async function deleteEntry(depositId: string, subInvoiceId: string) {
+    if (!confirm("Delete this payment? The amount will be reversed and you can record it again with the correct figure.")) return;
+    try {
+      const res = await fetch("/api/fees/collect", {
+        method: "DELETE", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ depositId, subInvoiceId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      router.refresh();
+    } catch (e: any) { alert(e.message); }
   }
 
   // Preview the discount total for the entered amount (mirrors the API math)
@@ -285,15 +299,27 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
                     <div className="mt-3 pt-3 border-t">
                       <p className="text-xs font-medium text-gray-500 mb-2">Payment History</p>
                       <div className="space-y-1">
-                        {master.deposits.map((d: any, i) => {
-                          const detail = Object.values(d.amountDetail as Record<string, any>)[0] as any;
-                          return (
-                            <div key={i} className="flex justify-between text-xs text-gray-600">
-                              <span>{detail?.date} · {detail?.payment_mode}</span>
-                              <span className="font-medium text-green-600">₵{Number(detail?.amount ?? 0).toLocaleString()}</span>
+                        {master.deposits.flatMap((d: any) =>
+                          Object.entries(d.amountDetail as Record<string, any>).map(([subId, detail]: [string, any]) => (
+                            <div key={`${d.id}-${subId}`} className="flex items-center justify-between text-xs text-gray-600 group">
+                              <span>
+                                {detail?.date} · {detail?.payment_mode}
+                                {Number(detail?.discount) > 0 && <span className="text-blue-500 ml-1">(disc ₵{Number(detail.discount)})</span>}
+                                {Number(detail?.fine) > 0 && <span className="text-amber-600 ml-1">(fine ₵{Number(detail.fine)})</span>}
+                              </span>
+                              <span className="flex items-center gap-2">
+                                <span className="font-medium text-green-600">₵{Number(detail?.amount ?? 0).toLocaleString()}</span>
+                                <button
+                                  onClick={() => deleteEntry(d.id, subId)}
+                                  title="Delete this payment"
+                                  className="text-gray-300 hover:text-red-500 transition-colors"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </span>
                             </div>
-                          );
-                        })}
+                          ))
+                        )}
                       </div>
                     </div>
                   )}
