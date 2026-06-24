@@ -26,7 +26,7 @@ export function AddHostelForm({ roomTypes, hostels }: Props) {
   const [hostelForm, setHostelForm] = useState({ name: "", type: "" });
 
   // Room form
-  const [roomForm, setRoomForm] = useState({ hostelId: "", roomNo: "", roomTypeId: "", capacity: "1", floor: "", description: "" });
+  const [roomForm, setRoomForm] = useState({ hostelId: "", roomNo: "", roomTypeId: "", capacity: "1", costPerBed: "", description: "" });
 
   // Room Type form
   const [rtName, setRtName] = useState("");
@@ -176,8 +176,8 @@ export function AddHostelForm({ roomTypes, hostels }: Props) {
                 <Input type="number" min="1" value={roomForm.capacity} onChange={e => setRoomForm(f => ({ ...f, capacity: e.target.value }))} />
               </div>
               <div>
-                <Label>Floor</Label>
-                <Input value={roomForm.floor} onChange={e => setRoomForm(f => ({ ...f, floor: e.target.value }))} placeholder="e.g. Ground, 1st" />
+                <Label>Cost per Bed (₵)</Label>
+                <Input type="number" min="0" step="0.01" value={roomForm.costPerBed} onChange={e => setRoomForm(f => ({ ...f, costPerBed: e.target.value }))} placeholder="e.g. 500" />
               </div>
               <div>
                 <Label>Description</Label>
