@@ -43,11 +43,19 @@ async function getData() {
       orderBy: { percentageFrom: "desc" },
     }).catch(() => []),
   ]);
+  // Canonical grading scale → grade-key legend on the report card
+  const scale = await ((await getDb()) as any).gradingScale.findFirst({
+    orderBy: { createdAt: "asc" },
+    include: { ranges: { where: { isActive: true }, orderBy: { markFrom: "desc" } } },
+  }).catch(() => null);
+  const gradeKey = (scale?.ranges ?? []).map((r: any) => ({
+    grade: r.grade, from: Number(r.markFrom), to: Number(r.markTo),
+  }));
   // Plain objects (Decimal → number) for the client
   const divs = (divisions ?? []).map((d: any) => ({
     name: d.name, from: Number(d.percentageFrom), to: Number(d.percentageTo),
   }));
-  return { examGroups, classes, school, divisions: divs };
+  return { examGroups, classes, school, divisions: divs, gradeKey };
 }
 
 export default async function MarksheetPage() {

@@ -50,11 +50,14 @@ function makeDivisionFn(divisions: Division[]) {
   };
 }
 
-export function MarksheetClient({ examGroups, classes, school, divisions = [] }: {
+type GradeKey = { grade: string; from: number; to: number };
+
+export function MarksheetClient({ examGroups, classes, school, divisions = [], gradeKey = [] }: {
   examGroups: ExamGroup[];
   classes: ClassData[];
-  school: { name: string; address?: string; phone?: string } | null;
+  school: { name: string; address?: string; phone?: string; logo?: string } | null;
   divisions?: Division[];
+  gradeKey?: GradeKey[];
 }) {
   const getGradeDivision = useMemo(() => makeDivisionFn(divisions), [divisions]);
   const [examGroupId, setExamGroupId] = useState("");
@@ -170,7 +173,10 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [] }:
               className="border-2 border-gray-700 print:break-after-page print:border print:border-gray-400"
             >
               {/* Header */}
-              <div className="bg-blue-700 text-white p-4 text-center">
+              <div className="bg-blue-700 text-white p-4 text-center relative">
+                {school?.logo && (
+                  <img src={school.logo} alt="" className="absolute left-4 top-1/2 -translate-y-1/2 h-14 w-14 object-contain bg-white rounded p-1" />
+                )}
                 <h1 className="text-xl font-bold">{schoolName}</h1>
                 {school?.address && <p className="text-sm text-blue-200">{school.address}</p>}
                 <div className="mt-2 inline-block bg-white text-blue-700 font-bold px-4 py-1 rounded text-sm tracking-widest">
@@ -256,20 +262,34 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [] }:
                 </table>
               </div>
 
-              {/* Summary + Signatures */}
-              <div className="px-4 pb-4 flex items-end justify-between">
-                <div className="space-y-1 text-sm">
-                  <p><span className="text-gray-500">Percentage:</span> <strong>{ms.pct}%</strong></p>
-                  <p><span className="text-gray-500">Division:</span> <strong className={ms.color}>{ms.div}</strong></p>
-                  <p><span className="text-gray-500">Overall Result:</span> <strong className={ms.allPassed ? "text-green-700" : "text-red-600"}>{ms.allPassed ? "PASSED" : "FAILED"}</strong></p>
+              {/* Grade key legend */}
+              {gradeKey.length > 0 && (
+                <div className="px-4 pb-2">
+                  <div className="border border-slate-200 rounded px-3 py-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-600">
+                    <span className="font-semibold text-gray-500">Grading Key:</span>
+                    {gradeKey.map((g) => (
+                      <span key={g.grade}><strong className="text-gray-800">{g.grade}</strong> {g.from}–{g.to}%</span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex gap-12 text-center text-xs text-gray-500">
-                  <div>
-                    <div className="border-t border-gray-400 mt-8 pt-1 w-28">Class Teacher</div>
+              )}
+
+              {/* Summary + Remark + Signatures */}
+              <div className="px-4 pb-4 space-y-3">
+                <div className="flex items-end justify-between">
+                  <div className="space-y-1 text-sm">
+                    <p><span className="text-gray-500">Percentage:</span> <strong>{ms.pct}%</strong></p>
+                    <p><span className="text-gray-500">Division:</span> <strong className={ms.color}>{ms.div}</strong></p>
+                    <p><span className="text-gray-500">Overall Result:</span> <strong className={ms.allPassed ? "text-green-700" : "text-red-600"}>{ms.allPassed ? "PASSED" : "FAILED"}</strong></p>
                   </div>
-                  <div>
-                    <div className="border-t border-gray-400 mt-8 pt-1 w-28">Principal</div>
+                  <div className="flex gap-12 text-center text-xs text-gray-500">
+                    <div><div className="border-t border-gray-400 mt-8 pt-1 w-28">Class Teacher</div></div>
+                    <div><div className="border-t border-gray-400 mt-8 pt-1 w-28">Principal</div></div>
                   </div>
+                </div>
+                <div className="text-sm">
+                  <span className="text-gray-500 text-xs">Remarks:</span>
+                  <div className="border-b border-dotted border-gray-300 h-5 mt-1" />
                 </div>
               </div>
             </div>
