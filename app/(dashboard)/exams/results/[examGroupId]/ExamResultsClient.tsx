@@ -15,6 +15,21 @@ export function ExamResultsClient({ group, classSections }: Props) {
   const [error,          setError]   = useState("");
   const [rankEdits, setRankEdits]    = useState<Record<string, number>>({});
   const [savingRank, setSavingRank]  = useState(false);
+  const [emailing, setEmailing]      = useState(false);
+
+  async function emailParents() {
+    if (!confirm("Email each student's report card to their guardian? (Sends only if an email provider is configured.)")) return;
+    setEmailing(true);
+    try {
+      const res = await fetch(`/api/exams/results/${group.id}/email`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ classSectionId }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error);
+      alert(d.sent > 0 ? `Report cards emailed to ${d.sent} guardian(s).` : (d.error || "No guardians with an email address."));
+    } catch (e: any) { alert(e.message); }
+    finally { setEmailing(false); }
+  }
 
   async function load() {
     if (!classSectionId) { setError("Select a class"); return; }
@@ -56,6 +71,9 @@ export function ExamResultsClient({ group, classSections }: Props) {
             {data.ranksPersisted && <span className="text-xs text-green-600 font-medium">Ranks saved</span>}
             <Button size="sm" variant="outline" disabled={savingRank} onClick={saveRanks}>
               {savingRank ? "Saving…" : data.ranksPersisted ? "Update Ranks" : "Save Ranks"}
+            </Button>
+            <Button size="sm" variant="outline" disabled={emailing} onClick={emailParents}>
+              {emailing ? "Sending…" : "Email to Parents"}
             </Button>
             <button onClick={() => window.print()} className="text-sm text-blue-600 hover:underline">Print Results</button>
           </div>
