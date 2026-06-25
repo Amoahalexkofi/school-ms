@@ -5,7 +5,8 @@ export type UserRole =
   | "ACCOUNTANT"
   | "LIBRARIAN"
   | "STUDENT"
-  | "PARENT";
+  | "PARENT"
+  | "RECEPTIONIST";
 
 // Routes accessible without authentication
 const PUBLIC_PREFIXES = [
@@ -130,7 +131,7 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   },
   {
     prefix: "/dashboard",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"],
   },
   // Exam & academic
   {
@@ -177,12 +178,12 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // Front office
   {
     prefix: "/front-office",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST"],
   },
   // Admissions
   {
     prefix: "/admissions",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST"],
   },
   // Reports
   {
@@ -192,7 +193,7 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // Notifications
   {
     prefix: "/notifications",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"],
   },
   // Audit log
   {
@@ -211,7 +212,7 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // API routes for new modules
   {
     prefix: "/api/admissions",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST"],
   },
   // Settings
   {
@@ -235,7 +236,7 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // Notice board
   {
     prefix: "/notice-board",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"],
   },
   // Messaging
   {
@@ -245,11 +246,11 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // Chat
   {
     prefix: "/chat",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"],
   },
   {
     prefix: "/api/chat",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"],
   },
   // School profile API
   {
@@ -272,7 +273,7 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // Grade ranges (canonical grading scale)
   { prefix: "/api/grade-ranges",   roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Front office APIs
-  { prefix: "/api/front-office", roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/front-office", roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST"] },
   // Attendance types (read-only, used by attendance forms)
   { prefix: "/api/attendance-types", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Notices API

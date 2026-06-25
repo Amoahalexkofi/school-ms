@@ -7,7 +7,7 @@ import Link from "next/link";
 import {
   ShieldCheck, Shield, BookOpen, Wallet,
   Library, UserCircle, Users, Eye, EyeOff, ArrowRight,
-  CheckCircle2, Database, Zap, RefreshCw,
+  CheckCircle2, Database, Zap, RefreshCw, ConciergeBell,
 } from "lucide-react";
 
 const DEMO_PASSWORD = "Demo@Skula2026";
@@ -20,6 +20,7 @@ const ROLES = [
   { key: "librarian",  label: "Librarian",     email: "librarian.demo@getskula.com",    icon: Library,     color: "amber",   tags: ["Books", "Issue & Return", "Members"]    },
   { key: "student",    label: "Student",       email: "student.demo@getskula.com",      icon: UserCircle,  color: "sky",     tags: ["Results", "Timetable", "Homework"]      },
   { key: "parent",     label: "Parent",        email: "parent.demo@getskula.com",       icon: Users,       color: "rose",    tags: ["Fee balance", "Attendance", "Results"]  },
+  { key: "receptionist", label: "Receptionist", email: "receptionist.demo@getskula.com", icon: ConciergeBell, color: "teal", tags: ["Visitors", "Phone calls", "Front desk"] },
 ] as const;
 
 const CM: Record<string, { activeBg: string; activeRing: string; tag: string; chip: string; chipText: string; dot: string }> = {
@@ -30,6 +31,7 @@ const CM: Record<string, { activeBg: string; activeRing: string; tag: string; ch
   amber:   { activeBg: "bg-amber-500",   activeRing: "ring-amber-400/40",   tag: "bg-amber-50 text-amber-700",     chip: "border-amber-300/70 text-amber-700",    chipText: "text-amber-700",   dot: "bg-amber-500"   },
   sky:     { activeBg: "bg-sky-600",     activeRing: "ring-sky-400/40",     tag: "bg-sky-50 text-sky-700",         chip: "border-sky-300/70 text-sky-700",        chipText: "text-sky-700",     dot: "bg-sky-600"     },
   rose:    { activeBg: "bg-rose-600",    activeRing: "ring-rose-400/40",    tag: "bg-rose-50 text-rose-700",       chip: "border-rose-300/70 text-rose-700",      chipText: "text-rose-700",    dot: "bg-rose-600"    },
+  teal:    { activeBg: "bg-teal-600",    activeRing: "ring-teal-400/40",    tag: "bg-teal-50 text-teal-700",       chip: "border-teal-300/70 text-teal-700",      chipText: "text-teal-700",    dot: "bg-teal-600"    },
 };
 
 type RoleKey = typeof ROLES[number]["key"];

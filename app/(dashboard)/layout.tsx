@@ -16,6 +16,7 @@ const DEMO_EMAILS = new Set([
   "librarian.demo@getskula.com",
   "student.demo@getskula.com",
   "parent.demo@getskula.com",
+  "receptionist.demo@getskula.com",
 ]);
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {

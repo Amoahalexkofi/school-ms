@@ -17,7 +17,7 @@ import { useSession } from "next-auth/react";
 import { usePermissions } from "@/components/PermissionsProvider";
 import { BranchSwitcher } from "@/components/BranchSwitcher";
 
-type StaffRole = "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "ACCOUNTANT" | "LIBRARIAN";
+type StaffRole = "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "ACCOUNTANT" | "LIBRARIAN" | "RECEPTIONIST";
 type NavItem  = { href: string; label: string; icon: React.ElementType; roles?: StaffRole[]; perm?: string; addon?: string };
 type NavGroup = { label: string; items: NavItem[] };
 
@@ -33,7 +33,7 @@ const adminGroups: NavGroup[] = [
     items: [
       { href: "/students",   label: "Students",   icon: Users,         roles: ["SUPER_ADMIN","ADMIN","TEACHER"], perm: "student_information" },
       { href: "/staff",      label: "Staff",       icon: UserCog,       roles: ["SUPER_ADMIN","ADMIN"],           perm: "human_resource" },
-      { href: "/admissions", label: "Admissions",  icon: UserPlus,      roles: ["SUPER_ADMIN","ADMIN"],           perm: "front_office" },
+      { href: "/admissions", label: "Admissions",  icon: UserPlus,      roles: ["SUPER_ADMIN","ADMIN","RECEPTIONIST"], perm: "front_office" },
       { href: "/alumni",     label: "Alumni",      icon: GraduationCap, roles: ["SUPER_ADMIN","ADMIN"],           perm: "alumni" },
     ],
   },
@@ -65,15 +65,15 @@ const adminGroups: NavGroup[] = [
       { href: "/transport",    label: "Transport",    icon: Bus,           roles: ["SUPER_ADMIN","ADMIN"],                        perm: "transport" },
       { href: "/hostel",       label: "Hostel",       icon: Building,      roles: ["SUPER_ADMIN","ADMIN"],                        perm: "hostel" },
       { href: "/inventory",    label: "Inventory",    icon: Package,       roles: ["SUPER_ADMIN","ADMIN"],                        perm: "inventory" },
-      { href: "/front-office", label: "Front Office", icon: ConciergeBell, roles: ["SUPER_ADMIN","ADMIN"],                        perm: "front_office" },
+      { href: "/front-office", label: "Front Office", icon: ConciergeBell, roles: ["SUPER_ADMIN","ADMIN","RECEPTIONIST"],         perm: "front_office" },
     ],
   },
   {
     label: "Communication",
     items: [
-      { href: "/notice-board", label: "Notices",   icon: Megaphone,    roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN"], perm: "communicate" },
+      { href: "/notice-board", label: "Notices",   icon: Megaphone,    roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN","RECEPTIONIST"], perm: "communicate" },
       { href: "/messaging",    label: "Messaging", icon: Send,          roles: ["SUPER_ADMIN","ADMIN"],                                    perm: "communicate" },
-      { href: "/chat",         label: "Chat",      icon: MessageCircle, roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN"], perm: "chat" },
+      { href: "/chat",         label: "Chat",      icon: MessageCircle, roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN","RECEPTIONIST"], perm: "chat" },
     ],
   },
   {

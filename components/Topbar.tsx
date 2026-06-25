@@ -16,6 +16,7 @@ const ROLE_COLOR: Record<string, string> = {
   STUDENT:     "bg-sky-500/15 text-sky-300 border-sky-500/25",
   PARENT:      "bg-orange-500/15 text-orange-300 border-orange-500/25",
   LIBRARIAN:   "bg-pink-500/15 text-pink-300 border-pink-500/25",
+  RECEPTIONIST: "bg-teal-500/15 text-teal-300 border-teal-500/25",
 };
 
 export function Topbar({ title }: { title: string }) {

@@ -18,6 +18,7 @@ enum UserRole {
   LIBRARIAN
   STUDENT
   PARENT
+  RECEPTIONIST
 }
 
 model User {
