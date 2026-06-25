@@ -13,6 +13,8 @@ export function ExamResultsClient({ group, classSections }: Props) {
   const [data,           setData]    = useState<any>(null);
   const [loading,        setLoading] = useState(false);
   const [error,          setError]   = useState("");
+  const [rankEdits, setRankEdits]    = useState<Record<string, number>>({});
+  const [savingRank, setSavingRank]  = useState(false);
 
   async function load() {
     if (!classSectionId) { setError("Select a class"); return; }
@@ -22,8 +24,23 @@ export function ExamResultsClient({ group, classSections }: Props) {
       const d    = await res.json();
       if (!res.ok) throw new Error(d.error);
       setData(d);
+      setRankEdits(Object.fromEntries((d.rows ?? []).map((r: any) => [r.student.id, r.rank])));
     } catch (e: any) { setError(e.message); }
     finally { setLoading(false); }
+  }
+
+  async function saveRanks() {
+    if (!data) return;
+    setSavingRank(true);
+    try {
+      const ranks = data.rows.map((r: any) => ({ studentId: r.student.id, rank: rankEdits[r.student.id] ?? r.rank, classSectionId }));
+      const res = await fetch(`/api/exams/results/${group.id}/rank`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ranks }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error);
+      await load();
+    } catch (e: any) { alert(e.message); }
+    finally { setSavingRank(false); }
   }
 
   const cs = classSections.find((cs: any) => cs.id === classSectionId);
@@ -34,8 +51,14 @@ export function ExamResultsClient({ group, classSections }: Props) {
         <Link href={`/exams/${group.id}`} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
           <ArrowLeft className="h-4 w-4" /> Back to Schedules
         </Link>
-        {data && (
-          <button onClick={() => window.print()} className="text-sm text-blue-600 hover:underline">Print Results</button>
+        {data && data.rows.length > 0 && (
+          <div className="flex items-center gap-3">
+            {data.ranksPersisted && <span className="text-xs text-green-600 font-medium">Ranks saved</span>}
+            <Button size="sm" variant="outline" disabled={savingRank} onClick={saveRanks}>
+              {savingRank ? "Saving…" : data.ranksPersisted ? "Update Ranks" : "Save Ranks"}
+            </Button>
+            <button onClick={() => window.print()} className="text-sm text-blue-600 hover:underline">Print Results</button>
+          </div>
         )}
       </div>
 
@@ -103,15 +126,12 @@ export function ExamResultsClient({ group, classSections }: Props) {
                   {data.rows.map((row: any) => (
                     <tr key={row.student.id} className={`hover:bg-gray-50 ${!row.allPassing ? "bg-red-50/20" : ""}`}>
                       <td className="px-3 py-3 text-center">
-                        {row.rank <= 3 ? (
-                          <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
-                            row.rank === 1 ? "bg-yellow-100 text-yellow-700" :
-                            row.rank === 2 ? "bg-gray-100 text-gray-600" :
-                            "bg-orange-100 text-orange-700"
-                          }`}>{row.rank}</span>
-                        ) : (
-                          <span className="text-gray-500">{row.rank}</span>
-                        )}
+                        <input
+                          type="number" min="1"
+                          value={rankEdits[row.student.id] ?? row.rank}
+                          onChange={(e) => setRankEdits((m) => ({ ...m, [row.student.id]: parseInt(e.target.value) || 0 }))}
+                          className="w-12 text-center text-sm rounded border border-slate-200 px-1 py-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 print:border-0"
+                        />
                       </td>
                       <td className="px-4 py-3">
                         <Link href={`/students/${row.student.id}`} className="font-medium text-gray-900 hover:text-blue-600 hover:underline">

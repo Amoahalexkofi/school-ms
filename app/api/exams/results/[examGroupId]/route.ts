@@ -61,9 +61,22 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
     return { ...row, totalObt, totalFull, pct, allPassing, division };
   });
 
-  // Rank by percentage descending
+  // Rank by percentage descending (computed default)
   rows.sort((a: any, b: any) => b.pct - a.pct);
   rows.forEach((r: any, i: number) => { r.rank = i + 1; });
 
-  return NextResponse.json({ schedules: schedules.map((s: any) => ({ id: s.id, subject: s.subject, fullMarks: s.fullMarks, passingMarks: s.passingMarks, dateOfExam: s.dateOfExam })), rows });
+  // Override with persisted/edited ranks where they exist (Smart School updaterank)
+  const persisted = await (db as any).studentExamRank
+    .findMany({ where: { examGroupId, ...(classSectionId ? { classSectionId } : {}) } })
+    .catch(() => []);
+  let ranksPersisted = false;
+  if (persisted.length) {
+    const map = new Map(persisted.map((p: any) => [p.studentId, p.rank]));
+    for (const r of rows) {
+      if (map.has(r.student.id)) { r.rank = map.get(r.student.id); ranksPersisted = true; }
+    }
+    rows.sort((a: any, b: any) => a.rank - b.rank);
+  }
+
+  return NextResponse.json({ ranksPersisted, schedules: schedules.map((s: any) => ({ id: s.id, subject: s.subject, fullMarks: s.fullMarks, passingMarks: s.passingMarks, dateOfExam: s.dateOfExam })), rows });
 }
