@@ -51,11 +51,13 @@ async function getData() {
   const gradeKey = (scale?.ranges ?? []).map((r: any) => ({
     grade: r.grade, from: Number(r.markFrom), to: Number(r.markTo),
   }));
+  const templates = await ((await getDb()) as any).templateMarksheet
+    .findMany({ orderBy: { createdAt: "desc" } }).catch(() => []);
   // Plain objects (Decimal → number) for the client
   const divs = (divisions ?? []).map((d: any) => ({
     name: d.name, from: Number(d.percentageFrom), to: Number(d.percentageTo),
   }));
-  return { examGroups, classes, school, divisions: divs, gradeKey };
+  return { examGroups, classes, school, divisions: divs, gradeKey, templates };
 }
 
 export default async function MarksheetPage() {

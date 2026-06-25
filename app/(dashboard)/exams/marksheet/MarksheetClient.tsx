@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,13 +53,37 @@ function makeDivisionFn(divisions: Division[]) {
 
 type GradeKey = { grade: string; from: number; to: number };
 
-export function MarksheetClient({ examGroups, classes, school, divisions = [], gradeKey = [] }: {
+type Template = {
+  id: string; template?: string; title?: string; heading?: string;
+  leftSign?: string; middleSign?: string; rightSign?: string;
+  isName: boolean; isFatherName: boolean; isMotherName: boolean;
+  isDob: boolean; isAdmissionNo: boolean; isRollNo: boolean;
+};
+
+export function MarksheetClient({ examGroups, classes, school, divisions = [], gradeKey = [], templates = [] }: {
   examGroups: ExamGroup[];
   classes: ClassData[];
   school: { name: string; address?: string; phone?: string; logo?: string } | null;
   divisions?: Division[];
   gradeKey?: GradeKey[];
+  templates?: Template[];
 }) {
+  const [templateId, setTemplateId] = useState("");
+  const tpl = templates.find((t) => t.id === templateId);
+  // Defaults when no template is selected (current built-in layout)
+  const T = {
+    title:      tpl?.title || "REPORT CARD / MARKSHEET",
+    heading:    tpl?.heading || "",
+    leftSign:   tpl?.leftSign ?? "Class Teacher",
+    middleSign: tpl?.middleSign ?? "",
+    rightSign:  tpl?.rightSign ?? "Principal",
+    isName:        tpl ? tpl.isName : true,
+    isFatherName:  tpl ? tpl.isFatherName : true,
+    isMotherName:  tpl ? tpl.isMotherName : true,
+    isDob:         tpl ? tpl.isDob : true,
+    isAdmissionNo: tpl ? tpl.isAdmissionNo : true,
+    isRollNo:      tpl ? tpl.isRollNo : true,
+  };
   const getGradeDivision = useMemo(() => makeDivisionFn(divisions), [divisions]);
   const [examGroupId, setExamGroupId] = useState("");
   const [classId, setClassId]         = useState("");
@@ -144,11 +169,19 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
                   {sections.map(s => <option key={s.id} value={s.id}>{s.section.name}</option>)}
                 </select>
               </div>
+              <div>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Template</Label>
+                <select className={SEL + " w-44"} value={templateId} onChange={e => setTemplateId(e.target.value)}>
+                  <option value="">Default layout</option>
+                  {templates.map(t => <option key={t.id} value={t.id}>{t.template || "Untitled"}</option>)}
+                </select>
+              </div>
               {studentMarksheets.length > 0 && (
                 <Button variant="outline" onClick={() => window.print()}>
                   <Printer className="h-4 w-4 mr-1" /> Print All ({studentMarksheets.length})
                 </Button>
               )}
+              <Link href="/exams/marksheet/templates" className="text-sm text-indigo-600 hover:underline self-center">Manage Templates →</Link>
             </div>
           </CardContent>
         </Card>
@@ -180,8 +213,9 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
                 <h1 className="text-xl font-bold">{schoolName}</h1>
                 {school?.address && <p className="text-sm text-blue-200">{school.address}</p>}
                 <div className="mt-2 inline-block bg-white text-blue-700 font-bold px-4 py-1 rounded text-sm tracking-widest">
-                  REPORT CARD / MARKSHEET
+                  {T.title}
                 </div>
+                {T.heading && <p className="text-sm text-blue-100 mt-1">{T.heading}</p>}
                 <p className="text-sm text-blue-200 mt-1">{selectedExam?.name} — {sessionLabel}</p>
               </div>
 
@@ -194,13 +228,13 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
                   }
                 </div>
                 <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 text-sm">
-                  <Field label="Student Name"   value={`${ms.student.firstName} ${ms.student.lastName}`} />
-                  <Field label="Admission No"   value={ms.student.admissionNo} />
-                  <Field label="Roll No"        value={ms.student.rollNo ?? "—"} />
+                  {T.isName        && <Field label="Student Name"   value={`${ms.student.firstName} ${ms.student.lastName}`} />}
+                  {T.isAdmissionNo && <Field label="Admission No"   value={ms.student.admissionNo} />}
+                  {T.isRollNo      && <Field label="Roll No"        value={ms.student.rollNo ?? "—"} />}
                   <Field label="Class"          value={`${selectedClass?.name} — ${sectionName}`} />
-                  <Field label="Father's Name"  value={ms.student.fatherName ?? "—"} />
-                  <Field label="Mother's Name"  value={ms.student.motherName ?? "—"} />
-                  <Field label="Date of Birth"  value={ms.student.dateOfBirth ? new Date(ms.student.dateOfBirth).toLocaleDateString() : "—"} />
+                  {T.isFatherName  && <Field label="Father's Name"  value={ms.student.fatherName ?? "—"} />}
+                  {T.isMotherName  && <Field label="Mother's Name"  value={ms.student.motherName ?? "—"} />}
+                  {T.isDob         && <Field label="Date of Birth"  value={ms.student.dateOfBirth ? new Date(ms.student.dateOfBirth).toLocaleDateString() : "—"} />}
                   <Field label="Gender"         value={ms.student.gender ?? "—"} />
                   <Field label="Issue Date"     value={printDate} />
                 </div>
@@ -282,9 +316,10 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
                     <p><span className="text-gray-500">Division:</span> <strong className={ms.color}>{ms.div}</strong></p>
                     <p><span className="text-gray-500">Overall Result:</span> <strong className={ms.allPassed ? "text-green-700" : "text-red-600"}>{ms.allPassed ? "PASSED" : "FAILED"}</strong></p>
                   </div>
-                  <div className="flex gap-12 text-center text-xs text-gray-500">
-                    <div><div className="border-t border-gray-400 mt-8 pt-1 w-28">Class Teacher</div></div>
-                    <div><div className="border-t border-gray-400 mt-8 pt-1 w-28">Principal</div></div>
+                  <div className="flex gap-10 text-center text-xs text-gray-500">
+                    {[T.leftSign, T.middleSign, T.rightSign].filter(Boolean).map((label, i) => (
+                      <div key={i}><div className="border-t border-gray-400 mt-8 pt-1 w-28">{label}</div></div>
+                    ))}
                   </div>
                 </div>
                 <div className="text-sm">
