@@ -5,6 +5,7 @@ import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ClipboardList, DollarSign, BookOpen, Calendar, User, GraduationCap } from "lucide-react";
 import { StudentProfileActions, StudentAvatar } from "./StudentProfileActions";
+import { ParentLinkCard } from "./ParentLinkCard";
 
 async function getStudent(id: string) {
   return ((await getDb()) as any).student.findUnique({
@@ -64,6 +65,11 @@ export default async function StudentProfilePage({
   const { id } = await params;
   const student = await getStudent(id);
   if (!student) notFound();
+
+  // Linked parent login (a PARENT user whose childs CSV includes this student)
+  const linkedParent = await ((await getDb()) as any).user
+    .findFirst({ where: { role: "PARENT", childs: { contains: id } }, select: { email: true } })
+    .catch(() => null);
 
   const currentSession = student.sessions[0];
   const classLabel = currentSession
@@ -235,6 +241,9 @@ export default async function StudentProfilePage({
             </CardContent>
           </Card>
         )}
+
+        {/* Parent login linking */}
+        <ParentLinkCard studentId={student.id} linkedEmail={linkedParent?.email ?? null} defaultEmail={student.guardianEmail ?? student.fatherEmail ?? student.motherEmail} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Attendance summary */}
