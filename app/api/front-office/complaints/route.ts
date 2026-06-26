@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
+import { resolveBranchForCreate } from "@/lib/services/branches";
 
 export async function GET() {
   return NextResponse.json(await ((await getDb()) as any).complaint.findMany({
@@ -12,8 +14,10 @@ export async function POST(req: NextRequest) {
     const { title, raisedBy, phone, complaintTypeId, description, source, assignedTo, date, image } = await req.json();
     if (!title?.trim() || !raisedBy?.trim() || !description?.trim())
       return NextResponse.json({ error: "Title, raised by, and description required" }, { status: 422 });
+    const branchId = await resolveBranchForCreate(await getActiveBranchId());
     const c = await ((await getDb()) as any).complaint.create({
       data: {
+        branchId,
         title:          title.trim(),
         raisedBy:       raisedBy.trim(),
         phone:          phone          || null,

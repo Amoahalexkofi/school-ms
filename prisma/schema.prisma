@@ -1310,8 +1310,11 @@ model Hostel {
   description String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
+  branchId    String?
 
   rooms HostelRoom[]
+
+  @@index([branchId])
 }
 
 model HostelRoom {
@@ -1373,8 +1376,11 @@ model Book {
   description String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
+  branchId    String?
 
   issues BookIssue[]
+
+  @@index([branchId])
 }
 
 enum BookIssueStatus {
@@ -1450,9 +1456,12 @@ model Item {
   unit          String?
   isActive      Boolean       @default(true)
   createdAt     DateTime      @default(now())
+  branchId      String?
 
   stockMovements StockMovement[]
   issues         ItemIssue[]
+
+  @@index([branchId])
 }
 
 enum StockMovementType {
@@ -1635,6 +1644,9 @@ model Visitor {
   note        String?
   image       String?
   createdAt   DateTime        @default(now())
+  branchId    String?
+
+  @@index([branchId])
 }
 
 model ComplaintType {
@@ -1671,6 +1683,9 @@ model Complaint {
   resolvedAt      DateTime?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+  branchId        String?
+
+  @@index([branchId])
 }
 
 model Enquiry {
@@ -1693,6 +1708,9 @@ model Enquiry {
   followUpNote String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  branchId     String?
+
+  @@index([branchId])
 }
 
 model Dispatch {
@@ -1706,6 +1724,9 @@ model Dispatch {
   date       DateTime
   attachment String?
   createdAt  DateTime @default(now())
+  branchId   String?
+
+  @@index([branchId])
 }
 
 // Front office phone-call log (Smart School general_call)
@@ -1720,6 +1741,9 @@ model PhoneCallLog {
   nextFollowUp DateTime?
   note         String?
   createdAt    DateTime  @default(now())
+  branchId     String?
+
+  @@index([branchId])
 }
 
 // ─── Online Exams ─────────────────────────────────────────────────────────────

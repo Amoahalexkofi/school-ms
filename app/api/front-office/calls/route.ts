@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
+import { resolveBranchForCreate } from "@/lib/services/branches";
 
 // Phone call log (Smart School Generalcall) — incoming/outgoing call records.
 export async function GET(req: NextRequest) {
@@ -18,8 +20,10 @@ export async function POST(req: NextRequest) {
   try {
     const { name, phone, callType, date, description, callDuration, nextFollowUp, note } = await req.json();
     if (!name?.trim() || !date) return NextResponse.json({ error: "name and date are required" }, { status: 422 });
+    const branchId = await resolveBranchForCreate(await getActiveBranchId());
     const c = await ((await getDb()) as any).phoneCallLog.create({
       data: {
+        branchId,
         name:         name.trim(),
         phone:        phone        || null,
         callType:     callType === "outgoing" ? "outgoing" : "incoming",

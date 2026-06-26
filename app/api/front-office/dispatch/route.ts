@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
+import { resolveBranchForCreate } from "@/lib/services/branches";
 
 // Smart School: dispatch_receive table — type "dispatch" (outgoing) or "receive" (incoming)
 export async function GET(req: NextRequest) {
@@ -29,8 +31,10 @@ export async function POST(req: NextRequest) {
     if (!type || !title?.trim() || !date) {
       return NextResponse.json({ error: "type, title, date are required" }, { status: 422 });
     }
+    const branchId = await resolveBranchForCreate(await getActiveBranchId());
     const record = await ((await getDb()) as any).dispatch.create({
       data: {
+        branchId,
         type:       type,
         title:      title.trim(),
         refNo:      refNo      || null,

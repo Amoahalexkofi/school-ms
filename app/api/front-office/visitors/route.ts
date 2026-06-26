@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { getActiveBranchId } from "@/lib/branch";
+import { resolveBranchForCreate } from "@/lib/services/branches";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -28,8 +30,10 @@ export async function POST(req: NextRequest) {
     } = await req.json();
     if (!name?.trim()) return NextResponse.json({ error: "Visitor name required" }, { status: 422 });
 
+    const branchId = await resolveBranchForCreate(await getActiveBranchId());
     const v = await ((await getDb()) as any).visitor.create({
       data: {
+        branchId,
         name:             name.trim(),
         phone:            phone            || null,
         email:            email            || null,
