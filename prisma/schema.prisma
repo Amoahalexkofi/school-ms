@@ -56,7 +56,7 @@ model AcademicSession {
   subjectGroups        SubjectGroup[]
   attendanceDays       AttendanceDay[]
   homeworkItems        Homework[]
-  lessonPlans          LessonPlan[]
+  lessons              Lesson[]
   examSchedules        ExamSchedule[]
   subjects             Subject[]
   holidays             Holiday[]
@@ -105,7 +105,7 @@ model ClassSection {
   timetableSlots       TimetableSlot[]
   attendanceDays       AttendanceDay[]
   homeworkItems        Homework[]
-  lessonPlans          LessonPlan[]
+  lessons              Lesson[]
   attendanceSchedules  StudentAttendanceSchedule[]
   subjectGroupSections SubjectGroupSection[]
   classSectionTimes    ClassSectionTime[]
@@ -147,8 +147,7 @@ model Subject {
   markEntries          MarkEntry[]
   homeworkItems        Homework[]
   timetableSlots       TimetableSlot[]
-  lessonPlans          LessonPlan[]
-  syllabi              Syllabus[]
+  lessons              Lesson[]
   questions            Question[]
   subjectGroupSubjects SubjectGroupSubject[]
 }
@@ -291,7 +290,6 @@ model Staff {
   leaveRequests         StaffLeaveRequest[]
   leaveBalances         StaffLeaveBalance[]
   bookIssues            BookIssue[]
-  lessonPlans           LessonPlan[]
   notices               Notice[]
   messageLogs           MessageLog[]
   payrollEntries        PayrollEntry[]
@@ -1121,41 +1119,36 @@ model HomeworkAcknowledgement {
   @@unique([homeworkId, studentId])
 }
 
-// ─── Syllabus & Lesson Plans ──────────────────────────────────────────────────
+// ─── Lesson Plan (Smart School: lesson → topic) ───────────────────────────────
+// A Lesson belongs to a subject + class-section + session and holds many Topics.
+// Each Topic tracks completion (Smart School: topic.status 0/1 + complete_date).
 
-model Syllabus {
-  id          String   @id @default(cuid())
-  subjectId   String
-  subject     Subject  @relation(fields: [subjectId], references: [id])
-  topic       String
-  description String?
-  status      String   @default("PENDING") // PENDING, COVERED
-  sessionId   String?
-  createdAt   DateTime @default(now())
-}
-
-enum LessonPlanStatus {
-  DRAFT
-  SUBMITTED
-  APPROVED
-}
-
-model LessonPlan {
-  id             String           @id @default(cuid())
-  staffId        String
-  staff          Staff            @relation(fields: [staffId], references: [id])
-  subjectId      String
-  subject        Subject          @relation(fields: [subjectId], references: [id])
-  classSectionId String
-  classSection   ClassSection     @relation(fields: [classSectionId], references: [id])
+model Lesson {
+  id             String          @id @default(cuid())
+  name           String
+  subjectId      String          // maps SS subject_group_subject_id
+  subject        Subject         @relation(fields: [subjectId], references: [id])
+  classSectionId String          // maps SS subject_group_class_sections_id
+  classSection   ClassSection    @relation(fields: [classSectionId], references: [id])
   sessionId      String
-  session        AcademicSession  @relation(fields: [sessionId], references: [id])
-  date           DateTime         @db.Date
-  topic          String
-  description    String?
-  status         LessonPlanStatus @default(DRAFT)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  session        AcademicSession @relation(fields: [sessionId], references: [id])
+  topics         Topic[]
+  createdAt      DateTime        @default(now())
+
+  @@index([subjectId, classSectionId, sessionId])
+}
+
+model Topic {
+  id           String    @id @default(cuid())
+  name         String
+  lessonId     String
+  lesson       Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  status       Boolean   @default(false) // false = incomplete, true = complete
+  completeDate DateTime? @db.Date
+  sessionId    String
+  createdAt    DateTime  @default(now())
+
+  @@index([lessonId])
 }
 
 // ─── Transport ────────────────────────────────────────────────────────────────

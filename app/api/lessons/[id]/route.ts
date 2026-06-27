@@ -1,26 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
+// PATCH /api/lessons/[id]  { name }
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    const { topic, description, status, sessionId } = await req.json();
-    const data: any = {};
-    if (topic       !== undefined) data.topic       = topic?.trim() || null;
-    if (description !== undefined) data.description = description   || null;
-    if (status      !== undefined) data.status      = status;
-    if (sessionId   !== undefined) data.sessionId   = sessionId     || null;
-    const s = await ((await getDb()) as any).syllabus.update({ where: { id }, data });
-    return NextResponse.json(s);
+    const { name } = await req.json();
+    if (!name?.trim()) return NextResponse.json({ error: "Lesson name is required" }, { status: 422 });
+    const db = await getDb();
+    const lesson = await (db as any).lesson.update({ where: { id }, data: { name: name.trim() } });
+    return NextResponse.json(lesson);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
+// DELETE /api/lessons/[id] — cascades to topics
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    await ((await getDb()) as any).syllabus.delete({ where: { id } });
+    const db = await getDb();
+    await (db as any).lesson.delete({ where: { id } });
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

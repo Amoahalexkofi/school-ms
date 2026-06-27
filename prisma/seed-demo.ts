@@ -294,33 +294,48 @@ async function main() {
   }
   console.log(`✓ Homework: ${hwCount} items`);
 
-  // ── Lesson Plans ─────────────────────────────────────────────────────────────
-  const lpDefs = [
-    { subj: 0, topic: "Place value to 1000",            days: -5, status: "APPROVED"  },
-    { subj: 0, topic: "Addition with regrouping",       days: -1, status: "SUBMITTED" },
-    { subj: 1, topic: "Comprehension: short stories",   days: -3, status: "APPROVED"  },
-    { subj: 1, topic: "Parts of speech — nouns & verbs", days: 2,  status: "DRAFT"     },
-    { subj: 2, topic: "States of matter",               days: -2, status: "SUBMITTED" },
-    { subj: 3, topic: "Regions of Ghana",               days: 4,  status: "DRAFT"     },
+  // ── Lesson Plan (Smart School: lesson → topics with complete/incomplete) ──────
+  const lessonDefs = [
+    { subj: 0, name: "Numbers & Place Value", topics: [
+      { name: "Place value to 1000", done: true }, { name: "Comparing & ordering numbers", done: true },
+      { name: "Rounding to nearest 10/100", done: false },
+    ] },
+    { subj: 0, name: "Addition & Subtraction", topics: [
+      { name: "Addition with regrouping", done: true }, { name: "Subtraction with borrowing", done: false },
+      { name: "Word problems", done: false },
+    ] },
+    { subj: 1, name: "Reading Comprehension", topics: [
+      { name: "Comprehension: short stories", done: true }, { name: "Main idea & details", done: false },
+    ] },
+    { subj: 1, name: "Grammar Basics", topics: [
+      { name: "Parts of speech — nouns & verbs", done: false }, { name: "Sentence construction", done: false },
+    ] },
+    { subj: 2, name: "Matter & Materials", topics: [
+      { name: "States of matter", done: true }, { name: "Changes of state", done: false },
+    ] },
+    { subj: 3, name: "Our Country Ghana", topics: [
+      { name: "Regions of Ghana", done: false }, { name: "Major rivers & lakes", done: false },
+    ] },
   ];
-  let lpCount = 0;
-  for (const def of lpDefs) {
+  let lpCount = 0, topicCount = 0;
+  for (const def of lessonDefs) {
     const subj = subjects[def.subj];
     if (!subj) continue;
-    const date = new Date(today0); date.setDate(date.getDate() + def.days);
-    const exists = await prisma.lessonPlan.findFirst({ where: { classSectionId: csA.id, subjectId: subj.id, topic: def.topic } });
+    const exists = await prisma.lesson.findFirst({ where: { classSectionId: csA.id, subjectId: subj.id, name: def.name } });
     if (exists) continue;
-    await prisma.lessonPlan.create({
-      data: {
-        staffId: demoTeacher.id, subjectId: subj.id, classSectionId: csA.id, sessionId: session.id,
-        date, topic: def.topic,
-        description: `Lesson plan for ${subj.name}: ${def.topic}. Objectives, activities and assessment.`,
-        status: def.status as any,
-      },
+    const lesson = await prisma.lesson.create({
+      data: { name: def.name, subjectId: subj.id, classSectionId: csA.id, sessionId: session.id },
     });
     lpCount++;
+    for (const t of def.topics) {
+      const cd = new Date(today0); cd.setDate(cd.getDate() - 3);
+      await prisma.topic.create({
+        data: { name: t.name, lessonId: lesson.id, sessionId: session.id, status: t.done, completeDate: t.done ? cd : null },
+      });
+      topicCount++;
+    }
   }
-  console.log(`✓ Lesson Plans: ${lpCount} items`);
+  console.log(`✓ Lesson Plan: ${lpCount} lessons, ${topicCount} topics`);
 
   // ── Front Office: phone call log ─────────────────────────────────────────────
   const callDefs = [
