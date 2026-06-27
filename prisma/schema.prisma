@@ -1088,8 +1088,8 @@ model Homework {
   classSection    ClassSection    @relation(fields: [classSectionId], references: [id])
   subjectId       String
   subject         Subject         @relation(fields: [subjectId], references: [id])
-  staffId         String
-  staff           Staff           @relation(fields: [staffId], references: [id])
+  staffId         String?
+  staff           Staff?          @relation(fields: [staffId], references: [id])
   sessionId       String
   session         AcademicSession @relation(fields: [sessionId], references: [id])
   title           String
