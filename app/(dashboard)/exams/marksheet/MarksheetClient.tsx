@@ -138,6 +138,17 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
     return list;
   }, [selectedExam, classSectionId]);
 
+  // Individual report card: filter the rendered list to one student (rank still
+  // comes from the full class list above).
+  const [studentFilter, setStudentFilter] = useState("");
+  const visible = studentFilter ? studentMarksheets.filter(s => s.student.id === studentFilter) : studentMarksheets;
+
+  // Print just one student's card (Save as PDF → individual report card)
+  function printOne(id: string) {
+    setStudentFilter(id);
+    setTimeout(() => window.print(), 120);
+  }
+
   const sectionName = sections.find(s => s.id === classSectionId)?.section.name ?? "";
   const printDate   = new Date().toLocaleDateString();
 
@@ -177,8 +188,19 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
                 </select>
               </div>
               {studentMarksheets.length > 0 && (
+                <div>
+                  <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Student</Label>
+                  <select className={SEL + " w-52"} value={studentFilter} onChange={e => setStudentFilter(e.target.value)}>
+                    <option value="">All students ({studentMarksheets.length})</option>
+                    {studentMarksheets.map(ms => (
+                      <option key={ms.student.id} value={ms.student.id}>{ms.student.firstName} {ms.student.lastName}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {studentMarksheets.length > 0 && (
                 <Button variant="outline" onClick={() => window.print()}>
-                  <Printer className="h-4 w-4 mr-1" /> Print All ({studentMarksheets.length})
+                  <Printer className="h-4 w-4 mr-1" /> {studentFilter ? "Print / Save PDF" : `Print All (${studentMarksheets.length})`}
                 </Button>
               )}
               <Link href="/exams/marksheet/templates" className="text-sm text-indigo-600 hover:underline self-center">Manage Templates →</Link>
@@ -200,11 +222,17 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
         </div>
       ) : (
         <div className="space-y-8">
-          {studentMarksheets.map((ms, idx) => (
+          {visible.map((ms, idx) => (
             <div
               key={ms.student.id}
               className="border-2 border-gray-700 print:break-after-page print:border print:border-gray-400"
             >
+              {/* Per-card print (hidden on print) */}
+              <div className="no-print flex justify-end px-3 pt-2">
+                <button onClick={() => printOne(ms.student.id)} className="text-xs text-indigo-600 hover:underline inline-flex items-center gap-1">
+                  <Printer className="h-3.5 w-3.5" /> Print this card
+                </button>
+              </div>
               {/* Header */}
               <div className="bg-blue-700 text-white p-4 text-center relative">
                 {school?.logo && (
