@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Plus, X, Trash2, Calendar } from "lucide-react";
+import { FileText, Plus, X, Trash2, Calendar, Pencil, Paperclip, Loader2 } from "lucide-react";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
 type ClassData = { id: string; name: string; classSections: { id: string; section: { id: string; name: string } }[] };
 
-const emptyForm = { title: "", description: "", subjectId: "", staffId: "", dueDate: "" };
+const emptyForm = { title: "", description: "", subjectId: "", staffId: "", dueDate: "", homeworkDate: "", marks: "", attachment: "" };
+const ymd = (d: any) => (d ? new Date(d).toISOString().slice(0, 10) : "");
 
 export function HomeworkClient({ classes, staff, session }: {
   classes: ClassData[];
@@ -30,8 +31,10 @@ export function HomeworkClient({ classes, staff, session }: {
   const [homework, setHomework]           = useState<any[]>([]);
   const [loading, setLoading]             = useState(false);
   const [showForm, setShowForm]           = useState(false);
+  const [editingId, setEditingId]         = useState<string | null>(null);
   const [form, setForm]                   = useState<any>(emptyForm);
   const [saving, setSaving]               = useState(false);
+  const [uploading, setUploading]         = useState(false);
   const [error, setError]                 = useState("");
 
   const selectedClass = classes.find(c => c.id === classId);
@@ -59,31 +62,65 @@ export function HomeworkClient({ classes, staff, session }: {
 
   function set(k: string, v: string) { setForm((f: any) => ({ ...f, [k]: v })); }
 
+  function openCreate() { setEditingId(null); setForm(emptyForm); setError(""); setShowForm(true); }
+
+  function openEdit(hw: any) {
+    setEditingId(hw.id);
+    setForm({
+      title:        hw.title ?? "",
+      description:  hw.description ?? "",
+      subjectId:    hw.subjectId ?? hw.subject?.id ?? "",
+      staffId:      hw.staffId ?? hw.staff?.id ?? "",
+      dueDate:      ymd(hw.dueDate),
+      homeworkDate: ymd(hw.homeworkDate),
+      marks:        hw.marks != null ? String(hw.marks) : "",
+      attachment:   hw.attachment ?? "",
+    });
+    setError("");
+    setShowForm(true);
+  }
+
+  async function uploadFile(file: File) {
+    setUploading(true); setError("");
+    const fd = new FormData(); fd.append("file", file);
+    const res = await fetch("/api/upload?type=document", { method: "POST", body: fd });
+    const d = await res.json();
+    setUploading(false);
+    if (res.ok && d.url) set("attachment", d.url);
+    else setError(d.error || "Upload failed");
+  }
+
   async function save() {
     if (!form.title || !form.subjectId || !form.dueDate) {
       setError("Title, subject and due date are required"); return;
     }
     if (!classSectionId || !session?.id) { setError("Select class and section first"); return; }
     setSaving(true); setError("");
+    const payload = {
+      title: form.title,
+      description: form.description || null,
+      subjectId: form.subjectId,
+      staffId: form.staffId || null,
+      dueDate: new Date(form.dueDate).toISOString(),
+      homeworkDate: form.homeworkDate ? new Date(form.homeworkDate).toISOString() : null,
+      marks: form.marks === "" ? null : form.marks,
+      attachment: form.attachment || null,
+    };
     try {
-      const res = await fetch("/api/homework", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: form.title,
-          description: form.description || null,
-          subjectId: form.subjectId,
-          classSectionId,
-          staffId: form.staffId || null,
-          sessionId: session.id,
-          dueDate: new Date(form.dueDate).toISOString(),
-        }),
-      });
+      const res = editingId
+        ? await fetch(`/api/homework/${editingId}`, {
+            method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
+          })
+        : await fetch("/api/homework", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...payload, classSectionId, sessionId: session.id }),
+          });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
       // Reload
       const updated = await fetch(`/api/homework?classSectionId=${classSectionId}`).then(r => r.json());
       setHomework(Array.isArray(updated) ? updated : []);
       setShowForm(false);
+      setEditingId(null);
       setForm(emptyForm);
     } catch (e: any) { setError(e.message ?? "Failed to save"); }
     finally { setSaving(false); }
@@ -130,7 +167,7 @@ export function HomeworkClient({ classes, staff, session }: {
               Homework — {selectedClass?.name} / {sections.find(s => s.id === classSectionId)?.section.name}
             </h2>
             {canCreate && (
-              <Button onClick={() => { setShowForm(true); setError(""); setForm(emptyForm); }}>
+              <Button onClick={openCreate}>
                 <Plus className="h-4 w-4 mr-1" /> Assign Homework
               </Button>
             )}
@@ -141,8 +178,8 @@ export function HomeworkClient({ classes, staff, session }: {
             <Card className="border-blue-200 bg-blue-50/30">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm text-blue-800">Assign Homework</CardTitle>
-                  <button onClick={() => setShowForm(false)}><X className="h-4 w-4 text-gray-400" /></button>
+                  <CardTitle className="text-sm text-blue-800">{editingId ? "Edit Homework" : "Assign Homework"}</CardTitle>
+                  <button onClick={() => { setShowForm(false); setEditingId(null); }}><X className="h-4 w-4 text-gray-400" /></button>
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -165,8 +202,28 @@ export function HomeworkClient({ classes, staff, session }: {
                   </select>
                 </div>
                 <div>
-                  <Label>Due Date *</Label>
+                  <Label>Homework Date</Label>
+                  <Input type="date" value={form.homeworkDate} onChange={e => set("homeworkDate", e.target.value)} />
+                </div>
+                <div>
+                  <Label>Due / Submission Date *</Label>
                   <Input type="date" value={form.dueDate} onChange={e => set("dueDate", e.target.value)} />
+                </div>
+                <div>
+                  <Label>Marks</Label>
+                  <Input type="number" min="0" step="0.5" value={form.marks} onChange={e => set("marks", e.target.value)} placeholder="e.g. 10" />
+                </div>
+                <div>
+                  <Label>Attachment</Label>
+                  <div className="flex items-center gap-2">
+                    <input type="file" className="text-xs flex-1" onChange={e => e.target.files?.[0] && uploadFile(e.target.files[0])} />
+                    {uploading && <Loader2 className="h-4 w-4 animate-spin text-gray-400" />}
+                  </div>
+                  {form.attachment && (
+                    <a href={form.attachment} target="_blank" rel="noreferrer" className="text-[11px] text-indigo-600 hover:underline inline-flex items-center gap-0.5 mt-1">
+                      <Paperclip className="h-3 w-3" /> Uploaded file
+                    </a>
+                  )}
                 </div>
                 <div className="sm:col-span-2">
                   <Label>Description</Label>
@@ -180,8 +237,8 @@ export function HomeworkClient({ classes, staff, session }: {
                 </div>
                 {error && <p className="sm:col-span-2 text-sm text-red-600">{error}</p>}
                 <div className="sm:col-span-2 flex gap-2">
-                  <Button size="sm" onClick={save} disabled={saving}>{saving ? "Saving…" : "Assign"}</Button>
-                  <Button variant="outline" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
+                  <Button size="sm" onClick={save} disabled={saving || uploading}>{saving ? "Saving…" : editingId ? "Update" : "Assign"}</Button>
+                  <Button variant="outline" size="sm" onClick={() => { setShowForm(false); setEditingId(null); }}>Cancel</Button>
                 </div>
               </CardContent>
             </Card>
@@ -222,15 +279,30 @@ export function HomeworkClient({ classes, staff, session }: {
                                : <span className="text-red-500 ml-1">(overdue)</span>}
                             </span>
                             {hw.staff && <span>By: {hw.staff.firstName} {hw.staff.lastName}</span>}
+                            {hw.marks != null && <span>Marks: {hw.marks}</span>}
+                            {hw.attachment && (
+                              <a href={hw.attachment} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-indigo-600 hover:underline">
+                                <Paperclip className="h-3 w-3" /> Attachment
+                              </a>
+                            )}
                             {hw.acknowledgements?.length > 0 && (
                               <span>{hw.acknowledgements.length} student{hw.acknowledgements.length !== 1 ? "s" : ""} acknowledged</span>
                             )}
                           </div>
                         </div>
-                        {perm.canDelete && (role === "SUPER_ADMIN" || role === "ADMIN" || role === "TEACHER") && (
-                          <Button size="sm" variant="ghost" onClick={() => deleteHw(hw.id)} className="text-red-400 hover:text-red-600">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                        {(role === "SUPER_ADMIN" || role === "ADMIN" || role === "TEACHER") && (
+                          <div className="flex items-center gap-1 shrink-0">
+                            {perm.canEdit && (
+                              <Button size="sm" variant="ghost" onClick={() => openEdit(hw)} className="text-gray-400 hover:text-indigo-600">
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {perm.canDelete && (
+                              <Button size="sm" variant="ghost" onClick={() => deleteHw(hw.id)} className="text-red-400 hover:text-red-600">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                         )}
                       </div>
                     </CardContent>

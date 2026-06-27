@@ -338,28 +338,18 @@ async function main() {
   console.log(`✓ Lesson Plan: ${lpCount} lessons, ${topicCount} topics`);
 
   // ── Weekly Syllabus (subject_syllabus scheduler) ─────────────────────────────
-  // Schedule a few topics across the current week for the demo class.
-  const planTopics = await prisma.topic.findMany({
-    where: { lesson: { classSectionId: csA.id } },
-    include: { lesson: true }, orderBy: { createdAt: "asc" }, take: 4,
-  });
+  // Schedule topics across the current week for Mathematics, English & Science
+  // so each subject's Weekly Plan grid looks populated.
   const monday = new Date(today0);
   monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7)); // Monday of this week
-  const slots = [
-    { off: 0, from: "08:00", to: "09:00" },
-    { off: 1, from: "09:00", to: "10:00" },
-    { off: 2, from: "10:30", to: "11:30" },
-    { off: 3, from: "08:00", to: "09:00" },
-  ];
   let sylCount = 0;
-  for (let i = 0; i < planTopics.length; i++) {
-    const t = planTopics[i]; const s = slots[i];
-    const date = new Date(monday); date.setDate(date.getDate() + s.off);
-    const exists = await prisma.subjectSyllabus.findFirst({ where: { topicId: t.id, date, timeFrom: s.from } });
-    if (exists) continue;
+  const schedule = async (t: any, off: number, from: string, to: string, video: boolean) => {
+    const date = new Date(monday); date.setDate(date.getDate() + off);
+    const exists = await prisma.subjectSyllabus.findFirst({ where: { topicId: t.id, date, timeFrom: from } });
+    if (exists) return;
     await prisma.subjectSyllabus.create({
       data: {
-        topicId: t.id, sessionId: session.id, date, timeFrom: s.from, timeTo: s.to,
+        topicId: t.id, sessionId: session.id, date, timeFrom: from, timeTo: to,
         createdForId: demoTeacher.id, createdById: demoTeacher.id,
         subTopic: t.name,
         generalObjectives: `By the end of the lesson, pupils should understand "${t.name}".`,
@@ -367,12 +357,30 @@ async function main() {
         teachingMethod: "Discussion, demonstration and group work.",
         presentation: "Introduce the concept, work examples, then guided practice.",
         comprehensiveQuestions: `What did we learn about ${t.name}? Give one example.`,
-        lectureYoutubeUrl: i === 0 ? "https://www.youtube.com/watch?v=dQw4w9WgXcQ" : null,
+        lectureYoutubeUrl: video ? "https://www.youtube.com/watch?v=dQw4w9WgXcQ" : null,
       },
     });
     sylCount++;
+  };
+  // Per-subject plan: [subject index, [day-offset, from, to, withVideo] ...]
+  const weeklyPlan: { subj: number; slots: [number, string, string, boolean][] }[] = [
+    { subj: 0, slots: [[0, "08:00", "09:00", true], [1, "09:00", "10:00", false], [2, "10:30", "11:30", false], [3, "08:00", "09:00", false]] }, // Mathematics
+    { subj: 1, slots: [[1, "11:00", "12:00", true], [3, "10:00", "11:00", false]] }, // English Language
+    { subj: 2, slots: [[0, "11:30", "12:30", true], [4, "09:00", "10:00", false]] }, // Integrated Science
+  ];
+  for (const p of weeklyPlan) {
+    const subj = subjects[p.subj];
+    if (!subj) continue;
+    const tps = await prisma.topic.findMany({
+      where: { lesson: { classSectionId: csA.id, subjectId: subj.id } },
+      orderBy: { createdAt: "asc" }, take: p.slots.length,
+    });
+    for (let i = 0; i < tps.length; i++) {
+      const [off, from, to, video] = p.slots[i];
+      await schedule(tps[i], off, from, to, video);
+    }
   }
-  console.log(`✓ Weekly Syllabus: ${sylCount} scheduled entries`);
+  console.log(`✓ Weekly Syllabus: ${sylCount} new scheduled entries`);
 
   // ── Front Office: phone call log ─────────────────────────────────────────────
   const callDefs = [
