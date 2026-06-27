@@ -4,24 +4,27 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   ScrollText, ListTree, BookOpen, Copy, Plus, X, Pencil, Trash2,
-  CheckCircle2, Circle, Save, Loader2,
+  CheckCircle2, Circle, Save, Loader2, CalendarDays, ChevronLeft, ChevronRight,
+  Video, Paperclip, Clock, User as UserIcon, ChevronDown,
 } from "lucide-react";
 
 type Lookup = { id: string; name: string };
+type Teacher = { id: string; name: string; employeeId: string };
 type Session = { id: string; session: string; isActive: boolean };
 type ClassSection = { id: string; class: { name: string }; section: { name: string } };
 type Subject = { id: string; name: string; code?: string | null };
 type Topic = { id: string; name: string; status: boolean; completeDate: string | null };
 type Lesson = { id: string; name: string; topics: Topic[] };
 
-type Props = { classes: Lookup[]; sessions: Session[]; currentSessionId: string };
+type Props = { classes: Lookup[]; sessions: Session[]; teachers: Teacher[]; currentSessionId: string };
 
-type Tab = "manage" | "lessons" | "topics" | "copy";
+type Tab = "manage" | "lessons" | "topics" | "weekly" | "copy";
 
 const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: "manage",  label: "Manage Lesson Plan", icon: <ScrollText className="h-4 w-4" /> },
   { key: "lessons", label: "Lessons",            icon: <BookOpen className="h-4 w-4" /> },
   { key: "topics",  label: "Topics",             icon: <ListTree className="h-4 w-4" /> },
+  { key: "weekly",  label: "Weekly Plan",        icon: <CalendarDays className="h-4 w-4" /> },
   { key: "copy",    label: "Copy Old Lesson",    icon: <Copy className="h-4 w-4" /> },
 ];
 
@@ -88,7 +91,7 @@ function SubjectSelector({
   );
 }
 
-export function LessonPlanClient({ classes, sessions, currentSessionId }: Props) {
+export function LessonPlanClient({ classes, sessions, teachers, currentSessionId }: Props) {
   const [tab, setTab] = useState<Tab>("manage");
 
   return (
@@ -108,6 +111,7 @@ export function LessonPlanClient({ classes, sessions, currentSessionId }: Props)
       {tab === "manage"  && <ManageTab  classes={classes} sessionId={currentSessionId} />}
       {tab === "lessons" && <LessonsTab classes={classes} sessionId={currentSessionId} />}
       {tab === "topics"  && <TopicsTab  classes={classes} sessionId={currentSessionId} />}
+      {tab === "weekly"  && <WeeklyTab  classes={classes} teachers={teachers} sessionId={currentSessionId} />}
       {tab === "copy"    && <CopyTab    classes={classes} sessions={sessions} currentSessionId={currentSessionId} />}
     </div>
   );
@@ -503,6 +507,287 @@ function CopyTab({ classes, sessions, currentSessionId }: { classes: Lookup[]; s
           <Button onClick={copy} disabled={saving}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Copy className="h-4 w-4" />} Copy {checked.size > 0 ? `${checked.size} Topic(s)` : "Lessons"}</Button>
           {msg && <span className="text-xs text-gray-600">{msg}</span>}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Weekly Plan (Smart School subject_syllabus scheduler) ─────────────────────
+type SyllabusEntry = {
+  id: string; date: string; timeFrom: string; timeTo: string; createdForId: string | null;
+  subTopic: string | null; presentation: string | null; teachingMethod: string | null;
+  generalObjectives: string | null; previousKnowledge: string | null;
+  comprehensiveQuestions: string | null; lectureYoutubeUrl: string | null; attachment: string | null;
+  topic: { id: string; name: string; lesson: { name: string; subject: { name: string; code?: string | null } } };
+  createdFor: { firstName: string; lastName: string; employeeId: string } | null;
+};
+
+const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const ymd = (d: Date) => d.toISOString().slice(0, 10);
+function weekStart(d: Date) { const x = new Date(d); const dow = (x.getDay() + 6) % 7; x.setDate(x.getDate() - dow); x.setHours(0, 0, 0, 0); return x; } // Monday
+function addDays(d: Date, n: number) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+
+function WeeklyTab({ classes, teachers, sessionId }: { classes: Lookup[]; teachers: Teacher[]; sessionId: string }) {
+  const [sel, setSel] = useState({ classId: "", classSectionId: "", subjectId: "" });
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [entries, setEntries] = useState<SyllabusEntry[]>([]);
+  const [anchor, setAnchor] = useState(() => weekStart(new Date()));
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<SyllabusEntry | null>(null);
+
+  const start = anchor;
+  const end = addDays(anchor, 6);
+
+  useEffect(() => {
+    if (!sel.classSectionId || !sel.subjectId) { setLessons([]); return; }
+    fetch(`/api/lessons?classSectionId=${sel.classSectionId}&subjectId=${sel.subjectId}&sessionId=${sessionId}`)
+      .then((r) => r.json()).then((d) => setLessons(Array.isArray(d) ? d : []));
+  }, [sel.classSectionId, sel.subjectId, sessionId]);
+
+  const loadEntries = useCallback(() => {
+    if (!sel.classSectionId || !sel.subjectId) { setEntries([]); return; }
+    fetch(`/api/syllabus?classSectionId=${sel.classSectionId}&subjectId=${sel.subjectId}&sessionId=${sessionId}&from=${ymd(start)}&to=${ymd(end)}`)
+      .then((r) => r.json()).then((d) => setEntries(Array.isArray(d) ? d : []));
+  }, [sel.classSectionId, sel.subjectId, sessionId, start, end]);
+  useEffect(() => { loadEntries(); }, [loadEntries]);
+
+  const remove = async (id: string) => {
+    if (!confirm("Delete this lesson-plan entry?")) return;
+    await fetch(`/api/syllabus/${id}`, { method: "DELETE" });
+    loadEntries();
+  };
+
+  const byDay = (d: Date) => entries.filter((e) => e.date.slice(0, 10) === ymd(d));
+  const canAdd = sel.classSectionId && sel.subjectId && lessons.some((l) => l.topics.length);
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white border rounded-lg p-4 space-y-4">
+        <SubjectSelector classes={classes} sessionId={sessionId} value={sel} onChange={setSel} />
+      </div>
+
+      {!sel.subjectId ? (
+        <p className="text-sm text-gray-500 text-center py-10">Select a class, section and subject to plan the week.</p>
+      ) : (
+        <>
+          {/* Week navigation */}
+          <div className="flex items-center justify-between bg-white border rounded-lg px-4 py-2.5">
+            <button onClick={() => setAnchor(addDays(anchor, -7))} className="text-gray-500 hover:text-indigo-600 inline-flex items-center gap-1 text-sm"><ChevronLeft className="h-4 w-4" /> Prev</button>
+            <div className="text-center">
+              <p className="text-sm font-semibold">{start.toLocaleDateString(undefined, { month: "short", day: "numeric" })} – {end.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</p>
+              <button onClick={() => setAnchor(weekStart(new Date()))} className="text-[11px] text-indigo-600 hover:underline">This week</button>
+            </div>
+            <button onClick={() => setAnchor(addDays(anchor, 7))} className="text-gray-500 hover:text-indigo-600 inline-flex items-center gap-1 text-sm">Next <ChevronRight className="h-4 w-4" /></button>
+          </div>
+
+          <div className="flex justify-end">
+            <Button onClick={() => { setEditing(null); setShowForm(true); }} disabled={!canAdd}><Plus className="h-4 w-4" /> Add to Plan</Button>
+          </div>
+          {!canAdd && <p className="text-[11px] text-amber-600 text-right -mt-2">Add lessons &amp; topics first (Lessons / Topics tabs).</p>}
+
+          {(showForm || editing) && (
+            <SyllabusForm
+              lessons={lessons} teachers={teachers} sessionId={sessionId}
+              weekStart={start} weekEnd={end} editing={editing}
+              onClose={() => { setShowForm(false); setEditing(null); }}
+              onSaved={() => { setShowForm(false); setEditing(null); loadEntries(); }}
+            />
+          )}
+
+          {/* Week grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+            {Array.from({ length: 7 }, (_, i) => addDays(start, i)).map((d) => {
+              const items = byDay(d);
+              const isToday = ymd(d) === ymd(new Date());
+              return (
+                <div key={ymd(d)} className={`bg-white border rounded-lg ${isToday ? "ring-2 ring-indigo-200" : ""}`}>
+                  <div className={`px-3 py-2 border-b flex items-center justify-between ${isToday ? "bg-indigo-50" : "bg-gray-50"}`}>
+                    <span className="text-sm font-semibold">{DAY_NAMES[d.getDay()]}</span>
+                    <span className="text-xs text-gray-400">{d.toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
+                  </div>
+                  <div className="p-2 space-y-2 min-h-[60px]">
+                    {items.length === 0 ? (
+                      <p className="text-[11px] text-gray-300 text-center py-3">No entries</p>
+                    ) : items.map((e) => (
+                      <SyllabusCard key={e.id} entry={e} onEdit={() => { setShowForm(false); setEditing(e); }} onDelete={() => remove(e.id)} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function SyllabusCard({ entry, onEdit, onDelete }: { entry: SyllabusEntry; onEdit: () => void; onDelete: () => void }) {
+  const [open, setOpen] = useState(false);
+  const details: [string, string | null][] = [
+    ["Sub-topic", entry.subTopic], ["General objectives", entry.generalObjectives],
+    ["Previous knowledge", entry.previousKnowledge], ["Teaching method", entry.teachingMethod],
+    ["Presentation", entry.presentation], ["Comprehensive questions", entry.comprehensiveQuestions],
+  ];
+  const hasDetails = details.some(([, v]) => v);
+  return (
+    <div className="border rounded-md text-xs">
+      <div className="p-2">
+        <div className="flex items-start justify-between gap-1">
+          <p className="font-semibold text-gray-800 leading-tight">{entry.topic.name}</p>
+          <div className="flex items-center gap-0.5 shrink-0">
+            <button onClick={onEdit} className="text-gray-400 hover:text-indigo-600 p-0.5"><Pencil className="h-3 w-3" /></button>
+            <button onClick={onDelete} className="text-gray-400 hover:text-red-500 p-0.5"><Trash2 className="h-3 w-3" /></button>
+          </div>
+        </div>
+        <p className="text-gray-400">{entry.topic.lesson.name} · {entry.topic.lesson.subject.name}</p>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1 text-gray-500">
+          <span className="inline-flex items-center gap-0.5"><Clock className="h-3 w-3" />{entry.timeFrom}–{entry.timeTo}</span>
+          {entry.createdFor && <span className="inline-flex items-center gap-0.5"><UserIcon className="h-3 w-3" />{entry.createdFor.firstName} {entry.createdFor.lastName}</span>}
+        </div>
+        <div className="flex flex-wrap items-center gap-2 mt-1">
+          {entry.lectureYoutubeUrl && <a href={entry.lectureYoutubeUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 text-red-600 hover:underline"><Video className="h-3 w-3" />Video</a>}
+          {entry.attachment && <a href={entry.attachment} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 text-indigo-600 hover:underline"><Paperclip className="h-3 w-3" />Attachment</a>}
+          {hasDetails && <button onClick={() => setOpen(!open)} className="inline-flex items-center gap-0.5 text-gray-500 hover:text-gray-700"><ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />Details</button>}
+        </div>
+      </div>
+      {open && hasDetails && (
+        <div className="border-t bg-gray-50 p-2 space-y-1.5">
+          {details.filter(([, v]) => v).map(([k, v]) => (
+            <div key={k}><span className="text-gray-400">{k}: </span><span className="text-gray-700 whitespace-pre-wrap">{v}</span></div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SyllabusForm({
+  lessons, teachers, sessionId, weekStart, weekEnd, editing, onClose, onSaved,
+}: {
+  lessons: Lesson[]; teachers: Teacher[]; sessionId: string; weekStart: Date; weekEnd: Date;
+  editing: SyllabusEntry | null; onClose: () => void; onSaved: () => void;
+}) {
+  const initLessonId = editing ? lessons.find((l) => l.topics.some((t) => t.id === editing.topic.id))?.id ?? "" : "";
+  const [lessonId, setLessonId] = useState(initLessonId);
+  const [f, setF] = useState({
+    topicId: editing?.topic.id ?? "",
+    date: editing ? editing.date.slice(0, 10) : ymd(weekStart),
+    timeFrom: editing?.timeFrom ?? "08:00",
+    timeTo: editing?.timeTo ?? "09:00",
+    createdForId: editing?.createdForId ?? "",
+    subTopic: editing?.subTopic ?? "",
+    generalObjectives: editing?.generalObjectives ?? "",
+    previousKnowledge: editing?.previousKnowledge ?? "",
+    teachingMethod: editing?.teachingMethod ?? "",
+    presentation: editing?.presentation ?? "",
+    comprehensiveQuestions: editing?.comprehensiveQuestions ?? "",
+    lectureYoutubeUrl: editing?.lectureYoutubeUrl ?? "",
+    attachment: editing?.attachment ?? "",
+  });
+  const [msg, setMsg] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
+  const topics = lessons.find((l) => l.id === lessonId)?.topics ?? [];
+
+  const upload = async (file: File) => {
+    setUploading(true); setMsg("");
+    const fd = new FormData(); fd.append("file", file);
+    const res = await fetch("/api/upload?type=document", { method: "POST", body: fd });
+    const d = await res.json();
+    setUploading(false);
+    if (res.ok && d.url) set("attachment", d.url);
+    else setMsg(d.error || "Upload failed.");
+  };
+
+  const save = async () => {
+    setMsg("");
+    if (!f.topicId) return setMsg("Pick a lesson and topic.");
+    if (!f.date || !f.timeFrom || !f.timeTo) return setMsg("Date and time are required.");
+    setSaving(true);
+    const res = editing
+      ? await fetch(`/api/syllabus/${editing.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) })
+      : await fetch("/api/syllabus", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...f, sessionId }) });
+    setSaving(false);
+    if (res.ok) onSaved();
+    else setMsg((await res.json()).error || "Failed to save.");
+  };
+
+  const ta = "border rounded-md px-3 py-2 text-sm w-full";
+  return (
+    <div className="bg-white border-2 border-indigo-200 rounded-lg p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold">{editing ? "Edit Lesson-Plan Entry" : "Add Lesson-Plan Entry"}</p>
+        <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className={lblCls}>Lesson *</label>
+          <select className={selCls} value={lessonId} onChange={(e) => { setLessonId(e.target.value); set("topicId", ""); }}>
+            <option value="">Select Lesson</option>
+            {lessons.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className={lblCls}>Topic *</label>
+          <select className={selCls} value={f.topicId} disabled={!topics.length} onChange={(e) => set("topicId", e.target.value)}>
+            <option value="">Select Topic</option>
+            {topics.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div>
+          <label className={lblCls}>Date *</label>
+          <input type="date" className={selCls} value={f.date} min={ymd(weekStart)} max={ymd(weekEnd)} onChange={(e) => set("date", e.target.value)} />
+        </div>
+        <div>
+          <label className={lblCls}>From *</label>
+          <input type="time" className={selCls} value={f.timeFrom} onChange={(e) => set("timeFrom", e.target.value)} />
+        </div>
+        <div>
+          <label className={lblCls}>To *</label>
+          <input type="time" className={selCls} value={f.timeTo} onChange={(e) => set("timeTo", e.target.value)} />
+        </div>
+        <div>
+          <label className={lblCls}>Teacher</label>
+          <select className={selCls} value={f.createdForId} onChange={(e) => set("createdForId", e.target.value)}>
+            <option value="">— None —</option>
+            {teachers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div><label className={lblCls}>Sub-topic</label><input className={ta} value={f.subTopic} onChange={(e) => set("subTopic", e.target.value)} /></div>
+        <div><label className={lblCls}>Teaching method</label><input className={ta} value={f.teachingMethod} onChange={(e) => set("teachingMethod", e.target.value)} /></div>
+        <div><label className={lblCls}>General objectives</label><textarea className={ta} rows={2} value={f.generalObjectives} onChange={(e) => set("generalObjectives", e.target.value)} /></div>
+        <div><label className={lblCls}>Previous knowledge</label><textarea className={ta} rows={2} value={f.previousKnowledge} onChange={(e) => set("previousKnowledge", e.target.value)} /></div>
+        <div><label className={lblCls}>Presentation</label><textarea className={ta} rows={2} value={f.presentation} onChange={(e) => set("presentation", e.target.value)} /></div>
+        <div><label className={lblCls}>Comprehensive questions</label><textarea className={ta} rows={2} value={f.comprehensiveQuestions} onChange={(e) => set("comprehensiveQuestions", e.target.value)} /></div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className={lblCls}>Lecture YouTube URL</label>
+          <input className={ta} placeholder="https://youtube.com/…" value={f.lectureYoutubeUrl} onChange={(e) => set("lectureYoutubeUrl", e.target.value)} />
+        </div>
+        <div>
+          <label className={lblCls}>Attachment</label>
+          <div className="flex items-center gap-2">
+            <input type="file" className="text-xs flex-1" onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
+            {uploading && <Loader2 className="h-4 w-4 animate-spin text-gray-400" />}
+          </div>
+          {f.attachment && <a href={f.attachment} target="_blank" rel="noreferrer" className="text-[11px] text-indigo-600 hover:underline inline-flex items-center gap-0.5 mt-1"><Paperclip className="h-3 w-3" />Uploaded file</a>}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <Button onClick={save} disabled={saving || uploading}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} {editing ? "Update Entry" : "Save Entry"}</Button>
+        {msg && <span className="text-xs text-gray-600">{msg}</span>}
       </div>
     </div>
   );

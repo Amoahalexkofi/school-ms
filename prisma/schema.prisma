@@ -290,6 +290,7 @@ model Staff {
   leaveRequests         StaffLeaveRequest[]
   leaveBalances         StaffLeaveBalance[]
   bookIssues            BookIssue[]
+  syllabusAssignments   SubjectSyllabus[] @relation("SyllabusCreatedFor")
   notices               Notice[]
   messageLogs           MessageLog[]
   payrollEntries        PayrollEntry[]
@@ -1139,16 +1140,46 @@ model Lesson {
 }
 
 model Topic {
-  id           String    @id @default(cuid())
-  name         String
-  lessonId     String
-  lesson       Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  status       Boolean   @default(false) // false = incomplete, true = complete
-  completeDate DateTime? @db.Date
-  sessionId    String
-  createdAt    DateTime  @default(now())
+  id              String            @id @default(cuid())
+  name            String
+  lessonId        String
+  lesson          Lesson            @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  status          Boolean           @default(false) // false = incomplete, true = complete
+  completeDate    DateTime?         @db.Date
+  sessionId       String
+  createdAt       DateTime          @default(now())
+  syllabusEntries SubjectSyllabus[]
 
   @@index([lessonId])
+}
+
+// Weekly syllabus scheduler (Smart School: subject_syllabus). One scheduled,
+// detailed lesson-plan entry: a topic taught on a date in a time slot, by a
+// teacher, with objectives/methods/questions + a YouTube link and attachment.
+model SubjectSyllabus {
+  id                     String    @id @default(cuid())
+  topicId                String
+  topic                  Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  sessionId              String
+  date                   DateTime  @db.Date
+  timeFrom               String
+  timeTo                 String
+  createdForId           String? // teacher (Staff) the period is assigned to
+  createdFor             Staff?    @relation("SyllabusCreatedFor", fields: [createdForId], references: [id])
+  createdById            String? // staff who created the entry
+  subTopic               String?
+  presentation           String?
+  teachingMethod         String?
+  generalObjectives      String?
+  previousKnowledge      String?
+  comprehensiveQuestions String?
+  lectureYoutubeUrl      String?
+  attachment             String? // file URL
+  createdAt              DateTime  @default(now())
+
+  @@index([topicId])
+  @@index([date])
+  @@index([createdForId])
 }
 
 // ─── Transport ────────────────────────────────────────────────────────────────

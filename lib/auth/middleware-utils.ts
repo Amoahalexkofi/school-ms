@@ -309,9 +309,10 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/api/fees/groups",            roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { prefix: "/api/fees/discounts/assign",  roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { prefix: "/api/fees/discounts",         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
-  // Lesson plan API (lessons → topics, copy old lesson)
+  // Lesson plan API (lessons → topics, copy old lesson, weekly syllabus scheduler)
   { prefix: "/api/lessons", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   { prefix: "/api/topics", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
+  { prefix: "/api/syllabus", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Grades API
   { prefix: "/api/grades", roles: ["SUPER_ADMIN", "ADMIN"] },
   // Subject groups API

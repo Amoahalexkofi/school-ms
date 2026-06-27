@@ -337,6 +337,43 @@ async function main() {
   }
   console.log(`✓ Lesson Plan: ${lpCount} lessons, ${topicCount} topics`);
 
+  // ── Weekly Syllabus (subject_syllabus scheduler) ─────────────────────────────
+  // Schedule a few topics across the current week for the demo class.
+  const planTopics = await prisma.topic.findMany({
+    where: { lesson: { classSectionId: csA.id } },
+    include: { lesson: true }, orderBy: { createdAt: "asc" }, take: 4,
+  });
+  const monday = new Date(today0);
+  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7)); // Monday of this week
+  const slots = [
+    { off: 0, from: "08:00", to: "09:00" },
+    { off: 1, from: "09:00", to: "10:00" },
+    { off: 2, from: "10:30", to: "11:30" },
+    { off: 3, from: "08:00", to: "09:00" },
+  ];
+  let sylCount = 0;
+  for (let i = 0; i < planTopics.length; i++) {
+    const t = planTopics[i]; const s = slots[i];
+    const date = new Date(monday); date.setDate(date.getDate() + s.off);
+    const exists = await prisma.subjectSyllabus.findFirst({ where: { topicId: t.id, date, timeFrom: s.from } });
+    if (exists) continue;
+    await prisma.subjectSyllabus.create({
+      data: {
+        topicId: t.id, sessionId: session.id, date, timeFrom: s.from, timeTo: s.to,
+        createdForId: demoTeacher.id, createdById: demoTeacher.id,
+        subTopic: t.name,
+        generalObjectives: `By the end of the lesson, pupils should understand "${t.name}".`,
+        previousKnowledge: "Pupils have covered the preceding topics in this lesson.",
+        teachingMethod: "Discussion, demonstration and group work.",
+        presentation: "Introduce the concept, work examples, then guided practice.",
+        comprehensiveQuestions: `What did we learn about ${t.name}? Give one example.`,
+        lectureYoutubeUrl: i === 0 ? "https://www.youtube.com/watch?v=dQw4w9WgXcQ" : null,
+      },
+    });
+    sylCount++;
+  }
+  console.log(`✓ Weekly Syllabus: ${sylCount} scheduled entries`);
+
   // ── Front Office: phone call log ─────────────────────────────────────────────
   const callDefs = [
     { name: "Ama Owusu (parent)", phone: "0244000111", callType: "incoming", days: -1, description: "Asked about Term 2 fees deadline", callDuration: "4 min", follow: 2 },
