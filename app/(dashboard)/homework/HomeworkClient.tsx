@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Plus, X, Trash2, Calendar, Pencil, Paperclip, Loader2 } from "lucide-react";
+import { FileText, Plus, X, Trash2, Calendar, Pencil, Paperclip, Loader2, ClipboardCheck } from "lucide-react";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
@@ -36,6 +36,16 @@ export function HomeworkClient({ classes, staff, session }: {
   const [saving, setSaving]               = useState(false);
   const [uploading, setUploading]         = useState(false);
   const [error, setError]                 = useState("");
+
+  // Per-student evaluation modal
+  const [evalHw, setEvalHw]               = useState<any>(null);
+  const [evalRows, setEvalRows]           = useState<any[]>([]);
+  const [evalDate, setEvalDate]           = useState("");
+  const [evalMax, setEvalMax]             = useState<number | null>(null);
+  const [evalLoading, setEvalLoading]     = useState(false);
+  const [evalSaving, setEvalSaving]       = useState(false);
+  const [evalError, setEvalError]         = useState("");
+  const [evalMsg, setEvalMsg]             = useState("");
 
   const selectedClass = classes.find(c => c.id === classId);
   const sections = selectedClass?.classSections ?? [];
@@ -132,7 +142,45 @@ export function HomeworkClient({ classes, staff, session }: {
     setHomework(h => h.filter(x => x.id !== id));
   }
 
+  async function openEval(hw: any) {
+    setEvalHw(hw); setEvalError(""); setEvalMsg(""); setEvalLoading(true); setEvalRows([]);
+    try {
+      const d = await fetch(`/api/homework/${hw.id}/evaluation`).then(r => r.json());
+      setEvalRows(d.students ?? []);
+      setEvalMax(d.homework?.maxMarks ?? null);
+      setEvalDate(d.homework?.evaluationDate ? ymd(d.homework.evaluationDate) : ymd(new Date()));
+    } catch { setEvalError("Failed to load students"); }
+    finally { setEvalLoading(false); }
+  }
+
+  function setEvalRow(studentId: string, k: "marks" | "note", v: string) {
+    setEvalRows(rows => rows.map(r => r.studentId === studentId ? { ...r, [k]: v } : r));
+  }
+
+  async function saveEval() {
+    if (!evalDate) { setEvalError("Evaluation date is required"); return; }
+    setEvalSaving(true); setEvalError(""); setEvalMsg("");
+    try {
+      const entries = evalRows
+        .filter(r => (r.marks !== null && r.marks !== "") || (r.note && r.note.trim()))
+        .map(r => ({ studentId: r.studentId, marks: r.marks, note: r.note }));
+      if (!entries.length) { setEvalError("Enter marks or a note for at least one student"); setEvalSaving(false); return; }
+      const res = await fetch(`/api/homework/${evalHw.id}/evaluation`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ evaluationDate: new Date(evalDate).toISOString(), entries }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error);
+      setEvalMsg(`Saved evaluation for ${d.saved} student${d.saved !== 1 ? "s" : ""}.`);
+      // refresh homework list (so evaluated state is reflected)
+      const updated = await fetch(`/api/homework?classSectionId=${classSectionId}`).then(r => r.json());
+      setHomework(Array.isArray(updated) ? updated : []);
+    } catch (e: any) { setEvalError(e.message ?? "Failed to save"); }
+    finally { setEvalSaving(false); }
+  }
+
   const canCreate = (role === "SUPER_ADMIN" || role === "ADMIN" || role === "TEACHER") && perm.canAdd;
+  const isStaff = role === "SUPER_ADMIN" || role === "ADMIN" || role === "TEACHER";
 
   return (
     <main className="flex-1 p-4 md:p-6 space-y-5">
@@ -290,8 +338,11 @@ export function HomeworkClient({ classes, staff, session }: {
                             )}
                           </div>
                         </div>
-                        {(role === "SUPER_ADMIN" || role === "ADMIN" || role === "TEACHER") && (
+                        {isStaff && (
                           <div className="flex items-center gap-1 shrink-0">
+                            <Button size="sm" variant="ghost" onClick={() => openEval(hw)} className="text-gray-400 hover:text-green-600" title="Evaluate">
+                              <ClipboardCheck className="h-4 w-4" />
+                            </Button>
                             {perm.canEdit && (
                               <Button size="sm" variant="ghost" onClick={() => openEdit(hw)} className="text-gray-400 hover:text-indigo-600">
                                 <Pencil className="h-4 w-4" />
@@ -318,6 +369,70 @@ export function HomeworkClient({ classes, staff, session }: {
         <div className="text-center py-16 text-gray-400 border-2 border-dashed rounded-xl">
           <FileText className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p className="font-medium">Select a class and section to view homework</p>
+        </div>
+      )}
+
+      {/* Per-student evaluation modal */}
+      {evalHw && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-start justify-center p-4 overflow-y-auto" onClick={() => setEvalHw(null)}>
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl my-8" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-3 border-b">
+              <div>
+                <h3 className="font-semibold text-gray-800">Evaluate Homework</h3>
+                <p className="text-xs text-gray-500">{evalHw.title} · {evalHw.subject?.name ?? "—"}{evalMax != null && ` · Max marks: ${evalMax}`}</p>
+              </div>
+              <button onClick={() => setEvalHw(null)}><X className="h-5 w-5 text-gray-400" /></button>
+            </div>
+
+            <div className="px-5 py-3 border-b flex items-end gap-3">
+              <div>
+                <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Evaluation Date *</Label>
+                <Input type="date" value={evalDate} onChange={e => setEvalDate(e.target.value)} className="w-44" />
+              </div>
+            </div>
+
+            <div className="max-h-[55vh] overflow-y-auto px-5 py-3">
+              {evalLoading ? (
+                <p className="text-sm text-gray-400 text-center py-8"><Loader2 className="h-4 w-4 animate-spin inline" /> Loading students…</p>
+              ) : evalRows.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-8">No students enrolled in this class section.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-xs text-gray-400 border-b">
+                      <th className="py-2 pr-2">Student</th>
+                      <th className="py-2 px-2 w-24">Marks{evalMax != null && ` /${evalMax}`}</th>
+                      <th className="py-2 pl-2">Note</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {evalRows.map(r => (
+                      <tr key={r.studentId} className="border-b last:border-0">
+                        <td className="py-2 pr-2">
+                          <div className="font-medium text-gray-800">{r.name}</div>
+                          <div className="text-[11px] text-gray-400">{r.admissionNo}{r.rollNo ? ` · Roll ${r.rollNo}` : ""}{r.evaluated && <span className="ml-1 text-green-600">• evaluated</span>}</div>
+                        </td>
+                        <td className="py-2 px-2">
+                          <Input type="number" min="0" step="0.5" max={evalMax ?? undefined}
+                            value={r.marks ?? ""} onChange={e => setEvalRow(r.studentId, "marks", e.target.value)} className="h-9 w-20" />
+                        </td>
+                        <td className="py-2 pl-2">
+                          <Input value={r.note ?? ""} onChange={e => setEvalRow(r.studentId, "note", e.target.value)} placeholder="Remark…" className="h-9" />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            <div className="px-5 py-3 border-t flex items-center gap-3">
+              <Button size="sm" onClick={saveEval} disabled={evalSaving || evalLoading}>{evalSaving ? "Saving…" : "Save Evaluation"}</Button>
+              <Button variant="outline" size="sm" onClick={() => setEvalHw(null)}>Close</Button>
+              {evalError && <span className="text-sm text-red-600">{evalError}</span>}
+              {evalMsg && <span className="text-sm text-green-600">{evalMsg}</span>}
+            </div>
+          </div>
         </div>
       )}
     </main>

@@ -438,6 +438,7 @@ model Student {
   markEntries              MarkEntry[]
   attendances              StudentAttendance[]
   homeworkAcknowledgements HomeworkAcknowledgement[]
+  homeworkEvaluations      HomeworkEvaluation[]
   bookIssues               BookIssue[]
   transportRoute           StudentRoute?
   hostelAllocation         HostelAllocation?
@@ -1104,8 +1105,26 @@ model Homework {
   createdAt       DateTime        @default(now())
 
   acknowledgements HomeworkAcknowledgement[]
+  evaluations      HomeworkEvaluation[]
 
   @@index([classSectionId, sessionId])
+}
+
+// Per-student homework evaluation (Smart School: homework_evaluation).
+model HomeworkEvaluation {
+  id         String   @id @default(cuid())
+  homeworkId String
+  homework   Homework @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id])
+  marks      Float?
+  note       String?
+  status     String   @default("completed")
+  date       DateTime @db.Date
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([homeworkId, studentId])
 }
 
 model HomeworkAcknowledgement {
