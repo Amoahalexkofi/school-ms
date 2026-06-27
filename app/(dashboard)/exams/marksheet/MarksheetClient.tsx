@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Printer, FileText, CheckCircle2, XCircle } from "lucide-react";
+import { Printer, FileText, CheckCircle2, XCircle, Download } from "lucide-react";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
@@ -149,6 +149,14 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
     setTimeout(() => window.print(), 120);
   }
 
+  // One-click server-generated PDF download
+  function pdfUrl(sid?: string) {
+    const p = new URLSearchParams({ classSectionId });
+    if (sid) p.set("studentId", sid);
+    if (templateId) p.set("templateId", templateId);
+    return `/api/exams/results/${examGroupId}/pdf?${p.toString()}`;
+  }
+
   const sectionName = sections.find(s => s.id === classSectionId)?.section.name ?? "";
   const printDate   = new Date().toLocaleDateString();
 
@@ -200,8 +208,14 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
               )}
               {studentMarksheets.length > 0 && (
                 <Button variant="outline" onClick={() => window.print()}>
-                  <Printer className="h-4 w-4 mr-1" /> {studentFilter ? "Print / Save PDF" : `Print All (${studentMarksheets.length})`}
+                  <Printer className="h-4 w-4 mr-1" /> {studentFilter ? "Print" : `Print All (${studentMarksheets.length})`}
                 </Button>
+              )}
+              {studentMarksheets.length > 0 && (
+                <a href={pdfUrl(studentFilter || undefined)} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center h-10 px-4 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700">
+                  <Download className="h-4 w-4 mr-1" /> {studentFilter ? "Download PDF" : `Download PDF (${studentMarksheets.length})`}
+                </a>
               )}
               <Link href="/exams/marksheet/templates" className="text-sm text-indigo-600 hover:underline self-center">Manage Templates →</Link>
             </div>
@@ -227,8 +241,11 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
               key={ms.student.id}
               className="border-2 border-gray-700 print:break-after-page print:border print:border-gray-400"
             >
-              {/* Per-card print (hidden on print) */}
-              <div className="no-print flex justify-end px-3 pt-2">
+              {/* Per-card actions (hidden on print) */}
+              <div className="no-print flex justify-end gap-3 px-3 pt-2">
+                <a href={pdfUrl(ms.student.id)} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-600 hover:underline inline-flex items-center gap-1">
+                  <Download className="h-3.5 w-3.5" /> Download PDF
+                </a>
                 <button onClick={() => printOne(ms.student.id)} className="text-xs text-indigo-600 hover:underline inline-flex items-center gap-1">
                   <Printer className="h-3.5 w-3.5" /> Print this card
                 </button>
