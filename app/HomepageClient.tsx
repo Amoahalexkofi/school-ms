@@ -650,17 +650,20 @@ export function HomepageClient() {
               { step: "03", icon: Zap,       title: "Go live",         desc: "Start marking attendance, collecting fees with digital receipts, running exams and communicating with parents — all from one dashboard.", color: "#10b981" },
             ].map(({ step, icon: Icon, title, desc, color }) => (
               <motion.div key={step} variants={fadeUp}
-                className="relative p-7 rounded-2xl flex flex-col gap-4"
+                className="group relative p-7 rounded-2xl flex flex-col gap-4 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.05]"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ background: color + "18", border: `1px solid ${color}30` }}>
+                {/* Oversized step number watermark for depth */}
+                <span className="pointer-events-none absolute -top-3 right-3 text-[64px] font-black leading-none select-none font-[family-name:var(--font-montserrat)]"
+                  style={{ color: color + "16" }}>{step}</span>
+                <div className="relative flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105"
+                    style={{ background: color + "1f", border: `1px solid ${color}3d`, boxShadow: `0 10px 28px -10px ${color}88` }}>
                     <Icon className="h-5 w-5" style={{ color }} />
                   </div>
-                  <span className="text-[10px] font-black tracking-widest" style={{ color: color + "70" }}>STEP {step}</span>
+                  <span className="text-[10px] font-black tracking-widest" style={{ color: color + "99" }}>STEP {step}</span>
                 </div>
-                <h3 className="text-white font-black text-[18px] tracking-tight">{title}</h3>
-                <p className="text-slate-400 text-[14px] leading-relaxed">{desc}</p>
+                <h3 className="relative text-white font-black text-[18px] tracking-tight">{title}</h3>
+                <p className="relative text-slate-400 text-[14px] leading-relaxed">{desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -877,16 +880,20 @@ export function HomepageClient() {
               { name: "Enterprise", price: "Custom",   sub: "for school groups & large institutions", annual: "", hl: false, cta: "Contact sales", href: "/contact", features: ["Everything in Annual","Dedicated infrastructure","Enhanced SLA & uptime","On-site training","Custom integrations","Dedicated account manager"] },
             ].map(({ name, price, sub, annual, hl, features, cta, href }) => (
               <motion.div key={name} variants={fadeUp}
-                className={`rounded-2xl p-6 border relative flex flex-col ${hl
-                  ? "border-slate-900/[0.0] lg:scale-[1.03] z-10"
-                  : "bg-white border-slate-900/[0.07]"
+                className={`group rounded-2xl p-6 border relative flex flex-col overflow-hidden transition-all duration-300 ${hl
+                  ? "border-slate-900/[0.0] lg:scale-[1.03] z-10 hover:-translate-y-1"
+                  : "bg-white border-slate-900/[0.07] hover:-translate-y-1 hover:border-slate-900/[0.12] hover:shadow-[0_16px_44px_-18px_rgba(15,23,42,0.22)]"
                 }`}
                 style={hl ? {
                   background: "#0a0a0f",
                   boxShadow: "0 0 0 1px rgba(99,102,241,0.3), 0 8px 32px rgba(99,102,241,0.15)",
                 } : { boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
                 {hl && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-black px-5 py-1.5 rounded-full whitespace-nowrap"
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-40"
+                    style={{ background: "radial-gradient(120% 100% at 50% 0%, rgba(99,102,241,0.22) 0%, transparent 70%)" }} />
+                )}
+                {hl && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-black px-5 py-1.5 rounded-full whitespace-nowrap z-10"
                     style={{ boxShadow: "0 4px 16px rgba(99,102,241,0.4)" }}>
                     ✦ BEST VALUE
                   </div>
