@@ -319,9 +319,49 @@ function ExamsMockup() {
 }
 
 /* ─── HERO IMAGE + PRODUCT CARDS ─── */
+// Soft entrance + a slow, out-of-sync vertical drift so the stat cards read as a
+// single living product collage rather than four static boxes.
+function FloatCard({
+  children, className, style, delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+  delay?: number;
+}) {
+  return (
+    <motion.div
+      className={className}
+      style={style}
+      initial={{ opacity: 0, scale: 0.92, y: 12 }}
+      animate={{ opacity: 1, scale: 1, y: [0, -7, 0] }}
+      transition={{
+        opacity: { duration: 0.5, delay, ease: "easeOut" },
+        scale:   { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] },
+        y:       { duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: delay + 0.6 },
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+const STAT_CARD =
+  "absolute z-20 bg-white/95 backdrop-blur-sm rounded-2xl ring-1 ring-slate-900/[0.06] px-4 py-3 flex items-center gap-3";
+const STAT_SHADOW: React.CSSProperties = {
+  boxShadow: "0 1px 2px rgba(15,23,42,0.04), 0 18px 40px -14px rgba(15,23,42,0.25)",
+};
+
 function HeroProduct() {
   return (
     <div className="relative flex items-end justify-center h-[520px]">
+      {/* Grounding glow behind the student */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[360px] h-[360px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(99,102,241,0.20) 0%, transparent 68%)" }} />
+      {/* Soft contact shadow ellipse to seat the figure on the page */}
+      <div className="absolute bottom-7 left-1/2 -translate-x-1/2 w-[280px] h-7 rounded-[50%] pointer-events-none"
+        style={{ background: "radial-gradient(ellipse, rgba(15,23,42,0.13) 0%, transparent 70%)", filter: "blur(3px)" }} />
+
       {/* Student image */}
       <div className="relative z-10 w-full max-w-[460px] h-full flex items-end justify-center">
         <img src="/images/hero-1.webp" alt="Student using Skula"
@@ -329,21 +369,19 @@ function HeroProduct() {
       </div>
 
       {/* Fee received — top-left */}
-      <div className="absolute top-0 left-[-16px] z-20 bg-white rounded-2xl border border-slate-900/[0.07] px-4 py-3 flex items-center gap-3"
-        style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
-        <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+      <FloatCard delay={0.35} className={`${STAT_CARD} top-0 left-[-16px]`} style={STAT_SHADOW}>
+        <div className="w-9 h-9 rounded-xl bg-emerald-50 ring-1 ring-emerald-500/15 flex items-center justify-center shrink-0">
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
         </div>
         <div>
           <p className="text-[12px] font-bold text-slate-900 leading-none">Fee Received</p>
           <p className="text-[11px] text-slate-500 mt-1">GH₵ 450 · Kwame Boateng</p>
         </div>
-      </div>
+      </FloatCard>
 
       {/* Students count — top-right */}
-      <div className="absolute top-6 right-[-16px] z-20 bg-white rounded-2xl border border-slate-900/[0.07] px-4 py-3 flex items-center gap-3"
-        style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
-        <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center shrink-0">
+      <FloatCard delay={0.5} className={`${STAT_CARD} top-6 right-[-16px]`} style={STAT_SHADOW}>
+        <div className="w-9 h-9 rounded-xl bg-indigo-50 ring-1 ring-indigo-500/15 flex items-center justify-center shrink-0">
           <Users className="h-4 w-4 text-indigo-600" />
         </div>
         <div>
@@ -353,31 +391,29 @@ function HeroProduct() {
             <p className="text-[11px] text-indigo-600 font-semibold">+12 this term</p>
           </div>
         </div>
-      </div>
+      </FloatCard>
 
       {/* Fees collected — bottom-left */}
-      <div className="absolute bottom-4 left-[-16px] z-20 bg-white rounded-2xl border border-slate-900/[0.07] px-4 py-3 flex items-center gap-3"
-        style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
-        <div className="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center shrink-0">
+      <FloatCard delay={0.65} className={`${STAT_CARD} bottom-4 left-[-16px]`} style={STAT_SHADOW}>
+        <div className="w-9 h-9 rounded-xl bg-amber-50 ring-1 ring-amber-500/15 flex items-center justify-center shrink-0">
           <DollarSign className="h-4 w-4 text-amber-600" />
         </div>
         <div>
           <p className="text-[12px] font-bold text-slate-900 leading-none">GH₵ 450K Collected</p>
           <p className="text-[11px] text-amber-600 font-semibold mt-1">Term 2 · 2025/26</p>
         </div>
-      </div>
+      </FloatCard>
 
       {/* Attendance — bottom-right */}
-      <div className="absolute bottom-0 right-[-16px] z-20 bg-white rounded-2xl border border-slate-900/[0.07] px-4 py-3 flex items-center gap-3"
-        style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
-        <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center shrink-0">
+      <FloatCard delay={0.8} className={`${STAT_CARD} bottom-0 right-[-16px]`} style={STAT_SHADOW}>
+        <div className="w-9 h-9 rounded-xl bg-rose-50 ring-1 ring-rose-500/15 flex items-center justify-center shrink-0">
           <Star className="h-4 w-4 text-rose-500 fill-rose-500" />
         </div>
         <div>
           <p className="text-[12px] font-bold text-slate-900 leading-none">94% Attendance</p>
           <p className="text-[11px] text-rose-500 font-semibold mt-1">Best week this term</p>
         </div>
-      </div>
+      </FloatCard>
     </div>
   );
 }
@@ -501,6 +537,16 @@ export function HomepageClient() {
                   <Zap className="h-4 w-4 text-indigo-500" /> Try Live Demo
                 </Link>
               </motion.div>
+
+              {/* Honest reassurance row — no fabricated social proof */}
+              <motion.ul variants={fadeUp} className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1">
+                {["No credit card needed", "Same-day setup", "Cancel anytime"].map((t) => (
+                  <li key={t} className="flex items-center gap-1.5 text-[13px] text-slate-500 font-medium">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    {t}
+                  </li>
+                ))}
+              </motion.ul>
 
             </motion.div>
 
