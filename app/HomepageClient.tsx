@@ -880,7 +880,7 @@ export function HomepageClient() {
               { name: "Enterprise", price: "Custom",   sub: "for school groups & large institutions", annual: "", hl: false, cta: "Contact sales", href: "/contact", features: ["Everything in Annual","Dedicated infrastructure","Enhanced SLA & uptime","On-site training","Custom integrations","Dedicated account manager"] },
             ].map(({ name, price, sub, annual, hl, features, cta, href }) => (
               <motion.div key={name} variants={fadeUp}
-                className={`group rounded-2xl p-6 border relative flex flex-col overflow-hidden transition-all duration-300 ${hl
+                className={`group rounded-2xl p-6 border relative flex flex-col transition-all duration-300 ${hl
                   ? "border-slate-900/[0.0] lg:scale-[1.03] z-10 hover:-translate-y-1"
                   : "bg-white border-slate-900/[0.07] hover:-translate-y-1 hover:border-slate-900/[0.12] hover:shadow-[0_16px_44px_-18px_rgba(15,23,42,0.22)]"
                 }`}
@@ -889,7 +889,7 @@ export function HomepageClient() {
                   boxShadow: "0 0 0 1px rgba(99,102,241,0.3), 0 8px 32px rgba(99,102,241,0.15)",
                 } : { boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
                 {hl && (
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-40"
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-40 rounded-t-2xl"
                     style={{ background: "radial-gradient(120% 100% at 50% 0%, rgba(99,102,241,0.22) 0%, transparent 70%)" }} />
                 )}
                 {hl && (
