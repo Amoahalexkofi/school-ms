@@ -94,7 +94,7 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
       <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-white">
         {([["balance", "Balance / Due"], ["daily", "Daily Collection"]] as const).map(([k, label]) => (
           <button key={k} onClick={() => switchType(k)}
-            className={`px-4 h-8 rounded-md text-xs font-semibold transition-colors ${reportType === k ? "bg-indigo-600 text-white" : "text-slate-500"}`}>
+            className={`px-4 h-8 rounded-md text-xs font-semibold transition-colors ${reportType === k ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}>
             {label}
           </button>
         ))}

@@ -141,7 +141,7 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
                         <td className="px-4 py-3 text-center font-medium">{sch.fullMarks}</td>
                         <td className="px-4 py-3 text-center text-gray-500">{sch.passingMarks}</td>
                         <td className="px-4 py-3 text-center">
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${sch._count.markEntries > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${sch._count.markEntries > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
                             {sch._count.markEntries}
                           </span>
                         </td>
