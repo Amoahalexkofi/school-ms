@@ -610,12 +610,15 @@ export function HomepageClient() {
               { icon: Globe,         color: "#6366f1", bg: "#eef2ff", title: "Free School Website",     desc: "Every school gets a public, branded website — hero, about, news, staff, events, contact and a one-click parent/student portal login." },
             ].map(({ icon: Icon, color, bg, title, desc }, i) => (
               <motion.div key={title} variants={fadeUp}
-                className="group p-6 rounded-2xl bg-white border border-slate-900/[0.06] hover:border-slate-900/[0.1] hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all cursor-default">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform duration-200 group-hover:scale-110"
-                  style={{ backgroundColor: bg }}>
+                className="group relative overflow-hidden p-6 rounded-2xl bg-white border border-slate-900/[0.06] hover:border-slate-900/[0.1] hover:shadow-[0_10px_34px_-14px_rgba(15,23,42,0.20)] hover:-translate-y-0.5 transition-all duration-300 cursor-default">
+                {/* Hairline accent in the module's colour, revealed on hover */}
+                <span className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
+                  style={{ background: `linear-gradient(90deg, ${color}, ${color}00)` }} />
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 ring-1 transition-transform duration-300 group-hover:scale-105"
+                  style={{ backgroundColor: bg, "--tw-ring-color": `${color}22` } as React.CSSProperties}>
                   <Icon className="h-5 w-5" style={{ color }} />
                 </div>
-                <h3 className="text-slate-900 font-bold text-[14px] mb-1.5">{title}</h3>
+                <h3 className="text-slate-900 font-bold text-[14px] mb-1.5 tracking-tight">{title}</h3>
                 <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
               </motion.div>
             ))}
