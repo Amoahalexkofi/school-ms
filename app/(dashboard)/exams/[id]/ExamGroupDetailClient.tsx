@@ -116,7 +116,7 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
                 <CardTitle className="text-sm font-semibold text-gray-800">{csLabel}</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm tabular-nums">
                   <thead className="bg-gray-50 border-t border-b">
                     <tr>
                       {["Subject", "Session", "Date", "Time", "Full Marks", "Pass Marks", "Entries", ""].map(h => (

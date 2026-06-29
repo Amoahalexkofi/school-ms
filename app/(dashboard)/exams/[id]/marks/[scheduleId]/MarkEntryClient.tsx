@@ -162,7 +162,7 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm tabular-nums">
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 w-8">#</th>

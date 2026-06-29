@@ -123,7 +123,7 @@ export function ExamResultsClient({ group, classSections }: Props) {
             </CardContent></Card>
           ) : (
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm tabular-nums">
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     <th className="text-center px-3 py-3 font-medium text-gray-600 w-12">Rank</th>
