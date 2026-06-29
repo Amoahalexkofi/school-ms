@@ -116,7 +116,7 @@ export function FeeSessionGroupClient({ sg, feeTypes }: Props) {
           {sg.items.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">No items yet. Add fee types with amounts.</p>
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full text-sm tabular-nums">
               <thead className="bg-gray-50 border-t border-b">
                 <tr>
                   {["Fee Type", "Code", "Amount (₵)", "Due Date", "Fine", ""].map(h => (

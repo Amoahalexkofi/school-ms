@@ -187,7 +187,7 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
             </CardContent></Card>
           ) : (
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm tabular-nums">
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     {["Student", "Adm No.", "Fee Group", "Session", "Total (₵)", "Paid (₵)", "Balance (₵)", "Status", ""].map(h => (
@@ -241,7 +241,7 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
             </CardContent></Card>
           ) : (
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm tabular-nums">
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     {["Date", "Student", "Adm No.", "Class", "Fee Group", "Mode", "Discount", "Fine", "Amount (₵)"].map(h => (

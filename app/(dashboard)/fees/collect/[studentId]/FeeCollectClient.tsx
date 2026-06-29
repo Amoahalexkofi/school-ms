@@ -298,7 +298,7 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
 
                   {/* Fee items breakdown — each fee type collected individually */}
                   <div className="overflow-x-auto -mx-1 px-1">
-                    <table className="w-full text-xs">
+                    <table className="w-full text-xs tabular-nums">
                       <thead className="text-gray-500">
                         <tr>
                           <th className="text-left py-1 font-medium">Fee Type</th>

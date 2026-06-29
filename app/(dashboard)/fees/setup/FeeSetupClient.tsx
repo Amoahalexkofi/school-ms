@@ -252,7 +252,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             </Button>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm tabular-nums">
               <thead className="bg-gray-50 border-b">
                 <tr>
                   {["Name", "Code", "Category", ""].map(h => (
@@ -352,7 +352,7 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             </Button>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm tabular-nums">
               <thead className="bg-gray-50 border-b">
                 <tr>
                   {["Name", "Code", "Type", "Value", "Expires", ""].map(h => (

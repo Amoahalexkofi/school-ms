@@ -118,7 +118,7 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm tabular-nums">
               <thead className="bg-gray-50 border-b border-t">
                 <tr>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>

@@ -291,7 +291,7 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
 
               {/* Marks Table */}
               <div className="p-4">
-                <table className="w-full text-sm border-collapse">
+                <table className="w-full text-sm border-collapse tabular-nums">
                   <thead>
                     <tr className="bg-gray-100">
                       <th className="border border-slate-200 bg-white px-3 py-2 text-left">Subject</th>
