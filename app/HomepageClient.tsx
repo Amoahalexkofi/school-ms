@@ -710,7 +710,7 @@ export function HomepageClient() {
                 </motion.div>
               </div>
               <motion.div variants={fadeIn} className={flip ? "lg:order-1" : ""}>
-                <div className="rounded-2xl overflow-hidden bg-white"
+                <div className="rounded-2xl overflow-hidden bg-white transition-transform duration-500 ease-out hover:-translate-y-1.5"
                   style={{ boxShadow: `0 0 0 1px rgba(0,0,0,0.05), 0 8px 24px ${accent}15, 0 32px 64px ${accent}10` }}>
                   {/* Mobile scaled */}
                   <div className="lg:hidden overflow-hidden" style={{ height: "calc(340px * 0.62)" }}>
@@ -1064,12 +1064,12 @@ export function HomepageClient() {
               </motion.p>
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href="/demo"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-100 text-slate-900 px-8 py-4 rounded-2xl font-black text-[15px] transition-all"
+                  className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-100 text-slate-900 px-8 py-4 rounded-2xl font-black text-[15px] transition-all hover:scale-[1.02] active:scale-[0.98]"
                   style={{ boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
-                  Try Demo Free <ArrowRight className="h-4 w-4" />
+                  Try Demo Free <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1fba5a] text-white px-8 py-4 rounded-2xl font-black text-[15px] transition-all"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1fba5a] text-white px-8 py-4 rounded-2xl font-black text-[15px] transition-all hover:scale-[1.02] active:scale-[0.98]"
                   style={{ boxShadow: "0 4px 16px rgba(37,211,102,0.3)" }}>
                   <WhatsAppIcon className="h-5 w-5" /> WhatsApp Us
                 </a>
