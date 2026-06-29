@@ -45,7 +45,7 @@ typography:
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "-0.01em"
-    fontFeatureSettings: "\"tnum\""
+    fontFeature: "tnum"
   label:
     fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.75rem"
@@ -70,14 +70,6 @@ spacing:
   lg: "20px"
   xl: "24px"
   section: "96px"
-motion:
-  duration-fast: "150ms"
-  duration-base: "200ms"
-  duration-slow: "300ms"
-  ease-out: "cubic-bezier(0.16, 1, 0.3, 1)"
-  hover-lift: "translateY(-2px)"
-  press: "scale(0.98)"
-  stagger: "80ms"
 components:
   button-primary:
     backgroundColor: "{colors.primary}"

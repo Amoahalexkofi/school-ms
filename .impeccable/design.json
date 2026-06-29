@@ -1,36 +1,208 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-06-29T10:30:00.000Z",
+  "generatedAt": "2026-06-29T19:48:32.631Z",
   "title": "Design System: Skula",
   "extensions": {
     "colorMeta": {
-      "primary":   { "role": "primary", "displayName": "Indigo Signal", "canonical": "oklch(0.511 0.262 276.966)", "tonalRamp": ["#312e81", "#3730a3", "#4338ca", "#4f46e5", "#6366f1", "#818cf8", "#a5b4fc", "#e0e7ff"] },
-      "ink":       { "role": "neutral", "displayName": "Ink", "canonical": "oklch(0.145 0 0)", "tonalRamp": ["#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0"] },
-      "app-bg":    { "role": "neutral", "displayName": "App Background", "canonical": "oklch(0.985 0 0)", "tonalRamp": ["#111827", "#374151", "#6b7280", "#9ca3af", "#d1d5db", "#e5e7eb", "#f3f4f6", "#f9fafb"] },
-      "success":   { "role": "tertiary", "displayName": "Success Green", "canonical": "oklch(0.627 0.194 149.576)", "tonalRamp": ["#14532d", "#166534", "#15803d", "#16a34a", "#22c55e", "#4ade80", "#86efac", "#dcfce7"] },
-      "warning":   { "role": "tertiary", "displayName": "Warning Amber", "canonical": "oklch(0.769 0.188 70.08)", "tonalRamp": ["#78350f", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fcd34d", "#fef3c7"] },
-      "danger":    { "role": "tertiary", "displayName": "Danger Red", "canonical": "oklch(0.577 0.245 27.325)", "tonalRamp": ["#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fca5a5", "#fef2f2"] },
-      "info":      { "role": "tertiary", "displayName": "Info Blue", "canonical": "oklch(0.546 0.245 262.881)", "tonalRamp": ["#1e3a8a", "#1e40af", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#dbeafe"] }
+      "primary": {
+        "role": "primary",
+        "displayName": "Indigo Signal",
+        "canonical": "oklch(0.511 0.262 276.966)",
+        "tonalRamp": [
+          "#312e81",
+          "#3730a3",
+          "#4338ca",
+          "#4f46e5",
+          "#6366f1",
+          "#818cf8",
+          "#a5b4fc",
+          "#e0e7ff"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(0.145 0 0)",
+        "tonalRamp": [
+          "#0f172a",
+          "#1e293b",
+          "#334155",
+          "#475569",
+          "#64748b",
+          "#94a3b8",
+          "#cbd5e1",
+          "#e2e8f0"
+        ]
+      },
+      "app-bg": {
+        "role": "neutral",
+        "displayName": "App Background",
+        "canonical": "oklch(0.985 0 0)",
+        "tonalRamp": [
+          "#111827",
+          "#374151",
+          "#6b7280",
+          "#9ca3af",
+          "#d1d5db",
+          "#e5e7eb",
+          "#f3f4f6",
+          "#f9fafb"
+        ]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "Success Green",
+        "canonical": "oklch(0.627 0.194 149.576)",
+        "tonalRamp": [
+          "#14532d",
+          "#166534",
+          "#15803d",
+          "#16a34a",
+          "#22c55e",
+          "#4ade80",
+          "#86efac",
+          "#dcfce7"
+        ]
+      },
+      "warning": {
+        "role": "tertiary",
+        "displayName": "Warning Amber",
+        "canonical": "oklch(0.769 0.188 70.08)",
+        "tonalRamp": [
+          "#78350f",
+          "#92400e",
+          "#b45309",
+          "#d97706",
+          "#f59e0b",
+          "#fbbf24",
+          "#fcd34d",
+          "#fef3c7"
+        ]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Danger Red",
+        "canonical": "oklch(0.577 0.245 27.325)",
+        "tonalRamp": [
+          "#7f1d1d",
+          "#991b1b",
+          "#b91c1c",
+          "#dc2626",
+          "#ef4444",
+          "#f87171",
+          "#fca5a5",
+          "#fef2f2"
+        ]
+      },
+      "info": {
+        "role": "tertiary",
+        "displayName": "Info Blue",
+        "canonical": "oklch(0.546 0.245 262.881)",
+        "tonalRamp": [
+          "#1e3a8a",
+          "#1e40af",
+          "#1d4ed8",
+          "#2563eb",
+          "#3b82f6",
+          "#60a5fa",
+          "#93c5fd",
+          "#dbeafe"
+        ]
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Montserrat — marketing/landing headlines and the largest page titles only." },
-      "title":   { "displayName": "Title", "purpose": "Plus Jakarta Sans 600 — card titles, section headers, modal headings." },
-      "body":    { "displayName": "Body", "purpose": "Plus Jakarta Sans 400 at 14px — default UI text, table cells, form values." },
-      "label":   { "displayName": "Label", "purpose": "Plus Jakarta Sans 500 at 12px, muted — field labels, column heads, chip text." },
-      "mono":    { "displayName": "Mono", "purpose": "Geist Mono — admission numbers, codes, aligned numeric columns." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Montserrat — marketing/landing headlines and the largest page titles only."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Plus Jakarta Sans 600 — card titles, section headers, modal headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Plus Jakarta Sans 400 at 14px — default UI text, table cells, form values."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Plus Jakarta Sans 500 at 12px, muted — field labels, column heads, chip text."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Geist Mono — admission numbers, codes, aligned numeric columns."
+      },
+      "body-tabular": {
+        "displayName": "Tabular",
+        "purpose": "Money and numeric cells — fees, balances, marks, counts, percentages. Body size/weight with tabular figures (tnum) so digits align in columns and totals scan."
+      }
     },
     "shadows": [
-      { "name": "accent-lift", "value": "0 1px 6px rgba(99,102,241,0.35)", "purpose": "Primary button only — a faint indigo lift on the one action that matters." },
-      { "name": "overlay", "value": "0 10px 40px rgba(0,0,0,0.12)", "purpose": "Modals, dropdowns, popovers — surfaces truly floating above the page." }
+      {
+        "name": "accent-lift",
+        "value": "0 1px 6px rgba(99,102,241,0.35)",
+        "purpose": "Primary button only — a faint indigo lift on the one action that matters."
+      },
+      {
+        "name": "overlay",
+        "value": "0 10px 40px rgba(0,0,0,0.12)",
+        "purpose": "Modals, dropdowns, popovers — surfaces truly floating above the page."
+      }
     ],
     "motion": [
-      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for state transitions." },
-      { "name": "duration-fast", "value": "150ms", "purpose": "Hover/focus and small state changes." }
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Default easing for state transitions."
+      },
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Hover/focus and small state changes."
+      },
+      {
+        "name": "duration-base",
+        "value": "200ms",
+        "purpose": "Default state transitions (hover/press) on interactive surfaces."
+      },
+      {
+        "name": "duration-slow",
+        "value": "300ms",
+        "purpose": "Larger reveals and lifts; upper bound for calm motion."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Entrance easing — fade-and-rise; no bounce, no elastic."
+      },
+      {
+        "name": "hover-lift",
+        "value": "translateY(-2px)",
+        "purpose": "Subtle lift on interactive surfaces (cards, frames) on hover."
+      },
+      {
+        "name": "press",
+        "value": "scale(0.98)",
+        "purpose": "Press feedback on buttons/links (active state)."
+      },
+      {
+        "name": "stagger",
+        "value": "80ms",
+        "purpose": "Delay between staggered list/section entrances."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" }
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
     ]
   },
   "components": [
@@ -95,10 +267,36 @@
       "Dense-but-orderly: tables, filters, tabs, and chips behave identically everywhere"
     ],
     "rules": [
-      { "name": "The One Accent Rule", "body": "Indigo is the only brand color and appears on ≤10% of any screen — the primary action, the active state, a link. If two indigo things compete for attention, one is wrong.", "section": "colors" },
-      { "name": "The Status-Never-Alone Rule", "body": "A status color is always paired with a word or icon (PAID, Present, ✓ Complete). Color is reinforcement, never the sole signal.", "section": "colors" },
-      { "name": "The Two-Voice Rule", "body": "Montserrat speaks only for display/marketing and the biggest titles; everything functional is Plus Jakarta Sans.", "section": "typography" },
-      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest, defined by a 1px slate-200 border. A shadow is earned only by the single primary action or a true overlay.", "section": "elevation" }
+      {
+        "name": "The One Accent Rule",
+        "body": "Indigo is the only brand color and appears on ≤10% of any screen — the primary action, the active state, a link. If two indigo things compete for attention, one is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Status-Never-Alone Rule",
+        "body": "A status color is always paired with a word or icon (PAID, Present, ✓ Complete). Color is reinforcement, never the sole signal.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two-Voice Rule",
+        "body": "Montserrat speaks only for display/marketing and the biggest titles; everything functional is Plus Jakarta Sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces are flat at rest, defined by a 1px slate-200 border. A shadow is earned only by the single primary action or a true overlay.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Tabular-Figures Rule",
+        "body": "Every cell that renders money, a balance, a mark, or a count uses tabular figures (font-feature-settings: \"tnum\"). Proportional digits make columns ragged and totals hard to compare; tabular digits are the quiet signature of a system you trust with numbers. Never render a money cell without it. (Adapted from Stripe.)",
+        "section": "typography"
+      },
+      {
+        "name": "The Eyebrow Exception",
+        "body": "Titles and body run tight or neutral tracking, but small uppercase eyebrows/section kickers take positive tracking (~0.14em) — the one place letter-spacing opens up, to mark taxonomy rather than emphasis. (Adapted from Linear.)",
+        "section": "typography"
+      }
     ],
     "dos": [
       "Do reserve Indigo Signal (#4f46e5) for the primary action, active state, and links (≤10% of any screen).",
@@ -107,7 +305,9 @@
       "Do use generous rounding (cards 16px, buttons/inputs 12px).",
       "Do keep Montserrat for display/titles and Plus Jakarta Sans for everything functional.",
       "Do run app text at 13-14px with comfortable line-height.",
-      "Do give destructive actions a confirm step and a soft (not solid-red) treatment."
+      "Do give destructive actions a confirm step and a soft (not solid-red) treatment.",
+      "Do render every money/mark/count cell with tabular figures (tnum) so columns align and totals scan — the Tabular-Figures Rule.",
+      "Do keep motion functional and quick (150–300ms, ease-out) and honor prefers-reduced-motion."
     ],
     "donts": [
       "Don't recreate the dense, gray, dated PHP admin look — feature parity, never UI parity.",
@@ -116,7 +316,9 @@
       "Don't use childish, cartoonish, primary-color school clip-art.",
       "Don't let indigo exceed ~10% of a screen or introduce a second competing accent.",
       "Don't convey status with color alone.",
-      "Don't let Montserrat leak into buttons, inputs, or table cells."
+      "Don't let Montserrat leak into buttons, inputs, or table cells.",
+      "Don't put semantic status colors (success green, danger red) on solid button fills — keep them as text + soft-tinted chips; a solid green/red block reads as a trading terminal, not a ledger.",
+      "Don't render money or numeric columns with proportional figures (missing tnum) — ragged digits break the financial-data signature."
     ]
   }
 }
