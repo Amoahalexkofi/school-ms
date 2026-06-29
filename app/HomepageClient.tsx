@@ -751,9 +751,10 @@ export function HomepageClient() {
               { icon: Mail,          color: "#0ea5e9", bg: "#e0f2fe", title: "Email Notifications",        desc: "Connect your SMTP server or use SendGrid. Send report cards, fee statements, payslips and system alerts via email automatically.",       tags: ["SMTP / SendGrid","Report cards","Payslips & statements"] },
             ].map(({ icon: Icon, color, bg, title, desc, tags }) => (
               <motion.div key={title} variants={fadeUp}
-                className="p-7 rounded-2xl bg-white border border-slate-900/[0.06] hover:border-slate-900/[0.1] hover:shadow-[0_4px_24px_rgba(0,0,0,0.05)] transition-all">
+                className="group p-7 rounded-2xl bg-white border border-slate-900/[0.06] hover:border-slate-900/[0.1] hover:shadow-[0_12px_38px_-16px_rgba(15,23,42,0.20)] hover:-translate-y-0.5 transition-all duration-300">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: bg }}>
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ring-1 transition-transform duration-300 group-hover:scale-105"
+                    style={{ backgroundColor: bg, "--tw-ring-color": `${color}22` } as React.CSSProperties}>
                     <Icon className="h-5 w-5" style={{ color }} />
                   </div>
                   <div>
@@ -805,13 +806,13 @@ export function HomepageClient() {
                   ["Access","Office only, office hours","Any device, anywhere, 24/7"],
                   ["Data Safety","Physical files, fire risk","Cloud-hosted, encrypted, backed up"],
                 ].map(([cap,trad,skula]) => (
-                  <div key={cap} className="grid grid-cols-3 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.015] transition-colors">
+                  <div key={cap} className="group grid grid-cols-3 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.03] transition-colors">
                     <div className="px-6 py-4 text-[13px] font-semibold text-slate-300">{cap}</div>
                     <div className="px-6 py-4 text-[13px] text-rose-400/70 border-l border-white/[0.04] flex items-start gap-2">
                       <Minus className="h-3.5 w-3.5 mt-0.5 shrink-0 text-rose-500/60" />{trad}
                     </div>
-                    <div className="px-6 py-4 text-[13px] text-indigo-300 font-medium border-l border-indigo-500/15 flex items-start gap-2" style={{ background: "rgba(99,102,241,0.05)" }}>
-                      <Check className="h-3.5 w-3.5 mt-0.5 shrink-0 text-indigo-400" />{skula}
+                    <div className="px-6 py-4 text-[13px] text-indigo-200 font-medium border-l border-indigo-500/20 flex items-start gap-2 transition-colors group-hover:bg-indigo-500/[0.12]" style={{ background: "rgba(99,102,241,0.08)" }}>
+                      <Check className="h-3.5 w-3.5 mt-0.5 shrink-0 text-indigo-300" />{skula}
                     </div>
                   </div>
                 ))}
@@ -837,12 +838,12 @@ export function HomepageClient() {
               { n: "Same day", l: "To go live", icon: Clock },
             ].map(({ n, l, icon: Icon }, i) => (
               <motion.div key={l} variants={fadeUp}
-                className={`text-center py-10 px-4 border-white/15 ${
+                className={`group text-center py-10 px-4 border-white/15 ${
                   i === 0 ? "border-r border-b md:border-b-0" :
                   i === 1 ? "md:border-r border-b md:border-b-0" :
                   i === 2 ? "border-r" : ""
                 }`}>
-                <div className="w-10 h-10 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center">
+                <div className="w-11 h-11 mx-auto mb-4 rounded-xl bg-white/10 ring-1 ring-white/15 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white/20">
                   <Icon className="h-5 w-5 text-white" />
                 </div>
                 <p className="text-4xl sm:text-5xl font-black text-white mb-1.5 tracking-tight">{n}</p>
