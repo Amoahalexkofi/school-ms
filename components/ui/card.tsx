@@ -17,7 +17,6 @@ function Card({
         "has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0",
         className
       )}
-      style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(99,102,241,0.06)" }}
       {...props}
     />
   )
@@ -40,7 +39,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-title"
-      className={cn("text-[15px] font-black text-slate-900 tracking-tight leading-snug", className)}
+      className={cn("text-[15px] font-semibold text-slate-900 tracking-tight leading-snug", className)}
       {...props}
     />
   )

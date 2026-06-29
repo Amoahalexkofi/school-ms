@@ -28,3 +28,8 @@ Before continuing any work, read these files:
 ## Live URLs
 - Production: https://getskula.com
 - Repo: https://github.com/Amoahalexkofi/school-ms
+
+## Design Context
+- `PRODUCT.md` (root) — strategic: register (`product`), users, purpose, brand personality (trustworthy/calm/efficient), anti-references, design principles, accessibility (WCAG 2.1 AA). Read before UI work.
+- `DESIGN.md` (root) — visual system: North Star "The Quiet Ledger", indigo accent, Plus Jakarta Sans + Montserrat, flat surfaces + hairline borders, status = color + label. Tokens are normative.
+- Managed by the `impeccable` skill (`.claude/skills/impeccable`). Run `/impeccable <command>` (craft, shape, critique, audit, polish, document, live…) for design work.
