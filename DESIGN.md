@@ -39,6 +39,13 @@ typography:
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
+  body-tabular:
+    fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.875rem"
+    fontWeight: 400
+    lineHeight: 1.5
+    letterSpacing: "-0.01em"
+    fontFeatureSettings: "\"tnum\""
   label:
     fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.75rem"
@@ -56,11 +63,21 @@ rounded:
   md: "12px"
   lg: "16px"
 spacing:
+  base: "4px"
   xs: "8px"
   sm: "12px"
   md: "16px"
   lg: "20px"
   xl: "24px"
+  section: "96px"
+motion:
+  duration-fast: "150ms"
+  duration-base: "200ms"
+  duration-slow: "300ms"
+  ease-out: "cubic-bezier(0.16, 1, 0.3, 1)"
+  hover-lift: "translateY(-2px)"
+  press: "scale(0.98)"
+  stagger: "80ms"
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
@@ -162,10 +179,15 @@ A near-monochrome slate/gray foundation under white surfaces, with one indigo ac
 - **Title** (Plus Jakarta Sans, 600, ~1rem, line-height 1.3): Card titles, section headers, modal headings. The workhorse heading inside the app.
 - **Body** (Plus Jakarta Sans, 400, 0.875rem / 14px, line-height 1.5): Default UI text, table cells, form values. The app runs at 13–14px, not 16px — density with comfort.
 - **Label** (Plus Jakarta Sans, 500, 0.75rem / 12px, muted-text): Field labels, metadata, table column heads, chip text. Often `text-xs` in gray-500.
-- **Mono** (Geist Mono, 0.8125rem): Admission numbers, codes, and aligned numeric columns where tabular figures help scanning.
+- **Tabular** (Plus Jakarta Sans, 400, 0.875rem, `font-feature-settings: "tnum"`): Money and numeric cells — fees, balances, marks, counts, percentages. Same size and weight as Body, but with tabular figures so digits align in columns and totals stay scannable. Prefer this for in-table figures over switching fonts.
+- **Mono** (Geist Mono, 0.8125rem): Admission numbers, codes, and identifiers where a distinct glyph set aids recognition. Use for IDs/codes; reach for **Tabular** for money and counts.
 
 ### Named Rules
 **The Two-Voice Rule.** Montserrat speaks only for display/marketing and the biggest titles; everything functional is Plus Jakarta Sans. Don't let the display font leak into buttons, inputs, or table text.
+
+**The Tabular-Figures Rule.** Every cell that renders money, a balance, a mark, or a count uses tabular figures (`font-feature-settings: "tnum"`). Proportional digits make columns ragged and totals hard to compare; tabular digits are the quiet signature of a system you trust with numbers. Never render a money cell without it. *(Adapted from Stripe's financial-data treatment.)*
+
+**The Eyebrow Exception.** Titles and body run tight or neutral tracking, but small uppercase eyebrows/section kickers take *positive* tracking (~0.14em) — the one place letter-spacing opens up, to mark taxonomy rather than emphasis. *(Adapted from Linear.)*
 
 ## 4. Elevation
 
@@ -213,7 +235,10 @@ The single exception is functional, not decorative: the **primary button** carri
 - **Mobile:** Sidebar collapses; layouts reflow to single column (most staff and nearly all parents are on phones).
 
 ### Tables (signature surface)
-The densest, highest-stakes component. Hairline `slate-100` row dividers, muted 12px column headers, ink-weight values, generous row height for tap targets. Status cells use chips, not raw color. Tables stay flat and bordered — never striped with heavy fills or boxed in shadows.
+The densest, highest-stakes component. Hairline `slate-100` row dividers, muted 12px column headers, ink-weight values, generous row height for tap targets. Status cells use chips, not raw color. Money, mark, and count columns render in **Tabular** type (`tnum`) so digits align and totals scan (the Tabular-Figures Rule). Tables stay flat and bordered — never striped with heavy fills or boxed in shadows.
+
+### Interaction & Motion
+Motion is functional, quick, and calm — it confirms an action or guides the eye, never decorates. Default transitions run **150–300ms** on an ease-out curve (`cubic-bezier(0.16, 1, 0.3, 1)` for entrances). Interactive surfaces may lift a hair on hover (`translateY(-2px)`) and press in on click (`active:scale-[0.98]` or `active:translate-y-px`); links nudge their trailing arrow rather than bounce. Entrances fade-and-rise a few pixels, staggered ~80ms — nothing slides far or springs. Always honor **`prefers-reduced-motion`**: drop transforms and keep state changes instant. Marketing surfaces may animate a touch more expressively than the app, but stay within this vocabulary. *(Discipline adapted from Linear.)*
 
 ## 6. Do's and Don'ts
 
@@ -224,6 +249,8 @@ The densest, highest-stakes component. Hairline `slate-100` row dividers, muted 
 - **Do** use generous rounding (cards 16px, buttons/inputs 12px) for the soft, modern, non-corporate feel.
 - **Do** keep Montserrat for display/titles and Plus Jakarta Sans for everything functional (the Two-Voice Rule).
 - **Do** run app text at 13–14px with comfortable line-height; density is fine, cramped is not.
+- **Do** render every money/mark/count cell with tabular figures (`tnum`) so columns align and totals scan — the Tabular-Figures Rule.
+- **Do** keep motion functional and quick (150–300ms, ease-out) and honor `prefers-reduced-motion`.
 - **Do** give destructive actions a confirm step and a soft (not solid-red) treatment.
 
 ### Don't:
@@ -233,6 +260,8 @@ The densest, highest-stakes component. Hairline `slate-100` row dividers, muted 
 - **Don't** use **childish, cartoonish, primary-color school clip-art** — Skula is an institution, not a classroom poster.
 - **Don't** let indigo appear on more than ~10% of a screen, and never use two competing accents.
 - **Don't** convey status with color alone (no bare colored dots or text-color-only states).
+- **Don't** put semantic status colors (success green, danger red) on solid button fills — keep them as text + soft-tinted chips; a solid green/red block reads as a trading terminal, not a ledger.
+- **Don't** render money or numeric columns with proportional figures (missing `tnum`) — ragged digits break the financial-data signature.
 - **Don't** let Montserrat leak into buttons, inputs, or table cells.
 - **Don't** add a drop shadow to a resting card; shadows are earned by the primary button or a true overlay only.
 
@@ -243,3 +272,4 @@ One-sentence checks — if any is true, the screen is off-brand:
 - **The grayscale test:** view the screen in grayscale; if any status (paid/absent/overdue) becomes unreadable, it relies on color alone — add the label/icon.
 - **The thumb test:** on a 375px viewport, if the primary action sits at the top out of thumb reach or any tap target is under 44px, it fails the mobile-first staff/parent audience.
 - **The density test:** if a data table has heavy zebra striping, boxed shadows, or 16px+ body text, it's drifting toward either clutter or wasted space — hairline rows, 13–14px, flat.
+- **The tabular test:** stack two money values in a column; if the digits don't line up vertically, the cell is missing `tnum` (the Tabular-Figures Rule).
