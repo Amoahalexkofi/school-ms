@@ -20,7 +20,7 @@ function KpiCard({
 }) {
   const inner = (
     <div className="group bg-white rounded-xl border border-slate-200 p-5 h-full flex flex-col
-      hover:border-slate-300 transition-colors">
+      hover:border-slate-300 hover:shadow-[0_4px_16px_-6px_rgba(15,23,42,0.12)] transition-all duration-200">
       <div className="flex items-center justify-between">
         <span className="text-[12.5px] font-medium text-slate-500">{label}</span>
         <Icon className="h-4 w-4 text-slate-300 group-hover:text-slate-400 transition-colors" />
@@ -97,7 +97,7 @@ export default async function DashboardPage() {
       <main className="flex-1 px-4 py-7 md:p-8 max-w-[1400px] mx-auto w-full space-y-7">
 
         {/* ── Welcome ── */}
-        <div className="flex items-end justify-between gap-4">
+        <div className="dash-rise flex items-end justify-between gap-4">
           <div>
             <h1 className="text-[21px] font-semibold text-slate-900 tracking-tight">
               {greeting}{userName ? `, ${userName.split(" ")[0]}` : ""}
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
 
         {/* ── All-branches breakdown (head office view) ── */}
         {showBreakdown && (
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="dash-rise bg-white rounded-xl border border-slate-200 overflow-hidden" style={{ animationDelay: "40ms" }}>
             <div className="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
               <Building className="h-4 w-4 text-slate-400" />
               <h2 className="text-[14px] font-semibold text-slate-900">All branches</h2>
@@ -174,7 +174,7 @@ export default async function DashboardPage() {
         ) : (
           <>
             {/* ── KPI Cards ── */}
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="dash-rise grid grid-cols-2 xl:grid-cols-4 gap-4" style={{ animationDelay: "70ms" }}>
               <KpiCard
                 label="Students enrolled" value={stats.totalStudents}
                 sub="Current session" href="/students" icon={Users}
@@ -194,7 +194,7 @@ export default async function DashboardPage() {
             </div>
 
             {/* ── Attendance + Fees ── */}
-            <div className="grid grid-cols-12 gap-4">
+            <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "140ms" }}>
 
               {/* Attendance */}
               <div className="col-span-12 lg:col-span-7 bg-white rounded-xl border border-slate-200 p-5">
@@ -285,7 +285,7 @@ export default async function DashboardPage() {
             </div>
 
             {/* ── Payments + Side column ── */}
-            <div className="grid grid-cols-12 gap-4">
+            <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "210ms" }}>
 
               {/* Recent payments */}
               <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border border-slate-200 p-5">
