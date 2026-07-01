@@ -7,6 +7,33 @@ export interface WhatsAppResult {
   error?: string;
 }
 
+export interface WhatsAppConfigShape {
+  provider: string;
+  apiKey: string;
+  password: string;
+  senderId: string;
+  endpoint: string;
+}
+
+/**
+ * Central "Novalss" WhatsApp account, configured once via env vars. Used as the
+ * default sender for any school that hasn't configured its own provider (the
+ * hybrid model: central by default, per-school override optional). Returns null
+ * when no central number is set up.
+ */
+export function getPlatformWhatsAppConfig(): WhatsAppConfigShape | null {
+  const provider = process.env.PLATFORM_WA_PROVIDER;
+  const apiKey   = process.env.PLATFORM_WA_API_KEY;
+  if (!provider || !apiKey) return null;
+  return {
+    provider,
+    apiKey,
+    password: process.env.PLATFORM_WA_PASSWORD ?? "",
+    senderId: process.env.PLATFORM_WA_SENDER_ID ?? "",
+    endpoint: process.env.PLATFORM_WA_ENDPOINT ?? "",
+  };
+}
+
 // ── Twilio WhatsApp ───────────────────────────────────────────────────────────
 // Reuses Twilio REST API — just prefix numbers with "whatsapp:"
 // Requires a WhatsApp-enabled Twilio number (Sandbox or approved business number)
@@ -131,7 +158,10 @@ export async function sendWhatsApp(
   dbClient?: any
 ): Promise<WhatsAppResult> {
   const db     = dbClient ?? (await getDb());
-  const config = await (db as any).whatsAppConfig.findFirst({ where: { isActive: true } });
+  // Hybrid model: prefer the school's own active provider; otherwise fall back
+  // to the central Novalss number (env-configured). "none" only if neither set.
+  let config: WhatsAppConfigShape | null = await (db as any).whatsAppConfig.findFirst({ where: { isActive: true } });
+  if (!config) config = getPlatformWhatsAppConfig();
 
   if (!config) return { success: false, provider: "none", error: "No active WhatsApp provider configured" };
 
