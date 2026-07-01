@@ -80,7 +80,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
   const [form, setForm] = useState({
     firstName: "", middleName: "", lastName: "", admissionNo: "",
     admissionDate: "", dateOfBirth: "", gender: "", bloodGroup: "",
-    religion: "", caste: "", category: "", nationality: "",
+    religion: "", nationality: "",
     mobileNo: "", email: "", rte: false, height: "", weight: "",
     guardianIs: "Father",
     fatherName: "", fatherPhone: "", fatherEmail: "", fatherOccupation: "",
@@ -235,7 +235,6 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
               <Field {...fp} label="Gender" name="gender" options={GENDERS} required />
               <Field {...fp} label="Blood Group" name="bloodGroup" options={BLOOD_GROUPS} />
               <Field {...fp} label="Religion" name="religion" options={RELIGIONS} />
-              <Field {...fp} label="Caste / Category" name="caste" />
               <Field {...fp} label="Nationality" name="nationality" />
               <Field {...fp} label="Mobile No." name="mobileNo" />
               <Field {...fp} label="Email Address" name="email" type="email" />
