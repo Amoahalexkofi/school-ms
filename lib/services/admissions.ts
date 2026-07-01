@@ -54,3 +54,23 @@ export async function reviewApplication(
   if (!app) throw Object.assign(new Error("Application not found"), { code: "NOT_FOUND" });
   return (prisma as any).admissionApplication.update({ where: { id }, data: { status, reviewNote } });
 }
+
+export async function getApplication(id: string) {
+  const prisma = await getDb();
+  return (prisma as any).admissionApplication.findUnique({ where: { id } });
+}
+
+/**
+ * Flip an approved application to "enrolled" by linking the created student.
+ * Idempotent: a no-op if the application is already enrolled. Returns the
+ * updated application, or null if it was already linked / not found.
+ */
+export async function markApplicationEnrolled(id: string, studentId: string) {
+  const prisma = await getDb();
+  const app = await (prisma as any).admissionApplication.findUnique({ where: { id } });
+  if (!app || app.enrolledStudentId) return null;
+  return (prisma as any).admissionApplication.update({
+    where: { id },
+    data: { enrolledStudentId: studentId, status: "APPROVED" },
+  });
+}

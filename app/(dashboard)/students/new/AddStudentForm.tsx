@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, ArrowRight, ChevronRight, AlertCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronRight, AlertCircle, UserPlus } from "lucide-react";
 
 // Shared select class — matches Input h-11 rounded-xl
 const SEL = "w-full h-11 rounded-xl border border-slate-200 bg-white px-3 text-[14px] text-slate-900 hover:border-slate-300 focus:outline-none focus:border-indigo-400 focus:ring-3 focus:ring-indigo-500/15 transition-all cursor-pointer";
@@ -61,9 +61,16 @@ function Field({ label, name, required, type = "text", options, textarea, colSpa
   );
 }
 
-type Props = { sessions: any[]; classSections: any[]; schoolHouses: any[] };
+type Props = {
+  sessions: any[];
+  classSections: any[];
+  schoolHouses: any[];
+  initial?: Record<string, any>;
+  applicationId?: string;
+  fromApplication?: { name: string; appliedClass: string };
+};
 
-export function AddStudentForm({ sessions, classSections, schoolHouses }: Props) {
+export function AddStudentForm({ sessions, classSections, schoolHouses, initial, applicationId, fromApplication }: Props) {
   const router = useRouter();
   const [tab, setTab]       = useState<Tab>("Basic Info");
   const [loading, setLoading] = useState(false);
@@ -87,6 +94,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
     previousSchool: "", previousClass: "", previousPercent: "", previousTc: "",
     bankAccountNo: "", bankName: "", ifscCode: "", bankBranch: "",
     aadharNo: "", samagraId: "", note: "", about: "",
+    ...(initial ?? {}),
   });
 
   const set = (k: string) =>
@@ -107,7 +115,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
       const res  = await fetch("/api/students", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form }),
+        body: JSON.stringify({ ...form, applicationId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed");
@@ -164,6 +172,21 @@ export function AddStudentForm({ sessions, classSections, schoolHouses }: Props)
           <h1 className="text-[22px] font-black text-slate-900 tracking-tight">Add New Student</h1>
           <p className="text-[13.5px] text-slate-500 mt-0.5">Fill in the details below. Required fields are marked.</p>
         </div>
+
+        {/* Enrolling from an approved online application */}
+        {fromApplication && (
+          <div className="flex items-start gap-3 rounded-xl border border-indigo-100 bg-indigo-50/60 px-4 py-3">
+            <UserPlus className="h-4 w-4 text-indigo-600 shrink-0 mt-0.5" />
+            <div className="text-[13px] text-slate-700">
+              Enrolling <span className="font-semibold text-slate-900">{fromApplication.name}</span> from an online admission application — details below are pre-filled. Set the class &amp; section, then create.
+              {fromApplication.appliedClass && (
+                <span className="block text-[12px] text-indigo-700/80 mt-0.5">
+                  Class applied for: <span className="font-semibold text-indigo-900">{fromApplication.appliedClass}</span>
+                </span>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Tab nav — pill style */}
         <div className="flex items-center gap-1 bg-slate-100/80 p-1 rounded-2xl w-fit">

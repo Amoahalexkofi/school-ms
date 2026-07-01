@@ -4,6 +4,7 @@ import { generateAdmissionNumber } from "@/lib/domain/students";
 import { getActiveBranchId } from "@/lib/branch";
 import { resolveBranchForCreate } from "@/lib/services/branches";
 import { generateTempPassword } from "@/lib/auth/passwords";
+import { getApplication, markApplicationEnrolled } from "@/lib/services/admissions";
 import bcrypt from "bcryptjs";
 
 export async function GET(req: NextRequest) {
@@ -79,6 +80,13 @@ export async function POST(req: NextRequest) {
       if (exists) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
     }
 
+    // Enrolling from an online application: block double-enrollment.
+    if (body.applicationId) {
+      const app = await getApplication(body.applicationId);
+      if (!app) return NextResponse.json({ error: "Application not found" }, { status: 404 });
+      if (app.enrolledStudentId) return NextResponse.json({ error: "This application has already been enrolled" }, { status: 409 });
+    }
+
     const count  = await (db as any).student.count();
     const year   = new Date().getFullYear();
     const admissionNo = body.admissionNo?.trim() || generateAdmissionNumber({ sessionYear: year, sequenceNumber: count + 1 });
@@ -148,6 +156,7 @@ export async function POST(req: NextRequest) {
           aadharNo:           body.aadharNo                 || null,
           note:               body.note                     || null,
           about:              body.about                    || null,
+          applicationId:      body.applicationId            || null,
           branchId,
         },
       });
@@ -176,6 +185,11 @@ export async function POST(req: NextRequest) {
       }
       return s;
     });
+
+    // Link the online application to the new student and flip it to enrolled.
+    if (body.applicationId) {
+      await markApplicationEnrolled(body.applicationId, student.id).catch(() => null);
+    }
 
     return NextResponse.json({ ...student, tempPassword }, { status: 201 });
   } catch (err: any) {

@@ -353,6 +353,8 @@ model Student {
   userId             String       @unique
   user               User         @relation(fields: [userId], references: [id])
   admissionNo        String       @unique
+  // Back-link to the online admission application this student was enrolled from.
+  applicationId      String?      @unique
   rollNo             String?
   admissionDate      DateTime?
   firstName          String
@@ -1994,6 +1996,9 @@ model AdmissionApplication {
   notes           String?
   status          ApplicationStatus @default(PENDING)
   reviewNote      String?
+  // Set when an approved application has been converted into an enrolled
+  // Student. Non-null = enrolled (no enum change needed).
+  enrolledStudentId String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 }
