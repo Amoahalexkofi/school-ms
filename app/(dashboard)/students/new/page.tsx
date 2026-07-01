@@ -27,6 +27,8 @@ function prefillFromApplication(app: any) {
     fatherName:     app.parentName ?? "",
     fatherPhone:    app.parentPhone ?? "",
     fatherEmail:    app.parentEmail ?? "",
+    parentEmail:    app.parentEmail ?? "",
+    parentPhone:    app.parentPhone ?? "",
     currentAddress: app.address ?? "",
     note:           app.notes ?? "",
   };

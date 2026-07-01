@@ -43,6 +43,9 @@ export function isPublicRoute(pathname: string): boolean {
 const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // File upload (any authenticated user)
   { prefix: "/api/upload", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT"] },
+  // Self-service account (change password) — every authenticated role. Covers
+  // both the /account page and the /api/account endpoint (stripped-path match).
+  { prefix: "/account", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"] },
   { prefix: "/admin/system", roles: ["SUPER_ADMIN"] },
   {
     prefix: "/admin",

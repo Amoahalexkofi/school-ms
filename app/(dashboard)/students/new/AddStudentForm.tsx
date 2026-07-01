@@ -70,12 +70,35 @@ type Props = {
   fromApplication?: { name: string; appliedClass: string };
 };
 
+function DeliveryRow({ label, state }: { label: string; state: { ok: boolean; error?: string; skipped?: boolean } }) {
+  const notConfigured = state.error === "SMTP not configured" || (state.error ?? "").includes("No active WhatsApp");
+  const text = state.ok
+    ? "Sent"
+    : state.skipped
+      ? "Not attempted"
+      : notConfigured
+        ? "Channel not configured"
+        : `Failed${state.error ? ` — ${state.error}` : ""}`;
+  const cls = state.ok ? "text-emerald-600" : state.skipped || notConfigured ? "text-slate-400" : "text-rose-600";
+  return (
+    <div className="flex items-center justify-between text-[12.5px]">
+      <span className="text-slate-600">{label}</span>
+      <span className={`font-medium ${cls}`}>{state.ok ? "✓ " : ""}{text}</span>
+    </div>
+  );
+}
+
 export function AddStudentForm({ sessions, classSections, schoolHouses, initial, applicationId, fromApplication }: Props) {
   const router = useRouter();
   const [tab, setTab]       = useState<Tab>("Basic Info");
   const [loading, setLoading] = useState(false);
   const [error, setError]   = useState("");
-  const [created, setCreated] = useState<{ name: string; tempPassword: string } | null>(null);
+  const [created, setCreated] = useState<{
+    name: string;
+    tempPassword: string;
+    parent?: { email: string; tempPassword: string | null; existing: boolean; conflict: boolean } | null;
+    delivery?: { email: { ok: boolean; error?: string; skipped?: boolean }; whatsapp: { ok: boolean; error?: string; skipped?: boolean } } | null;
+  } | null>(null);
 
   const [form, setForm] = useState({
     firstName: "", middleName: "", lastName: "", admissionNo: "",
@@ -87,6 +110,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
     motherName: "", motherPhone: "", motherEmail: "", motherOccupation: "",
     guardianName: "", guardianRelation: "", guardianPhone: "",
     guardianEmail: "", guardianOccupation: "", guardianAddress: "",
+    parentEmail: "", parentPhone: "",
     currentAddress: "", permanentAddress: "", city: "", state: "", country: "", pincode: "",
     sessionId: sessions[0]?.id ?? "",
     classSectionId: classSections[0]?.id ?? "",
@@ -119,7 +143,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed");
-      setCreated({ name: `${form.firstName} ${form.lastName}`.trim(), tempPassword: data.tempPassword ?? "" });
+      setCreated({ name: `${form.firstName} ${form.lastName}`.trim(), tempPassword: data.tempPassword ?? "", parent: data.parent ?? null, delivery: data.delivery ?? null });
       router.refresh();
     } catch (e: any) {
       setError(e.message);
@@ -137,10 +161,45 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
           </div>
           <h1 className="text-[18px] font-semibold text-slate-900">Student created</h1>
           <p className="text-[13px] text-slate-500 mt-1">{created.name} has been added.</p>
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 my-5 text-left">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Temporary password</p>
-            <p className="text-[18px] font-bold text-slate-900 font-mono mt-1 select-all">{created.tempPassword || "—"}</p>
-            <p className="text-[12px] text-slate-500 mt-2">Share this with the student to log in. They can change it anytime via “Forgot password”.</p>
+
+          <div className="my-5 space-y-3 text-left">
+            {/* Student credential */}
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Student temp password</p>
+              <p className="text-[18px] font-bold text-slate-900 font-mono mt-1 select-all">{created.tempPassword || "—"}</p>
+            </div>
+
+            {/* Parent credential */}
+            {created.parent && !created.parent.conflict && (
+              <div className="bg-indigo-50/60 border border-indigo-100 rounded-lg p-4">
+                <p className="text-[11px] font-semibold text-indigo-600 uppercase tracking-wider">Parent login · {created.parent.email}</p>
+                {created.parent.existing ? (
+                  <p className="text-[13px] text-slate-600 mt-1">Linked to their existing parent account — siblings share one login.</p>
+                ) : (
+                  <p className="text-[18px] font-bold text-slate-900 font-mono mt-1 select-all">{created.parent.tempPassword || "—"}</p>
+                )}
+              </div>
+            )}
+
+            {/* Non-parent email conflict */}
+            {created.parent?.conflict && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[12.5px] text-amber-800">
+                That parent email already belongs to a non-parent account, so no parent login was linked.
+              </div>
+            )}
+
+            {/* Delivery status */}
+            {created.parent && !created.parent.conflict && created.delivery && (
+              <div className="border border-slate-200 rounded-lg p-3 space-y-1.5">
+                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Login details sent to parent</p>
+                <DeliveryRow label="Email" state={created.delivery.email} />
+                <DeliveryRow label="WhatsApp" state={created.delivery.whatsapp} />
+              </div>
+            )}
+
+            <p className="text-[12px] text-slate-500">
+              Everyone is prompted to set a new password on first sign-in. Share these as a fallback if the messages don't arrive.
+            </p>
           </div>
           <div className="flex gap-2">
             <button onClick={() => { setCreated(null); window.location.reload(); }}
@@ -303,6 +362,16 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
                   <Field {...fp} label="Occupation" name="guardianOccupation" />
                   <div />
                   <Field {...fp} label="Guardian Address" name="guardianAddress" textarea colSpan2 />
+                </div>
+              </div>
+              <div className="border-t border-slate-100 pt-6">
+                <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-widest mb-1">Parent Portal Login</p>
+                <p className="text-[12.5px] text-slate-500 mb-4">
+                  Optional. If provided, a parent account is created (or a sibling linked) and login details are sent by email &amp; WhatsApp.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                  <Field {...fp} label="Parent Email (login)" name="parentEmail" type="email" hint="Used as the parent's username" />
+                  <Field {...fp} label="Parent WhatsApp Number" name="parentPhone" hint="Include country code, e.g. +233…" />
                 </div>
               </div>
             </div>

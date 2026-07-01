@@ -29,6 +29,9 @@ model User {
   role              UserRole
   isActive          Boolean   @default(true)
   childs            String?
+  // Parent contact (WhatsApp/SMS) and a first-login password-change gate.
+  phone             String?
+  mustChangePassword Boolean  @default(false)
   resetToken        String?
   resetTokenExpiry  DateTime?
   createdAt         DateTime  @default(now())

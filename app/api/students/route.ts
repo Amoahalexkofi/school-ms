@@ -5,6 +5,7 @@ import { getActiveBranchId } from "@/lib/branch";
 import { resolveBranchForCreate } from "@/lib/services/branches";
 import { generateTempPassword } from "@/lib/auth/passwords";
 import { getApplication, markApplicationEnrolled } from "@/lib/services/admissions";
+import { notifyParentCredentials } from "@/lib/services/parent-onboarding";
 import bcrypt from "bcryptjs";
 
 export async function GET(req: NextRequest) {
@@ -100,8 +101,8 @@ export async function POST(req: NextRequest) {
     // Multi Branch: tag new student to the chosen branch (body) or active branch.
     const branchId = body.branchId || (await resolveBranchForCreate(await getActiveBranchId()));
 
-    const student = await (db as any).$transaction(async (tx: any) => {
-      const user = await tx.user.create({ data: { email, username, password, role: "STUDENT" } });
+    const created = await (db as any).$transaction(async (tx: any) => {
+      const user = await tx.user.create({ data: { email, username, password, role: "STUDENT", mustChangePassword: true } });
 
       const s = await tx.student.create({
         data: {
@@ -183,15 +184,69 @@ export async function POST(req: NextRequest) {
           });
         }
       }
-      return s;
+      // Auto-create / link the parent account (optional — only if a parent email is given).
+      let parentInfo: any = null;
+      const parentEmail = body.parentEmail?.trim()?.toLowerCase();
+      if (parentEmail) {
+        const existingParent = await tx.user.findUnique({ where: { email: parentEmail } });
+        if (existingParent && existingParent.role !== "PARENT") {
+          parentInfo = { conflict: true, email: parentEmail };
+        } else if (existingParent) {
+          // Sibling: add this student to the existing parent (keep their password).
+          const childs = (existingParent.childs ?? "").split(",").map((x: string) => x.trim()).filter(Boolean);
+          if (!childs.includes(s.id)) childs.push(s.id);
+          await tx.user.update({
+            where: { id: existingParent.id },
+            data: { childs: childs.join(","), phone: existingParent.phone ?? (body.parentPhone || null) },
+          });
+          parentInfo = { email: parentEmail, username: existingParent.username, tempPassword: null, existing: true };
+        } else {
+          const pTemp = generateTempPassword();
+          const pHash = await bcrypt.hash(pTemp, 12);
+          const pUsername = `par_${parentEmail.split("@")[0]}_${Math.random().toString(36).slice(2, 6)}`;
+          const np = await tx.user.create({
+            data: { email: parentEmail, username: pUsername, password: pHash, role: "PARENT", childs: s.id, phone: body.parentPhone || null, mustChangePassword: true },
+          });
+          parentInfo = { email: parentEmail, username: np.username, tempPassword: pTemp, existing: false };
+        }
+      }
+      return { student: s, parentInfo };
     });
+
+    const { student, parentInfo } = created;
 
     // Link the online application to the new student and flip it to enrolled.
     if (body.applicationId) {
       await markApplicationEnrolled(body.applicationId, student.id).catch(() => null);
     }
 
-    return NextResponse.json({ ...student, tempPassword }, { status: 201 });
+    // Notify the parent (best-effort) with login details via email + WhatsApp.
+    let delivery: any = null;
+    if (parentInfo && !parentInfo.conflict) {
+      const profile = await (db as any).schoolProfile.findFirst({ select: { name: true } }).catch(() => null);
+      const schoolName = profile?.name ?? "Your School";
+      const loginUrl = `${req.nextUrl.origin}/sign-in`;
+      const credentials = [
+        { label: "Student", name: `${body.firstName ?? ""} ${body.lastName ?? ""}`.trim(), username, email, tempPassword },
+        ...(parentInfo.existing ? [] : [{ label: "Parent", name: body.parentName || parentInfo.email, username: parentInfo.username, email: parentInfo.email, tempPassword: parentInfo.tempPassword }]),
+      ];
+      delivery = await notifyParentCredentials(db, {
+        schoolName, loginUrl,
+        parentEmail: parentInfo.email,
+        parentPhone: body.parentPhone || null,
+        parentExisting: !!parentInfo.existing,
+        credentials,
+      }).catch(() => null);
+    }
+
+    return NextResponse.json({
+      ...student,
+      tempPassword,
+      parent: parentInfo
+        ? { email: parentInfo.email, tempPassword: parentInfo.tempPassword ?? null, existing: !!parentInfo.existing, conflict: !!parentInfo.conflict }
+        : null,
+      delivery,
+    }, { status: 201 });
   } catch (err: any) {
     console.error(err);
     return NextResponse.json({ error: err.message || "Failed to create student" }, { status: 500 });

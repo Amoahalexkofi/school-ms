@@ -31,6 +31,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // it's completed. Only admins set the school up; skip the demo and the wizard
   // route itself (avoid a redirect loop).
   const pathname = (await headers()).get("x-pathname") ?? "";
+
+  // First-login gate: auto-created accounts (students/parents) must set a new
+  // password before doing anything else. Skip the change-password page itself.
+  if (userId && !pathname.startsWith("/account/security")) {
+    const me = await ((await getDb()) as any).user
+      .findUnique({ where: { id: userId }, select: { mustChangePassword: true } })
+      .catch(() => null);
+    if (me?.mustChangePassword) redirect("/account/security");
+  }
+
   if (!isDemo && (role === "ADMIN" || role === "SUPER_ADMIN") && !pathname.startsWith("/onboarding")) {
     const db = (await getDb()) as any;
     const profile = await db.schoolProfile.findFirst({ select: { onboardingCompleted: true } }).catch(() => null);
