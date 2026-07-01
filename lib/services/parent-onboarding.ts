@@ -1,5 +1,5 @@
 import { sendEmail } from "@/lib/email";
-import { sendWhatsApp } from "@/lib/services/whatsapp";
+import { sendWhatsApp, sendWhatsAppTemplate } from "@/lib/services/whatsapp";
 
 export interface Credential {
   label: string;        // "Student" | "Parent"
@@ -110,7 +110,25 @@ export async function notifyParentCredentials(db: any, input: NotifyInput): Prom
 
   if (input.parentPhone) {
     try {
-      const r = await sendWhatsApp(input.parentPhone, buildWhatsAppText(input), db);
+      // A cold, business-initiated WhatsApp requires a pre-approved template.
+      // When one is configured we send a short branded heads-up (the actual
+      // credentials go by email — a template body can't hold 4 login fields) and
+      // point the parent to sign in. Without a configured template we fall back
+      // to freeform text, which only delivers inside a 24h session / sandbox.
+      const templateName = process.env.PARENT_WA_TEMPLATE_NAME;
+      const r = templateName
+        ? await sendWhatsAppTemplate(
+            input.parentPhone,
+            {
+              name: templateName,
+              language: process.env.PARENT_WA_TEMPLATE_LANG ?? "en_US",
+              // {{1}} school name, {{2}} whether creds went to email
+              bodyParams: [input.schoolName, input.parentEmail ? "your email" : "the school office"],
+              buttonUrlParam: input.loginUrl,
+            },
+            db
+          )
+        : await sendWhatsApp(input.parentPhone, buildWhatsAppText(input), db);
       result.whatsapp = { ok: r.success, error: r.error };
     } catch (e: any) {
       result.whatsapp = { ok: false, error: e.message };

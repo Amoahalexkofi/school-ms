@@ -150,6 +150,149 @@ async function sendViaMetaCloudApi(
   }
 }
 
+// ── Template messages (Meta / WATI) ───────────────────────────────────────────
+// Cold, business-initiated WhatsApp messages MUST use a pre-approved template.
+// Freeform text (sendWhatsApp above) only delivers inside the 24-hour customer
+// service window. Use this for the very first message to a parent.
+
+export interface TemplateMessage {
+  /** The exact approved template name (e.g. "parent_login_details"). */
+  name: string;
+  /** BCP-47 code the template was approved in. Default "en_US". */
+  language?: string;
+  /** Ordered values for the body placeholders {{1}}, {{2}}, … */
+  bodyParams?: string[];
+  /** Value for a dynamic URL button's {{1}} placeholder, if the template has one. */
+  buttonUrlParam?: string;
+}
+
+async function sendTemplateViaMeta(
+  to: string[],
+  tpl: TemplateMessage,
+  config: { apiKey: string; senderId: string }
+): Promise<WhatsAppResult> {
+  const phoneNumberId = config.senderId;
+  const components: any[] = [];
+  if (tpl.bodyParams?.length) {
+    components.push({
+      type: "body",
+      parameters: tpl.bodyParams.map((text) => ({ type: "text", text })),
+    });
+  }
+  if (tpl.buttonUrlParam) {
+    components.push({
+      type: "button",
+      sub_type: "url",
+      index: "0",
+      parameters: [{ type: "text", text: tpl.buttonUrlParam }],
+    });
+  }
+
+  try {
+    const responses = await Promise.all(
+      to.map((phone) =>
+        fetch(`https://graph.facebook.com/v19.0/${phoneNumberId}/messages`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${config.apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            messaging_product: "whatsapp",
+            to: phone.replace(/\D/g, ""),
+            type: "template",
+            template: {
+              name: tpl.name,
+              language: { code: tpl.language ?? "en_US" },
+              ...(components.length ? { components } : {}),
+            },
+          }),
+        })
+      )
+    );
+    const failed = responses.find((r) => !r.ok);
+    if (failed) {
+      const data = await failed.json().catch(() => ({}));
+      return { success: false, provider: "meta", error: data?.error?.message ?? `HTTP ${failed.status}` };
+    }
+    return { success: true, provider: "meta" };
+  } catch (err: any) {
+    return { success: false, provider: "meta", error: err.message };
+  }
+}
+
+async function sendTemplateViaWati(
+  to: string[],
+  tpl: TemplateMessage,
+  config: { apiKey: string; endpoint: string }
+): Promise<WhatsAppResult> {
+  const base = config.endpoint.replace(/\/$/, "");
+  const parameters = (tpl.bodyParams ?? []).map((value, i) => ({ name: `${i + 1}`, value }));
+
+  try {
+    const responses = await Promise.all(
+      to.map((phone) =>
+        fetch(`${base}/api/v1/sendTemplateMessage?whatsappNumber=${phone.replace(/\D/g, "")}`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${config.apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            template_name: tpl.name,
+            broadcast_name: tpl.name,
+            parameters,
+          }),
+        })
+      )
+    );
+    const failed = responses.find((r) => !r.ok);
+    if (failed) {
+      const data = await failed.json().catch(() => ({}));
+      return { success: false, provider: "wati", error: data?.message ?? `HTTP ${failed.status}` };
+    }
+    return { success: true, provider: "wati" };
+  } catch (err: any) {
+    return { success: false, provider: "wati", error: err.message };
+  }
+}
+
+/**
+ * Send a pre-approved WhatsApp template. Uses the same hybrid provider
+ * resolution as sendWhatsApp (school's own provider, else the central account).
+ * Twilio WhatsApp templates use Content SIDs and are not supported here.
+ */
+export async function sendWhatsAppTemplate(
+  to: string | string[],
+  template: TemplateMessage,
+  dbClient?: any
+): Promise<WhatsAppResult> {
+  const db = dbClient ?? (await getDb());
+  let config: WhatsAppConfigShape | null = await (db as any).whatsAppConfig.findFirst({ where: { isActive: true } });
+  if (!config) config = getPlatformWhatsAppConfig();
+  if (!config) return { success: false, provider: "none", error: "No active WhatsApp provider configured" };
+
+  const normalise = (n: string) => {
+    const clean = n.replace(/\s+/g, "");
+    return clean.startsWith("+") ? clean : `+${clean}`;
+  };
+  const numbers = (Array.isArray(to) ? to : [to]).map(normalise).filter(Boolean);
+  if (!numbers.length) return { success: false, provider: config.provider, error: "No valid recipients" };
+
+  switch (config.provider) {
+    case "meta":
+      return sendTemplateViaMeta(numbers, template, { apiKey: config.apiKey, senderId: config.senderId });
+    case "wati":
+      return sendTemplateViaWati(numbers, template, { apiKey: config.apiKey, endpoint: config.endpoint });
+    default:
+      return {
+        success: false,
+        provider: config.provider,
+        error: `Template send not supported for provider "${config.provider}"`,
+      };
+  }
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export async function sendWhatsApp(
