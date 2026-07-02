@@ -2531,6 +2531,9 @@ model TemplateMarksheet {
   title        String?  @db.Text
   leftLogo     String?
   rightLogo    String?
+  headerColor  String? // hex — report header band (default indigo)
+  footerText   String? @db.Text // e.g. school motto printed under signatures
+  watermark    Boolean  @default(false) // faint school crest behind the page
   examName     String?
   schoolName   String?
   examCenter   String?

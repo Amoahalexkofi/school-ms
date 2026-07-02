@@ -1,5 +1,5 @@
 import React from "react";
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text, Image, StyleSheet } from "@react-pdf/renderer";
 
 export type PdfRow = {
   subject: string; full: number; passing: number; obtained: number | null; grade: string | null; isPassing: boolean;
@@ -28,6 +28,12 @@ export type PdfData = {
   printDate: string;
   // GES terminal-report mode: adds Class/Exam score columns + wrapper block
   ges?: { sbaLabel: string; examLabel: string; onRoll?: number | null } | null;
+  // School branding (template values, school profile as fallback)
+  leftLogo?: string | null;
+  rightLogo?: string | null;
+  headerColor?: string | null;
+  footerText?: string | null;
+  watermarkUrl?: string | null;
 };
 
 const s = StyleSheet.create({
@@ -71,17 +77,43 @@ function Info({ label, value }: { label: string; value: string }) {
   );
 }
 
+// Only pass safe, well-formed colors into the PDF header
+function safeColor(c: string | null | undefined, fallback: string): string {
+  return c && /^#[0-9a-fA-F]{3,8}$/.test(c.trim()) ? c.trim() : fallback;
+}
+
 export function ReportCardDoc(d: PdfData) {
+  const headerBg = safeColor(d.headerColor, "#1d4ed8");
   return (
     <Document>
       {d.students.map((st, i) => (
         <Page key={i} size="A4" style={s.page}>
-          <View style={s.header}>
-            <Text style={s.school}>{d.schoolName}</Text>
-            {d.address ? <Text style={s.addr}>{d.address}</Text> : null}
-            <Text style={s.titleChip}>{d.title}</Text>
-            {d.heading ? <Text style={s.sub}>{d.heading}</Text> : null}
-            <Text style={s.sub}>{d.examName} — {d.sessionLabel}</Text>
+          {d.watermarkUrl ? (
+            /* Faint school crest behind the page content */
+            <Image
+              src={d.watermarkUrl}
+              style={{ position: "absolute", top: 260, left: 150, width: 300, height: 300, opacity: 0.05 }}
+            />
+          ) : null}
+
+          <View style={[s.header, { backgroundColor: headerBg, flexDirection: "row", alignItems: "center" }]}>
+            {d.leftLogo ? (
+              <Image src={d.leftLogo} style={{ width: 52, height: 52, objectFit: "contain" }} />
+            ) : (
+              <View style={{ width: 52 }} />
+            )}
+            <View style={{ flex: 1 }}>
+              <Text style={s.school}>{d.schoolName}</Text>
+              {d.address ? <Text style={s.addr}>{d.address}</Text> : null}
+              <Text style={s.titleChip}>{d.title}</Text>
+              {d.heading ? <Text style={s.sub}>{d.heading}</Text> : null}
+              <Text style={s.sub}>{d.examName}{d.sessionLabel ? ` — ${d.sessionLabel}` : ""}</Text>
+            </View>
+            {d.rightLogo ? (
+              <Image src={d.rightLogo} style={{ width: 52, height: 52, objectFit: "contain" }} />
+            ) : (
+              <View style={{ width: 52 }} />
+            )}
           </View>
 
           <View style={s.infoBox}>
@@ -229,6 +261,12 @@ export function ReportCardDoc(d: PdfData) {
               <Text key={k} style={s.signItem}>{label}</Text>
             ))}
           </View>
+
+          {d.footerText ? (
+            <Text style={{ marginTop: 14, textAlign: "center", fontSize: 8, color: "#6b7280" }}>
+              {d.footerText}
+            </Text>
+          ) : null}
         </Page>
       ))}
     </Document>

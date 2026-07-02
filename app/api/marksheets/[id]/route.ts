@@ -17,8 +17,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       leftLogo, rightLogo, examName, schoolName, examCenter,
       leftSign, middleSign, rightSign, examSession,
       isName, isFatherName, isMotherName, isDob, isAdmissionNo, isRollNo,
+      headerColor, footerText, watermark,
     } = await req.json();
     const data: any = {};
+    if (headerColor    !== undefined) data.headerColor    = headerColor    || null;
+    if (footerText     !== undefined) data.footerText     = footerText     || null;
+    if (watermark      !== undefined) data.watermark      = Boolean(watermark);
     if (headerImage    !== undefined) data.headerImage    = headerImage    || null;
     if (template       !== undefined) data.template       = template       || null;
     if (heading        !== undefined) data.heading        = heading        || null;

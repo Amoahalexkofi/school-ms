@@ -16,10 +16,14 @@ export async function POST(req: NextRequest) {
       leftLogo, rightLogo, examName, schoolName, examCenter,
       leftSign, middleSign, rightSign, examSession,
       isName, isFatherName, isMotherName, isDob, isAdmissionNo, isRollNo,
+      headerColor, footerText, watermark,
     } = await req.json();
     const db = await getDb();
     const ms = await (db as any).templateMarksheet.create({
       data: {
+        headerColor:   headerColor  || null,
+        footerText:    footerText   || null,
+        watermark:     Boolean(watermark),
         headerImage:   headerImage  || null,
         template:      template     || null,
         heading:       heading      || null,

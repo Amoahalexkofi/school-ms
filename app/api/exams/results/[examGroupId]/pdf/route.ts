@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
   const db = await getDb();
   const [group, profile, divisions, scale, template] = await Promise.all([
     (db as any).examGroup.findUnique({ where: { id: examGroupId }, select: { name: true } }),
-    (db as any).schoolProfile.findFirst({ select: { name: true, address: true } }),
+    (db as any).schoolProfile.findFirst({ select: { name: true, address: true, logo: true, motto: true } }),
     (db as any).markDivision.findMany({ where: { isActive: true }, orderBy: { percentageFrom: "desc" } }).catch(() => []),
     (db as any).gradingScale.findFirst({ orderBy: { createdAt: "asc" }, include: { ranges: { where: { isActive: true }, orderBy: { markFrom: "desc" } } } }).catch(() => null),
     templateId ? (db as any).templateMarksheet.findUnique({ where: { id: templateId } }).catch(() => null) : null,
@@ -171,6 +171,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
       },
       students: list as PdfStudent[],
       printDate: new Date().toLocaleDateString(),
+      // Branding: template values win; the school profile's logo/motto fill in
+      // when the template leaves them blank (or no template is selected).
+      leftLogo: template?.leftLogo || profile?.logo || null,
+      rightLogo: template?.rightLogo || null,
+      headerColor: template?.headerColor || null,
+      footerText: template?.footerText || profile?.motto || null,
+      watermarkUrl: template?.watermark ? (template?.leftLogo || profile?.logo || null) : null,
       ges: gesMode
         ? {
             sbaLabel: `Class Score (${sbaWeight}%)`,
