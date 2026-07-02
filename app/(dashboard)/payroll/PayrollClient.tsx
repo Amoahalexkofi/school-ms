@@ -38,7 +38,7 @@ export function PayrollClient({ departments }: Props) {
   const [loading,      setLoading]      = useState(false);
   const [generating,   setGenerating]   = useState<string | null>(null);
   const [bulkLoading,  setBulkLoading]  = useState(false);
-  const [bulkResult,   setBulkResult]   = useState<{ created: number; skipped: number } | null>(null);
+  const [bulkResult,   setBulkResult]   = useState<{ created: number; skipped: number; message?: string } | null>(null);
   const [error,        setError]        = useState("");
 
   const years = Array.from({ length: 5 }, (_, i) => String(now.getFullYear() - i));
@@ -142,7 +142,7 @@ export function PayrollClient({ departments }: Props) {
         <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
           <Zap className="h-4 w-4 shrink-0" />
           Generated {bulkResult.created} payslip{bulkResult.created !== 1 ? "s" : ""}.
-          {bulkResult.skipped > 0 && ` ${bulkResult.skipped} already had payslips or had no salary set.`}
+          {bulkResult.skipped > 0 && ` Skipped ${bulkResult.skipped}${bulkResult.message ? ` — ${bulkResult.message}` : ""}.`}
         </div>
       )}
 

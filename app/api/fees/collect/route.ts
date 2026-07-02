@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { sendSms, feeReceiptSms } from "@/lib/services/sms";
 import { sendWhatsApp, whatsAppFeeReceipt } from "@/lib/services/whatsapp";
 import { sendEmail, feeReceiptEmail } from "@/lib/email";
@@ -64,6 +65,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Record the actual collector on the receipt (was hardcoded "Admin",
+    // which broke the audit trail for accountants).
+    const session = await auth().catch(() => null);
+    const receivedBy = (session?.user as any)?.name || session?.user?.email || "Admin";
+
     const newEntry = {
       amount:       Number(amount),
       discount:     totalDiscount,
@@ -71,7 +77,7 @@ export async function POST(req: NextRequest) {
       date,
       payment_mode: paymentMode || "CASH",
       description:  description || "",
-      received_by:  "Admin",
+      received_by:  receivedBy,
     };
 
     // Look for existing deposit row for this fee item (Smart School upsert logic)

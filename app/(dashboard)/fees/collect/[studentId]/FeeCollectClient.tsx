@@ -156,7 +156,8 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
   const discountPreview = selDiscounts.reduce((sum, id) => {
     const d = discounts.find((x) => x.id === id);
     if (!d) return sum;
-    return sum + (d.type === "percentage" ? (Number(amount) || 0) * d.percentage / 100 : d.amount);
+    // Decimal fields arrive as strings over JSON — coerce before math
+    return sum + (d.type === "percentage" ? (Number(amount) || 0) * Number(d.percentage) / 100 : Number(d.amount));
   }, 0);
 
   async function handlePayOnline(master: Master) {

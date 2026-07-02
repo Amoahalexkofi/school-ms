@@ -27,6 +27,19 @@ export async function createTransaction(input: {
   headId: string;
 }) {
   if (input.amount <= 0) throw Object.assign(new Error("Amount must be positive"), { code: "VALIDATION" });
+  // Validate the head exists up front — otherwise Prisma throws an FK error
+  // that surfaces as an opaque 500 instead of a clear 422.
+  {
+    const prisma = await getDb();
+    const model = input.type === "INCOME" ? "incomeHead" : "expenseHead";
+    const head = await (prisma as any)[model].findUnique({ where: { id: input.headId } });
+    if (!head) {
+      throw Object.assign(
+        new Error(`Selected ${input.type === "INCOME" ? "income" : "expense"} head no longer exists`),
+        { code: "VALIDATION" }
+      );
+    }
+  }
   const data: any = {
     type:       input.type,
     name:       input.name      || null,
@@ -61,14 +74,25 @@ export async function generatePayroll(month: number, year: number) {
   const staffList = await (prisma as any).staff.findMany({ where: { isActive: true } });
   if (staffList.length === 0) throw Object.assign(new Error("No active staff found"), { code: "VALIDATION" });
 
+  // Staff without a salary can't be paid — exclude them rather than writing
+  // meaningless ₵0 entries, and tell the accountant exactly what was skipped.
+  const payable = staffList.filter((s: any) => Number(s.basicSalary ?? 0) > 0);
+  const skippedNoSalary = staffList.length - payable.length;
+  if (payable.length === 0) {
+    throw Object.assign(
+      new Error("No staff have a basic salary set — add salaries on the staff records first"),
+      { code: "VALIDATION" }
+    );
+  }
+
   // Staff has no allowances/deductions columns — bulk payroll uses basic salary
   // as net. (Per-staff allowance line items live in the StaffPayslip flow.)
-  return (prisma as any).payroll.create({
+  const payroll = await (prisma as any).payroll.create({
     data: {
       month,
       year,
       entries: {
-        create: staffList.map((s: any) => {
+        create: payable.map((s: any) => {
           const basic = Number(s.basicSalary ?? 0);
           return {
             staffId: s.id,
@@ -82,6 +106,7 @@ export async function generatePayroll(month: number, year: number) {
     },
     include: { entries: { include: { staff: true } } },
   });
+  return { ...payroll, skippedNoSalary };
 }
 
 export async function markPayrollPaid(payrollId: string) {

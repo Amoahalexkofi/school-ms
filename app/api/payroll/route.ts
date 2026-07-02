@@ -49,6 +49,13 @@ export async function POST(req: NextRequest) {
     if (!staff) return NextResponse.json({ error: "Staff not found" }, { status: 404 });
 
     const basicSalary = Number(staff.basicSalary ?? 0);
+    if (basicSalary <= 0) {
+      // A ₵0 payslip is never intentional — the staff record is missing a salary.
+      return NextResponse.json(
+        { error: "This staff member has no basic salary set. Add it on their staff record first." },
+        { status: 422 }
+      );
+    }
 
     const payslip = await ((await getDb()) as any).staffPayslip.create({
       data: {

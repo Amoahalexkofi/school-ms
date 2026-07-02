@@ -31,6 +31,7 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState("");
 
   // Distinct classes, and sections available for the selected class
   const classes = useMemo(() => {
@@ -47,11 +48,24 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
   async function fetchStudents(qs: string) {
     setLoading(true);
     setSearched(true);
+    setSearchError("");
     try {
       const res = await fetch(`/api/students?isActive=true&${qs}`);
-      setResults(res.ok ? await res.json() : []);
+      if (res.ok) {
+        setResults(await res.json());
+      } else {
+        // Don't disguise failures as an empty class — a 403 here once hid a
+        // missing role rule as "No students found".
+        setResults([]);
+        setSearchError(
+          res.status === 403 || res.status === 401
+            ? "Your account doesn't have permission to search students. Ask an admin to check your role."
+            : `Student search failed (HTTP ${res.status}). Try again.`
+        );
+      }
     } catch {
       setResults([]);
+      setSearchError("Student search failed — check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -74,7 +88,17 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
     const t = setTimeout(async () => {
       try {
         const res = await fetch(`/api/students?isActive=true&limit=20&search=${encodeURIComponent(q)}`, { signal: ctrl.signal });
-        setResults(res.ok ? await res.json() : []);
+        if (res.ok) {
+          setResults(await res.json());
+          setSearchError("");
+        } else {
+          setResults([]);
+          setSearchError(
+            res.status === 403 || res.status === 401
+              ? "Your account doesn't have permission to search students. Ask an admin to check your role."
+              : `Student search failed (HTTP ${res.status}). Try again.`
+          );
+        }
         setSearched(true);
       } catch (e) {
         if ((e as any)?.name !== "AbortError") setResults([]);
@@ -89,6 +113,7 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
     setMode(m);
     setResults([]);
     setSearched(false);
+    setSearchError("");
   }
 
   function rosterName(s: any) {
@@ -202,7 +227,12 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
                 ))}
               </div>
             )}
-            {searched && !loading && results.length === 0 && (
+            {searchError && !loading && (
+              <p role="alert" className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-center">
+                {searchError}
+              </p>
+            )}
+            {searched && !loading && !searchError && results.length === 0 && (
               <p className="text-xs text-gray-400 text-center py-3">No students found.</p>
             )}
           </CardContent>

@@ -203,7 +203,7 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
               <tbody className="divide-y divide-gray-50">
                 <tr className="text-gray-700">
                   <td className="py-2 font-medium">Basic Salary</td>
-                  <td className="py-2 text-right font-semibold">₵{Number(payslip.basicSalary).toLocaleString()}</td>
+                  <td className="py-2 text-right font-semibold">₵{Number(payslip.basicSalary ?? 0).toLocaleString()}</td>
                   <td className="w-8" />
                 </tr>
                 {allowances.map(a => (

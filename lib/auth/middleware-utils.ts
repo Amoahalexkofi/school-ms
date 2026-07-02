@@ -59,6 +59,13 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/students",
     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
   },
+  // Accountants need the student search API for fee collection (Collect Fees
+  // looks up students by class/name). Longest-prefix wins, so this opens ONLY
+  // /api/students — the /students management pages stay admin/teacher-only.
+  {
+    prefix: "/api/students",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT"],
+  },
   {
     prefix: "/attendance",
     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],

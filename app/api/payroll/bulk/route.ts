@@ -19,10 +19,24 @@ export async function POST(req: NextRequest) {
     ]);
 
     const alreadyHas = new Set(existingPayslips.map((p: any) => p.staffId));
+    const noSalary = (allStaff as any[]).filter((s: any) => !alreadyHas.has(s.id) && Number(s.basicSalary ?? 0) <= 0);
     const toGenerate = (allStaff as any[]).filter((s: any) => !alreadyHas.has(s.id) && Number(s.basicSalary ?? 0) > 0);
 
+    // Tell the accountant WHY staff were skipped — "skipped 10" with no reason
+    // hides missing salary records.
+    const skipDetail = (already: number, missing: number) =>
+      [
+        already > 0 ? `${already} already have a payslip` : null,
+        missing > 0 ? `${missing} have no basic salary set` : null,
+      ].filter(Boolean).join("; ");
+
     if (toGenerate.length === 0) {
-      return NextResponse.json({ created: 0, skipped: allStaff.length });
+      return NextResponse.json({
+        created: 0,
+        skipped: allStaff.length,
+        skippedNoSalary: noSalary.length,
+        message: skipDetail(alreadyHas.size, noSalary.length) || "No eligible staff",
+      });
     }
 
     await (db as any).staffPayslip.createMany({
@@ -44,7 +58,12 @@ export async function POST(req: NextRequest) {
       skipDuplicates: true,
     });
 
-    return NextResponse.json({ created: toGenerate.length, skipped: allStaff.length - toGenerate.length });
+    return NextResponse.json({
+      created: toGenerate.length,
+      skipped: allStaff.length - toGenerate.length,
+      skippedNoSalary: noSalary.length,
+      message: skipDetail(alreadyHas.size, noSalary.length),
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
