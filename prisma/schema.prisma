@@ -959,6 +959,65 @@ model MarkEntry {
   @@index([studentId])
 }
 
+// GES-style continuous assessment (SBA) components. Each component's weight is
+// also its max mark (Class Work /20, Project /15, Quizzes /15, Exam /50 →
+// final /100), matching how Ghanaian terminal report sheets are filled in.
+// School-wide config; when none are active, marks entry falls back to the
+// single-mark mode.
+model AssessmentComponent {
+  id        String   @id @default(cuid())
+  name      String // "Class Work / Home Work"
+  weight    Decimal  @db.Decimal(5, 2) // % of final — doubles as the max mark
+  isExam    Boolean  @default(false) // the end-of-term exam component (splits SBA vs Exam on reports)
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  componentMarks ComponentMark[]
+}
+
+// Per-student score for one assessment component of one exam schedule. The
+// weighted total is still written to MarkEntry.marksObtained so grading, rank
+// and report generation downstream stay unchanged.
+model ComponentMark {
+  id             String              @id @default(cuid())
+  examScheduleId String
+  studentId      String
+  componentId    String
+  component      AssessmentComponent @relation(fields: [componentId], references: [id])
+  marksObtained  Decimal?            @db.Decimal(5, 2) // out of component.weight
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@unique([examScheduleId, studentId, componentId])
+  @@index([examScheduleId])
+  @@index([studentId])
+}
+
+// Terminal-report wrapper fields (GES report sheet): attendance summary,
+// conduct/attitude/interest, remarks, promotion. One row per student per exam
+// group (term). Relation-less like StudentExamRank to avoid touching
+// ExamGroup/Student.
+model TermReport {
+  id                 String    @id @default(cuid())
+  examGroupId        String
+  studentId          String
+  attendancePresent  Int?
+  attendanceTotal    Int?
+  conduct            String?
+  attitude           String?
+  interest           String?
+  classTeacherRemark String?
+  headTeacherRemark  String?
+  promotedTo         String?
+  nextTermBegins     DateTime? @db.Date
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@unique([examGroupId, studentId])
+  @@index([examGroupId])
+}
+
 // Persisted/editable exam rank per student per exam group (Smart School stores
 // rank and lets admins override). Relation-less to avoid touching ExamGroup/
 // Student. Absent → results compute live.

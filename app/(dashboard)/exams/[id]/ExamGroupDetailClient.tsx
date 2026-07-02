@@ -81,6 +81,9 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
               <Button variant="outline">View Results</Button>
             </Link>
           )}
+          <Link href={`/exams/${group.id}/term-report`}>
+            <Button variant="outline">Term Report Info</Button>
+          </Link>
           <Button onClick={() => { setError(""); setAddOpen(true); }}>
             <Plus className="h-4 w-4 mr-1.5" /> Add Schedule
           </Button>

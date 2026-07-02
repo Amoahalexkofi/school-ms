@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BookOpen, Plus, ChevronRight, Pencil, Trash2, Globe, Lock, FileText, CreditCard } from "lucide-react";
+import { BookOpen, Plus, ChevronRight, Pencil, Trash2, Globe, Lock, FileText, CreditCard, SlidersHorizontal } from "lucide-react";
 import { usePermission } from "@/components/PermissionsProvider";
 
 const EXAM_TYPES = ["TERM", "MIDTERM", "FINAL", "UNIT_TEST", "MOCK", "OTHER"];
@@ -70,6 +70,9 @@ export function ExamsListClient({ groups }: { groups: Group[] }) {
         <div className="flex gap-2 flex-wrap">
           <Link href="/exams/admit-card">
             <Button variant="outline"><CreditCard className="h-4 w-4 mr-1.5" /> Admit Cards</Button>
+          </Link>
+          <Link href="/exams/components">
+            <Button variant="outline"><SlidersHorizontal className="h-4 w-4 mr-1.5" /> CA Setup</Button>
           </Link>
           <Link href="/exams/marksheet">
             <Button variant="outline"><FileText className="h-4 w-4 mr-1.5" /> Marksheets</Button>

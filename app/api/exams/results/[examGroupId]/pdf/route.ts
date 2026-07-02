@@ -33,19 +33,76 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
     orderBy: { dateOfExam: "asc" },
   });
 
+  // GES terminal-report data: SBA components split each subject's mark into a
+  // class score + exam score; TermReport carries attendance/conduct/remarks.
+  const [components, componentMarks, termReports] = await Promise.all([
+    (db as any).assessmentComponent.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" } }).catch(() => []),
+    (db as any).componentMark
+      .findMany({ where: { examScheduleId: { in: schedules.map((s: any) => s.id) } } })
+      .catch(() => []),
+    (db as any).termReport.findMany({ where: { examGroupId } }).catch(() => []),
+  ]);
+  const gesMode = components.length > 0 && componentMarks.length > 0;
+  const examComponentIds = new Set(components.filter((c: any) => c.isExam).map((c: any) => c.id));
+  const sbaWeight = components.filter((c: any) => !c.isExam).reduce((a: number, c: any) => a + Number(c.weight), 0);
+  const examWeight = components.filter((c: any) => c.isExam).reduce((a: number, c: any) => a + Number(c.weight), 0);
+  // split[scheduleId][studentId] = { classScore, examScore }
+  const split: Record<string, Record<string, { classScore: number; examScore: number }>> = {};
+  for (const cm of componentMarks) {
+    if (cm.marksObtained === null) continue;
+    const bucket = ((split[cm.examScheduleId] ??= {})[cm.studentId] ??= { classScore: 0, examScore: 0 });
+    if (examComponentIds.has(cm.componentId)) bucket.examScore += Number(cm.marksObtained);
+    else bucket.classScore += Number(cm.marksObtained);
+  }
+  const reportMap: Record<string, any> = {};
+  for (const tr of termReports) reportMap[tr.studentId] = tr;
+
+  // Subject remark from the grade's configured description, else by percentage.
+  const remarkFor = (obtained: number | null, full: number): string => {
+    if (obtained === null) return "Absent";
+    const pct = full ? (obtained / full) * 100 : 0;
+    for (const r of scale?.ranges ?? []) {
+      if (pct >= Number(r.markFrom) && pct <= Number(r.markTo) && r.description) return r.description;
+    }
+    if (pct >= 80) return "Excellent";
+    if (pct >= 70) return "Very Good";
+    if (pct >= 60) return "Good";
+    if (pct >= 50) return "Credit";
+    if (pct >= 40) return "Pass";
+    return "Weak";
+  };
+
   const className = schedules[0]?.classSection
     ? `${schedules[0].classSection.class?.name ?? ""} - ${schedules[0].classSection.section?.name ?? ""}`
     : "";
 
   const map: Record<string, any> = {};
   for (const sch of schedules) {
+    // Per-subject position: rank present students by obtained mark
+    const subjectPositions = new Map<string, number>();
+    if (gesMode) {
+      const present = sch.markEntries
+        .filter((m: any) => m.attendance !== "A" && m.marksObtained !== null)
+        .sort((a: any, b: any) => Number(b.marksObtained) - Number(a.marksObtained));
+      present.forEach((m: any, i: number) => subjectPositions.set(m.studentId, i + 1));
+    }
     for (const m of sch.markEntries) {
       const st = m.student;
       if (!map[st.id]) map[st.id] = { st, rows: [] };
+      const obtained = m.attendance === "A" ? null : Number(m.marksObtained ?? 0);
+      const sp = gesMode ? split[sch.id]?.[st.id] : undefined;
       map[st.id].rows.push({
         subject: sch.subject.name, full: sch.fullMarks, passing: sch.passingMarks,
-        obtained: m.attendance === "A" ? null : Number(m.marksObtained ?? 0),
+        obtained,
         grade: m.grade, isPassing: m.isPassing,
+        ...(gesMode
+          ? {
+              classScore: sp ? sp.classScore : null,
+              examScore: sp ? sp.examScore : null,
+              position: subjectPositions.get(st.id) ?? null,
+              remark: remarkFor(obtained, sch.fullMarks),
+            }
+          : {}),
       });
     }
   }
@@ -61,12 +118,22 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
     const totalObtained = r.rows.reduce((a: number, x: any) => a + (x.obtained ?? 0), 0);
     const pct = totalFull ? Math.round((totalObtained / totalFull) * 100) : 0;
     const allPassed = r.rows.every((x: any) => x.obtained !== null && x.isPassing);
+    const tr = gesMode ? reportMap[r.st.id] : null;
     return {
       name: `${r.st.firstName} ${r.st.lastName}`, admissionNo: r.st.admissionNo, rollNo: r.st.rollNo,
       className, fatherName: r.st.fatherName, motherName: r.st.motherName,
       dob: r.st.dateOfBirth ? new Date(r.st.dateOfBirth).toLocaleDateString() : null,
       gender: r.st.gender, rows: r.rows, totalFull, totalObtained, pct, allPassed,
       division: divisionFor(pct, allPassed), _id: r.st.id,
+      report: tr
+        ? {
+            attendancePresent: tr.attendancePresent, attendanceTotal: tr.attendanceTotal,
+            conduct: tr.conduct, attitude: tr.attitude, interest: tr.interest,
+            classTeacherRemark: tr.classTeacherRemark, headTeacherRemark: tr.headTeacherRemark,
+            promotedTo: tr.promotedTo,
+            nextTermBegins: tr.nextTermBegins ? new Date(tr.nextTermBegins).toLocaleDateString() : null,
+          }
+        : null,
     } as PdfStudent & { _id: string };
   });
 
@@ -79,6 +146,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
     for (const s of list as any[]) if (pm.has(s._id)) s.rank = pm.get(s._id);
     list.sort((a, b) => a.rank - b.rank);
   }
+  const onRoll = list.length; // class size — captured before any single-student filter
   if (studentId) list = list.filter((s: any) => s._id === studentId);
   if (!list.length) return new Response("No results found", { status: 404 });
 
@@ -103,6 +171,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ exam
       },
       students: list as PdfStudent[],
       printDate: new Date().toLocaleDateString(),
+      ges: gesMode
+        ? {
+            sbaLabel: `Class Score (${sbaWeight}%)`,
+            examLabel: `Exam Score (${examWeight}%)`,
+            onRoll,
+          }
+        : null,
     })
   );
 

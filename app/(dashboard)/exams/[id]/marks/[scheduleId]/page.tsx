@@ -21,7 +21,7 @@ export default async function MarkEntryPage({
   });
   if (!schedule) notFound();
 
-  const [enrollments, existingMarks, gradingScale] = await Promise.all([
+  const [enrollments, existingMarks, gradingScale, components, componentMarks] = await Promise.all([
     // A schedule may be unassigned (no class section) — don't pass null to
     // Prisma (it rejects null filters and crashes the page).
     schedule.classSectionId
@@ -38,10 +38,24 @@ export default async function MarkEntryPage({
       orderBy: { createdAt: "asc" }, // canonical scale = first created (deterministic)
       include: { ranges: { where: { isActive: true }, orderBy: { markFrom: "desc" } } },
     }),
+    // GES SBA components — non-empty switches the entry table to component mode
+    ((await getDb()) as any).assessmentComponent
+      .findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" } })
+      .catch(() => []),
+    ((await getDb()) as any).componentMark
+      .findMany({ where: { examScheduleId: scheduleId } })
+      .catch(() => []),
   ]);
 
   const marksMap: Record<string, any> = {};
   for (const m of existingMarks) marksMap[m.studentId] = m;
+
+  // componentMarksMap[studentId][componentId] = "16"
+  const componentMarksMap: Record<string, Record<string, string>> = {};
+  for (const cm of componentMarks) {
+    (componentMarksMap[cm.studentId] ??= {})[cm.componentId] =
+      cm.marksObtained !== null ? String(Number(cm.marksObtained)) : "";
+  }
 
   return (
     <div className="flex flex-col flex-1">
@@ -52,6 +66,10 @@ export default async function MarkEntryPage({
         enrollments={enrollments}
         marksMap={marksMap}
         gradingScale={gradingScale}
+        components={components.map((c: any) => ({
+          id: c.id, name: c.name, weight: Number(c.weight), isExam: c.isExam,
+        }))}
+        componentMarksMap={componentMarksMap}
       />
     </div>
   );

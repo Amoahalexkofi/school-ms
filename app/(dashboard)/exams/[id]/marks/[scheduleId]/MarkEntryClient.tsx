@@ -12,7 +12,10 @@ type Row = {
   marksObtained: string;
   attendance: "P" | "A";
   note: string;
+  components: Record<string, string>; // componentId → score (out of its weight)
 };
+
+type Component = { id: string; name: string; weight: number; isExam: boolean };
 
 type Props = {
   schedule: any;
@@ -20,6 +23,8 @@ type Props = {
   enrollments: any[];
   marksMap: Record<string, any>;
   gradingScale: any;
+  components?: Component[];
+  componentMarksMap?: Record<string, Record<string, string>>;
 };
 
 function computeGrade(marks: number | null, fullMarks: number, ranges: any[]): string | null {
@@ -31,8 +36,16 @@ function computeGrade(marks: number | null, fullMarks: number, ranges: any[]): s
   return null;
 }
 
-export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, gradingScale }: Props) {
+export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, gradingScale, components = [], componentMarksMap = {} }: Props) {
   const router = useRouter();
+
+  // GES SBA mode: one score column per component (out of its weight); the
+  // final mark is their sum. No components configured → single-mark mode.
+  const sbaMode = components.length > 0;
+  const sbaComponents = components.filter(c => !c.isExam);
+  const examComponent = components.find(c => c.isExam) ?? null;
+  const sbaMax = sbaComponents.reduce((a, c) => a + c.weight, 0);
+  const totalMax = components.reduce((a, c) => a + c.weight, 0);
 
   const initRows = (): Record<string, Row> => {
     const m: Record<string, Row> = {};
@@ -43,6 +56,7 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
         marksObtained: existing ? (existing.marksObtained !== null ? String(Number(existing.marksObtained)) : "") : "",
         attendance:    existing ? existing.attendance : "P",
         note:          existing?.note ?? "",
+        components:    { ...(componentMarksMap[enr.student.id] ?? {}) },
       };
     }
     return m;
@@ -62,6 +76,24 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
     setRows(r => ({ ...r, [studentId]: { ...r[studentId], [field]: value } }));
   }
 
+  function setComponent(studentId: string, componentId: string, value: string) {
+    setRows(r => ({
+      ...r,
+      [studentId]: { ...r[studentId], components: { ...r[studentId].components, [componentId]: value } },
+    }));
+  }
+
+  // Sum of entered component scores (null until at least one is entered)
+  function componentTotal(row: Row | undefined, ids: string[]): number | null {
+    if (!row) return null;
+    let sum = 0, any = false;
+    for (const id of ids) {
+      const v = parseFloat(row.components[id] ?? "");
+      if (!isNaN(v)) { sum += v; any = true; }
+    }
+    return any ? sum : null;
+  }
+
   function markAllPresent() {
     setRows(r => {
       const next = { ...r };
@@ -78,12 +110,17 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
     });
   }
 
+  const allComponentIds = components.map(c => c.id);
+  const rowFinal = (r: Row): number | null =>
+    sbaMode ? componentTotal(r, allComponentIds)
+            : (r.marksObtained !== "" && !isNaN(parseFloat(r.marksObtained)) ? parseFloat(r.marksObtained) : null);
+
   const counts = {
     present: Object.values(rows).filter(r => r.attendance === "P").length,
     absent:  Object.values(rows).filter(r => r.attendance === "A").length,
     passed:  Object.values(rows).filter(r => {
-      const m = parseFloat(r.marksObtained);
-      return r.attendance === "P" && !isNaN(m) && m >= schedule.passingMarks;
+      const m = rowFinal(r);
+      return r.attendance === "P" && m !== null && m >= schedule.passingMarks;
     }).length,
   };
 
@@ -95,6 +132,7 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
         marksObtained: r.attendance === "A" ? null : (r.marksObtained !== "" ? r.marksObtained : null),
         attendance:    r.attendance,
         note:          r.note || null,
+        ...(sbaMode ? { components: r.components } : {}),
       }));
       const res  = await fetch(`/api/exams/schedules/${schedule.id}/marks`, {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -131,7 +169,10 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
         <div><p className="text-xs text-gray-400">Subject</p><p className="font-medium">{schedule.subject.name} <span className="text-gray-400 font-mono text-xs">({schedule.subject.code})</span></p></div>
         <div><p className="text-xs text-gray-400">Class</p><p className="font-medium">{csLabel}</p></div>
         <div><p className="text-xs text-gray-400">Session</p><p className="font-medium">{schedule.session.session}</p></div>
-        <div><p className="text-xs text-gray-400">Full / Pass</p><p className="font-medium">{schedule.fullMarks} / {schedule.passingMarks}</p></div>
+        <div><p className="text-xs text-gray-400">Full / Pass</p><p className="font-medium">{sbaMode ? totalMax : schedule.fullMarks} / {schedule.passingMarks}</p></div>
+        {sbaMode && (
+          <div><p className="text-xs text-gray-400">Assessment</p><p className="font-medium text-indigo-700">SBA {sbaMax}% + Exam {examComponent?.weight ?? 0}%</p></div>
+        )}
         <div><p className="text-xs text-gray-400">Date</p><p className="font-medium">{schedule.dateOfExam ? new Date(schedule.dateOfExam).toLocaleDateString() : "—"}</p></div>
       </div>
 
@@ -169,7 +210,32 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Adm No.</th>
                 <th className="text-center px-4 py-3 font-medium text-gray-600">Attendance</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">Marks / {schedule.fullMarks}</th>
+                {sbaMode ? (
+                  <>
+                    {sbaComponents.map(c => (
+                      <th key={c.id} className="text-center px-2 py-3 font-medium text-gray-600">
+                        <span className="block leading-tight">{c.name}</span>
+                        <span className="text-[10px] font-normal text-gray-400">/ {c.weight}</span>
+                      </th>
+                    ))}
+                    <th className="text-center px-2 py-3 font-medium text-gray-600 bg-indigo-50/60">
+                      <span className="block leading-tight">SBA</span>
+                      <span className="text-[10px] font-normal text-gray-400">/ {sbaMax}</span>
+                    </th>
+                    {examComponent && (
+                      <th className="text-center px-2 py-3 font-medium text-gray-600">
+                        <span className="block leading-tight">{examComponent.name}</span>
+                        <span className="text-[10px] font-normal text-gray-400">/ {examComponent.weight}</span>
+                      </th>
+                    )}
+                    <th className="text-center px-2 py-3 font-medium text-gray-600 bg-indigo-50/60">
+                      <span className="block leading-tight">Final</span>
+                      <span className="text-[10px] font-normal text-gray-400">/ {totalMax}</span>
+                    </th>
+                  </>
+                ) : (
+                  <th className="text-center px-4 py-3 font-medium text-gray-600">Marks / {schedule.fullMarks}</th>
+                )}
                 <th className="text-center px-4 py-3 font-medium text-gray-600">Grade</th>
                 <th className="text-center px-4 py-3 font-medium text-gray-600">Status</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Note</th>
@@ -180,8 +246,13 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
                 const s        = enr.student;
                 const row      = rows[s.id];
                 const absent   = row?.attendance === "A";
-                const marks    = absent ? null : (row?.marksObtained !== "" ? parseFloat(row?.marksObtained) : null);
-                const grade    = computeGrade(marks, schedule.fullMarks, ranges);
+                const sbaTotal  = sbaMode && !absent ? componentTotal(row, sbaComponents.map(c => c.id)) : null;
+                const marks    = absent
+                  ? null
+                  : sbaMode
+                    ? componentTotal(row, allComponentIds)
+                    : (row?.marksObtained !== "" ? parseFloat(row?.marksObtained) : null);
+                const grade    = computeGrade(marks, sbaMode ? totalMax : schedule.fullMarks, ranges);
                 const isPassing = marks !== null && marks >= schedule.passingMarks;
 
                 return (
@@ -205,18 +276,59 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
                         ))}
                       </div>
                     </td>
-                    <td className="px-4 py-2.5 text-center">
-                      {absent ? (
-                        <span className="text-xs text-gray-400 italic">Absent</span>
-                      ) : (
-                        <Input
-                          type="number" min="0" max={schedule.fullMarks} step="0.5"
-                          className="w-20 mx-auto text-center h-8"
-                          value={row?.marksObtained ?? ""}
-                          onChange={e => setRow(s.id, "marksObtained", e.target.value)}
-                        />
-                      )}
-                    </td>
+                    {sbaMode ? (
+                      <>
+                        {sbaComponents.map(c => (
+                          <td key={c.id} className="px-2 py-2.5 text-center">
+                            {absent ? (
+                              <span className="text-xs text-gray-400 italic">—</span>
+                            ) : (
+                              <Input
+                                type="number" min="0" max={c.weight} step="0.5"
+                                aria-label={`${c.name} score for ${s.firstName} ${s.lastName}, out of ${c.weight}`}
+                                className="w-16 mx-auto text-center h-8"
+                                value={row?.components[c.id] ?? ""}
+                                onChange={e => setComponent(s.id, c.id, e.target.value)}
+                              />
+                            )}
+                          </td>
+                        ))}
+                        <td className="px-2 py-2.5 text-center font-semibold text-gray-900 bg-indigo-50/40">
+                          {sbaTotal !== null ? sbaTotal : "—"}
+                        </td>
+                        {examComponent && (
+                          <td className="px-2 py-2.5 text-center">
+                            {absent ? (
+                              <span className="text-xs text-gray-400 italic">—</span>
+                            ) : (
+                              <Input
+                                type="number" min="0" max={examComponent.weight} step="0.5"
+                                aria-label={`${examComponent.name} score for ${s.firstName} ${s.lastName}, out of ${examComponent.weight}`}
+                                className="w-16 mx-auto text-center h-8"
+                                value={row?.components[examComponent.id] ?? ""}
+                                onChange={e => setComponent(s.id, examComponent.id, e.target.value)}
+                              />
+                            )}
+                          </td>
+                        )}
+                        <td className="px-2 py-2.5 text-center font-bold text-gray-900 bg-indigo-50/40">
+                          {absent ? "—" : marks !== null ? marks : "—"}
+                        </td>
+                      </>
+                    ) : (
+                      <td className="px-4 py-2.5 text-center">
+                        {absent ? (
+                          <span className="text-xs text-gray-400 italic">Absent</span>
+                        ) : (
+                          <Input
+                            type="number" min="0" max={schedule.fullMarks} step="0.5"
+                            className="w-20 mx-auto text-center h-8"
+                            value={row?.marksObtained ?? ""}
+                            onChange={e => setRow(s.id, "marksObtained", e.target.value)}
+                          />
+                        )}
+                      </td>
+                    )}
                     <td className="px-4 py-2.5 text-center font-bold text-indigo-700">
                       {absent ? "—" : (grade ?? (marks !== null ? "—" : ""))}
                     </td>
