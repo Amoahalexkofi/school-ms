@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { deleteStudentCascade } from "@/lib/services/students";
 
 const ALLOWED_FIELDS = [
   "firstName","middleName","lastName","admissionDate","dateOfBirth","gender",
@@ -57,7 +58,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (data.disabledAt)      data.disabledAt      = new Date(data.disabledAt);
     if (typeof data.rte !== "undefined") data.rte = data.rte === true || data.rte === "true";
 
-    const student = await ((await getDb()) as any).student.update({ where: { id }, data });
+    const db = await getDb();
+    const student = await (db as any).student.update({ where: { id }, data });
+
+    // Disabling/enabling a student must also gate their login account —
+    // Smart School blocks sign-in on students.is_active, we mirror via User.isActive.
+    if (typeof data.isActive === "boolean") {
+      await (db as any).user.update({
+        where: { id: student.userId },
+        data: { isActive: data.isActive },
+      }).catch(() => {});
+    }
+
     return NextResponse.json(student);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -70,6 +82,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const sessions = await (db as any).studentSession.count({ where: { studentId: id, isActive: true } });
   if (sessions > 0)
     return NextResponse.json({ error: "Cannot delete student with active enrollments" }, { status: 409 });
-  await (db as any).student.delete({ where: { id } });
+  await deleteStudentCascade(db, id);
   return NextResponse.json({ ok: true });
 }

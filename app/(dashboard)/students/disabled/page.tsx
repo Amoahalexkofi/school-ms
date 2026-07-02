@@ -5,7 +5,7 @@ import { requireStaffPage } from "@/lib/auth/guards";
 import { DisabledStudentsClient } from "./DisabledStudentsClient";
 
 export default async function DisabledStudentsPage() {
-  await requireStaffPage("/students");
+  const role = await requireStaffPage("/students");
   const db = await getDb();
   const branchId = await getActiveBranchId();
 
@@ -21,10 +21,16 @@ export default async function DisabledStudentsPage() {
     orderBy: { disabledAt: "desc" },
   });
 
+  const reasons = await (db as any).disableReason.findMany({ orderBy: { reason: "asc" } });
+
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Disabled Students" />
-      <DisabledStudentsClient students={students} />
+      <DisabledStudentsClient
+        students={students}
+        reasons={reasons}
+        canManageReasons={role === "SUPER_ADMIN" || role === "ADMIN"}
+      />
     </div>
   );
 }

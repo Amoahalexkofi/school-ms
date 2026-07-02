@@ -128,3 +128,33 @@ export async function createStudent(input: CreateStudentInput) {
     return student;
   });
 }
+
+// Mirrors Smart School's Student_model cascade: remove the student, their
+// login account, and any parent login left with no remaining children.
+export async function deleteStudentCascade(db: any, studentId: string) {
+  const student = await db.student.findUnique({
+    where: { id: studentId },
+    select: { userId: true },
+  });
+  if (!student) return;
+
+  await db.$transaction(async (tx: any) => {
+    await tx.student.delete({ where: { id: studentId } });
+    await tx.user.deleteMany({ where: { id: student.userId, role: "STUDENT" } });
+
+    const parents = await tx.user.findMany({
+      where: { role: "PARENT", childs: { contains: studentId } },
+      select: { id: true, childs: true },
+    });
+    for (const p of parents) {
+      const remaining = (p.childs ?? "")
+        .split(",").map((c: string) => c.trim())
+        .filter((c: string) => c && c !== studentId);
+      if (remaining.length === 0) {
+        await tx.user.delete({ where: { id: p.id } });
+      } else {
+        await tx.user.update({ where: { id: p.id }, data: { childs: remaining.join(",") } });
+      }
+    }
+  });
+}

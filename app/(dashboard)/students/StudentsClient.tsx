@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Users, Plus, Search, Eye, GraduationCap, CreditCard, Upload, UserX, Mail, Trash2 } from "lucide-react";
+import { Users, Plus, Search, Eye, GraduationCap, CreditCard, Upload, UserX, Mail, Trash2, Layers } from "lucide-react";
 import { usePermission } from "@/components/PermissionsProvider";
 import { Pagination } from "@/components/Pagination";
 
@@ -171,6 +171,13 @@ export function StudentsClient({ students, classSections, total, page, totalPage
               <GraduationCap className="h-4 w-4 mr-1" /> Promote
             </Button>
           </Link>
+          {perm.canEdit && (
+            <Link href="/students/multiclass">
+              <Button variant="outline" size="sm">
+                <Layers className="h-4 w-4 mr-1" /> Multi-Class
+              </Button>
+            </Link>
+          )}
           {perm.canAdd && (
             <Link href="/students/import">
               <Button variant="outline" size="sm">

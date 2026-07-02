@@ -27,6 +27,9 @@ export default async function StudentsPage({
         ],
       }
     : {};
+  // Smart School forces is_active='yes' on every list query; the
+  // /students/disabled page is the inverse view.
+  where.isActive = true;
   if (activeBranchId) where.branchId = activeBranchId;
   // Class / Section filter (mirrors Smart School class_search) — via the
   // student's current-session classSection.

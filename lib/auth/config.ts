@@ -77,7 +77,11 @@ export const authConfig: NextAuthConfig = {
           const sql = neon(process.env.DATABASE_URL!);
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const result = await (sql as any).query(
-            `SELECT id, email, password, role FROM "${schema}"."User" WHERE email = $1 LIMIT 1`,
+            `SELECT u.id, u.email, u.password, u.role, u."isActive" AS "userActive",
+                    s."isActive" AS "studentActive"
+             FROM "${schema}"."User" u
+             LEFT JOIN "${schema}"."Student" s ON s."userId" = u.id
+             WHERE u.email = $1 LIMIT 1`,
             [credentials.email as string]
           );
           const rows: Record<string, unknown>[] = result.rows ?? result;
@@ -90,6 +94,11 @@ export const authConfig: NextAuthConfig = {
             user.password as string
           );
           if (!valid) return null;
+
+          // Disabled accounts cannot sign in — mirrors Smart School, which
+          // gates login on both users.is_active and students.is_active.
+          if (user.userActive === false) return null;
+          if (user.role === "STUDENT" && user.studentActive === false) return null;
 
           return { id: user.id as string, email: user.email as string, role: user.role as string };
         } catch (e) {

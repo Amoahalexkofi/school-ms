@@ -23,7 +23,11 @@ export async function POST(req: NextRequest) {
     const year = new Date().getFullYear();
     let count = await (db as any).student.count();
 
-    const results: { row: number; ok: boolean; name?: string; admissionNo?: string; tempPassword?: string; error?: string }[] = [];
+    const results: {
+      row: number; ok: boolean; name?: string; admissionNo?: string; tempPassword?: string;
+      parent?: { email: string; tempPassword: string | null; existing: boolean; conflict?: boolean } | null;
+      error?: string;
+    }[] = [];
 
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i] ?? {};
@@ -46,8 +50,8 @@ export async function POST(req: NextRequest) {
         const tempPassword = generateTempPassword();
         const password = await bcrypt.hash(tempPassword, 12);
 
-        await (db as any).$transaction(async (tx: any) => {
-          const user = await tx.user.create({ data: { email, username, password, role: "STUDENT" } });
+        const parentInfo = await (db as any).$transaction(async (tx: any) => {
+          const user = await tx.user.create({ data: { email, username, password, role: "STUDENT", mustChangePassword: true } });
           const s = await tx.student.create({
             data: {
               userId: user.id,
@@ -59,6 +63,7 @@ export async function POST(req: NextRequest) {
               mobileNo:      (r.mobile ?? r.mobileNo ?? "").trim() || null,
               guardianName:  (r.guardian_name ?? "").trim() || null,
               guardianPhone: (r.guardian_phone ?? "").trim() || null,
+              guardianEmail: (r.guardian_email ?? "").trim() || null,
               fatherName:    (r.father_name ?? "").trim() || null,
               motherName:    (r.mother_name ?? "").trim() || null,
               branchId,
@@ -69,9 +74,38 @@ export async function POST(req: NextRequest) {
               data: { studentId: s.id, sessionId, classSectionId, rollNo: (r.roll_no ?? "").trim() || null, defaultLogin: true },
             });
           }
+
+          // Smart School's import also creates the parent login. Same rules as
+          // the single-create POST: existing parent → sibling link, existing
+          // non-parent email → conflict (skipped), else new PARENT account.
+          const parentEmail = (r.guardian_email ?? r.parent_email ?? "").trim().toLowerCase();
+          if (!parentEmail) return null;
+          const existingParent = await tx.user.findUnique({ where: { email: parentEmail } });
+          if (existingParent && existingParent.role !== "PARENT") {
+            return { email: parentEmail, tempPassword: null, existing: false, conflict: true };
+          }
+          if (existingParent) {
+            const childs = (existingParent.childs ?? "").split(",").map((x: string) => x.trim()).filter(Boolean);
+            if (!childs.includes(s.id)) childs.push(s.id);
+            await tx.user.update({
+              where: { id: existingParent.id },
+              data: { childs: childs.join(","), phone: existingParent.phone ?? ((r.guardian_phone ?? "").trim() || null) },
+            });
+            return { email: parentEmail, tempPassword: null, existing: true };
+          }
+          const pTemp = generateTempPassword();
+          const pHash = await bcrypt.hash(pTemp, 12);
+          const pUsername = `par_${parentEmail.split("@")[0]}_${Math.random().toString(36).slice(2, 6)}`;
+          await tx.user.create({
+            data: {
+              email: parentEmail, username: pUsername, password: pHash, role: "PARENT",
+              childs: s.id, phone: (r.guardian_phone ?? "").trim() || null, mustChangePassword: true,
+            },
+          });
+          return { email: parentEmail, tempPassword: pTemp, existing: false };
         });
 
-        results.push({ row: i + 1, ok: true, name: `${firstName} ${lastName}`, admissionNo, tempPassword });
+        results.push({ row: i + 1, ok: true, name: `${firstName} ${lastName}`, admissionNo, tempPassword, parent: parentInfo });
       } catch (err: any) {
         results.push({ row: i + 1, ok: false, error: err.message ?? "Failed" });
       }

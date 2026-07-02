@@ -10,7 +10,7 @@ const SEL = "w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm
 
 const COLUMNS = [
   "admission_no", "first_name", "middle_name", "last_name", "gender", "date_of_birth",
-  "roll_no", "mobile", "guardian_name", "guardian_phone", "father_name", "mother_name",
+  "roll_no", "mobile", "guardian_name", "guardian_phone", "guardian_email", "father_name", "mother_name",
 ];
 
 // Minimal CSV parse with basic quoted-field support.
@@ -54,7 +54,7 @@ export function ImportStudentsClient({ sessions, classSections }: { sessions: an
 
   function downloadSample() {
     const csv = COLUMNS.join(",") + "\n" +
-      "ADM/2026/001,Kofi,,Mensah,Male,2015-04-12,1,0244000000,Ama Mensah,0244000001,Yaw Mensah,Ama Mensah\n";
+      "ADM/2026/001,Kofi,,Mensah,Male,2015-04-12,1,0244000000,Ama Mensah,0244000001,ama.mensah@example.com,Yaw Mensah,Ama Mensah\n";
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -109,7 +109,8 @@ export function ImportStudentsClient({ sessions, classSections }: { sessions: an
           </div>
           <p className="text-xs text-gray-500">
             Columns: {COLUMNS.join(", ")}. <code>first_name</code>, <code>last_name</code> and <code>gender</code> are
-            required; admission numbers are auto-generated if blank.
+            required; admission numbers are auto-generated if blank. If <code>guardian_email</code> is present a
+            parent portal login is created (or the student is linked to the existing parent account).
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -165,7 +166,7 @@ export function ImportStudentsClient({ sessions, classSections }: { sessions: an
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead className="bg-gray-50 border-b">
-                  <tr>{["Row", "Name", "Adm No.", "Temp Password", "Status"].map((h) => (
+                  <tr>{["Row", "Name", "Adm No.", "Temp Password", "Parent Login", "Status"].map((h) => (
                     <th key={h} className="text-left px-3 py-2 font-medium text-gray-600">{h}</th>
                   ))}</tr>
                 </thead>
@@ -176,6 +177,12 @@ export function ImportStudentsClient({ sessions, classSections }: { sessions: an
                       <td className="px-3 py-1.5">{r.name ?? "—"}</td>
                       <td className="px-3 py-1.5 font-mono text-gray-500">{r.admissionNo ?? "—"}</td>
                       <td className="px-3 py-1.5 font-mono">{r.tempPassword ?? "—"}</td>
+                      <td className="px-3 py-1.5">
+                        {!r.parent ? "—"
+                          : r.parent.conflict ? <span className="text-amber-600" title="Email belongs to a non-parent account">email in use</span>
+                          : r.parent.existing ? <span className="text-gray-500">linked existing</span>
+                          : <span className="font-mono">{r.parent.tempPassword}</span>}
+                      </td>
                       <td className="px-3 py-1.5">
                         {r.ok ? <span className="text-green-600">OK</span> : <span className="text-red-600" title={r.error}>{r.error}</span>}
                       </td>

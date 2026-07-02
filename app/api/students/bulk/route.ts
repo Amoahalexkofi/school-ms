@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { sendEmail, bulkMessageEmail } from "@/lib/email";
+import { deleteStudentCascade } from "@/lib/services/students";
 
 // Bulk student actions (Smart School bulkdelete / sendbulkmail).
 //  action "delete": hard-delete each student that has NO active enrollment
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
       for (const id of ids) {
         const active = await (db as any).studentSession.count({ where: { studentId: id, isActive: true } });
         if (active > 0) { skipped.push(id); continue; }
-        await (db as any).student.delete({ where: { id } }).then(() => deleted++).catch(() => skipped.push(id));
+        await deleteStudentCascade(db, id).then(() => deleted++).catch(() => skipped.push(id));
       }
       return NextResponse.json({ deleted, skipped: skipped.length });
     }

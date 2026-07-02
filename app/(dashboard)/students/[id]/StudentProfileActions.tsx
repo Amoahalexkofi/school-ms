@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,7 +106,18 @@ export function StudentProfileActions({ student }: Props) {
   const [disableForm, setDisableForm] = useState({
     disableReason: student.disableReason ?? "",
     disableNote:   student.disableNote ?? "",
+    disableDate:   new Date().toISOString().slice(0, 10),
   });
+
+  // Smart School's disable modal selects from the disable_reason master.
+  const [reasons, setReasons] = useState<{ id: string; reason: string }[] | null>(null);
+  useEffect(() => {
+    if (!disableOpen || reasons !== null) return;
+    fetch("/api/disable-reasons")
+      .then(r => (r.ok ? r.json() : []))
+      .then(setReasons)
+      .catch(() => setReasons([]));
+  }, [disableOpen, reasons]);
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
@@ -141,7 +152,7 @@ export function StudentProfileActions({ student }: Props) {
           isActive:      false,
           disableReason: disableForm.disableReason,
           disableNote:   disableForm.disableNote,
-          disabledAt:    new Date().toISOString(),
+          disabledAt:    new Date(disableForm.disableDate + "T00:00:00").toISOString(),
         }),
       });
       const data = await res.json();
@@ -261,9 +272,25 @@ export function StudentProfileActions({ student }: Props) {
           <div className="space-y-3 mt-3">
             <div>
               <Label className="text-xs">Reason *</Label>
-              <Input className="mt-1" value={disableForm.disableReason}
-                onChange={e => setDisableForm(f => ({ ...f, disableReason: e.target.value }))}
-                placeholder="e.g. Transferred, Withdrawn…" />
+              {reasons && reasons.length > 0 ? (
+                <select
+                  className="mt-1 w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+                  value={disableForm.disableReason}
+                  onChange={e => setDisableForm(f => ({ ...f, disableReason: e.target.value }))}>
+                  <option value="">— Select reason —</option>
+                  {reasons.map(r => <option key={r.id} value={r.reason}>{r.reason}</option>)}
+                </select>
+              ) : (
+                <Input className="mt-1" value={disableForm.disableReason}
+                  onChange={e => setDisableForm(f => ({ ...f, disableReason: e.target.value }))}
+                  placeholder="e.g. Transferred, Withdrawn…" />
+              )}
+              <p className="text-[11px] text-gray-400 mt-1">Reasons are managed on the Disabled Students page.</p>
+            </div>
+            <div>
+              <Label className="text-xs">Disable Date *</Label>
+              <Input className="mt-1" type="date" value={disableForm.disableDate}
+                onChange={e => setDisableForm(f => ({ ...f, disableDate: e.target.value }))} />
             </div>
             <div>
               <Label className="text-xs">Note (optional)</Label>
@@ -275,7 +302,7 @@ export function StudentProfileActions({ student }: Props) {
           {error && <p className="text-sm text-red-600 mt-2 bg-red-50 px-3 py-2 rounded">{error}</p>}
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setDisableOpen(false)}>Cancel</Button>
-            <Button variant="destructive" disabled={loading || !disableForm.disableReason}
+            <Button variant="destructive" disabled={loading || !disableForm.disableReason || !disableForm.disableDate}
               onClick={handleDisable}>{loading ? "Saving…" : "Disable Student"}</Button>
           </div>
         </DialogContent>
