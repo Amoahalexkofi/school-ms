@@ -90,6 +90,9 @@ export async function provisionSchool(input: {
   adminEmail: string;
   adminPassword: string;
   adminName: string;
+  phone?: string | null;
+  address?: string | null;
+  country?: string | null;
 }) {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
   const client = await pool.connect();
@@ -148,12 +151,30 @@ export async function provisionSchool(input: {
       VALUES ($1, $2, $3, $4, 'EMP0001', true, NOW(), NOW())
     `, [staffId, userId, input.adminName.split(" ")[0] ?? "Admin", input.adminName.split(" ").slice(1).join(" ") || "User"]);
 
-    // 4. Create school profile
+    // 4. Create school profile. Provisioning IS the setup — the school must
+    // land straight on the dashboard, so onboarding is marked complete here.
     await client.query(`
       INSERT INTO "${input.schemaName}"."SchoolProfile"
-        (id, name, currency, "dateFormat", "admAutoInsert", "admStartFrom", "admNoDigit", "staffidStartFrom", "staffidNoDigit")
-      VALUES ($1, $2, 'GHS', 'DD/MM/YYYY', true, 1, 4, 1, 4)
-    `, [generateId(), input.schoolName]);
+        (id, name, phone, address, country, currency, "dateFormat", "onboardingCompleted",
+         "admAutoInsert", "admStartFrom", "admNoDigit", "staffidStartFrom", "staffidNoDigit")
+      VALUES ($1, $2, $3, $4, $5, 'GHS', 'DD/MM/YYYY', true, true, 1, 4, 1, 4)
+    `, [generateId(), input.schoolName, input.phone ?? null, input.address ?? null, input.country ?? null]);
+
+    // 4b. Seed the first academic session (active) — without one, most pages
+    // have nothing to hang data on and the app used to trap the new school in
+    // the onboarding wizard. Sep–Jul matches the Ghanaian school year.
+    const now = new Date();
+    const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1; // Aug+ → current year
+    await client.query(`
+      INSERT INTO "${input.schemaName}"."AcademicSession"
+        (id, session, "startDate", "endDate", "isActive", "createdAt")
+      VALUES ($1, $2, $3, $4, true, NOW())
+    `, [
+      generateId(),
+      `${startYear}/${startYear + 1}`,
+      new Date(Date.UTC(startYear, 8, 1)),      // 1 Sep
+      new Date(Date.UTC(startYear + 1, 6, 31)), // 31 Jul
+    ]);
 
     // 5. Seed attendance types
     const attendanceTypes = [

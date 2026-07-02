@@ -20,23 +20,19 @@ export async function upsertSchoolProfile(input: Record<string, unknown>) {
   }
 
   if (!name?.trim()) throw Object.assign(new Error("School name is required"), { code: "VALIDATION" });
-  const data: any = {
-    name:       (name as string).trim(),
-    code:       code       || null,
-    address:    address    || null,
-    phone:      phone      || null,
-    email:      email      || null,
-    website:    website    || null,
-    motto:      motto      || null,
-    logo:       logo       || null,
-    currency:   currency   || null,
-    dateFormat: dateFormat || null,
-    country:    country    || null,
-    state:      state      || null,
-    city:       city       || null,
-    feeDueDays: feeDueDays ? parseInt(feeDueDays) : null,
-    ...(onboardingCompleted !== undefined && { onboardingCompleted: Boolean(onboardingCompleted) }),
-  };
+  // Partial-update semantics: only touch fields the caller actually sent.
+  // Writing `field || null` for absent keys silently wiped values saved
+  // elsewhere — and nulling the NOT NULL currency/dateFormat columns made the
+  // whole save 500 (which stalled the onboarding wizard with no error).
+  const data: any = { name: (name as string).trim() };
+  const optional: Record<string, unknown> = { code, address, phone, email, website, motto, logo, country, state, city };
+  for (const [key, value] of Object.entries(optional)) {
+    if (value !== undefined) data[key] = value || null;
+  }
+  if (currency   !== undefined && currency)   data.currency   = currency;   // NOT NULL — never null out
+  if (dateFormat !== undefined && dateFormat) data.dateFormat = dateFormat; // NOT NULL — never null out
+  if (feeDueDays !== undefined) data.feeDueDays = feeDueDays ? parseInt(feeDueDays) : null;
+  if (onboardingCompleted !== undefined) data.onboardingCompleted = Boolean(onboardingCompleted);
   if (existing) {
     return (prisma as any).schoolProfile.update({ where: { id: existing.id }, data });
   }

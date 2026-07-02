@@ -86,6 +86,14 @@ export function OnboardingClient({ profile }: Props) {
 
   // ── save handlers ──────────────────────────────────────────────────────────
 
+  // Reads the API's error body so a failed save NEVER silently stalls the
+  // wizard (it used to leave the user clicking Next with no feedback).
+  async function failWith(res: Response, fallback: string) {
+    const data = await res.json().catch(() => ({}));
+    setError(data.error || `${fallback} (HTTP ${res.status})`);
+    return false;
+  }
+
   async function saveProfile() {
     if (!profileForm.name.trim()) { setError("School name is required"); return false; }
     setError("");
@@ -94,7 +102,7 @@ export function OnboardingClient({ profile }: Props) {
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify(profileForm),
     });
-    return res.ok;
+    return res.ok || failWith(res, "Could not save the school profile");
   }
 
   async function saveSession() {
@@ -110,11 +118,15 @@ export function OnboardingClient({ profile }: Props) {
         setActive: true,
       }),
     });
-    return res.ok;
+    // An already-existing session (e.g. seeded at provisioning) is fine — the
+    // goal of this step is "a session exists", not "this exact one was created".
+    if (res.status === 409) return true;
+    return res.ok || failWith(res, "Could not create the academic session");
   }
 
   async function saveClassesAndSections() {
     if (classes.length === 0) { setError("Add at least one class"); return false; }
+    if (sections.length === 0) { setError("Add at least one section"); return false; }
     setError("");
     // Create sections first
     const sectionIds: Record<string, string> = {};
@@ -124,6 +136,10 @@ export function OnboardingClient({ profile }: Props) {
         body: JSON.stringify({ name: sec }),
       });
       if (r.ok) { const d = await r.json(); sectionIds[sec] = d.id; }
+    }
+    if (Object.keys(sectionIds).length === 0) {
+      setError("Could not create any sections — they may already exist. Check Settings → Sections.");
+      return false;
     }
     // Create classes + link sections
     for (const cls of classes) {
@@ -163,7 +179,7 @@ export function OnboardingClient({ profile }: Props) {
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify({ onboardingCompleted: true }),
     });
-    return res.ok;
+    return res.ok || failWith(res, "Could not finish setup");
   }
 
   async function handleNext() {

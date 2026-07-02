@@ -62,6 +62,9 @@ export async function POST(req: NextRequest) {
       adminEmail,
       adminPassword,
       adminName: adminName ?? adminEmail.split("@")[0],
+      phone: phone ?? null,
+      address: address ?? null,
+      country: country ?? "Ghana",
     });
 
     return NextResponse.json(school, { status: 201 });
