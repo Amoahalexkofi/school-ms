@@ -13,17 +13,21 @@ Legend: ✅ match · 🟡 partial · ❌ missing
 
 | Screen | Smart School has | Ours | Verdict |
 |---|---|---|---|
-| Student list / search | **Class + Section dropdowns** AND keyword; category & gender criteria | keyword search **only** | 🟡 **no class/section filter** |
+_Updated 2026-07-02 (commit 03f8e8a): fresh two-sided audit + gap closure._
+
+| Screen | Smart School has | Ours | Verdict |
+|---|---|---|---|
+| Student list / search | **Class + Section dropdowns** AND keyword; category & gender criteria | class + section + keyword; excludes disabled (like SS) | ✅ |
 | List columns | adm no, name, class/section, roll, mobile, gender, DOB | adm no, name, class/section, roll, mobile, gender, status | ✅ |
-| Row actions | view, edit, **collect fees**, phone, login detail, disable | view (edit/delete on profile) | 🟡 no inline "collect fees"/disable |
+| Row actions | view, edit, **collect fees**, phone, login detail, disable | view (edit/delete/disable on profile) | 🟡 no inline "collect fees" |
 | Add / Edit student | full multi-section form | present (`/students/new`, `[id]`) | ✅ |
 | Profile (studentShow) | tabbed profile | present (`/students/[id]`) | ✅ |
 | Promote | pass/fail + continue/leave + → alumni | plain class move | 🟡 (known) |
-| **CSV Import** | `import` screen + sample | — | ❌ missing |
-| **Disabled students** | list + disable-with-reason + enable | — | ❌ missing |
-| **Bulk delete / Bulk email** | both | — | ❌ missing |
-| **Multi-class assign** | `multiclass` | — | ❌ missing |
-| Profile field settings | `profilesetting` | — | ❌ missing |
+| **CSV Import** | `import` screen + sample; creates student + parent logins | screen + sample; creates student + parent logins, temp passwords shown once | ✅ |
+| **Disabled students** | list + disable-with-reason (master) + enable; **login blocked** | list + reason-master dropdown + date + note; manage-reasons UI; login blocked (User.isActive + Student.isActive in authorize) | ✅ |
+| **Bulk delete / Bulk email** | both; delete cascades to users + orphan parents | both; same cascade; enrolled students skipped | ✅ |
+| **Multi-class assign** | `multiclass` — multiple student_session rows per session | `/students/multiclass` + sync API; primary = defaultLogin; removal blocked if membership has attendance/fee records | ✅ |
+| Profile field settings | `profilesetting` — which fields student/parent may self-edit in their portal | — | ❌ deferred: we have no portal self-edit feature for it to gate |
 
 ## ATTENDANCE
 
