@@ -6,51 +6,30 @@ import { Button } from "@/components/ui/button";
 
 type Props = { student: any; school: any; template: any };
 
-const FIELD_LABELS: Record<string, string> = {
-  admissionNo: "Adm No.",
-  rollNo:      "Roll No.",
-  class:       "Class",
-  dob:         "D.O.B",
-  gender:      "Gender",
-  bloodGroup:  "Blood Grp",
-  fatherName:  "Father",
-  phone:       "Phone",
-  address:     "Address",
-  houseNo:     "House",
-  session:     "Session",
-};
-
 export function IdCardClient({ student, school, template }: Props) {
   const enroll  = student.sessions?.[0];
   const cls     = enroll?.classSection;
   const dob     = student.dateOfBirth ? new Date(student.dateOfBirth).toLocaleDateString("en-GB") : "—";
 
-  // Use template colors if a template is set, fall back to defaults
-  const bgColor   = template?.bgColor   ?? "#1a56db";
-  const fontColor = template?.fontColor ?? "#ffffff";
-  const bodyColor = template?.bodyColor ?? "#f9fafb";
-  const heading   = template?.heading   ?? school?.name ?? "School Name";
-  const title     = template?.title     ?? "Student Identity Card";
+  const headerColor = template?.headerColor || "#1a56db";
+  const heading     = template?.schoolName || school?.name || "School Name";
+  const address     = template?.schoolAddress || school?.address || "";
+  const title       = template?.title || "Student Identity Card";
 
-  // Fields to display (Smart School: configured per template)
-  const fieldList: string[] = template?.fieldList ?? ["admissionNo", "class", "rollNo", "dob", "gender", "bloodGroup"];
-
-  function fieldValue(key: string): string {
-    switch (key) {
-      case "admissionNo": return student.admissionNo ?? "—";
-      case "rollNo":      return enroll?.rollNo ?? "—";
-      case "class":       return cls ? `${cls.class.name} – ${cls.section.name}` : "—";
-      case "dob":         return dob;
-      case "gender":      return student.gender ?? "—";
-      case "bloodGroup":  return student.bloodGroup ?? "—";
-      case "fatherName":  return student.fatherName ?? "—";
-      case "phone":       return student.mobileNo ?? "—";
-      case "address":     return student.currentAddress ?? "—";
-      case "houseNo":     return student.schoolHouse?.name ?? "—";
-      case "session":     return enroll?.session?.session ?? "—";
-      default:            return "—";
-    }
-  }
+  // Rows follow the template's Smart School enable_* flags; sensible defaults
+  // when no template is configured yet.
+  const rows: { on: boolean; label: string; value: string }[] = [
+    { on: template ? !!template.enableAdmissionNo      : true,  label: "Adm No.",   value: student.admissionNo ?? "—" },
+    { on: template ? !!template.enableStudentRollno    : false, label: "Roll No.",  value: enroll?.rollNo ?? "—" },
+    { on: template ? !!template.enableClass            : true,  label: "Class",     value: cls ? `${cls.class.name} – ${cls.section.name}` : "—" },
+    { on: template ? !!template.enableDob              : true,  label: "D.O.B",     value: dob },
+    { on: template ? !!template.enableBloodGroup       : true,  label: "Blood Grp", value: student.bloodGroup ?? "—" },
+    { on: template ? !!template.enableFathersName      : false, label: "Father",    value: student.fatherName ?? "—" },
+    { on: template ? !!template.enableMothersName      : false, label: "Mother",    value: student.motherName ?? "—" },
+    { on: template ? !!template.enablePhone            : false, label: "Phone",     value: student.mobileNo ?? "—" },
+    { on: template ? !!template.enableAddress          : false, label: "Address",   value: student.currentAddress ?? "—" },
+    { on: template ? !!template.enableStudentHouseName : false, label: "House",     value: student.schoolHouse?.name ?? "—" },
+  ].filter(r => r.on);
 
   return (
     <main className="min-h-screen bg-gray-100 p-6">
@@ -83,15 +62,15 @@ export function IdCardClient({ student, school, template }: Props) {
         className="mx-auto bg-white rounded-2xl shadow-lg overflow-hidden print:shadow-none print:rounded-none"
         style={{ width: 340, minHeight: 200 }}
       >
-        {/* Header — uses template bgColor */}
-        <div className="px-5 py-4 text-center" style={{ backgroundColor: bgColor, color: fontColor }}>
+        {/* Header — template headerColor, white text */}
+        <div className="px-5 py-4 text-center text-white" style={{ backgroundColor: headerColor }}>
           <p className="font-bold text-base leading-tight">{heading}</p>
-          {school?.address && <p className="text-xs mt-0.5 opacity-80">{school.address}</p>}
+          {address && <p className="text-xs mt-0.5 opacity-80">{address}</p>}
           <p className="text-xs mt-1 font-semibold tracking-widest opacity-90 uppercase">{title}</p>
         </div>
 
         {/* Body */}
-        <div className="flex gap-4 px-5 py-4" style={{ backgroundColor: bodyColor }}>
+        <div className="flex gap-4 px-5 py-4 bg-slate-50">
           {/* Photo placeholder */}
           <div className="flex-shrink-0 w-20 h-24 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-300">
             {student.image
@@ -104,19 +83,28 @@ export function IdCardClient({ student, school, template }: Props) {
             }
           </div>
 
-          {/* Details — only the fields configured in the template */}
+          {/* Details — only the fields enabled in the template */}
           <div className="flex-1 space-y-1.5 text-sm">
             <p className="font-bold text-gray-900 text-base leading-tight">
               {student.firstName} {student.middleName ? student.middleName + " " : ""}{student.lastName}
             </p>
-            {fieldList.map(f => (
-              <Row key={f} label={FIELD_LABELS[f] ?? f} value={fieldValue(f)} />
+            {rows.map(r => (
+              <Row key={r.label} label={r.label} value={r.value} />
             ))}
           </div>
         </div>
 
+        {/* Barcode (Smart School enable_student_barcode: admission no as code) */}
+        {template?.enableStudentBarcode && (
+          <div className="px-5 pb-2 text-center bg-slate-50">
+            <p className="font-mono text-[10px] tracking-[0.35em] text-gray-700 border border-gray-300 rounded inline-block px-3 py-1">
+              *{student.admissionNo}*
+            </p>
+          </div>
+        )}
+
         {/* Footer */}
-        <div className="border-t px-5 py-2 flex items-center justify-between" style={{ backgroundColor: bodyColor }}>
+        <div className="border-t px-5 py-2 flex items-center justify-between bg-slate-50">
           <p className="text-xs text-gray-400">Session: {enroll?.session?.session ?? "—"}</p>
           {student.schoolHouse && <p className="text-xs text-gray-400">House: {student.schoolHouse.name}</p>}
         </div>

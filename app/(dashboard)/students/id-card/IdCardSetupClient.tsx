@@ -9,30 +9,50 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, Plus, Pencil, Trash2, Star } from "lucide-react";
 
+// Field toggles mirror Smart School's student_id_card enable_* columns.
 const FIELDS = [
-  { key: "admissionNo",  label: "Admission No." },
-  { key: "rollNo",       label: "Roll No." },
-  { key: "class",        label: "Class / Section" },
-  { key: "dob",          label: "Date of Birth" },
-  { key: "gender",       label: "Gender" },
-  { key: "bloodGroup",   label: "Blood Group" },
-  { key: "fatherName",   label: "Father Name" },
-  { key: "phone",        label: "Phone" },
-  { key: "address",      label: "Address" },
-  { key: "houseNo",      label: "House" },
-  { key: "session",      label: "Session" },
-];
+  { key: "enableAdmissionNo",      label: "Admission No." },
+  { key: "enableStudentRollno",    label: "Roll No." },
+  { key: "enableClass",            label: "Class / Section" },
+  { key: "enableDob",              label: "Date of Birth" },
+  { key: "enableBloodGroup",       label: "Blood Group" },
+  { key: "enableFathersName",      label: "Father's Name" },
+  { key: "enableMothersName",      label: "Mother's Name" },
+  { key: "enablePhone",            label: "Phone" },
+  { key: "enableAddress",          label: "Address" },
+  { key: "enableStudentHouseName", label: "House" },
+  { key: "enableStudentBarcode",   label: "Barcode" },
+] as const;
 
 type Template = {
-  id: string; heading: string; title?: string;
-  bgColor: string; fontColor: string; bodyColor: string;
-  schoolName?: string; fieldList?: string[]; status: number;
-};
+  id: string;
+  title: string;
+  schoolName: string;
+  schoolAddress?: string | null;
+  headerColor?: string | null;
+  status: number;
+} & Record<string, any>;
 
 type Props = { templates: Template[] };
 
-function blank(): Omit<Template, "id" | "status"> {
-  return { heading: "", title: "", bgColor: "#1a56db", fontColor: "#ffffff", bodyColor: "#f9fafb", schoolName: "", fieldList: [] };
+function blank() {
+  return {
+    schoolName: "",
+    title: "Student Identity Card",
+    schoolAddress: "",
+    headerColor: "#1a56db",
+    enableAdmissionNo: true,
+    enableStudentRollno: false,
+    enableClass: true,
+    enableDob: true,
+    enableBloodGroup: true,
+    enableFathersName: true,
+    enableMothersName: false,
+    enablePhone: true,
+    enableAddress: true,
+    enableStudentHouseName: false,
+    enableStudentBarcode: false,
+  };
 }
 
 export function IdCardSetupClient({ templates: init }: Props) {
@@ -40,37 +60,27 @@ export function IdCardSetupClient({ templates: init }: Props) {
   const [templates, setTemplates] = useState<Template[]>(init);
   const [open,   setOpen]   = useState(false);
   const [edit,   setEdit]   = useState<Template | null>(null);
-  const [form,   setForm]   = useState(blank());
+  const [form,   setForm]   = useState<Record<string, any>>(blank());
   const [loading, setLoading] = useState(false);
   const [err,    setErr]    = useState("");
 
-  function set(k: keyof typeof form, v: any) { setForm(f => ({ ...f, [k]: v })); }
-
-  function toggleField(key: string) {
-    const list = form.fieldList ?? [];
-    set("fieldList", list.includes(key) ? list.filter(k => k !== key) : [...list, key]);
-  }
+  function set(k: string, v: any) { setForm(f => ({ ...f, [k]: v })); }
 
   async function save() {
-    if (!form.heading.trim()) { setErr("Heading is required"); return; }
+    if (!form.schoolName.trim()) { setErr("School name is required"); return; }
+    if (!form.title.trim()) { setErr("Card title is required"); return; }
     setLoading(true); setErr("");
     try {
-      if (edit) {
-        const res = await fetch(`/api/id-card/${edit.id}`, {
-          method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        setTemplates(t => t.map(x => x.id === edit.id ? data : x));
-      } else {
-        const res = await fetch("/api/id-card", {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        setTemplates(t => [...t, data]);
-      }
+      const res = await fetch(edit ? `/api/id-card/${edit.id}` : "/api/id-card", {
+        method: edit ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setTemplates(t => edit ? t.map(x => x.id === edit.id ? data : x) : [...t, data]);
       setOpen(false);
+      router.refresh();
     } catch (e: any) { setErr(e.message); }
     finally { setLoading(false); }
   }
@@ -79,6 +89,7 @@ export function IdCardSetupClient({ templates: init }: Props) {
     if (!confirm("Delete this template?")) return;
     await fetch(`/api/id-card/${id}`, { method: "DELETE" });
     setTemplates(t => t.filter(x => x.id !== id));
+    router.refresh();
   }
 
   async function setActive(id: string) {
@@ -86,14 +97,23 @@ export function IdCardSetupClient({ templates: init }: Props) {
     await fetch(`/api/id-card/${id}`, {
       method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: 1 }),
     });
-    // Set all others to status 0
     for (const t of templates.filter(x => x.id !== id && x.status === 1)) {
       await fetch(`/api/id-card/${t.id}`, {
         method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: 0 }),
       });
     }
+    setTemplates(ts => ts.map(t => ({ ...t, status: t.id === id ? 1 : 0 })));
     router.refresh();
   }
+
+  function openEdit(t: Template) {
+    const f: Record<string, any> = blank();
+    for (const k of Object.keys(f)) if (k in t && t[k] !== null) f[k] = t[k];
+    setForm(f); setEdit(t); setErr(""); setOpen(true);
+  }
+
+  const enabledLabels = (t: Template) =>
+    FIELDS.filter(f => t[f.key]).map(f => f.label);
 
   return (
     <main className="flex-1 p-4 md:p-6 space-y-5 max-w-4xl mx-auto">
@@ -120,11 +140,13 @@ export function IdCardSetupClient({ templates: init }: Props) {
           <Card key={t.id} className={t.status === 1 ? "ring-2 ring-blue-500" : ""}>
             <CardContent className="pt-4 space-y-3">
               {/* Mini preview */}
-              <div className="rounded-lg overflow-hidden text-xs" style={{ backgroundColor: t.bgColor, color: t.fontColor }}>
-                <div className="px-3 py-2 font-bold text-center">{t.heading || "School Name"}</div>
-                <div style={{ backgroundColor: t.bodyColor, color: "#111" }} className="px-3 py-2">
-                  <p className="font-semibold">{t.title || "Student ID Card"}</p>
-                  <p className="text-gray-400 mt-0.5">{(t.fieldList ?? []).slice(0, 3).join(" · ")||"(no fields)"}</p>
+              <div className="rounded-lg overflow-hidden text-xs border border-slate-200">
+                <div className="px-3 py-2 font-bold text-center text-white" style={{ backgroundColor: t.headerColor || "#1a56db" }}>
+                  {t.schoolName || "School Name"}
+                </div>
+                <div className="px-3 py-2 bg-slate-50">
+                  <p className="font-semibold text-gray-800">{t.title || "Student ID Card"}</p>
+                  <p className="text-gray-500 mt-0.5">{enabledLabels(t).slice(0, 4).join(" · ") || "(no fields)"}</p>
                 </div>
               </div>
               <div className="flex items-center justify-between">
@@ -133,7 +155,7 @@ export function IdCardSetupClient({ templates: init }: Props) {
                   : <button onClick={() => setActive(t.id)} className="text-xs text-gray-400 hover:text-blue-600">Set as default</button>
                 }
                 <div className="flex gap-1">
-                  <Button size="sm" variant="outline" onClick={() => { setForm({ heading: t.heading, title: t.title??"", bgColor: t.bgColor, fontColor: t.fontColor, bodyColor: t.bodyColor, schoolName: t.schoolName??"", fieldList: t.fieldList??[] }); setEdit(t); setErr(""); setOpen(true); }}>
+                  <Button size="sm" variant="outline" onClick={() => openEdit(t)}>
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
                   <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => remove(t.id)}>
@@ -152,33 +174,27 @@ export function IdCardSetupClient({ templates: init }: Props) {
           <DialogHeader><DialogTitle>{edit ? "Edit Template" : "New ID Card Template"}</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Heading (school name line) *</label>
-              <Input value={form.heading} onChange={e => set("heading", e.target.value)} placeholder="e.g. St. Mary's Academy" />
+              <label className="block text-sm font-medium text-gray-700 mb-1">School name (header line) *</label>
+              <Input value={form.schoolName} onChange={e => set("schoolName", e.target.value)} placeholder="e.g. St. Mary's Academy" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Sub-title</label>
-              <Input value={form.title??""} onChange={e => set("title", e.target.value)} placeholder="e.g. Student Identity Card" />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Card title *</label>
+              <Input value={form.title} onChange={e => set("title", e.target.value)} placeholder="e.g. Student Identity Card" />
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">Header BG</label>
-                <input type="color" value={form.bgColor} onChange={e => set("bgColor", e.target.value)} className="w-full h-8 rounded cursor-pointer" />
-              </div>
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">Header Text</label>
-                <input type="color" value={form.fontColor} onChange={e => set("fontColor", e.target.value)} className="w-full h-8 rounded cursor-pointer" />
-              </div>
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">Body BG</label>
-                <input type="color" value={form.bodyColor} onChange={e => set("bodyColor", e.target.value)} className="w-full h-8 rounded cursor-pointer" />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">School address</label>
+              <Input value={form.schoolAddress ?? ""} onChange={e => set("schoolAddress", e.target.value)} placeholder="optional — shown under the school name" />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Header color</label>
+              <input type="color" value={form.headerColor ?? "#1a56db"} onChange={e => set("headerColor", e.target.value)} className="w-full h-8 rounded cursor-pointer" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Fields to display</label>
               <div className="grid grid-cols-2 gap-1">
                 {FIELDS.map(f => (
                   <label key={f.key} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                    <input type="checkbox" checked={(form.fieldList??[]).includes(f.key)} onChange={() => toggleField(f.key)} className="rounded" />
+                    <input type="checkbox" checked={!!form[f.key]} onChange={() => set(f.key, !form[f.key])} className="rounded" />
                     {f.label}
                   </label>
                 ))}
