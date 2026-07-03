@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { announceExamResults } from "@/lib/services/exams";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,7 +22,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   return NextResponse.json(group);
 }
 
-const EG_ALLOWED = ["name","examType","sessionId","dateFrom","dateTo","description","isPublished","passingPercentage"];
+// Only real ExamGroup columns (sessionId/dateFrom/dateTo were dead keys that
+// would throw at the Prisma layer if ever sent).
+const EG_ALLOWED = ["name","examType","description","isPublished","passingPercentage"];
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -29,12 +32,22 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const data: any = {};
   for (const key of EG_ALLOWED) {
     if (key in body) {
-      if (["dateFrom","dateTo"].includes(key) && body[key]) data[key] = new Date(body[key]);
-      else if (key === "passingPercentage" && body[key] !== undefined) data[key] = body[key] ? parseFloat(body[key]) : null;
+      if (key === "passingPercentage" && body[key] !== undefined) data[key] = body[key] ? parseFloat(body[key]) : null;
       else data[key] = body[key] ?? null;
     }
   }
-  const group = await ((await getDb()) as any).examGroup.update({ where: { id }, data });
+  const db = await getDb();
+  const before = await (db as any).examGroup.findUnique({ where: { id }, select: { isPublished: true } });
+  if (!before) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const group = await (db as any).examGroup.update({ where: { id }, data });
+
+  // Smart School announces results (mail/SMS) when an exam is saved with the
+  // publish flag on. Fire-and-forget on the false→true transition.
+  if (data.isPublished === true && !before.isPublished) {
+    announceExamResults(db, id).catch(() => null);
+  }
+
   return NextResponse.json(group);
 }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { filterToExamRoster } from "@/lib/services/exams";
 
 // GET — students enrolled in this exam's classSection + existing marks
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -35,6 +36,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       .catch(() => []),
   ]);
 
+  const rosterEnrollments = await filterToExamRoster(
+    (await getDb()) as any, schedule.examGroupId, schedule.classSectionId, enrollments
+  );
+
   const marksMap: Record<string, any> = {};
   for (const m of existingMarks) marksMap[m.studentId] = m;
 
@@ -46,7 +51,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   return NextResponse.json({
-    schedule, enrollments, marksMap, gradingScale: gradingScales,
+    schedule, enrollments: rosterEnrollments, marksMap, gradingScale: gradingScales,
     components, componentMarksMap,
   });
 }

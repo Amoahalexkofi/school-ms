@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Plus, Pencil, Trash2, ClipboardEdit, Globe, Lock } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, ClipboardEdit, Globe, Lock, UserCheck } from "lucide-react";
 
 type Props = { group: any; sessions: any[]; classSections: any[]; subjects: any[] };
 
@@ -116,7 +116,15 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
           return (
             <Card key={csId}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold text-gray-800">{csLabel}</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-semibold text-gray-800">{csLabel}</CardTitle>
+                  {csId !== "unassigned" && (
+                    <Link href={`/exams/${group.id}/students?classSectionId=${csId}`}
+                      className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800">
+                      <UserCheck className="h-3.5 w-3.5" /> Assign Students
+                    </Link>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="p-0">
                 <table className="w-full text-sm tabular-nums">

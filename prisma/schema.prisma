@@ -1034,6 +1034,21 @@ model StudentExamRank {
   @@index([examGroupId, classSectionId])
 }
 
+// Exam roster (Smart School exam_group_class_batch_exam_students): the subset
+// of a class actually sitting an exam group. No rows for a (group, class-
+// section) → every active student of the class is included (default).
+// Relation-less like StudentExamRank for tenant-DDL simplicity.
+model ExamGroupStudent {
+  id             String   @id @default(cuid())
+  examGroupId    String
+  classSectionId String
+  studentId      String
+  createdAt      DateTime @default(now())
+
+  @@unique([examGroupId, studentId])
+  @@index([examGroupId, classSectionId])
+}
+
 // ─── Payroll ──────────────────────────────────────────────────────────────────
 
 enum PayslipStatus {

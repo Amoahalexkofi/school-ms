@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { filterToExamRoster } from "@/lib/services/exams";
 
 // GES terminal-report wrapper fields (attendance, conduct, remarks, promotion).
 // One row per student per exam group (term).
@@ -22,7 +23,7 @@ export async function GET(req: NextRequest) {
   });
   if (!schedule) return NextResponse.json({ error: "No schedules for this exam group / class" }, { status: 404 });
 
-  const [enrollments, saved] = await Promise.all([
+  const [allEnrollments, saved] = await Promise.all([
     db.studentSession.findMany({
       where: { classSectionId, sessionId: schedule.sessionId, isActive: true },
       include: {
@@ -32,6 +33,7 @@ export async function GET(req: NextRequest) {
     }),
     db.termReport.findMany({ where: { examGroupId } }),
   ]);
+  const enrollments = await filterToExamRoster(db, examGroupId, classSectionId, allEnrollments);
 
   // Auto attendance counts for the session (teacher can override before saving).
   // Present = P (Present), L (Late), F (Half Day); H (Holiday) is excluded from

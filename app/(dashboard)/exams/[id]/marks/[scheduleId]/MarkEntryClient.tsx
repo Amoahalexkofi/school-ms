@@ -1,11 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Save, CheckCheck, AlertCircle } from "lucide-react";
+import { ArrowLeft, Save, CheckCheck, AlertCircle, Download, Upload } from "lucide-react";
+
+// Minimal CSV parse with basic quoted-field support (same as students import).
+function parseCSV(text: string): string[][] {
+  const lines = text.replace(/\r/g, "").split("\n").filter(l => l.trim().length);
+  const split = (line: string) => {
+    const out: string[] = [];
+    let cur = "", inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { if (inQ && line[i + 1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+      else if (c === "," && !inQ) { out.push(cur); cur = ""; }
+      else cur += c;
+    }
+    out.push(cur);
+    return out.map(s => s.trim());
+  };
+  return lines.map(split);
+}
 
 type Row = {
   studentId: string;
@@ -66,6 +84,85 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
   const [saving,   setSaving]   = useState(false);
   const [saved,    setSaved]    = useState(false);
   const [error,    setError]    = useState("");
+  const [importMsg, setImportMsg] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  // CSV import (Smart School marks_import): the file only FILLS the grid,
+  // matched by admission number — nothing is saved until "Save Marks".
+  // Columns: adm_no, status (1 present / 0 absent), then marks (single-mark
+  // mode) or one column per component (SBA mode), then optional note.
+  const csvColumns = ["adm_no", "status",
+    ...(sbaMode ? components.map(c => c.name.toLowerCase().replace(/\s+/g, "_")) : ["marks"]),
+    "note"];
+
+  function downloadSample() {
+    const example = sbaMode
+      ? ["1001", "1", ...components.map(c => String(Math.round(c.weight * 0.75))), "Good"]
+      : ["1001", "1", "75", "Good"];
+    const absent = ["1002", "0", ...(sbaMode ? components.map(() => "0") : ["0"]), "Absent"];
+    const csv = csvColumns.join(",") + "\n" + example.join(",") + "\n" + absent.join(",") + "\n";
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "marks-import-sample.csv"; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function onImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = parseCSV(String(reader.result));
+        if (parsed.length < 2) { setImportMsg("No data rows found in the file."); return; }
+        const dataRows = parsed.slice(1); // skip header (positional mapping, like Smart School)
+
+        const byAdm = new Map<string, string>();
+        for (const enr of enrollments) byAdm.set(String(enr.student.admissionNo).trim(), enr.student.id);
+
+        let applied = 0;
+        const unmatched: string[] = [];
+        setRows(prev => {
+          const next = { ...prev };
+          for (const cols of dataRows) {
+            const adm = (cols[0] ?? "").trim();
+            if (!adm) continue;
+            const studentId = byAdm.get(adm);
+            if (!studentId) { unmatched.push(adm); continue; }
+            const present = (cols[1] ?? "1").trim() !== "0";
+            const noteIdx = 2 + (sbaMode ? components.length : 1);
+            const note = (cols[noteIdx] ?? "").trim();
+            const row: Row = { ...next[studentId], attendance: present ? "P" : "A", note: note || next[studentId].note };
+            if (!present) {
+              row.marksObtained = "";
+              row.components = sbaMode ? Object.fromEntries(components.map(c => [c.id, ""])) : row.components;
+            } else if (sbaMode) {
+              const comps = { ...row.components };
+              components.forEach((c, i) => {
+                const v = (cols[2 + i] ?? "").trim();
+                if (v !== "" && !isNaN(parseFloat(v))) comps[c.id] = String(Math.min(parseFloat(v), c.weight));
+              });
+              row.components = comps;
+            } else {
+              const v = (cols[2] ?? "").trim();
+              if (v !== "" && !isNaN(parseFloat(v))) row.marksObtained = v;
+            }
+            next[studentId] = row;
+            applied++;
+          }
+          return next;
+        });
+        setImportMsg(
+          `${applied} row${applied !== 1 ? "s" : ""} filled into the grid` +
+          (unmatched.length ? `; ${unmatched.length} admission no${unmatched.length !== 1 ? "s" : ""} not in this class (${unmatched.slice(0, 5).join(", ")}${unmatched.length > 5 ? "…" : ""})` : "") +
+          ". Review and press Save Marks."
+        );
+      } catch { setImportMsg("Could not parse the CSV file."); }
+      finally { if (fileRef.current) fileRef.current.value = ""; }
+    };
+    reader.readAsText(file);
+  }
 
   const ranges = gradingScale?.ranges ?? [];
   const csLabel = schedule.classSection
@@ -153,7 +250,14 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
         <Link href={`/exams/${examGroupId}`} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
           <ArrowLeft className="h-4 w-4" /> Back to Schedules
         </Link>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <input ref={fileRef} type="file" accept=".csv,text/csv" className="hidden" onChange={onImportFile} />
+          <Button variant="outline" size="sm" onClick={downloadSample}>
+            <Download className="h-3.5 w-3.5 mr-1" /> Sample CSV
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
+            <Upload className="h-3.5 w-3.5 mr-1" /> Import CSV
+          </Button>
           <Button variant="outline" size="sm" onClick={markAllPresent}>Mark All Present</Button>
           <Button variant="outline" size="sm" onClick={markAllAbsent}>Mark All Absent</Button>
           <Button disabled={saving} onClick={handleSave} className="min-w-[120px]">
@@ -193,6 +297,12 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
       {error && (
         <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
           <AlertCircle className="h-4 w-4 shrink-0" /> {error}
+        </div>
+      )}
+
+      {importMsg && (
+        <div className="flex items-center gap-2 text-sm text-indigo-800 bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-3">
+          <CheckCheck className="h-4 w-4 shrink-0" /> {importMsg}
         </div>
       )}
 

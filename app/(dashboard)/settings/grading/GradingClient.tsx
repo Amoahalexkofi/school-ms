@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Plus, Trash2, GraduationCap, Award } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, GraduationCap, Award, Pencil, Check, X } from "lucide-react";
 
 type Range = { id: string; grade: string; gradePoint: number; markFrom: number; markTo: number };
 type Div = { id: string; name: string; percentageFrom: number; percentageTo: number };
@@ -40,6 +40,48 @@ export function GradingClient({ scaleName, ranges: initRanges, divisions: initDi
     if (!confirm("Remove this grade?")) return;
     await fetch(`/api/grade-ranges/${id}`, { method: "DELETE" });
     setRanges((r) => r.filter((x) => x.id !== id)); router.refresh();
+  }
+
+  // Inline edit (Smart School Grade::edit / Marksdivision::edit)
+  const [editGrade, setEditGrade] = useState<{ id: string; grade: string; gradePoint: string; markFrom: string; markTo: string } | null>(null);
+  const [editDiv, setEditDiv]     = useState<{ id: string; name: string; percentageFrom: string; percentageTo: string } | null>(null);
+
+  async function saveGrade() {
+    if (!editGrade) return;
+    if (!editGrade.grade.trim() || editGrade.markFrom === "" || editGrade.markTo === "") { alert("Grade, From and To are required"); return; }
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/grade-ranges/${editGrade.id}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ grade: editGrade.grade, gradePoint: editGrade.gradePoint, markFrom: editGrade.markFrom, markTo: editGrade.markTo }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error);
+      setRanges((r) => r.map((x) => x.id === editGrade.id
+        ? { ...x, grade: d.grade, gradePoint: Number(d.gradePoint), markFrom: Number(d.markFrom), markTo: Number(d.markTo) }
+        : x).sort((a, b) => b.markFrom - a.markFrom));
+      setEditGrade(null);
+      router.refresh();
+    } catch (e: any) { alert(e.message); } finally { setBusy(false); }
+  }
+
+  async function saveDiv() {
+    if (!editDiv) return;
+    if (!editDiv.name.trim() || editDiv.percentageFrom === "" || editDiv.percentageTo === "") { alert("Name, From and To are required"); return; }
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/mark-divisions/${editDiv.id}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: editDiv.name, percentageFrom: editDiv.percentageFrom, percentageTo: editDiv.percentageTo }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error);
+      setDivs((v) => v.map((x) => x.id === editDiv.id
+        ? { ...x, name: d.name, percentageFrom: Number(d.percentageFrom), percentageTo: Number(d.percentageTo) }
+        : x).sort((a, b) => b.percentageFrom - a.percentageFrom));
+      setEditDiv(null);
+      router.refresh();
+    } catch (e: any) { alert(e.message); } finally { setBusy(false); }
   }
 
   async function addDiv() {
@@ -80,13 +122,28 @@ export function GradingClient({ scaleName, ranges: initRanges, divisions: initDi
               <tr><th className="text-left py-2">Grade</th><th className="text-left py-2">Grade Point</th><th className="text-left py-2">From %</th><th className="text-left py-2">To %</th><th /></tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {ranges.map((r) => (
+              {ranges.map((r) => editGrade?.id === r.id ? (
+                <tr key={r.id} className="bg-indigo-50/40">
+                  <td className="py-2 pr-2"><Input className={IN} value={editGrade.grade} onChange={(e) => setEditGrade((f) => f && ({ ...f, grade: e.target.value }))} /></td>
+                  <td className="py-2 pr-2"><Input className={IN} type="number" step="0.1" value={editGrade.gradePoint} onChange={(e) => setEditGrade((f) => f && ({ ...f, gradePoint: e.target.value }))} /></td>
+                  <td className="py-2 pr-2"><Input className={IN} type="number" value={editGrade.markFrom} onChange={(e) => setEditGrade((f) => f && ({ ...f, markFrom: e.target.value }))} /></td>
+                  <td className="py-2 pr-2"><Input className={IN} type="number" value={editGrade.markTo} onChange={(e) => setEditGrade((f) => f && ({ ...f, markTo: e.target.value }))} /></td>
+                  <td className="py-2 text-right whitespace-nowrap">
+                    <button onClick={saveGrade} disabled={busy} className="text-green-600 hover:text-green-700 mr-2" title="Save"><Check className="h-4 w-4" /></button>
+                    <button onClick={() => setEditGrade(null)} className="text-gray-400 hover:text-gray-600" title="Cancel"><X className="h-4 w-4" /></button>
+                  </td>
+                </tr>
+              ) : (
                 <tr key={r.id}>
                   <td className="py-2 font-medium">{r.grade}</td>
                   <td className="py-2 text-gray-600">{r.gradePoint}</td>
                   <td className="py-2 text-gray-600">{r.markFrom}</td>
                   <td className="py-2 text-gray-600">{r.markTo}</td>
-                  <td className="py-2 text-right"><button onClick={() => delGrade(r.id)} className="text-red-500 hover:text-red-700"><Trash2 className="h-3.5 w-3.5" /></button></td>
+                  <td className="py-2 text-right whitespace-nowrap">
+                    <button onClick={() => setEditGrade({ id: r.id, grade: r.grade, gradePoint: String(r.gradePoint), markFrom: String(r.markFrom), markTo: String(r.markTo) })}
+                      className="text-gray-400 hover:text-indigo-600 mr-2" title="Edit"><Pencil className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => delGrade(r.id)} className="text-red-500 hover:text-red-700" title="Delete"><Trash2 className="h-3.5 w-3.5" /></button>
+                  </td>
                 </tr>
               ))}
               {ranges.length === 0 && <tr><td colSpan={5} className="py-4 text-center text-gray-400 text-xs">No grades yet.</td></tr>}
@@ -115,12 +172,26 @@ export function GradingClient({ scaleName, ranges: initRanges, divisions: initDi
               <tr><th className="text-left py-2">Division</th><th className="text-left py-2">From %</th><th className="text-left py-2">To %</th><th /></tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {divs.map((d) => (
+              {divs.map((d) => editDiv?.id === d.id ? (
+                <tr key={d.id} className="bg-indigo-50/40">
+                  <td className="py-2 pr-2"><Input className={IN} value={editDiv.name} onChange={(e) => setEditDiv((f) => f && ({ ...f, name: e.target.value }))} /></td>
+                  <td className="py-2 pr-2"><Input className={IN} type="number" value={editDiv.percentageFrom} onChange={(e) => setEditDiv((f) => f && ({ ...f, percentageFrom: e.target.value }))} /></td>
+                  <td className="py-2 pr-2"><Input className={IN} type="number" value={editDiv.percentageTo} onChange={(e) => setEditDiv((f) => f && ({ ...f, percentageTo: e.target.value }))} /></td>
+                  <td className="py-2 text-right whitespace-nowrap">
+                    <button onClick={saveDiv} disabled={busy} className="text-green-600 hover:text-green-700 mr-2" title="Save"><Check className="h-4 w-4" /></button>
+                    <button onClick={() => setEditDiv(null)} className="text-gray-400 hover:text-gray-600" title="Cancel"><X className="h-4 w-4" /></button>
+                  </td>
+                </tr>
+              ) : (
                 <tr key={d.id}>
                   <td className="py-2 font-medium">{d.name}</td>
                   <td className="py-2 text-gray-600">{d.percentageFrom}</td>
                   <td className="py-2 text-gray-600">{d.percentageTo}</td>
-                  <td className="py-2 text-right"><button onClick={() => delDiv(d.id)} className="text-red-500 hover:text-red-700"><Trash2 className="h-3.5 w-3.5" /></button></td>
+                  <td className="py-2 text-right whitespace-nowrap">
+                    <button onClick={() => setEditDiv({ id: d.id, name: d.name, percentageFrom: String(d.percentageFrom), percentageTo: String(d.percentageTo) })}
+                      className="text-gray-400 hover:text-indigo-600 mr-2" title="Edit"><Pencil className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => delDiv(d.id)} className="text-red-500 hover:text-red-700" title="Delete"><Trash2 className="h-3.5 w-3.5" /></button>
+                  </td>
                 </tr>
               ))}
               {divs.length === 0 && <tr><td colSpan={4} className="py-4 text-center text-gray-400 text-xs">No divisions yet.</td></tr>}

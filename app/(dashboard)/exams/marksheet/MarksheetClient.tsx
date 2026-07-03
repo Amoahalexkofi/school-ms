@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -95,6 +95,33 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
   const schoolName    = school?.name ?? "Skula";
   const sessionLabel  = selectedExam?.schedules?.[0]?.session?.session ?? "";
 
+  // Persisted ranks + term-report remarks — same sources the server PDF uses,
+  // so the on-screen card matches the download.
+  const [persistedRanks, setPersistedRanks] = useState<Record<string, number>>({});
+  const [remarks, setRemarks] = useState<Record<string, { classTeacher?: string; headTeacher?: string }>>({});
+  useEffect(() => {
+    setPersistedRanks({}); setRemarks({});
+    if (!examGroupId || !classSectionId) return;
+    fetch(`/api/exams/results/${examGroupId}?classSectionId=${classSectionId}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        if (!d?.ranksPersisted || !Array.isArray(d.rows)) return;
+        const m: Record<string, number> = {};
+        for (const row of d.rows) if (row.student?.id && row.rank) m[row.student.id] = row.rank;
+        setPersistedRanks(m);
+      })
+      .catch(() => null);
+    fetch(`/api/exams/term-report?examGroupId=${examGroupId}&classSectionId=${classSectionId}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        const m: Record<string, { classTeacher?: string; headTeacher?: string }> = {};
+        for (const [sid, row] of Object.entries<any>(d?.savedMap ?? {}))
+          m[sid] = { classTeacher: row?.classTeacherRemark ?? undefined, headTeacher: row?.headTeacherRemark ?? undefined };
+        setRemarks(m);
+      })
+      .catch(() => null);
+  }, [examGroupId, classSectionId]);
+
   // Build per-student marksheets from the exam schedules + mark entries
   const studentMarksheets = useMemo(() => {
     if (!selectedExam || !classSectionId) return [];
@@ -131,12 +158,14 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
       return { ...ms, totalFull, totalObtained, pct, allPassed, div, color };
     });
 
-    // Rank by total obtained (descending)
+    // Rank by total obtained (descending); persisted/edited ranks override
+    // the computed default so the screen matches the results page + PDF.
     list.sort((a, b) => b.totalObtained - a.totalObtained);
-    list.forEach((s, i) => (s as any).rank = i + 1);
+    list.forEach((s, i) => (s as any).rank = persistedRanks[s.student.id] ?? i + 1);
+    if (Object.keys(persistedRanks).length) list.sort((a: any, b: any) => a.rank - b.rank);
 
     return list;
-  }, [selectedExam, classSectionId]);
+  }, [selectedExam, classSectionId, persistedRanks]);
 
   // Individual report card: filter the rendered list to one student (rank still
   // comes from the full class list above).
@@ -369,7 +398,18 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
                 </div>
                 <div className="text-sm">
                   <span className="text-gray-500 text-xs">Remarks:</span>
-                  <div className="border-b border-dotted border-gray-300 h-5 mt-1" />
+                  {remarks[ms.student.id]?.classTeacher || remarks[ms.student.id]?.headTeacher ? (
+                    <div className="mt-1 space-y-0.5">
+                      {remarks[ms.student.id]?.classTeacher && (
+                        <p className="text-sm text-gray-800">{remarks[ms.student.id].classTeacher} <span className="text-xs text-gray-400">— Class Teacher</span></p>
+                      )}
+                      {remarks[ms.student.id]?.headTeacher && (
+                        <p className="text-sm text-gray-800">{remarks[ms.student.id].headTeacher} <span className="text-xs text-gray-400">— Head Teacher</span></p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="border-b border-dotted border-gray-300 h-5 mt-1" />
+                  )}
                 </div>
               </div>
             </div>
