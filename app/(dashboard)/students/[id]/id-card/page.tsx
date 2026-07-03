@@ -20,7 +20,7 @@ export default async function IdCardPage({ params }: { params: Promise<{ id: str
     }),
     (db as any).schoolProfile.findFirst(),
     // Smart School: use the active (status=1) template
-    (db as any).idCard.findFirst({ where: { status: 1, isActive: true } }),
+    (db as any).idCard.findFirst({ where: { status: 1 } }),
   ]);
 
   if (!student) notFound();
