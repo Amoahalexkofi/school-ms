@@ -41,19 +41,22 @@ _Updated 2026-07-02 (commit 03f8e8a): fresh two-sided audit + gap closure._
 
 ## EXAMS / MARKS
 
+_Updated 2026-07-03 (commit 6b5d813): fresh two-sided audit + gap closure._
+
 | Screen | Smart School has | Ours | Verdict |
 |---|---|---|---|
 | Exam groups / exams | CRUD | present | ✅ |
-| Exam schedule | class/section/subject/date/room/marks | present (`exams/[id]`: session, class/section, subject, date, room, times, full/passing) | ✅ |
-| Marks entry | exam+class+section+subject → grid (obtained, note) | present (class/section/subject) | ✅ |
-| Results | columns: total, %, **grade, rank, division, pass/fail**; publish | total/%/publish; **no rank, no division, grade system disconnected** | 🟡 |
-| **CSV mark import** | yes (download sample + upload adm_no,attendance,marks,note) | — | ❌ |
-| Grades / Mark divisions admin | dedicated pages | API only, **no page**; divisions hardcoded `80/60/45/33`, DB table unused | ❌ inert/fake |
-| Marksheet / Admit card print | designable templates + PDF + email | single hardcoded layout, browser print | 🟡 |
-| Assign students to exam | pick who sits the exam | auto-enroll all | ❌ no screen |
-| Persisted/editable rank | stored + admin override | recomputed by % each load | 🟡 |
-| Result SMS/email on publish | yes | flag flip only | ❌ |
-| Connect/weighted exams, teacher remark, rank report | yes | — | ❌ |
+| Exam schedule | class/section/subject/date/room/marks | present (`exams/[id]`; roomNo PATCH fixed) | ✅ |
+| Marks entry | exam+class+section+subject → grid (obtained, note) | present; GES SBA component mode | ✅ |
+| Results | total, %, grade, rank, division, pass/fail; publish | all present (MarkDivision-driven division, GradeRange grades) | ✅ |
+| **CSV mark import** | sample + upload adm_no,status,marks,note fills grid | same client-side flow; supports SBA component columns | ✅ |
+| Grades / Mark divisions admin | dedicated pages w/ edit | `/settings/grading` add + **inline edit** + soft-delete | ✅ |
+| Marksheet / Admit card print | designable templates + PDF + email | template designer + server PDF + email; screen now uses persisted ranks + TermReport remarks (matches PDF) | ✅ |
+| Assign students to exam | roster subset per exam (exam_group_class_batch_exam_students) | `/exams/[id]/students` checkbox roster (ExamGroupStudent); no roster = whole class; filters marks + term report | ✅ |
+| Persisted/editable rank | stored + admin override | StudentExamRank, editable on results grid | ✅ |
+| Result SMS/email on publish | mailsms 'exam_result' announcement on publish | publish flip fires email + SMS/WhatsApp announcement to students+guardians | ✅ |
+| Teacher remark | per-student per-exam textarea grid → marksheet | TermReport classTeacherRemark/headTeacherRemark grid → PDF + on-screen card | ✅ (equivalent) |
+| Connect/weighted exams | link exams w/ weightages summing 100, combined % column | — | ❌ deferred: GES SBA weights already cover the weighted CA+exam use case for our market |
 
 ## FEES
 
