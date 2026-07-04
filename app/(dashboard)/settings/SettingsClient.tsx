@@ -47,6 +47,16 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
   function openPanel(type: "session" | "class" | "section" | "subject") {
     setError("");
     setAddingType(type);
+    // classId was captured when the page mounted — a class created since then
+    // (fresh school flow) leaves it empty/stale while the select *displays*
+    // the first option. Re-sync so state matches what the user sees.
+    if (type === "subject") {
+      subjectForm.setForm(f => (
+        f.classId && classes.some((c: any) => c.id === f.classId)
+          ? f
+          : { ...f, classId: classes[0]?.id ?? "" }
+      ));
+    }
   }
 
   function closePanel() {
@@ -369,6 +379,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                   <div>
                     <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class *</Label>
                     <select className={SEL} value={subjectForm.form.classId} onChange={subjectForm.set("classId")}>
+                      <option value="" disabled>{classes.length ? "Select class" : "No classes yet — create one above"}</option>
                       {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                   </div>
