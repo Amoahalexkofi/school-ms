@@ -11,7 +11,7 @@ function generateEmployeeId(count: number) {
 
 const ALLOWED_FIELDS = [
   "departmentId","designationId","firstName","lastName","fatherName","motherName",
-  "dob","gender","maritalStatus","religion","nationality","qualification","workExperience",
+  "dob","gender","maritalStatus","religion","qualification","workExperience",
   "dateOfJoining","dateOfLeaving","contractType","contactNo","emergencyContact",
   "localAddress","permanentAddress","city","state","country","image",
   "basicSalary","bankAccountNo","bankName","bankBranch","ifscCode","epfNo",
@@ -106,7 +106,6 @@ export async function POST(req: NextRequest) {
           gender:           body.gender,
           maritalStatus:    body.maritalStatus     || null,
           religion:         body.religion          || null,
-          nationality:      body.nationality       || null,
           qualification:    body.qualification     || null,
           workExperience:   body.workExperience    || null,
           dateOfJoining:    body.dateOfJoining     ? new Date(body.dateOfJoining) : null,

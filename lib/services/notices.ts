@@ -18,8 +18,8 @@ export async function createNotice(input: {
   isPublished?: boolean;
   postedById: string;
 }) {
-  if (!input.title.trim()) throw Object.assign(new Error("Title is required"), { code: "VALIDATION" });
-  if (!input.content.trim()) throw Object.assign(new Error("Content is required"), { code: "VALIDATION" });
+  if (!input.title?.trim()) throw Object.assign(new Error("Title is required"), { code: "VALIDATION" });
+  if (!input.content?.trim()) throw Object.assign(new Error("Content is required"), { code: "VALIDATION" });
   const prisma = await getDb();
   return (prisma as any).notice.create({
     data: {

@@ -63,7 +63,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 
 const empty = {
   firstName: "", lastName: "", fatherName: "", motherName: "",
-  dob: "", gender: "", maritalStatus: "", religion: "", nationality: "", qualification: "", workExperience: "",
+  dob: "", gender: "", maritalStatus: "", religion: "", qualification: "", workExperience: "",
   employeeId: "", role: "TEACHER", departmentId: "", designationId: "",
   dateOfJoining: "", contractType: "", payscale: "", shift: "", location: "",
   email: "", contactNo: "", emergencyContact: "",
@@ -190,7 +190,6 @@ export function AddStaffForm({ departments, designations }: Props) {
               <Field label="Gender *" name="gender" value={form.gender} onChange={set("gender")} options={GENDERS} />
               <Field label="Marital Status" name="maritalStatus" value={form.maritalStatus} onChange={set("maritalStatus")} options={MARITAL} />
               <Field label="Religion" name="religion" value={form.religion} onChange={set("religion")} options={RELIGIONS} />
-              <Field label="Nationality" name="nationality" value={form.nationality} onChange={set("nationality")} />
               <Field label="Father's Name" name="fatherName" value={form.fatherName} onChange={set("fatherName")} />
               <Field label="Mother's Name" name="motherName" value={form.motherName} onChange={set("motherName")} />
             </Row>
