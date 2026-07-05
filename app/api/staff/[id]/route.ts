@@ -47,13 +47,27 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       if (f in body) staffData[f] = body[f];
     }
 
-    // Parse date fields
-    if (staffData.dob)           staffData.dob           = new Date(staffData.dob);
-    if (staffData.dateOfJoining) staffData.dateOfJoining = new Date(staffData.dateOfJoining);
-    if (staffData.dateOfLeaving) staffData.dateOfLeaving = new Date(staffData.dateOfLeaving);
-    if (staffData.disabledAt)    staffData.disabledAt    = new Date(staffData.disabledAt);
-    if (staffData.basicSalary !== undefined && staffData.basicSalary !== null && staffData.basicSalary !== "") {
-      staffData.basicSalary = parseFloat(staffData.basicSalary);
+    // Date fields: blank clears the value; anything else must parse.
+    for (const f of ["dob", "dateOfJoining", "dateOfLeaving", "disabledAt"]) {
+      if (f in staffData) {
+        if (!staffData[f]) { staffData[f] = null; continue; }
+        const d = new Date(staffData[f]);
+        if (isNaN(d.getTime())) return NextResponse.json({ error: `Invalid date for ${f}` }, { status: 422 });
+        staffData[f] = d;
+      }
+    }
+    // Optional relations and enums: a blank select means "none" — Prisma
+    // rejects "" for both FK ids and enum values (ContractType, MaritalStatus).
+    for (const f of ["departmentId", "designationId", "contractType", "maritalStatus"]) {
+      if (f in staffData && !staffData[f]) staffData[f] = null;
+    }
+    if ("basicSalary" in staffData) {
+      staffData.basicSalary =
+        staffData.basicSalary === "" || staffData.basicSalary === null
+          ? null
+          : parseFloat(staffData.basicSalary);
+      if (staffData.basicSalary !== null && isNaN(staffData.basicSalary))
+        return NextResponse.json({ error: "Invalid basic salary" }, { status: 422 });
     }
 
     const { role } = body;
@@ -68,7 +82,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     return NextResponse.json(staff);
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    // Never leak raw Prisma dumps into the dialog.
+    console.error("[staff PATCH]", err);
+    return NextResponse.json({ error: "Failed to update staff — please check the field values" }, { status: 500 });
   }
 }
 

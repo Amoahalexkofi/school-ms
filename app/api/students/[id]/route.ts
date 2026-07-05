@@ -51,11 +51,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       if (f in body) data[f] = body[f];
     }
 
-    // Parse date fields
-    if (data.dateOfBirth)     data.dateOfBirth     = new Date(data.dateOfBirth);
-    if (data.admissionDate)   data.admissionDate   = new Date(data.admissionDate);
-    if (data.measurementDate) data.measurementDate = new Date(data.measurementDate);
-    if (data.disabledAt)      data.disabledAt      = new Date(data.disabledAt);
+    // Date fields: blank clears the value; anything else must parse.
+    for (const f of ["dateOfBirth", "admissionDate", "measurementDate", "disabledAt"]) {
+      if (f in data) {
+        if (!data[f]) { data[f] = null; continue; }
+        const d = new Date(data[f]);
+        if (isNaN(d.getTime())) return NextResponse.json({ error: `Invalid date for ${f}` }, { status: 422 });
+        data[f] = d;
+      }
+    }
+    // Optional relation: blank select means "none", not an empty-string FK.
+    if ("schoolHouseId" in data && !data.schoolHouseId) data.schoolHouseId = null;
     if (typeof data.rte !== "undefined") data.rte = data.rte === true || data.rte === "true";
 
     const db = await getDb();
@@ -72,7 +78,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     return NextResponse.json(student);
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    // Never leak raw Prisma dumps into the dialog.
+    console.error("[student PATCH]", err);
+    return NextResponse.json({ error: "Failed to update student — please check the field values" }, { status: 500 });
   }
 }
 
