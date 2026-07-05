@@ -31,13 +31,20 @@ _Updated 2026-07-02 (commit 03f8e8a): fresh two-sided audit + gap closure._
 
 ## ATTENDANCE
 
+_Updated 2026-07-05 (commit 847bb26): fresh two-sided audit + gap closure._
+
 | Screen | Smart School has | Ours | Verdict |
 |---|---|---|---|
-| Student attendance marking | Class + Section + Date → roster grid; status P/A/L/Half-day/Holiday | Session + Class/Section + Date → grid; same statuses | ✅ |
-| Save + **SMS/email on absent** | yes | save only, **no notify toggle** | 🟡 |
-| Staff attendance | by date | present (`/attendance/staff`) | ✅ |
-| **Subject-wise attendance** | dedicated screen | API only, **no page** | ❌ no UI |
-| Attendance report | monthly 1–31 per-student grid + filters | basic report (half-day % now consistent) | 🟡 no monthly grid |
+| Student attendance marking | Class + Section + Date → roster grid; status P/A/L/Half-day/Holiday | Session + Class/Section + Date → grid; same statuses; transactional save | ✅ |
+| Save + SMS/email on absent | yes | notify-guardians toggle → SMS + WhatsApp | ✅ |
+| Staff attendance | by date | present + now linked from /attendance header | ✅ |
+| **Period (subject-wise) attendance** | Subjectattendence: class+section+date → timetable period → roster; absent notify with period context | `/attendance/subject` Mark tab: same flow off TimetableSlot; upsert (studentSession, slot, date); period-named absent SMS/WhatsApp | ✅ |
+| Period attendance by-date report | students × periods matrix, letter per cell | By-Date Report tab, same matrix + legend | ✅ |
+| Attendance report | summary + monthly 1–31 grid | both (Summary/Monthly tabs); % divisor now consistent across all three report paths | ✅ |
+| **Student apply leave** | user/apply_leave (student portal) + admin approve (class/subject-teacher gated) | `/my-leave` self-apply (session-scoped) + existing staff `/leave` approve tab | ✅ |
+| Day-wise vs period-wise mode toggle | sch_settings.attendence_type flips menus/portal | — both pages offered side by side | 🟡 deferred: no global mode switch; Ghana schools are day-wise-first and both screens coexist |
+| Biometric / QR attendance | biometric endpoint + schedules (QR not shipped) | — | ❌ deferred (hardware-dependent; schedules table exists unused) |
+| Period monthly reports (per-subject grid) | reportbymonth / reportbymonthstudent | — | 🟡 deferred: by-date matrix + day-wise monthly grid cover the demo need |
 
 ## EXAMS / MARKS
 
