@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { isPublicRoute, canAccessRoute, canAccessApiRoute, type UserRole } from "@/lib/auth/middleware-utils";
+import {
+  ROLE_DEFAULTS, mergePerms, moduleForApiPath, actionForMethod,
+  type PermissionMap,
+} from "@/lib/permission-defaults";
 import { neon } from "@neondatabase/serverless";
 
 // ── Tenant detection ──────────────────────────────────────────────────────────
@@ -33,6 +37,85 @@ async function getTenantForSubdomain(subdomain: string): Promise<Tenant | null> 
   } catch {
     return null;
   }
+}
+
+// ── Permission-matrix enforcement (granular RBAC) ─────────────────────────────
+// The Settings → Roles matrix (AppRole/RolePermission) drives the UI via
+// PermissionsProvider; this enforces the SAME merged map server-side so hiding
+// a button also blocks the API call. Only roles with ROLE_DEFAULTS entries are
+// restricted (TEACHER/ACCOUNTANT/LIBRARIAN) — admins and unlisted roles pass.
+
+type CustomPerm = { superAdmin: boolean; map: PermissionMap | null };
+const permCache = new Map<string, { value: CustomPerm; expiresAt: number }>();
+
+// Custom AppRole permissions for a user, aggregated to permission-GROUP codes
+// (same aggregation as lib/services/permissions.ts getUserPermissions).
+// Cached 60 s like tenant lookups; "error" on a DB blip.
+async function getCustomPermMap(schema: string, userId: string): Promise<CustomPerm | "error"> {
+  const key = `${schema}:${userId}`;
+  const now = Date.now();
+  const cached = permCache.get(key);
+  if (cached && cached.expiresAt > now) return cached.value;
+
+  try {
+    const sql = neon(process.env.DATABASE_URL!);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await (sql as any).query(
+      `SELECT ar."isSuperAdmin", rp."canView", rp."canAdd", rp."canEdit", rp."canDelete",
+              pg."shortCode" AS grp
+       FROM "${schema}"."StaffAppRole" sar
+       JOIN "${schema}"."Staff" st ON st.id = sar."staffId"
+       JOIN "${schema}"."AppRole" ar ON ar.id = sar."roleId"
+       LEFT JOIN "${schema}"."RolePermission" rp ON rp."roleId" = ar.id
+       LEFT JOIN "${schema}"."PermissionCategory" pc ON pc.id = rp."permCatId"
+       LEFT JOIN "${schema}"."PermissionGroup" pg ON pg.id = pc."permGroupId"
+       WHERE st."userId" = $1`,
+      [userId]
+    );
+    const rows: Record<string, unknown>[] = result.rows ?? result;
+
+    let value: CustomPerm;
+    if (!rows.length) {
+      value = { superAdmin: false, map: null }; // no custom AppRole
+    } else if (rows.some((r) => r.isSuperAdmin === true)) {
+      value = { superAdmin: true, map: null };  // custom super-admin role → unrestricted
+    } else {
+      const map: PermissionMap = {};
+      for (const r of rows) {
+        const grp = r.grp as string | null;
+        if (!grp) continue;
+        const e = (map[grp] ??= { canView: false, canAdd: false, canEdit: false, canDelete: false });
+        e.canView   = e.canView   || r.canView   === true;
+        e.canAdd    = e.canAdd    || r.canAdd    === true;
+        e.canEdit   = e.canEdit   || r.canEdit   === true;
+        e.canDelete = e.canDelete || r.canDelete === true;
+      }
+      value = { superAdmin: false, map };
+    }
+    permCache.set(key, { value, expiresAt: now + 60_000 });
+    return value;
+  } catch {
+    return "error";
+  }
+}
+
+async function isApiCallPermitted(
+  pathname: string, method: string, role: string, schema: string, userId: string
+): Promise<boolean> {
+  const defaults = ROLE_DEFAULTS[role];
+  if (defaults === null || defaults === undefined) return true; // unrestricted role
+  const module = moduleForApiPath(pathname);
+  if (!module) return true; // unmapped route → coarse gate only
+
+  const custom = await getCustomPermMap(schema, userId);
+  if (custom !== "error" && custom.superAdmin) return true;
+  // DB blip: fall back to role defaults so a transient error can't lock staff
+  // out of modules their role always had (custom roles only ever ADD access).
+  const merged = custom === "error" || !custom.map
+    ? defaults
+    : mergePerms(defaults, custom.map);
+
+  return merged[module]?.[actionForMethod(method)] === true;
 }
 
 function extractSubdomain(host: string): string | null {
@@ -115,6 +198,15 @@ export async function proxy(request: NextRequest) {
   if (pathname.startsWith("/api/")) {
     if (!role || !canAccessApiRoute(pathname, role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    // Granular permission matrix: same map that drives the UI (role defaults
+    // merged with any custom AppRole) checked per module + HTTP method, so a
+    // teacher whose UI hides "Delete" can't call DELETE /api/students either.
+    const schema = requestHeaders.get("x-tenant-schema")
+      ?? process.env.DATABASE_SCHEMA ?? "public";
+    const userId = token.sub as string | undefined;
+    if (userId && !(await isApiCallPermitted(pathname, request.method, role, schema, userId))) {
+      return NextResponse.json({ error: "Forbidden — your role lacks this permission" }, { status: 403 });
     }
     // Online exams: students/parents may read exams and start/submit their OWN
     // attempt, but must never create, edit, publish or delete an exam. The

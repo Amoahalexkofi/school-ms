@@ -1,71 +1,14 @@
 import { getDb } from "@/lib/db";
+import {
+  ROLE_DEFAULTS,
+  mergePerms,
+  ALLOW_ALL,
+  type PermEntry,
+  type PermissionMap,
+} from "@/lib/permission-defaults";
 
-export type PermEntry = { canView: boolean; canAdd: boolean; canEdit: boolean; canDelete: boolean };
-export type PermissionMap = Record<string, PermEntry>;
-
-const ALLOW: PermEntry = { canView: true,  canAdd: true,  canEdit: true,  canDelete: true  };
-const VIEW:  PermEntry = { canView: true,  canAdd: false, canEdit: false, canDelete: false };
-const WRITE: PermEntry = { canView: true,  canAdd: true,  canEdit: true,  canDelete: false };
-
-export const ALLOW_ALL: PermEntry = ALLOW;
-
-/**
- * Default permissions per auth role.
- * null = unrestricted (SUPER_ADMIN / ADMIN).
- * Non-null = restricted to listed modules; Super Admin can extend via AppRole.
- */
-const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
-  SUPER_ADMIN: null,
-  ADMIN:       null,
-
-  TEACHER: {
-    student_information:  VIEW,   // see students, not add/edit/delete
-    student_attendance:   ALLOW,  // mark attendance
-    examination:          ALLOW,  // create exams, enter marks
-    academics:            ALLOW,  // timetable, subjects, results
-    homework:             ALLOW,
-    lesson_plan:          ALLOW,
-    online_examination:   ALLOW,
-    communicate:          WRITE,  // post notices, not delete
-    chat:                 ALLOW,
-    library:              VIEW,   // search only
-    reports:              VIEW,
-  },
-
-  ACCOUNTANT: {
-    student_information:  VIEW,   // read-only (find students for fees)
-    fees_collection:      ALLOW,
-    expense:              ALLOW,
-    human_resource:       VIEW,   // view payroll, not edit staff
-    reports:              VIEW,
-    communicate:          VIEW,
-    chat:                 ALLOW,
-  },
-
-  LIBRARIAN: {
-    student_information:  VIEW,   // find borrowers
-    library:              ALLOW,
-    communicate:          VIEW,
-    chat:                 ALLOW,
-  },
-};
-
-function mergePerms(base: PermissionMap, extra: PermissionMap): PermissionMap {
-  const result: PermissionMap = { ...base };
-  for (const [code, entry] of Object.entries(extra)) {
-    if (result[code]) {
-      result[code] = {
-        canView:   result[code].canView   || entry.canView,
-        canAdd:    result[code].canAdd    || entry.canAdd,
-        canEdit:   result[code].canEdit   || entry.canEdit,
-        canDelete: result[code].canDelete || entry.canDelete,
-      };
-    } else {
-      result[code] = entry;
-    }
-  }
-  return result;
-}
+export type { PermEntry, PermissionMap };
+export { ALLOW_ALL };
 
 /**
  * Returns a PermissionMap for this userId, or null if unrestricted.
@@ -151,5 +94,3 @@ export async function getUserPermissions(userId: string): Promise<PermissionMap 
     return null;
   }
 }
-
-export { ALLOW_ALL as _ALLOW_ALL };
