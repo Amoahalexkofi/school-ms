@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       student: {
         select: {
           id: true, firstName: true, lastName: true, admissionNo: true,
-          gender: true, image: true, isAlumni: true,
+          gender: true, image: true,
           sessions: {
             include: {
               session: { select: { id: true, session: true } },
@@ -61,7 +61,16 @@ export async function POST(req: NextRequest) {
     if (!studentId) return NextResponse.json({ error: "studentId required" }, { status: 422 });
 
     const db = await getDb();
-    await (db as any).student.update({ where: { id: studentId }, data: { isAlumni: true } });
+    // The alumni flag lives on StudentSession (Smart School student_session.is_alumni),
+    // not on Student — flag the most recent enrollment.
+    const latest = await (db as any).studentSession.findFirst({
+      where: { studentId },
+      orderBy: { createdAt: "desc" },
+      select: { id: true },
+    });
+    if (latest) {
+      await (db as any).studentSession.update({ where: { id: latest.id }, data: { isAlumni: true } });
+    }
 
     const alumniData = {
       currentEmail: currentEmail || null,

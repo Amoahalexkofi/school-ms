@@ -30,9 +30,14 @@ async function getData() {
     }),
     ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
     ((await getDb()) as any).class.findMany({ orderBy: { name: "asc" } }),
-    // Students eligible to be marked as alumni (inactive + no Alumni record yet)
+    // Students eligible to be marked as alumni: disabled students OR students
+    // flagged isAlumni on a session (promote-with-leave — they stay isActive
+    // like Smart School), minus those who already have an Alumni record.
     ((await getDb()) as any).student.findMany({
-      where: { isActive: false, alumni: { is: null } },
+      where: {
+        alumni: { is: null },
+        OR: [{ isActive: false }, { sessions: { some: { isAlumni: true } } }],
+      },
       select: {
         id: true, firstName: true, lastName: true, admissionNo: true,
         sessions: {
