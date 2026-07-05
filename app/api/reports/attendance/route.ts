@@ -62,13 +62,17 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const rows = Object.values(studentMap).map((r: any) => ({
-    ...r,
-    schoolDays: r.P + r.A + r.L + r.F,
-    // Half-day (F) counts as 0.5 — must match lib/services/attendance.ts so admin
-    // reports and the student/parent portals show the same percentage.
-    pct: r.total > 0 ? Math.round(((r.P + r.L + r.F * 0.5) / r.total) * 100) : 0,
-  }));
+  const rows = Object.values(studentMap).map((r: any) => {
+    // Half-day (F) counts as 0.5 and holidays are excluded from the divisor —
+    // must match lib/services/attendance.ts so admin reports and the
+    // student/parent portals show the same percentage.
+    const schoolDays = r.total - r.H;
+    return {
+      ...r,
+      schoolDays,
+      pct: schoolDays > 0 ? Math.round(((r.P + r.L + r.F * 0.5) / schoolDays) * 100) : 0,
+    };
+  });
 
   rows.sort((a: any, b: any) =>
     a.student.firstName.localeCompare(b.student.firstName)

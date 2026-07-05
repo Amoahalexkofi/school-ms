@@ -102,6 +102,7 @@ const studentGroups: NavGroup[] = [
       { href: "/my-attendance", label: "Attendance",   icon: ClipboardList },
       { href: "/my-fees",       label: "My Fees",      icon: CreditCard },
       { href: "/my-homework",   label: "Homework",     icon: CheckSquare },
+      { href: "/my-leave",      label: "My Leave",     icon: Send },
       { href: "/timetable",     label: "Timetable",    icon: Calendar },
       { href: "/online-exams",  label: "Online Exams", icon: Monitor },
       { href: "/notice-board",  label: "Notices",      icon: Bell },

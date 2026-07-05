@@ -138,6 +138,12 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
           <Link href="/attendance/report">
             <Button variant="outline"><ClipboardList className="h-4 w-4 mr-1.5" />Reports</Button>
           </Link>
+          <Link href="/attendance/subject">
+            <Button variant="outline">Period Attendance</Button>
+          </Link>
+          <Link href="/attendance/staff">
+            <Button variant="outline">Staff Attendance</Button>
+          </Link>
         </div>
       </div>
 

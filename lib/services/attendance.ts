@@ -14,15 +14,17 @@ export async function markAttendance(input: {
   if (input.date > now) throw new Error("Cannot mark attendance for a future date");
 
   const prisma = await getDb();
-  const attendanceDay = await (prisma as any).attendanceDay.upsert({
-    where: { date_classSectionId: { date: input.date, classSectionId: input.classSectionId } },
-    create: { date: input.date, classSectionId: input.classSectionId, sessionId: input.sessionId },
-    update: {},
-  });
+  // Day + records commit atomically — a mid-save failure must not leave a
+  // half-marked register.
+  await (prisma as any).$transaction(async (tx: any) => {
+    const attendanceDay = await tx.attendanceDay.upsert({
+      where: { date_classSectionId: { date: input.date, classSectionId: input.classSectionId } },
+      create: { date: input.date, classSectionId: input.classSectionId, sessionId: input.sessionId },
+      update: {},
+    });
 
-  await Promise.all(
-    input.records.map((r) =>
-      (prisma as any).studentAttendance.upsert({
+    for (const r of input.records) {
+      await tx.studentAttendance.upsert({
         where: { studentSessionId_attendanceDayId: { studentSessionId: r.studentSessionId, attendanceDayId: attendanceDay.id } },
         create: {
           studentId: r.studentId,
@@ -39,9 +41,9 @@ export async function markAttendance(input: {
           outTime: r.outTime,
           remark: r.remark,
         },
-      })
-    )
-  );
+      });
+    }
+  }, { timeout: 30000 });
 }
 
 export async function getStudentAttendanceSummary(studentId: string, sessionId: string) {
