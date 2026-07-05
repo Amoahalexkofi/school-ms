@@ -22,7 +22,7 @@ _Updated 2026-07-02 (commit 03f8e8a): fresh two-sided audit + gap closure._
 | Row actions | view, edit, **collect fees**, phone, login detail, disable | view (edit/delete/disable on profile) | 🟡 no inline "collect fees" |
 | Add / Edit student | full multi-section form | present (`/students/new`, `[id]`) | ✅ |
 | Profile (studentShow) | tabbed profile | present (`/students/[id]`) | ✅ |
-| Promote | pass/fail + continue/leave + → alumni | plain class move | 🟡 (known) |
+| Promote | pass/fail + continue/leave + → alumni (Stdtransfer) | same: per-student radios; fail repeats the class, leave flags isLeave+isAlumni on the current session (no new row); roster excludes already-promoted (438aa17) | ✅ |
 | **CSV Import** | `import` screen + sample; creates student + parent logins | screen + sample; creates student + parent logins, temp passwords shown once | ✅ |
 | **Disabled students** | list + disable-with-reason (master) + enable; **login blocked** | list + reason-master dropdown + date + note; manage-reasons UI; login blocked (User.isActive + Student.isActive in authorize) | ✅ |
 | **Bulk delete / Bulk email** | both; delete cascades to users + orphan parents | both; same cascade; enrolled students skipped | ✅ |
