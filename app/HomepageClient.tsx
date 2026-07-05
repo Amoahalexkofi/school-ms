@@ -599,6 +599,7 @@ export function HomepageClient() {
               { icon: ClipboardList, color: "#0ea5e9", bg: "#e0f2fe", title: "Attendance",             desc: "Daily & subject attendance from any device. Absent alerts to parents via SMS instantly." },
               { icon: DollarSign,    color: "#10b981", bg: "#dcfce7", title: "Fees & Payments",        desc: "Collect fees online or offline. GHS receipts, WhatsApp alerts, defaulter reminders." },
               { icon: BookOpen,      color: "#8b5cf6", bg: "#ede9fe", title: "Exams & Marksheets",     desc: "Enter marks once — Skula auto-ranks, generates BECE-style report cards, ready to print." },
+              { icon: Award,         color: "#10b981", bg: "#dcfce7", title: "GES Continuous Assessment", desc: "SBA the GES way — class work, projects and quizzes weighted with the exam. Class score, exam score and position on a proper GES terminal report sheet." },
               { icon: Banknote,      color: "#059669", bg: "#d1fae5", title: "Payroll",                desc: "Staff salary computation with allowances, deductions, payslips and bulk disbursement." },
               { icon: MessageSquare, color: "#ec4899", bg: "#fce7f3", title: "Communication",          desc: "Bulk SMS, email alerts, homework, notice board, internal chat and parent portal." },
               { icon: CalendarDays,  color: "#f59e0b", bg: "#fef3c7", title: "Timetable",              desc: "Build and publish class timetables. Teachers and students see live schedules instantly." },

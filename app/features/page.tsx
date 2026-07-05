@@ -168,11 +168,13 @@ const MODULES = [
     color: "indigo",
     category: "Academic",
     name: "Exams & Results",
-    tagline: "Marks in. Ranked marksheets out. No Excel.",
+    tagline: "GES continuous assessment in. Ranked terminal reports out. No Excel.",
     description:
-      "The module that saves teachers three days of work every term. Enter marks by subject, and Skula calculates totals, grades, positions, and generates print-ready marksheets — automatically.",
+      "The module that saves teachers three days of work every term. Enter class work, project, quiz and exam scores by subject, and Skula computes the GES SBA weighting, totals, grades, positions — and prints the terminal report sheet, automatically.",
     who: "Teacher, Admin",
     features: [
+      "GES Continuous Assessment (SBA) — class work, projects and quizzes weighted against the exam score, with the standard GES split out of the box and fully adjustable weights",
+      "GES terminal report sheet — class score / exam score columns, position, attendance, conduct, interest and class & head teacher remarks",
       "Exam groups and exam scheduling with configurable subjects per class",
       "Marks entry per subject — one teacher per subject, controlled by the admin",
       "Configurable grade scales: A1-F9 for WASSCE, A-E for BECE, or custom",
