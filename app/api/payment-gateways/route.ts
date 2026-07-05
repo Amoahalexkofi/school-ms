@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { redactSecrets, keepSecret } from "@/lib/config-secrets";
+import { encryptSecret } from "@/lib/secrets-crypto";
 
 // Mirrors Smart School's Paymentsetting_model: payment gateway config.
 // apiPublishableKey is a public key by design; the rest are secret.
@@ -38,9 +39,9 @@ export async function POST(req: NextRequest) {
 
     // Secrets: keep stored value when client submits a blank.
     const secretData = {
-      apiSecretKey: keepSecret(apiSecretKey, existing?.apiSecretKey) || null,
-      apiPassword:  keepSecret(apiPassword,  existing?.apiPassword)  || null,
-      apiSignature: keepSecret(apiSignature, existing?.apiSignature) || null,
+      apiSecretKey: encryptSecret(keepSecret(apiSecretKey, existing?.apiSecretKey)) || null,
+      apiPassword:  encryptSecret(keepSecret(apiPassword,  existing?.apiPassword))  || null,
+      apiSignature: encryptSecret(keepSecret(apiSignature, existing?.apiSignature)) || null,
     };
     const common = {
       apiUsername:       apiUsername       || null,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { decryptSecrets } from "@/lib/secrets-crypto";
 
 // Called by Paystack/Flutterwave after payment (redirect callback)
 export async function GET(req: NextRequest) {
@@ -21,7 +22,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL(`/fees/receipt/${txn.depositId}/${txn.subInvoiceId ?? 1}`, req.url));
   }
 
-  const gwConfig = await (db as any).paymentGateway.findFirst({ where: { paymentType: txn.gateway, isActive: true } });
+  const gwConfig = decryptSecrets(
+    await (db as any).paymentGateway.findFirst({ where: { paymentType: txn.gateway, isActive: true } }),
+    ["apiSecretKey", "apiPassword", "apiSignature"]
+  );
   if (!gwConfig) return NextResponse.redirect(new URL("/fees?error=gateway_disabled", req.url));
 
   let verified = false;

@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { decryptSecrets } from "@/lib/secrets-crypto";
 
 export interface SmsResult {
   success: boolean;
@@ -87,7 +88,10 @@ export async function sendSms(
   dbClient?: any
 ): Promise<SmsResult> {
   const db = dbClient ?? (await getDb());
-  const config = await (db as any).smsConfig.findFirst({ where: { isActive: true } });
+  const config = decryptSecrets(
+    await (db as any).smsConfig.findFirst({ where: { isActive: true } }),
+    ["apiKey", "password"]
+  );
 
   if (!config) {
     return { success: false, provider: "none", error: "No active SMS gateway configured" };

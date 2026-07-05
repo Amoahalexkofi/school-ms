@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { redactList, redactSecrets, keepSecret } from "@/lib/config-secrets";
+import { encryptSecret } from "@/lib/secrets-crypto";
 
 const SECRET_FIELDS = ["apiKey", "password"];
 
@@ -20,9 +21,9 @@ export async function POST(req: NextRequest) {
     if (senderId !== undefined) data.senderId = senderId || "";
     if (username !== undefined) data.username = username || "";
     if (isActive !== undefined) data.isActive = Boolean(isActive);
-    // Secrets: keep the stored value when the client submits a blank.
-    if (apiKey   !== undefined) data.apiKey   = keepSecret(apiKey, existing?.apiKey);
-    if (password !== undefined) data.password = keepSecret(password, existing?.password);
+    // Secrets: keep the stored value when the client submits a blank; encrypt at rest.
+    if (apiKey   !== undefined) data.apiKey   = encryptSecret(keepSecret(apiKey, existing?.apiKey));
+    if (password !== undefined) data.password = encryptSecret(keepSecret(password, existing?.password));
 
     const config = existing
       ? await db.smsConfig.update({ where: { provider }, data })

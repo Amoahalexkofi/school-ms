@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { redactSecrets, keepSecret } from "@/lib/config-secrets";
+import { encryptSecret } from "@/lib/secrets-crypto";
 
 const SECRET_FIELDS = ["smtpPassword"];
 
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
     if (fromName     !== undefined) data.fromName     = fromName     || "";
     if (isActive     !== undefined) data.isActive     = Boolean(isActive);
     // Secret: keep stored value when client submits a blank.
-    if (smtpPassword !== undefined) data.smtpPassword = keepSecret(smtpPassword, existing?.smtpPassword);
+    if (smtpPassword !== undefined) data.smtpPassword = encryptSecret(keepSecret(smtpPassword, existing?.smtpPassword));
 
     const config = existing
       ? await db.emailConfig.update({ where: { id: existing.id }, data })

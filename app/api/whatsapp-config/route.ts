@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { redactList, redactSecrets, keepSecret } from "@/lib/config-secrets";
+import { encryptSecret } from "@/lib/secrets-crypto";
 
 const SECRET_FIELDS = ["apiKey", "password"];
 
@@ -25,8 +26,8 @@ export async function POST(req: NextRequest) {
   const existing = await db.whatsAppConfig.findUnique({ where: { provider } });
   const data = {
     // Secrets: keep stored value when client submits a blank.
-    apiKey:   keepSecret(apiKey, existing?.apiKey),
-    password: keepSecret(password, existing?.password),
+    apiKey:   encryptSecret(keepSecret(apiKey, existing?.apiKey)),
+    password: encryptSecret(keepSecret(password, existing?.password)),
     senderId: senderId ?? "",
     endpoint: endpoint ?? "",
     isActive: Boolean(isActive),

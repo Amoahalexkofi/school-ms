@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { randomBytes } from "crypto";
+import { decryptSecrets } from "@/lib/secrets-crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,7 +10,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "studentFeesMasterId and amount required" }, { status: 422 });
 
     const db = await getDb();
-    const gateway = await (db as any).paymentGateway.findFirst({ where: { isActive: true } });
+    const gateway = decryptSecrets(
+      await (db as any).paymentGateway.findFirst({ where: { isActive: true } }),
+      ["apiSecretKey", "apiPassword", "apiSignature"]
+    );
     if (!gateway) return NextResponse.json({ error: "No active payment gateway configured" }, { status: 400 });
 
     const reference = randomBytes(16).toString("hex");

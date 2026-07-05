@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import type { PrismaClient } from "@/app/generated/prisma/client";
+import { decryptSecrets } from "@/lib/secrets-crypto";
 
 export interface EmailPayload {
   to: string | string[];
@@ -32,7 +33,7 @@ export async function sendEmail(
   payload: EmailPayload
 ): Promise<{ ok: boolean; error?: string }> {
   try {
-    const cfg = await (db as any).emailConfig.findFirst();
+    const cfg = decryptSecrets(await (db as any).emailConfig.findFirst(), ["smtpPassword"]);
     if (!cfg?.isActive || !cfg.smtpHost) {
       console.log("[email] SMTP not configured — skipping send to", payload.to);
       return { ok: false, error: "SMTP not configured" };

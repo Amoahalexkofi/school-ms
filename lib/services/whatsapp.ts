@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { decryptSecrets } from "@/lib/secrets-crypto";
 
 export interface WhatsAppResult {
   success: boolean;
@@ -268,7 +269,10 @@ export async function sendWhatsAppTemplate(
   dbClient?: any
 ): Promise<WhatsAppResult> {
   const db = dbClient ?? (await getDb());
-  let config: WhatsAppConfigShape | null = await (db as any).whatsAppConfig.findFirst({ where: { isActive: true } });
+  let config: WhatsAppConfigShape | null = decryptSecrets(
+    await (db as any).whatsAppConfig.findFirst({ where: { isActive: true } }),
+    ["apiKey", "password"]
+  );
   if (!config) config = getPlatformWhatsAppConfig();
   if (!config) return { success: false, provider: "none", error: "No active WhatsApp provider configured" };
 
@@ -303,7 +307,10 @@ export async function sendWhatsApp(
   const db     = dbClient ?? (await getDb());
   // Hybrid model: prefer the school's own active provider; otherwise fall back
   // to the central Novalss number (env-configured). "none" only if neither set.
-  let config: WhatsAppConfigShape | null = await (db as any).whatsAppConfig.findFirst({ where: { isActive: true } });
+  let config: WhatsAppConfigShape | null = decryptSecrets(
+    await (db as any).whatsAppConfig.findFirst({ where: { isActive: true } }),
+    ["apiKey", "password"]
+  );
   if (!config) config = getPlatformWhatsAppConfig();
 
   if (!config) return { success: false, provider: "none", error: "No active WhatsApp provider configured" };
