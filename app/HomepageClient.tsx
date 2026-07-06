@@ -625,19 +625,23 @@ export function HomepageClient() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section id="features" className="scroll-mt-20 py-16 md:py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
+      <section id="features" className="scroll-mt-20 py-16 md:py-24 relative overflow-hidden" style={{ background: "#0a0a0f" }}>
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.02) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[420px] pointer-events-none"
+          style={{ background: "radial-gradient(ellipse, rgba(99,102,241,0.14) 0%, transparent 70%)" }} />
+        <div className="relative max-w-6xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}
             variants={stagger} className="mb-10 md:mb-16">
             <motion.div variants={fadeUp} className="mb-4">
-              <span className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.14em]">Platform</span>
+              <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-[0.14em]">Platform</span>
             </motion.div>
             <motion.h2 variants={fadeUp}
-              className="text-[36px] sm:text-[48px] font-black tracking-tight text-slate-900 leading-[1.1] mt-5 font-[family-name:var(--font-montserrat)]">
+              className="text-[36px] sm:text-[48px] font-black tracking-tight text-white leading-[1.1] mt-5 font-[family-name:var(--font-montserrat)]">
               Everything your school needs.<br />
-              <span className="text-slate-400 font-light italic">Nothing you don't.</span>
+              <span className="text-indigo-400 font-light italic">Nothing you don't.</span>
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-slate-500 text-[16px] mt-4 max-w-lg leading-relaxed">
+            <motion.p variants={fadeUp} className="text-slate-400 text-[16px] mt-4 max-w-lg leading-relaxed">
               15 modules. One subscription. No per-feature pricing.
             </motion.p>
           </motion.div>
@@ -648,22 +652,23 @@ export function HomepageClient() {
 
             {/* GES Continuous Assessment — the Ghana headliner, largest cell */}
             <motion.div variants={fadeUp}
-              className="group relative lg:col-span-3 rounded-3xl border border-slate-900/[0.07] bg-gradient-to-b from-indigo-50/70 to-white overflow-hidden flex flex-col hover:shadow-[0_24px_60px_-24px_rgba(79,70,229,0.25)] transition-shadow duration-300">
+              className="group relative lg:col-span-3 rounded-3xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 0 80px -20px rgba(99,102,241,0.25) inset, 0 24px 60px -24px rgba(99,102,241,0.2)" }}>
               <div className="p-7 sm:p-9 pb-0">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 bg-indigo-600 text-white">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 text-indigo-300" style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.35)" }}>
                   <Star className="h-3 w-3 fill-current" /> Built for GES
                 </span>
-                <h3 className="text-[24px] sm:text-[28px] font-black tracking-tight text-slate-900 leading-tight font-[family-name:var(--font-montserrat)]">
+                <h3 className="text-[24px] sm:text-[28px] font-black tracking-tight text-white leading-tight font-[family-name:var(--font-montserrat)]">
                   Continuous assessment,<br />computed for you.
                 </h3>
-                <p className="text-slate-500 text-[14px] leading-relaxed mt-3 max-w-md">
+                <p className="text-slate-400 text-[14px] leading-relaxed mt-3 max-w-md">
                   Class work, projects and quizzes weighted the GES way — class score, exam score,
                   position and remarks land on a proper terminal report sheet.
                 </p>
               </div>
               {/* Embedded terminal report sheet, cropped by the cell */}
               <div className="relative mt-auto pt-6 mx-7 sm:mx-14 -mb-8 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-                <div className="bg-white border border-slate-200 rounded-t-xl shadow-[0_-8px_40px_-12px_rgba(15,23,42,0.18)] px-6 pt-5 pb-10">
+                <div className="bg-white rounded-t-xl px-6 pt-5 pb-10" style={{ boxShadow: "0 -12px 60px -12px rgba(99,102,241,0.45)" }}>
                   <div className="text-center pb-2 mb-3" style={{ borderBottom: "3px double #cbd5e1" }}>
                     <p className="text-[11px] font-black tracking-wide text-slate-900">ST. MARY&apos;S BASIC SCHOOL</p>
                     <p className="text-[8.5px] font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Terminal Report — End of Term 2</p>
@@ -696,28 +701,29 @@ export function HomepageClient() {
 
             {/* Fees & Payments — WhatsApp receipt */}
             <motion.div variants={fadeUp}
-              className="group relative lg:col-span-2 rounded-3xl border border-slate-900/[0.07] bg-gradient-to-b from-emerald-50/70 to-white overflow-hidden flex flex-col hover:shadow-[0_24px_60px_-24px_rgba(16,185,129,0.3)] transition-shadow duration-300">
+              className="group relative lg:col-span-2 rounded-3xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 0 80px -20px rgba(16,185,129,0.22) inset, 0 24px 60px -24px rgba(16,185,129,0.18)" }}>
               <div className="p-7 sm:p-8 pb-0">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 bg-emerald-600 text-white">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 text-emerald-300" style={{ background: "rgba(16,185,129,0.14)", border: "1px solid rgba(16,185,129,0.35)" }}>
                   <Star className="h-3 w-3 fill-current" /> Most loved
                 </span>
-                <h3 className="text-[22px] font-black tracking-tight text-slate-900 leading-tight font-[family-name:var(--font-montserrat)]">
+                <h3 className="text-[22px] font-black tracking-tight text-white leading-tight font-[family-name:var(--font-montserrat)]">
                   Fees collected.<br />Parents informed.
                 </h3>
-                <p className="text-slate-500 text-[14px] leading-relaxed mt-3">
+                <p className="text-slate-400 text-[14px] leading-relaxed mt-3">
                   Online or at the office — every payment gets a GHS receipt on WhatsApp, and defaulters get reminded automatically.
                 </p>
               </div>
               <div className="relative mt-auto pt-6 mx-7 -mb-4 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-                <div className="rounded-t-2xl px-4 pt-4 pb-8" style={{ backgroundColor: "#e7f6ee" }}>
-                  <div className="max-w-[270px] bg-white rounded-xl rounded-tl-sm shadow-sm px-3.5 py-3 border border-emerald-900/[0.06]">
-                    <p className="text-[10px] font-bold text-emerald-700 mb-1">Skula · St. Mary&apos;s Basic</p>
-                    <p className="text-[11.5px] text-slate-700 leading-snug">
+                <div className="rounded-t-2xl px-4 pt-4 pb-8" style={{ backgroundColor: "#0b141a", border: "1px solid rgba(255,255,255,0.06)", borderBottom: "none" }}>
+                  <div className="max-w-[270px] rounded-xl rounded-tl-sm px-3.5 py-3" style={{ backgroundColor: "#202c33" }}>
+                    <p className="text-[10px] font-bold text-emerald-400 mb-1">Skula · St. Mary&apos;s Basic</p>
+                    <p className="text-[11.5px] text-slate-200 leading-snug">
                       Payment received ✅<br />
                       <strong>GH₵350.00</strong> — Term 2 fees for <strong>Kofi Mensah</strong> (Basic 4).<br />
-                      Receipt <span className="font-mono text-[10px]">SKL-0042</span> · Balance: <strong className="text-emerald-700">GH₵0.00</strong>
+                      Receipt <span className="font-mono text-[10px]">SKL-0042</span> · Balance: <strong className="text-emerald-400">GH₵0.00</strong>
                     </p>
-                    <p className="text-[9px] text-slate-400 text-right mt-1.5">10:42 ✓✓</p>
+                    <p className="text-[9px] text-slate-500 text-right mt-1.5">10:42 <span className="text-sky-400">✓✓</span></p>
                   </div>
                 </div>
               </div>
@@ -725,20 +731,21 @@ export function HomepageClient() {
 
             {/* Exams & Marksheets — ranked list */}
             <motion.div variants={fadeUp}
-              className="group relative lg:col-span-2 rounded-3xl border border-slate-900/[0.07] bg-gradient-to-b from-violet-50/70 to-white overflow-hidden flex flex-col hover:shadow-[0_24px_60px_-24px_rgba(139,92,246,0.3)] transition-shadow duration-300">
+              className="group relative lg:col-span-2 rounded-3xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 0 80px -20px rgba(139,92,246,0.22) inset, 0 24px 60px -24px rgba(139,92,246,0.18)" }}>
               <div className="p-7 sm:p-8 pb-0">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 bg-violet-600 text-white">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 text-violet-300" style={{ background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.35)" }}>
                   <Star className="h-3 w-3 fill-current" /> Time saver
                 </span>
-                <h3 className="text-[22px] font-black tracking-tight text-slate-900 leading-tight font-[family-name:var(--font-montserrat)]">
+                <h3 className="text-[22px] font-black tracking-tight text-white leading-tight font-[family-name:var(--font-montserrat)]">
                   Marks in. Ranked<br />report cards out.
                 </h3>
-                <p className="text-slate-500 text-[14px] leading-relaxed mt-3">
+                <p className="text-slate-400 text-[14px] leading-relaxed mt-3">
                   Totals, grades and class positions computed the moment marks are entered — BECE-style cards ready to print.
                 </p>
               </div>
               <div className="relative mt-auto pt-6 mx-7 -mb-4 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-                <div className="bg-white border border-slate-200 rounded-t-xl shadow-[0_-8px_40px_-12px_rgba(15,23,42,0.14)] px-4 pt-3 pb-8">
+                <div className="bg-white rounded-t-xl px-4 pt-3 pb-8" style={{ boxShadow: "0 -12px 60px -12px rgba(139,92,246,0.4)" }}>
                   {[
                     { rank: "1st", name: "Ama Asante",  total: 86, grade: "A1", gold: true },
                     { rank: "2nd", name: "Kwame Boadu", total: 81, grade: "A2" },
@@ -757,21 +764,22 @@ export function HomepageClient() {
 
             {/* Attendance — register + SMS alert */}
             <motion.div variants={fadeUp}
-              className="group relative lg:col-span-3 rounded-3xl border border-slate-900/[0.07] bg-gradient-to-b from-sky-50/70 to-white overflow-hidden flex flex-col hover:shadow-[0_24px_60px_-24px_rgba(14,165,233,0.3)] transition-shadow duration-300">
+              className="group relative lg:col-span-3 rounded-3xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 0 80px -20px rgba(14,165,233,0.22) inset, 0 24px 60px -24px rgba(14,165,233,0.18)" }}>
               <div className="p-7 sm:p-9 pb-0 sm:flex sm:items-start sm:justify-between sm:gap-8">
                 <div className="max-w-sm">
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 bg-sky-600 text-white">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 text-sky-300" style={{ background: "rgba(14,165,233,0.15)", border: "1px solid rgba(14,165,233,0.35)" }}>
                     <Star className="h-3 w-3 fill-current" /> Parents notice
                   </span>
-                  <h3 className="text-[22px] sm:text-[24px] font-black tracking-tight text-slate-900 leading-tight font-[family-name:var(--font-montserrat)]">
+                  <h3 className="text-[22px] sm:text-[24px] font-black tracking-tight text-white leading-tight font-[family-name:var(--font-montserrat)]">
                     Mark the register.<br />Parents know by 8:05.
                   </h3>
-                  <p className="text-slate-500 text-[14px] leading-relaxed mt-3">
+                  <p className="text-slate-400 text-[14px] leading-relaxed mt-3">
                     Daily and per-subject attendance from any device — absent students&apos; guardians get an SMS the moment you save.
                   </p>
                 </div>
                 <div className="hidden sm:block shrink-0 mt-2 max-w-[240px]">
-                  <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-3.5 py-3">
+                  <div className="bg-white rounded-xl px-3.5 py-3" style={{ boxShadow: "0 8px 40px -8px rgba(14,165,233,0.35)" }}>
                     <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wide mb-1">SMS · 8:05 AM</p>
                     <p className="text-[11.5px] text-slate-700 leading-snug">
                       St. Mary&apos;s: <strong>Yaw Owusu</strong> was marked <strong className="text-red-600">absent</strong> today (Basic 5). Please contact the school.
@@ -780,7 +788,7 @@ export function HomepageClient() {
                 </div>
               </div>
               <div className="relative mt-auto pt-6 mx-7 sm:mx-9 -mb-4 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-                <div className="bg-white border border-slate-200 rounded-t-xl shadow-[0_-8px_40px_-12px_rgba(15,23,42,0.14)] px-4 pt-3 pb-8 overflow-hidden">
+                <div className="bg-white rounded-t-xl px-4 pt-3 pb-8 overflow-hidden" style={{ boxShadow: "0 -12px 60px -12px rgba(14,165,233,0.4)" }}>
                   <div className="grid grid-cols-[1.4fr_repeat(5,1fr)] gap-x-2 pb-1.5 border-b border-slate-200">
                     {["Student", "Mon", "Tue", "Wed", "Thu", "Fri"].map(h => (
                       <p key={h} className="text-[8px] font-bold text-slate-400 uppercase tracking-wide">{h}</p>
@@ -805,12 +813,12 @@ export function HomepageClient() {
 
             {/* Everything else — the other ten modules in one quiet cell */}
             <motion.div variants={fadeUp}
-              className="lg:col-span-5 rounded-3xl border border-slate-900/[0.07] bg-white p-7 sm:p-8">
+              className="lg:col-span-5 rounded-3xl p-7 sm:p-8" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
               <div className="sm:flex sm:items-baseline sm:justify-between mb-5">
-                <h3 className="text-[16px] font-black tracking-tight text-slate-900 font-[family-name:var(--font-montserrat)]">
+                <h3 className="text-[16px] font-black tracking-tight text-white font-[family-name:var(--font-montserrat)]">
                   …and the other ten, included.
                 </h3>
-                <p className="text-[13px] text-slate-400 mt-1 sm:mt-0">All 15 modules · <span className="font-bold text-indigo-600">GH₵199/month</span> · no per-feature pricing</p>
+                <p className="text-[13px] text-slate-400 mt-1 sm:mt-0">All 15 modules · <span className="font-bold text-indigo-400">GH₵199/month</span> · no per-feature pricing</p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-3">
                 {[
@@ -818,8 +826,8 @@ export function HomepageClient() {
                   "Library", "Transport", "Hostel", "Inventory", "Free School Website",
                 ].map(m => (
                   <div key={m} className="flex items-center gap-2">
-                    <Check className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
-                    <span className="text-[13px] font-medium text-slate-600">{m}</span>
+                    <Check className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
+                    <span className="text-[13px] font-medium text-slate-300">{m}</span>
                   </div>
                 ))}
               </div>
