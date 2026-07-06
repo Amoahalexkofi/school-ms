@@ -642,70 +642,188 @@ export function HomepageClient() {
             </motion.p>
           </motion.div>
 
-          {/* The Module Register — a school ledger, not a card grid. Featured
-              modules are lit in their colour; every line is a real module. */}
+          {/* Bento grid — flagship modules with the product visible inside the cell */}
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}
-            variants={fadeUp} className="rounded-2xl bg-white border border-slate-900/[0.06] overflow-hidden">
-            {/* Ledger heading */}
-            <div className="flex items-baseline justify-between px-6 sm:px-8 py-4"
-              style={{ borderBottom: "3px double #cbd5e1" }}>
-              <p className="text-[12px] font-black text-slate-900 uppercase tracking-widest">Module Register</p>
-              <p className="text-[12px] text-slate-400 tabular-nums">2026 / 2027</p>
-            </div>
+            variants={stagger} className="grid grid-cols-1 lg:grid-cols-5 gap-4">
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 lg:divide-x lg:divide-slate-900/[0.06]">
-              {[
-                [
-                  { n: "01", color: "#10b981", featured: "Most loved",     title: "Fees & Payments",           desc: "Online & offline collection, GHS receipts on WhatsApp, defaulter reminders." },
-                  { n: "02", color: "#4f46e5", featured: "Built for GES",  title: "GES Continuous Assessment", desc: "Weighted SBA and a proper GES terminal report sheet, computed for you." },
-                  { n: "03", color: "#8b5cf6", featured: "Time saver",     title: "Exams & Marksheets",        desc: "Auto totals, grades, positions and BECE-style report cards." },
-                  { n: "04", color: "#0ea5e9", featured: "Parents notice", title: "Attendance",                desc: "Daily & period registers with instant SMS absent alerts." },
-                  { n: "05", color: "#6366f1", title: "Students & Admissions", desc: "Enrollment, profiles, ID cards and bulk promotion." },
-                  { n: "06", color: "#ec4899", title: "Communication",         desc: "Bulk SMS, notices, homework, chat and the parent portal." },
-                  { n: "07", color: "#059669", title: "Payroll",               desc: "Salaries, allowances, deductions and payslips." },
-                  { n: "08", color: "#f59e0b", title: "Timetable",             desc: "Build and publish live class schedules." },
-                ],
-                [
-                  { n: "09", color: "#0ea5e9", title: "Online Exams",        desc: "MCQ & theory exams with auto-grading." },
-                  { n: "10", color: "#f97316", title: "Library",             desc: "Catalog, issue & return, overdue tracking." },
-                  { n: "11", color: "#14b8a6", title: "Transport",           desc: "Routes, vehicles, pickup points and transport fees." },
-                  { n: "12", color: "#8b5cf6", title: "Hostel",              desc: "Rooms, allocations and hostel fees." },
-                  { n: "13", color: "#64748b", title: "Inventory",           desc: "Items, stores, suppliers and stock issues." },
-                  { n: "14", color: "#64748b", title: "Front Office",        desc: "Visitors, enquiries, calls and dispatch." },
-                  { n: "15", color: "#6366f1", title: "Free School Website", desc: "A branded public site with portal login — included." },
-                ],
-              ].map((column, ci) => (
-                <motion.ol key={ci} variants={stagger} className="list-none">
-                  {column.map(({ n, color, title, desc, featured }) => (
-                    <motion.li key={title} variants={fadeUp}
-                      className={`group relative flex gap-4 px-6 sm:px-8 py-[15px] border-b border-slate-900/[0.05] transition-colors duration-200 ${
-                        ci === 1 ? "last:border-b-0" : "lg:last:border-b-0"}`}
-                      style={featured ? { backgroundColor: `${color}08` } : undefined}>
-                      <span className="text-[11px] tabular-nums font-semibold text-slate-300 pt-0.5 w-5 shrink-0 select-none">{n}</span>
-                      <span className="w-2 h-2 rounded-full mt-[7px] shrink-0 transition-transform duration-200 group-hover:scale-125" style={{ backgroundColor: color }} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2.5 flex-wrap">
-                          <h3 className="text-slate-900 font-bold text-[14px] tracking-tight">{title}</h3>
-                          {featured && (
-                            <span className="inline-flex items-center gap-1 rounded-full px-2 py-[3px] text-[9.5px] font-bold uppercase tracking-wide"
-                              style={{ backgroundColor: `${color}14`, color }}>
-                              <Star className="h-2.5 w-2.5 fill-current" /> {featured}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-slate-500 text-[13px] leading-relaxed mt-0.5">{desc}</p>
-                      </div>
-                    </motion.li>
+            {/* GES Continuous Assessment — the Ghana headliner, largest cell */}
+            <motion.div variants={fadeUp}
+              className="group relative lg:col-span-3 rounded-3xl border border-slate-900/[0.07] bg-gradient-to-b from-indigo-50/70 to-white overflow-hidden flex flex-col hover:shadow-[0_24px_60px_-24px_rgba(79,70,229,0.25)] transition-shadow duration-300">
+              <div className="p-7 sm:p-9 pb-0">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 bg-indigo-600 text-white">
+                  <Star className="h-3 w-3 fill-current" /> Built for GES
+                </span>
+                <h3 className="text-[24px] sm:text-[28px] font-black tracking-tight text-slate-900 leading-tight font-[family-name:var(--font-montserrat)]">
+                  Continuous assessment,<br />computed for you.
+                </h3>
+                <p className="text-slate-500 text-[14px] leading-relaxed mt-3 max-w-md">
+                  Class work, projects and quizzes weighted the GES way — class score, exam score,
+                  position and remarks land on a proper terminal report sheet.
+                </p>
+              </div>
+              {/* Embedded terminal report sheet, cropped by the cell */}
+              <div className="relative mt-auto pt-6 mx-7 sm:mx-14 -mb-8 transition-transform duration-500 ease-out group-hover:-translate-y-2">
+                <div className="bg-white border border-slate-200 rounded-t-xl shadow-[0_-8px_40px_-12px_rgba(15,23,42,0.18)] px-6 pt-5 pb-10">
+                  <div className="text-center pb-2 mb-3" style={{ borderBottom: "3px double #cbd5e1" }}>
+                    <p className="text-[11px] font-black tracking-wide text-slate-900">ST. MARY&apos;S BASIC SCHOOL</p>
+                    <p className="text-[8.5px] font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Terminal Report — End of Term 2</p>
+                  </div>
+                  <div className="flex justify-between text-[10px] text-slate-600 mb-2">
+                    <span><span className="text-slate-400">Name:</span> <strong>Ama Asante</strong> · Basic 6</span>
+                    <span className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-full text-[9px]">Position: 2nd of 31</span>
+                  </div>
+                  <div className="grid grid-cols-[1.7fr_1fr_1fr_0.8fr_0.7fr] gap-x-2 pb-1.5 border-b border-slate-200">
+                    {["Subject", "Class (50)", "Exam (50)", "Total", "Grade"].map(h => (
+                      <p key={h} className="text-[8px] font-bold text-slate-400 uppercase tracking-wide">{h}</p>
+                    ))}
+                  </div>
+                  {[
+                    { sub: "Mathematics",   cls: 44, exam: 42, total: 86, grade: "A1", top: true },
+                    { sub: "English Lang.", cls: 40, exam: 39, total: 79, grade: "B2" },
+                    { sub: "Int. Science",  cls: 41, exam: 37, total: 78, grade: "B2" },
+                  ].map(r => (
+                    <div key={r.sub} className="grid grid-cols-[1.7fr_1fr_1fr_0.8fr_0.7fr] gap-x-2 items-center py-1.5 border-b border-slate-100">
+                      <span className="text-[10.5px] font-semibold text-slate-700">{r.sub}</span>
+                      <span className="text-[10.5px] text-slate-600 tabular-nums">{r.cls}</span>
+                      <span className="text-[10.5px] text-slate-600 tabular-nums">{r.exam}</span>
+                      <span className="text-[10.5px] font-bold text-slate-900 tabular-nums">{r.total}</span>
+                      <span className={`text-[9px] font-black px-1.5 py-0.5 rounded w-fit ${r.top ? "bg-emerald-100 text-emerald-700" : "bg-indigo-100 text-indigo-700"}`}>{r.grade}</span>
+                    </div>
                   ))}
-                </motion.ol>
-              ))}
-            </div>
+                </div>
+              </div>
+            </motion.div>
 
-            {/* Ledger total line */}
-            <div className="flex items-baseline justify-between px-6 sm:px-8 py-4 border-t border-slate-900/[0.06] bg-slate-50/60">
-              <p className="text-[12px] font-black text-slate-900 uppercase tracking-widest">Total — everything included</p>
-              <p className="text-[13px] font-bold text-indigo-600 tabular-nums">GH₵199 / month</p>
-            </div>
+            {/* Fees & Payments — WhatsApp receipt */}
+            <motion.div variants={fadeUp}
+              className="group relative lg:col-span-2 rounded-3xl border border-slate-900/[0.07] bg-gradient-to-b from-emerald-50/70 to-white overflow-hidden flex flex-col hover:shadow-[0_24px_60px_-24px_rgba(16,185,129,0.3)] transition-shadow duration-300">
+              <div className="p-7 sm:p-8 pb-0">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 bg-emerald-600 text-white">
+                  <Star className="h-3 w-3 fill-current" /> Most loved
+                </span>
+                <h3 className="text-[22px] font-black tracking-tight text-slate-900 leading-tight font-[family-name:var(--font-montserrat)]">
+                  Fees collected.<br />Parents informed.
+                </h3>
+                <p className="text-slate-500 text-[14px] leading-relaxed mt-3">
+                  Online or at the office — every payment gets a GHS receipt on WhatsApp, and defaulters get reminded automatically.
+                </p>
+              </div>
+              <div className="relative mt-auto pt-6 mx-7 -mb-4 transition-transform duration-500 ease-out group-hover:-translate-y-2">
+                <div className="rounded-t-2xl px-4 pt-4 pb-8" style={{ backgroundColor: "#e7f6ee" }}>
+                  <div className="max-w-[270px] bg-white rounded-xl rounded-tl-sm shadow-sm px-3.5 py-3 border border-emerald-900/[0.06]">
+                    <p className="text-[10px] font-bold text-emerald-700 mb-1">Skula · St. Mary&apos;s Basic</p>
+                    <p className="text-[11.5px] text-slate-700 leading-snug">
+                      Payment received ✅<br />
+                      <strong>GH₵350.00</strong> — Term 2 fees for <strong>Kofi Mensah</strong> (Basic 4).<br />
+                      Receipt <span className="font-mono text-[10px]">SKL-0042</span> · Balance: <strong className="text-emerald-700">GH₵0.00</strong>
+                    </p>
+                    <p className="text-[9px] text-slate-400 text-right mt-1.5">10:42 ✓✓</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Exams & Marksheets — ranked list */}
+            <motion.div variants={fadeUp}
+              className="group relative lg:col-span-2 rounded-3xl border border-slate-900/[0.07] bg-gradient-to-b from-violet-50/70 to-white overflow-hidden flex flex-col hover:shadow-[0_24px_60px_-24px_rgba(139,92,246,0.3)] transition-shadow duration-300">
+              <div className="p-7 sm:p-8 pb-0">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 bg-violet-600 text-white">
+                  <Star className="h-3 w-3 fill-current" /> Time saver
+                </span>
+                <h3 className="text-[22px] font-black tracking-tight text-slate-900 leading-tight font-[family-name:var(--font-montserrat)]">
+                  Marks in. Ranked<br />report cards out.
+                </h3>
+                <p className="text-slate-500 text-[14px] leading-relaxed mt-3">
+                  Totals, grades and class positions computed the moment marks are entered — BECE-style cards ready to print.
+                </p>
+              </div>
+              <div className="relative mt-auto pt-6 mx-7 -mb-4 transition-transform duration-500 ease-out group-hover:-translate-y-2">
+                <div className="bg-white border border-slate-200 rounded-t-xl shadow-[0_-8px_40px_-12px_rgba(15,23,42,0.14)] px-4 pt-3 pb-8">
+                  {[
+                    { rank: "1st", name: "Ama Asante",  total: 86, grade: "A1", gold: true },
+                    { rank: "2nd", name: "Kwame Boadu", total: 81, grade: "A2" },
+                    { rank: "3rd", name: "Efua Darko",  total: 78, grade: "B2" },
+                  ].map(r => (
+                    <div key={r.name} className={`flex items-center gap-3 py-2 border-b border-slate-100 last:border-0 ${r.gold ? "bg-amber-50/60 -mx-4 px-4 rounded" : ""}`}>
+                      <span className={`text-[10px] font-black w-8 ${r.gold ? "text-amber-500" : "text-slate-400"}`}>{r.rank}</span>
+                      <span className="text-[11.5px] font-semibold text-slate-700 flex-1">{r.name}</span>
+                      <span className="text-[11.5px] font-bold text-slate-900 tabular-nums">{r.total}%</span>
+                      <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${r.gold ? "bg-emerald-100 text-emerald-700" : "bg-indigo-100 text-indigo-700"}`}>{r.grade}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Attendance — register + SMS alert */}
+            <motion.div variants={fadeUp}
+              className="group relative lg:col-span-3 rounded-3xl border border-slate-900/[0.07] bg-gradient-to-b from-sky-50/70 to-white overflow-hidden flex flex-col hover:shadow-[0_24px_60px_-24px_rgba(14,165,233,0.3)] transition-shadow duration-300">
+              <div className="p-7 sm:p-9 pb-0 sm:flex sm:items-start sm:justify-between sm:gap-8">
+                <div className="max-w-sm">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 bg-sky-600 text-white">
+                    <Star className="h-3 w-3 fill-current" /> Parents notice
+                  </span>
+                  <h3 className="text-[22px] sm:text-[24px] font-black tracking-tight text-slate-900 leading-tight font-[family-name:var(--font-montserrat)]">
+                    Mark the register.<br />Parents know by 8:05.
+                  </h3>
+                  <p className="text-slate-500 text-[14px] leading-relaxed mt-3">
+                    Daily and per-subject attendance from any device — absent students&apos; guardians get an SMS the moment you save.
+                  </p>
+                </div>
+                <div className="hidden sm:block shrink-0 mt-2 max-w-[240px]">
+                  <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-3.5 py-3">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wide mb-1">SMS · 8:05 AM</p>
+                    <p className="text-[11.5px] text-slate-700 leading-snug">
+                      St. Mary&apos;s: <strong>Yaw Owusu</strong> was marked <strong className="text-red-600">absent</strong> today (Basic 5). Please contact the school.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="relative mt-auto pt-6 mx-7 sm:mx-9 -mb-4 transition-transform duration-500 ease-out group-hover:-translate-y-2">
+                <div className="bg-white border border-slate-200 rounded-t-xl shadow-[0_-8px_40px_-12px_rgba(15,23,42,0.14)] px-4 pt-3 pb-8 overflow-hidden">
+                  <div className="grid grid-cols-[1.4fr_repeat(5,1fr)] gap-x-2 pb-1.5 border-b border-slate-200">
+                    {["Student", "Mon", "Tue", "Wed", "Thu", "Fri"].map(h => (
+                      <p key={h} className="text-[8px] font-bold text-slate-400 uppercase tracking-wide">{h}</p>
+                    ))}
+                  </div>
+                  {[
+                    { name: "Ama Asante",  days: ["P", "P", "P", "P", "P"] },
+                    { name: "Yaw Owusu",   days: ["P", "P", "A", "P", "P"] },
+                    { name: "Efua Darko",  days: ["P", "L", "P", "P", "P"] },
+                  ].map(r => (
+                    <div key={r.name} className="grid grid-cols-[1.4fr_repeat(5,1fr)] gap-x-2 items-center py-1.5 border-b border-slate-100 last:border-0">
+                      <span className="text-[10.5px] font-semibold text-slate-700">{r.name}</span>
+                      {r.days.map((d, i) => (
+                        <span key={i} className={`text-[9px] font-black w-5 h-5 rounded-md flex items-center justify-center ${
+                          d === "P" ? "bg-emerald-100 text-emerald-700" : d === "A" ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-700"}`}>{d}</span>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Everything else — the other ten modules in one quiet cell */}
+            <motion.div variants={fadeUp}
+              className="lg:col-span-5 rounded-3xl border border-slate-900/[0.07] bg-white p-7 sm:p-8">
+              <div className="sm:flex sm:items-baseline sm:justify-between mb-5">
+                <h3 className="text-[16px] font-black tracking-tight text-slate-900 font-[family-name:var(--font-montserrat)]">
+                  …and the other ten, included.
+                </h3>
+                <p className="text-[13px] text-slate-400 mt-1 sm:mt-0">All 15 modules · <span className="font-bold text-indigo-600">GH₵199/month</span> · no per-feature pricing</p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-3">
+                {[
+                  "Students & Admissions", "Communication", "Payroll", "Timetable", "Online Exams",
+                  "Library", "Transport", "Hostel", "Inventory", "Free School Website",
+                ].map(m => (
+                  <div key={m} className="flex items-center gap-2">
+                    <Check className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                    <span className="text-[13px] font-medium text-slate-600">{m}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
