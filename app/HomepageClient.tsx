@@ -645,10 +645,10 @@ export function HomepageClient() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}
             variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { icon: DollarSign,    color: "#10b981", bg: "#dcfce7", featured: "Most loved",     title: "Fees & Payments",        desc: "Collect fees online or offline. GHS receipts, WhatsApp alerts, defaulter reminders." },
-              { icon: Award,         color: "#4f46e5", bg: "#eef2ff", featured: "Built for GES",  title: "GES Continuous Assessment", desc: "SBA the GES way — class work, projects and quizzes weighted with the exam. Class score, exam score and position on a proper GES terminal report sheet." },
-              { icon: BookOpen,      color: "#8b5cf6", bg: "#ede9fe", featured: "Time saver",     title: "Exams & Marksheets",     desc: "Enter marks once — Skula auto-ranks, generates BECE-style report cards, ready to print." },
-              { icon: ClipboardList, color: "#0ea5e9", bg: "#e0f2fe", featured: "Parents notice", title: "Attendance",             desc: "Daily & subject attendance from any device. Absent alerts to parents via SMS instantly." },
+              { icon: DollarSign,    color: "#10b981", bg: "#dcfce7", featured: true, title: "Fees & Payments",        desc: "Collect fees online or offline. GHS receipts, WhatsApp alerts, defaulter reminders." },
+              { icon: Award,         color: "#4f46e5", bg: "#eef2ff", featured: true, title: "GES Continuous Assessment", desc: "SBA the GES way — class work, projects and quizzes weighted with the exam. Class score, exam score and position on a proper GES terminal report sheet." },
+              { icon: BookOpen,      color: "#8b5cf6", bg: "#ede9fe", featured: true, title: "Exams & Marksheets",     desc: "Enter marks once — Skula auto-ranks, generates BECE-style report cards, ready to print." },
+              { icon: ClipboardList, color: "#0ea5e9", bg: "#e0f2fe", featured: true, title: "Attendance",             desc: "Daily & subject attendance from any device. Absent alerts to parents via SMS instantly." },
               { icon: Users,         color: "#6366f1", bg: "#eef2ff", title: "Students & Admissions", desc: "Online enrollment, student profiles, BECE tracking, digital ID cards and bulk promotions." },
               { icon: MessageSquare, color: "#ec4899", bg: "#fce7f3", title: "Communication",          desc: "Bulk SMS, email alerts, homework, notice board, internal chat and parent portal." },
               { icon: Banknote,      color: "#059669", bg: "#d1fae5", title: "Payroll",                desc: "Staff salary computation with allowances, deductions, payslips and bulk disbursement." },
@@ -663,19 +663,13 @@ export function HomepageClient() {
               <motion.div key={title} variants={fadeUp}
                 className="group relative overflow-hidden p-6 rounded-2xl bg-white border hover:shadow-[0_10px_34px_-14px_rgba(15,23,42,0.20)] hover:-translate-y-0.5 transition-all duration-300 cursor-default"
                 style={featured
-                  ? { borderColor: `${color}3d`, backgroundColor: `${color}08` }
+                  ? { borderColor: `${color}4d`, backgroundColor: `${color}0f` }
                   : { borderColor: "rgba(15,23,42,0.06)" }}>
                 {/* Hairline accent in the module's colour — always lit on featured
                     modules, revealed on hover for the rest */}
                 <span className={`absolute inset-x-0 top-0 h-[2px] origin-left transition-transform duration-300 ease-out ${
                   featured ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`}
                   style={{ background: `linear-gradient(90deg, ${color}, ${color}00)` }} />
-                {featured && (
-                  <span className="absolute top-4 right-4 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
-                    style={{ backgroundColor: bg, color }}>
-                    <Star className="h-2.5 w-2.5 fill-current" /> {featured}
-                  </span>
-                )}
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 ring-1 transition-transform duration-300 group-hover:scale-105"
                   style={{ backgroundColor: bg, "--tw-ring-color": `${color}22` } as React.CSSProperties}>
                   <Icon className="h-5 w-5" style={{ color }} />
