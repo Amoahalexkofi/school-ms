@@ -625,213 +625,65 @@ export function HomepageClient() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section id="features" className="scroll-mt-20 py-16 md:py-24 relative overflow-hidden" style={{ background: "#0a0a0f" }}>
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.02) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[420px] pointer-events-none"
-          style={{ background: "radial-gradient(ellipse, rgba(99,102,241,0.14) 0%, transparent 70%)" }} />
-        <div className="relative max-w-6xl mx-auto px-6">
+      <section id="features" className="scroll-mt-20 py-16 md:py-24 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}
             variants={stagger} className="mb-10 md:mb-16">
             <motion.div variants={fadeUp} className="mb-4">
-              <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-[0.14em]">Platform</span>
+              <span className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.14em]">Platform</span>
             </motion.div>
             <motion.h2 variants={fadeUp}
-              className="text-[36px] sm:text-[48px] font-black tracking-tight text-white leading-[1.1] mt-5 font-[family-name:var(--font-montserrat)]">
+              className="text-[36px] sm:text-[48px] font-black tracking-tight text-slate-900 leading-[1.1] mt-5 font-[family-name:var(--font-montserrat)]">
               Everything your school needs.<br />
-              <span className="text-indigo-400 font-light italic">Nothing you don't.</span>
+              <span className="text-slate-400 font-light italic">Nothing you don't.</span>
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-slate-400 text-[16px] mt-4 max-w-lg leading-relaxed">
+            <motion.p variants={fadeUp} className="text-slate-500 text-[16px] mt-4 max-w-lg leading-relaxed">
               15 modules. One subscription. No per-feature pricing.
             </motion.p>
           </motion.div>
 
-          {/* Bento grid — flagship modules with the product visible inside the cell */}
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}
-            variants={stagger} className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-
-            {/* GES Continuous Assessment — the Ghana headliner, largest cell */}
-            <motion.div variants={fadeUp}
-              className="group relative lg:col-span-3 rounded-3xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 0 80px -20px rgba(99,102,241,0.25) inset, 0 24px 60px -24px rgba(99,102,241,0.2)" }}>
-              <div className="p-7 sm:p-9 pb-0">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 text-indigo-300" style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.35)" }}>
-                  <Star className="h-3 w-3 fill-current" /> Built for GES
-                </span>
-                <h3 className="text-[24px] sm:text-[28px] font-black tracking-tight text-white leading-tight font-[family-name:var(--font-montserrat)]">
-                  Continuous assessment,<br />computed for you.
-                </h3>
-                <p className="text-slate-400 text-[14px] leading-relaxed mt-3 max-w-md">
-                  Class work, projects and quizzes weighted the GES way — class score, exam score,
-                  position and remarks land on a proper terminal report sheet.
-                </p>
-              </div>
-              {/* Embedded terminal report sheet, cropped by the cell */}
-              <div className="relative mt-auto pt-6 mx-7 sm:mx-14 -mb-8 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-                <div className="bg-white rounded-t-xl px-6 pt-5 pb-10" style={{ boxShadow: "0 -12px 60px -12px rgba(99,102,241,0.45)" }}>
-                  <div className="text-center pb-2 mb-3" style={{ borderBottom: "3px double #cbd5e1" }}>
-                    <p className="text-[11px] font-black tracking-wide text-slate-900">ST. MARY&apos;S BASIC SCHOOL</p>
-                    <p className="text-[8.5px] font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Terminal Report — End of Term 2</p>
-                  </div>
-                  <div className="flex justify-between text-[10px] text-slate-600 mb-2">
-                    <span><span className="text-slate-400">Name:</span> <strong>Ama Asante</strong> · Basic 6</span>
-                    <span className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-full text-[9px]">Position: 2nd of 31</span>
-                  </div>
-                  <div className="grid grid-cols-[1.7fr_1fr_1fr_0.8fr_0.7fr] gap-x-2 pb-1.5 border-b border-slate-200">
-                    {["Subject", "Class (50)", "Exam (50)", "Total", "Grade"].map(h => (
-                      <p key={h} className="text-[8px] font-bold text-slate-400 uppercase tracking-wide">{h}</p>
-                    ))}
-                  </div>
-                  {[
-                    { sub: "Mathematics",   cls: 44, exam: 42, total: 86, grade: "A1", top: true },
-                    { sub: "English Lang.", cls: 40, exam: 39, total: 79, grade: "B2" },
-                    { sub: "Int. Science",  cls: 41, exam: 37, total: 78, grade: "B2" },
-                  ].map(r => (
-                    <div key={r.sub} className="grid grid-cols-[1.7fr_1fr_1fr_0.8fr_0.7fr] gap-x-2 items-center py-1.5 border-b border-slate-100">
-                      <span className="text-[10.5px] font-semibold text-slate-700">{r.sub}</span>
-                      <span className="text-[10.5px] text-slate-600 tabular-nums">{r.cls}</span>
-                      <span className="text-[10.5px] text-slate-600 tabular-nums">{r.exam}</span>
-                      <span className="text-[10.5px] font-bold text-slate-900 tabular-nums">{r.total}</span>
-                      <span className={`text-[9px] font-black px-1.5 py-0.5 rounded w-fit ${r.top ? "bg-emerald-100 text-emerald-700" : "bg-indigo-100 text-indigo-700"}`}>{r.grade}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Fees & Payments — WhatsApp receipt */}
-            <motion.div variants={fadeUp}
-              className="group relative lg:col-span-2 rounded-3xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 0 80px -20px rgba(16,185,129,0.22) inset, 0 24px 60px -24px rgba(16,185,129,0.18)" }}>
-              <div className="p-7 sm:p-8 pb-0">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 text-emerald-300" style={{ background: "rgba(16,185,129,0.14)", border: "1px solid rgba(16,185,129,0.35)" }}>
-                  <Star className="h-3 w-3 fill-current" /> Most loved
-                </span>
-                <h3 className="text-[22px] font-black tracking-tight text-white leading-tight font-[family-name:var(--font-montserrat)]">
-                  Fees collected.<br />Parents informed.
-                </h3>
-                <p className="text-slate-400 text-[14px] leading-relaxed mt-3">
-                  Online or at the office — every payment gets a GHS receipt on WhatsApp, and defaulters get reminded automatically.
-                </p>
-              </div>
-              <div className="relative mt-auto pt-6 mx-7 -mb-4 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-                <div className="rounded-t-2xl px-4 pt-4 pb-8" style={{ backgroundColor: "#0b141a", border: "1px solid rgba(255,255,255,0.06)", borderBottom: "none" }}>
-                  <div className="max-w-[270px] rounded-xl rounded-tl-sm px-3.5 py-3" style={{ backgroundColor: "#202c33" }}>
-                    <p className="text-[10px] font-bold text-emerald-400 mb-1">Skula · St. Mary&apos;s Basic</p>
-                    <p className="text-[11.5px] text-slate-200 leading-snug">
-                      Payment received ✅<br />
-                      <strong>GH₵350.00</strong> — Term 2 fees for <strong>Kofi Mensah</strong> (Basic 4).<br />
-                      Receipt <span className="font-mono text-[10px]">SKL-0042</span> · Balance: <strong className="text-emerald-400">GH₵0.00</strong>
-                    </p>
-                    <p className="text-[9px] text-slate-500 text-right mt-1.5">10:42 <span className="text-sky-400">✓✓</span></p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Exams & Marksheets — ranked list */}
-            <motion.div variants={fadeUp}
-              className="group relative lg:col-span-2 rounded-3xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 0 80px -20px rgba(139,92,246,0.22) inset, 0 24px 60px -24px rgba(139,92,246,0.18)" }}>
-              <div className="p-7 sm:p-8 pb-0">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 text-violet-300" style={{ background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.35)" }}>
-                  <Star className="h-3 w-3 fill-current" /> Time saver
-                </span>
-                <h3 className="text-[22px] font-black tracking-tight text-white leading-tight font-[family-name:var(--font-montserrat)]">
-                  Marks in. Ranked<br />report cards out.
-                </h3>
-                <p className="text-slate-400 text-[14px] leading-relaxed mt-3">
-                  Totals, grades and class positions computed the moment marks are entered — BECE-style cards ready to print.
-                </p>
-              </div>
-              <div className="relative mt-auto pt-6 mx-7 -mb-4 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-                <div className="bg-white rounded-t-xl px-4 pt-3 pb-8" style={{ boxShadow: "0 -12px 60px -12px rgba(139,92,246,0.4)" }}>
-                  {[
-                    { rank: "1st", name: "Ama Asante",  total: 86, grade: "A1", gold: true },
-                    { rank: "2nd", name: "Kwame Boadu", total: 81, grade: "A2" },
-                    { rank: "3rd", name: "Efua Darko",  total: 78, grade: "B2" },
-                  ].map(r => (
-                    <div key={r.name} className={`flex items-center gap-3 py-2 border-b border-slate-100 last:border-0 ${r.gold ? "bg-amber-50/60 -mx-4 px-4 rounded" : ""}`}>
-                      <span className={`text-[10px] font-black w-8 ${r.gold ? "text-amber-500" : "text-slate-400"}`}>{r.rank}</span>
-                      <span className="text-[11.5px] font-semibold text-slate-700 flex-1">{r.name}</span>
-                      <span className="text-[11.5px] font-bold text-slate-900 tabular-nums">{r.total}%</span>
-                      <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${r.gold ? "bg-emerald-100 text-emerald-700" : "bg-indigo-100 text-indigo-700"}`}>{r.grade}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Attendance — register + SMS alert */}
-            <motion.div variants={fadeUp}
-              className="group relative lg:col-span-3 rounded-3xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 0 80px -20px rgba(14,165,233,0.22) inset, 0 24px 60px -24px rgba(14,165,233,0.18)" }}>
-              <div className="p-7 sm:p-9 pb-0 sm:flex sm:items-start sm:justify-between sm:gap-8">
-                <div className="max-w-sm">
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full mb-4 text-sky-300" style={{ background: "rgba(14,165,233,0.15)", border: "1px solid rgba(14,165,233,0.35)" }}>
-                    <Star className="h-3 w-3 fill-current" /> Parents notice
+            variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: DollarSign,    color: "#10b981", bg: "#dcfce7", featured: "Most loved",     title: "Fees & Payments",        desc: "Collect fees online or offline. GHS receipts, WhatsApp alerts, defaulter reminders." },
+              { icon: Award,         color: "#4f46e5", bg: "#eef2ff", featured: "Built for GES",  title: "GES Continuous Assessment", desc: "SBA the GES way — class work, projects and quizzes weighted with the exam. Class score, exam score and position on a proper GES terminal report sheet." },
+              { icon: BookOpen,      color: "#8b5cf6", bg: "#ede9fe", featured: "Time saver",     title: "Exams & Marksheets",     desc: "Enter marks once — Skula auto-ranks, generates BECE-style report cards, ready to print." },
+              { icon: ClipboardList, color: "#0ea5e9", bg: "#e0f2fe", featured: "Parents notice", title: "Attendance",             desc: "Daily & subject attendance from any device. Absent alerts to parents via SMS instantly." },
+              { icon: Users,         color: "#6366f1", bg: "#eef2ff", title: "Students & Admissions", desc: "Online enrollment, student profiles, BECE tracking, digital ID cards and bulk promotions." },
+              { icon: MessageSquare, color: "#ec4899", bg: "#fce7f3", title: "Communication",          desc: "Bulk SMS, email alerts, homework, notice board, internal chat and parent portal." },
+              { icon: Banknote,      color: "#059669", bg: "#d1fae5", title: "Payroll",                desc: "Staff salary computation with allowances, deductions, payslips and bulk disbursement." },
+              { icon: CalendarDays,  color: "#f59e0b", bg: "#fef3c7", title: "Timetable",              desc: "Build and publish class timetables. Teachers and students see live schedules instantly." },
+              { icon: Bus,           color: "#14b8a6", bg: "#ccfbf1", title: "Transport",              desc: "Routes, vehicles, pickup points, student assignment and transport fee management." },
+              { icon: Library,       color: "#f97316", bg: "#ffedd5", title: "Library",                desc: "Book catalog, issue & return tracking, overdue alerts and membership management." },
+              { icon: Home,          color: "#8b5cf6", bg: "#f3e8ff", title: "Hostel",                 desc: "Boarding house rooms, allocations, room types and hostel fee management." },
+              { icon: Smartphone,    color: "#0ea5e9", bg: "#e0f2fe", title: "Online Exams",           desc: "Set MCQ/theory exams. Students attempt online. Auto-grading with instant results." },
+              { icon: Building2,     color: "#64748b", bg: "#f1f5f9", title: "Front Office",           desc: "Visitor log, complaints, parent enquiries, dispatch records and reception management." },
+              { icon: Globe,         color: "#6366f1", bg: "#eef2ff", title: "Free School Website",     desc: "Every school gets a public, branded website — hero, about, news, staff, events, contact and a one-click parent/student portal login." },
+            ].map(({ icon: Icon, color, bg, title, desc, featured }) => (
+              <motion.div key={title} variants={fadeUp}
+                className="group relative overflow-hidden p-6 rounded-2xl bg-white border hover:shadow-[0_10px_34px_-14px_rgba(15,23,42,0.20)] hover:-translate-y-0.5 transition-all duration-300 cursor-default"
+                style={featured
+                  ? { borderColor: `${color}3d`, backgroundColor: `${color}08` }
+                  : { borderColor: "rgba(15,23,42,0.06)" }}>
+                {/* Hairline accent in the module's colour — always lit on featured
+                    modules, revealed on hover for the rest */}
+                <span className={`absolute inset-x-0 top-0 h-[2px] origin-left transition-transform duration-300 ease-out ${
+                  featured ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`}
+                  style={{ background: `linear-gradient(90deg, ${color}, ${color}00)` }} />
+                {featured && (
+                  <span className="absolute top-4 right-4 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+                    style={{ backgroundColor: bg, color }}>
+                    <Star className="h-2.5 w-2.5 fill-current" /> {featured}
                   </span>
-                  <h3 className="text-[22px] sm:text-[24px] font-black tracking-tight text-white leading-tight font-[family-name:var(--font-montserrat)]">
-                    Mark the register.<br />Parents know by 8:05.
-                  </h3>
-                  <p className="text-slate-400 text-[14px] leading-relaxed mt-3">
-                    Daily and per-subject attendance from any device — absent students&apos; guardians get an SMS the moment you save.
-                  </p>
+                )}
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 ring-1 transition-transform duration-300 group-hover:scale-105"
+                  style={{ backgroundColor: bg, "--tw-ring-color": `${color}22` } as React.CSSProperties}>
+                  <Icon className="h-5 w-5" style={{ color }} />
                 </div>
-                <div className="hidden sm:block shrink-0 mt-2 max-w-[240px]">
-                  <div className="bg-white rounded-xl px-3.5 py-3" style={{ boxShadow: "0 8px 40px -8px rgba(14,165,233,0.35)" }}>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wide mb-1">SMS · 8:05 AM</p>
-                    <p className="text-[11.5px] text-slate-700 leading-snug">
-                      St. Mary&apos;s: <strong>Yaw Owusu</strong> was marked <strong className="text-red-600">absent</strong> today (Basic 5). Please contact the school.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="relative mt-auto pt-6 mx-7 sm:mx-9 -mb-4 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-                <div className="bg-white rounded-t-xl px-4 pt-3 pb-8 overflow-hidden" style={{ boxShadow: "0 -12px 60px -12px rgba(14,165,233,0.4)" }}>
-                  <div className="grid grid-cols-[1.4fr_repeat(5,1fr)] gap-x-2 pb-1.5 border-b border-slate-200">
-                    {["Student", "Mon", "Tue", "Wed", "Thu", "Fri"].map(h => (
-                      <p key={h} className="text-[8px] font-bold text-slate-400 uppercase tracking-wide">{h}</p>
-                    ))}
-                  </div>
-                  {[
-                    { name: "Ama Asante",  days: ["P", "P", "P", "P", "P"] },
-                    { name: "Yaw Owusu",   days: ["P", "P", "A", "P", "P"] },
-                    { name: "Efua Darko",  days: ["P", "L", "P", "P", "P"] },
-                  ].map(r => (
-                    <div key={r.name} className="grid grid-cols-[1.4fr_repeat(5,1fr)] gap-x-2 items-center py-1.5 border-b border-slate-100 last:border-0">
-                      <span className="text-[10.5px] font-semibold text-slate-700">{r.name}</span>
-                      {r.days.map((d, i) => (
-                        <span key={i} className={`text-[9px] font-black w-5 h-5 rounded-md flex items-center justify-center ${
-                          d === "P" ? "bg-emerald-100 text-emerald-700" : d === "A" ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-700"}`}>{d}</span>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Everything else — the other ten modules in one quiet cell */}
-            <motion.div variants={fadeUp}
-              className="lg:col-span-5 rounded-3xl p-7 sm:p-8" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <div className="sm:flex sm:items-baseline sm:justify-between mb-5">
-                <h3 className="text-[16px] font-black tracking-tight text-white font-[family-name:var(--font-montserrat)]">
-                  …and the other ten, included.
-                </h3>
-                <p className="text-[13px] text-slate-400 mt-1 sm:mt-0">All 15 modules · <span className="font-bold text-indigo-400">GH₵199/month</span> · no per-feature pricing</p>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-3">
-                {[
-                  "Students & Admissions", "Communication", "Payroll", "Timetable", "Online Exams",
-                  "Library", "Transport", "Hostel", "Inventory", "Free School Website",
-                ].map(m => (
-                  <div key={m} className="flex items-center gap-2">
-                    <Check className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
-                    <span className="text-[13px] font-medium text-slate-300">{m}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+                <h3 className="text-slate-900 font-bold text-[14px] mb-1.5 tracking-tight">{title}</h3>
+                <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
