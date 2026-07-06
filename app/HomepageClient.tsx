@@ -440,6 +440,56 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+/* ─── GES TERMINAL REPORT MOCKUP — a printed sheet, not a browser window ─── */
+function TerminalReportMockup() {
+  const rows = [
+    { sub: "Mathematics",    cls: 44, exam: 42, total: 86, grade: "A1", g: "emerald" },
+    { sub: "English Lang.",  cls: 40, exam: 39, total: 79, grade: "B2", g: "indigo" },
+    { sub: "Int. Science",   cls: 41, exam: 37, total: 78, grade: "B2", g: "indigo" },
+    { sub: "Ghanaian Lang.", cls: 38, exam: 36, total: 74, grade: "B3", g: "indigo" },
+    { sub: "Social Studies", cls: 36, exam: 35, total: 71, grade: "B3", g: "indigo" },
+  ];
+  return (
+    <div className="w-full h-[340px] overflow-hidden bg-slate-100 flex items-start justify-center">
+      <div className="w-[400px] max-w-[92%] bg-white border border-slate-200 rounded-lg shadow-sm px-6 py-5 mt-6">
+        <div className="text-center pb-2.5 mb-3" style={{ borderBottom: "3px double #cbd5e1" }}>
+          <p className="text-[11px] font-black tracking-wide text-slate-900">ST. MARY&apos;S BASIC SCHOOL</p>
+          <p className="text-[8.5px] font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Terminal Report — End of Term 2</p>
+        </div>
+        <div className="flex justify-between text-[9px] text-slate-600 mb-2.5">
+          <span><span className="text-slate-400">Name:</span> <strong>Ama Asante</strong> · Basic 6</span>
+          <span><span className="text-slate-400">Position:</span> <strong>2nd of 31</strong></span>
+        </div>
+        <div className="grid grid-cols-[1.6fr_1fr_1fr_0.8fr_0.7fr] gap-x-2 pb-1 border-b border-slate-200">
+          {["Subject", "Class (50)", "Exam (50)", "Total", "Grade"].map(h => (
+            <p key={h} className="text-[7.5px] font-bold text-slate-400 uppercase tracking-wide">{h}</p>
+          ))}
+        </div>
+        {rows.map(r => (
+          <div key={r.sub} className="grid grid-cols-[1.6fr_1fr_1fr_0.8fr_0.7fr] gap-x-2 items-center py-[5px] border-b border-slate-100 last:border-slate-200">
+            <span className="text-[9.5px] font-semibold text-slate-700">{r.sub}</span>
+            <span className="text-[9.5px] text-slate-600 tabular-nums">{r.cls}</span>
+            <span className="text-[9.5px] text-slate-600 tabular-nums">{r.exam}</span>
+            <span className="text-[9.5px] font-bold text-slate-900 tabular-nums">{r.total}</span>
+            <span className={`text-[8.5px] font-black px-1.5 py-0.5 rounded w-fit ${r.g === "emerald" ? "bg-emerald-100 text-emerald-700" : "bg-indigo-100 text-indigo-700"}`}>{r.grade}</span>
+          </div>
+        ))}
+        <div className="flex justify-between text-[8.5px] text-slate-500 mt-2.5">
+          <span>Attendance: <strong className="text-slate-700">58 / 60</strong></span>
+          <span>Conduct: <strong className="text-slate-700">Respectful</strong></span>
+        </div>
+        <p className="text-[9px] text-slate-600 italic mt-2">&ldquo;Hardworking — capable of taking 1st position next term.&rdquo;</p>
+        <div className="flex justify-end mt-3">
+          <div className="text-center">
+            <div className="w-24 border-b border-slate-300 mb-0.5" />
+            <p className="text-[7.5px] text-slate-400 uppercase tracking-wide">Class Teacher</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── HOME CONTACT FORM ─── */
 function HomeContactForm() {
   const [form, setForm] = useState({ name: "", school: "", phone: "" });
@@ -592,48 +642,70 @@ export function HomepageClient() {
             </motion.p>
           </motion.div>
 
+          {/* The Module Register — a school ledger, not a card grid. Featured
+              modules are lit in their colour; every line is a real module. */}
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}
-            variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { icon: DollarSign,    color: "#10b981", bg: "#dcfce7", featured: "Most loved",     title: "Fees & Payments",        desc: "Collect fees online or offline. GHS receipts, WhatsApp alerts, defaulter reminders." },
-              { icon: Award,         color: "#4f46e5", bg: "#eef2ff", featured: "Built for GES",  title: "GES Continuous Assessment", desc: "SBA the GES way — class work, projects and quizzes weighted with the exam. Class score, exam score and position on a proper GES terminal report sheet." },
-              { icon: BookOpen,      color: "#8b5cf6", bg: "#ede9fe", featured: "Time saver",     title: "Exams & Marksheets",     desc: "Enter marks once — Skula auto-ranks, generates BECE-style report cards, ready to print." },
-              { icon: ClipboardList, color: "#0ea5e9", bg: "#e0f2fe", featured: "Parents notice", title: "Attendance",             desc: "Daily & subject attendance from any device. Absent alerts to parents via SMS instantly." },
-              { icon: Users,         color: "#6366f1", bg: "#eef2ff", title: "Students & Admissions", desc: "Online enrollment, student profiles, BECE tracking, digital ID cards and bulk promotions." },
-              { icon: MessageSquare, color: "#ec4899", bg: "#fce7f3", title: "Communication",          desc: "Bulk SMS, email alerts, homework, notice board, internal chat and parent portal." },
-              { icon: Banknote,      color: "#059669", bg: "#d1fae5", title: "Payroll",                desc: "Staff salary computation with allowances, deductions, payslips and bulk disbursement." },
-              { icon: CalendarDays,  color: "#f59e0b", bg: "#fef3c7", title: "Timetable",              desc: "Build and publish class timetables. Teachers and students see live schedules instantly." },
-              { icon: Bus,           color: "#14b8a6", bg: "#ccfbf1", title: "Transport",              desc: "Routes, vehicles, pickup points, student assignment and transport fee management." },
-              { icon: Library,       color: "#f97316", bg: "#ffedd5", title: "Library",                desc: "Book catalog, issue & return tracking, overdue alerts and membership management." },
-              { icon: Home,          color: "#8b5cf6", bg: "#f3e8ff", title: "Hostel",                 desc: "Boarding house rooms, allocations, room types and hostel fee management." },
-              { icon: Smartphone,    color: "#0ea5e9", bg: "#e0f2fe", title: "Online Exams",           desc: "Set MCQ/theory exams. Students attempt online. Auto-grading with instant results." },
-              { icon: Building2,     color: "#64748b", bg: "#f1f5f9", title: "Front Office",           desc: "Visitor log, complaints, parent enquiries, dispatch records and reception management." },
-              { icon: Globe,         color: "#6366f1", bg: "#eef2ff", title: "Free School Website",     desc: "Every school gets a public, branded website — hero, about, news, staff, events, contact and a one-click parent/student portal login." },
-            ].map(({ icon: Icon, color, bg, title, desc, featured }) => (
-              <motion.div key={title} variants={fadeUp}
-                className="group relative overflow-hidden p-6 rounded-2xl bg-white border hover:shadow-[0_10px_34px_-14px_rgba(15,23,42,0.20)] hover:-translate-y-0.5 transition-all duration-300 cursor-default"
-                style={featured
-                  ? { borderColor: `${color}3d`, backgroundColor: `${color}08` }
-                  : { borderColor: "rgba(15,23,42,0.06)" }}>
-                {/* Hairline accent in the module's colour — always lit on featured
-                    modules, revealed on hover for the rest */}
-                <span className={`absolute inset-x-0 top-0 h-[2px] origin-left transition-transform duration-300 ease-out ${
-                  featured ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`}
-                  style={{ background: `linear-gradient(90deg, ${color}, ${color}00)` }} />
-                {featured && (
-                  <span className="absolute top-4 right-4 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
-                    style={{ backgroundColor: bg, color }}>
-                    <Star className="h-2.5 w-2.5 fill-current" /> {featured}
-                  </span>
-                )}
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 ring-1 transition-transform duration-300 group-hover:scale-105"
-                  style={{ backgroundColor: bg, "--tw-ring-color": `${color}22` } as React.CSSProperties}>
-                  <Icon className="h-5 w-5" style={{ color }} />
-                </div>
-                <h3 className="text-slate-900 font-bold text-[14px] mb-1.5 tracking-tight">{title}</h3>
-                <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
-              </motion.div>
-            ))}
+            variants={fadeUp} className="rounded-2xl bg-white border border-slate-900/[0.06] overflow-hidden">
+            {/* Ledger heading */}
+            <div className="flex items-baseline justify-between px-6 sm:px-8 py-4"
+              style={{ borderBottom: "3px double #cbd5e1" }}>
+              <p className="text-[12px] font-black text-slate-900 uppercase tracking-widest">Module Register</p>
+              <p className="text-[12px] text-slate-400 tabular-nums">2026 / 2027</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 lg:divide-x lg:divide-slate-900/[0.06]">
+              {[
+                [
+                  { n: "01", color: "#10b981", featured: "Most loved",     title: "Fees & Payments",           desc: "Online & offline collection, GHS receipts on WhatsApp, defaulter reminders." },
+                  { n: "02", color: "#4f46e5", featured: "Built for GES",  title: "GES Continuous Assessment", desc: "Weighted SBA and a proper GES terminal report sheet, computed for you." },
+                  { n: "03", color: "#8b5cf6", featured: "Time saver",     title: "Exams & Marksheets",        desc: "Auto totals, grades, positions and BECE-style report cards." },
+                  { n: "04", color: "#0ea5e9", featured: "Parents notice", title: "Attendance",                desc: "Daily & period registers with instant SMS absent alerts." },
+                  { n: "05", color: "#6366f1", title: "Students & Admissions", desc: "Enrollment, profiles, ID cards and bulk promotion." },
+                  { n: "06", color: "#ec4899", title: "Communication",         desc: "Bulk SMS, notices, homework, chat and the parent portal." },
+                  { n: "07", color: "#059669", title: "Payroll",               desc: "Salaries, allowances, deductions and payslips." },
+                  { n: "08", color: "#f59e0b", title: "Timetable",             desc: "Build and publish live class schedules." },
+                ],
+                [
+                  { n: "09", color: "#0ea5e9", title: "Online Exams",        desc: "MCQ & theory exams with auto-grading." },
+                  { n: "10", color: "#f97316", title: "Library",             desc: "Catalog, issue & return, overdue tracking." },
+                  { n: "11", color: "#14b8a6", title: "Transport",           desc: "Routes, vehicles, pickup points and transport fees." },
+                  { n: "12", color: "#8b5cf6", title: "Hostel",              desc: "Rooms, allocations and hostel fees." },
+                  { n: "13", color: "#64748b", title: "Inventory",           desc: "Items, stores, suppliers and stock issues." },
+                  { n: "14", color: "#64748b", title: "Front Office",        desc: "Visitors, enquiries, calls and dispatch." },
+                  { n: "15", color: "#6366f1", title: "Free School Website", desc: "A branded public site with portal login — included." },
+                ],
+              ].map((column, ci) => (
+                <motion.ol key={ci} variants={stagger} className="list-none">
+                  {column.map(({ n, color, title, desc, featured }) => (
+                    <motion.li key={title} variants={fadeUp}
+                      className={`group relative flex gap-4 px-6 sm:px-8 py-[15px] border-b border-slate-900/[0.05] transition-colors duration-200 ${
+                        ci === 1 ? "last:border-b-0" : "lg:last:border-b-0"}`}
+                      style={featured ? { backgroundColor: `${color}08` } : undefined}>
+                      <span className="text-[11px] tabular-nums font-semibold text-slate-300 pt-0.5 w-5 shrink-0 select-none">{n}</span>
+                      <span className="w-2 h-2 rounded-full mt-[7px] shrink-0 transition-transform duration-200 group-hover:scale-125" style={{ backgroundColor: color }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <h3 className="text-slate-900 font-bold text-[14px] tracking-tight">{title}</h3>
+                          {featured && (
+                            <span className="inline-flex items-center gap-1 rounded-full px-2 py-[3px] text-[9.5px] font-bold uppercase tracking-wide"
+                              style={{ backgroundColor: `${color}14`, color }}>
+                              <Star className="h-2.5 w-2.5 fill-current" /> {featured}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-slate-500 text-[13px] leading-relaxed mt-0.5">{desc}</p>
+                      </div>
+                    </motion.li>
+                  ))}
+                </motion.ol>
+              ))}
+            </div>
+
+            {/* Ledger total line */}
+            <div className="flex items-baseline justify-between px-6 sm:px-8 py-4 border-t border-slate-900/[0.06] bg-slate-50/60">
+              <p className="text-[12px] font-black text-slate-900 uppercase tracking-widest">Total — everything included</p>
+              <p className="text-[13px] font-bold text-indigo-600 tabular-nums">GH₵199 / month</p>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -689,6 +761,7 @@ export function HomepageClient() {
             { eyebrow: "Student Information System",   title: "Every student. Every detail. One place.",      desc: "Enroll students, manage profiles, track BECE candidates, issue ID cards and promote entire classes in minutes — not days.", bullets: ["Bulk enrollment & promotion","BECE candidate management","Digital ID card generation","Parent portal access"], flip: false, accent: "#6366f1", accentBg: "#eef2ff", Mockup: StudentsMockup },
             { eyebrow: "Finance & Fee Management",     title: "Collect fees. Track every pesewa.",             desc: "From setting up fee structures to issuing digital receipts on WhatsApp — Skula automates your entire finance workflow.",    bullets: ["Automated GHS receipts","Defaulter tracking & reminders","Term-by-term fee reports","Multi-currency support"],   flip: true,  accent: "#10b981", accentBg: "#dcfce7", Mockup: FeesMockup    },
             { eyebrow: "Exams & Academic Performance", title: "From marks to report cards automatically.",     desc: "Teachers enter marks once. Skula calculates rankings, generates BECE-style report cards, and makes results available to parents instantly.", bullets: ["Automated grade calculation","Class ranking & reports","BECE-style report cards","Parent result portal"],    flip: false, accent: "#8b5cf6", accentBg: "#ede9fe", Mockup: ExamsMockup   },
+            { eyebrow: "GES Continuous Assessment",    title: "SBA done the GES way. Automatically.",          desc: "Teachers capture class work, projects and quizzes through the term; Skula applies the GES weighting and produces the terminal report sheet — class score, exam score, position and remarks.", bullets: ["Weighted SBA components, fully configurable","Class score / exam score split computed for you","Terminal report sheet, print-ready","Attendance, conduct & remarks included"], flip: true, accent: "#4f46e5", accentBg: "#eef2ff", Mockup: TerminalReportMockup },
           ].map(({ eyebrow, title, desc, bullets, flip, accent, accentBg, Mockup }) => (
             <motion.div key={title} initial="hidden" whileInView="show"
               viewport={{ once: true, margin: "-80px" }} variants={stagger}
