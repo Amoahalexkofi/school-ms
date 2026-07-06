@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { generateAdmissionNumber } from "@/lib/domain/students";
 import { getActiveBranchId } from "@/lib/branch";
 import { resolveBranchForCreate } from "@/lib/services/branches";
@@ -238,6 +239,8 @@ export async function POST(req: NextRequest) {
         credentials,
       }).catch(() => null);
     }
+
+    await audit("create", "student", student.id, { admissionNo: student.admissionNo });
 
     return NextResponse.json({
       ...student,

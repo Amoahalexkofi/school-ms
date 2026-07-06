@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -10,10 +11,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (approvedBy !== undefined) data.approvedBy = approvedBy || null;
   if (remark     !== undefined) data.remark     = remark     || null;
   const r = await ((await getDb()) as any).studentLeaveRequest.update({ where: { id }, data });
+  await audit(status === "APPROVED" ? "approve" : status === "REJECTED" ? "reject" : "update", "student-leave", id, { status: status ?? null });
   return NextResponse.json(r);
 }
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   await ((await getDb()) as any).studentLeaveRequest.delete({ where: { id } });
+  await audit("delete", "student-leave", id);
   return NextResponse.json({ ok: true });
 }

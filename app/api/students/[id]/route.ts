@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { deleteStudentCascade } from "@/lib/services/students";
 
 const ALLOWED_FIELDS = [
@@ -76,6 +77,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       }).catch(() => {});
     }
 
+    await audit(
+      typeof data.isActive === "boolean" ? (data.isActive ? "enable" : "disable") : "update",
+      "student", id,
+      typeof data.isActive === "boolean" && !data.isActive ? { reason: data.disableReason ?? null } : undefined
+    );
+
     return NextResponse.json(student);
   } catch (err: any) {
     // Never leak raw Prisma dumps into the dialog.
@@ -91,5 +98,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   if (sessions > 0)
     return NextResponse.json({ error: "Cannot delete student with active enrollments" }, { status: 409 });
   await deleteStudentCascade(db, id);
+  await audit("delete", "student", id);
   return NextResponse.json({ ok: true });
 }

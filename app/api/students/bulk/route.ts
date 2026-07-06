@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { sendEmail, bulkMessageEmail } from "@/lib/email";
 import { deleteStudentCascade } from "@/lib/services/students";
 
@@ -23,6 +24,7 @@ export async function POST(req: NextRequest) {
         if (active > 0) { skipped.push(id); continue; }
         await deleteStudentCascade(db, id).then(() => deleted++).catch(() => skipped.push(id));
       }
+      await audit("bulk-delete", "student", null, { deleted, skipped: skipped.length });
       return NextResponse.json({ deleted, skipped: skipped.length });
     }
 
@@ -52,6 +54,7 @@ export async function POST(req: NextRequest) {
           html: bulkMessageEmail({ recipientName: `${s.firstName} ${s.lastName}`, message: message.trim(), schoolName, subject: subj }),
         }).then(() => sent++).catch(() => null);
       }
+      await audit("bulk-email", "student", null, { sent, target: target ?? "both" });
       return NextResponse.json({ sent });
     }
 

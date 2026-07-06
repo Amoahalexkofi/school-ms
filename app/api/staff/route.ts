@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { getActiveBranchId } from "@/lib/branch";
 import { resolveBranchForCreate } from "@/lib/services/branches";
 import { generateTempPassword } from "@/lib/auth/passwords";
@@ -152,6 +153,7 @@ export async function POST(req: NextRequest) {
       return s;
     });
 
+    await audit("create", "staff", staff.id, { role: body.role ?? "TEACHER" });
     return NextResponse.json({ ...staff, tempPassword }, { status: 201 });
   } catch (err: any) {
     console.error(err);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { announceExamResults } from "@/lib/services/exams";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -47,6 +48,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (data.isPublished === true && !before.isPublished) {
     announceExamResults(db, id).catch(() => null);
   }
+
+  await audit(
+    data.isPublished === true && !before.isPublished ? "publish"
+      : data.isPublished === false && before.isPublished ? "unpublish" : "update",
+    "exam", id, { name: group.name }
+  );
 
   return NextResponse.json(group);
 }

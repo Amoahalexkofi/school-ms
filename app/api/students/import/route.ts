@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { generateAdmissionNumber } from "@/lib/domain/students";
 import { getActiveBranchId } from "@/lib/branch";
 import { resolveBranchForCreate } from "@/lib/services/branches";
@@ -112,6 +113,7 @@ export async function POST(req: NextRequest) {
     }
 
     const created = results.filter((r) => r.ok).length;
+    await audit("import", "student", null, { created, failed: results.length - created });
     return NextResponse.json({ created, failed: results.length - created, results }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message ?? "Import failed" }, { status: 500 });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 
 // Persist / override exam ranks for an exam group (Smart School updaterank).
 // Body: { ranks: [{ studentId, rank, classSectionId? }] }
@@ -18,6 +19,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ exa
         update: { rank: parseInt(r.rank), classSectionId: r.classSectionId ?? null },
       });
     }
+    await audit("override-ranks", "exam", examGroupId, { saved: ranks.length });
     return NextResponse.json({ ok: true, saved: ranks.length });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

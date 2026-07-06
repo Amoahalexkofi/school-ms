@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { filterToExamRoster } from "@/lib/services/exams";
 
 // GET — students enrolled in this exam's classSection + existing marks
@@ -158,6 +159,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       })
     );
 
+    await audit("save-marks", "exam-schedule", scheduleId, { records: records.length });
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

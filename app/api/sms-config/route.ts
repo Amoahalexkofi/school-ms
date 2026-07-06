@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { redactList, redactSecrets, keepSecret } from "@/lib/config-secrets";
 import { encryptSecret } from "@/lib/secrets-crypto";
 
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
     const config = existing
       ? await db.smsConfig.update({ where: { provider }, data })
       : await db.smsConfig.create({ data: { apiKey: "", password: "", ...data } });
+    await audit("update-config", "sms-config", provider ?? null);
     return NextResponse.json(redactSecrets(config, SECRET_FIELDS));
   } catch (err: any) {
     console.error(err);

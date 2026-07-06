@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { redactSecrets, keepSecret } from "@/lib/config-secrets";
 import { encryptSecret } from "@/lib/secrets-crypto";
 
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
       create: { paymentType: type, ...common },
       update: common,
     });
+    await audit("update-config", "payment-gateway", g.id, { paymentType: g.paymentType ?? null });
     return NextResponse.json(redactSecrets(g, SECRET_FIELDS), { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

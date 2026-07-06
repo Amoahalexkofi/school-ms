@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { redactSecrets, keepSecret } from "@/lib/config-secrets";
 import { encryptSecret } from "@/lib/secrets-crypto";
 
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
     const config = existing
       ? await db.emailConfig.update({ where: { id: existing.id }, data })
       : await db.emailConfig.create({ data: { smtpPassword: "", ...data } });
+    await audit("update-config", "email-config", null);
     return NextResponse.json(redactSecrets(config, SECRET_FIELDS));
   } catch (err: any) {
     console.error(err);

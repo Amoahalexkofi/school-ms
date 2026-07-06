@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 
 const ALLOWED_FIELDS = [
   "departmentId","designationId","firstName","lastName","fatherName","motherName",
@@ -80,6 +81,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return tx.staff.update({ where: { id }, data: staffData });
     });
 
+    await audit("update", "staff", id, role ? { roleChangedTo: role } : undefined);
+
     return NextResponse.json(staff);
   } catch (err: any) {
     // Never leak raw Prisma dumps into the dialog.
@@ -92,6 +95,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const { id } = await params;
   try {
     await ((await getDb()) as any).staff.delete({ where: { id } });
+    await audit("delete", "staff", id);
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

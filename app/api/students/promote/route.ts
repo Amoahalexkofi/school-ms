@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 
 // Mirrors Smart School's Stdtransfer (Promote Student):
 //  pass + continue → student_session row in the DESTINATION session + class
@@ -93,6 +94,7 @@ export async function POST(req: NextRequest) {
       if (result === "pass") promoted++; else retained++;
     }
 
+    await audit("promote", "student", null, { promoted, retained, left, skipped });
     return NextResponse.json({ promoted, retained, left, skipped });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

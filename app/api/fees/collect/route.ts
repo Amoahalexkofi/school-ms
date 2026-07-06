@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { auth } from "@/lib/auth";
 import { sendSms, feeReceiptSms } from "@/lib/services/sms";
 import { sendWhatsApp, whatsAppFeeReceipt } from "@/lib/services/whatsapp";
@@ -165,6 +166,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    await audit("collect", "fee-payment", studentFeesMasterId, { amount: Number(amount) });
     return NextResponse.json(result, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -203,6 +205,7 @@ export async function DELETE(req: NextRequest) {
       }
     });
 
+    await audit("delete-payment", "fee-payment", depositId, { subInvoiceId });
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

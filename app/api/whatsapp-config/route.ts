@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { audit } from "@/lib/services/audit";
 import { redactList, redactSecrets, keepSecret } from "@/lib/config-secrets";
 import { encryptSecret } from "@/lib/secrets-crypto";
 
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
     ? await db.whatsAppConfig.update({ where: { provider }, data })
     : await db.whatsAppConfig.create({ data: { provider, ...data } });
 
+  await audit("update-config", "whatsapp-config", null);
   return NextResponse.json(redactSecrets(config, SECRET_FIELDS));
 }
 
