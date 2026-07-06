@@ -211,6 +211,7 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/audit-log",
     roles: ["SUPER_ADMIN", "ADMIN"],
   },
+  { prefix: "/api/audit-log", roles: ["SUPER_ADMIN", "ADMIN"] },
   // Branches (Multi Branch add-on)
   {
     prefix: "/branches",
