@@ -646,7 +646,7 @@ export function HomepageClient() {
             variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { icon: DollarSign,    color: "#10b981", bg: "#dcfce7", featured: true, title: "Fees & Payments",        desc: "Collect fees online or offline. GHS receipts, WhatsApp alerts, defaulter reminders." },
-              { icon: Award,         color: "#4f46e5", bg: "#eef2ff", featured: true, title: "GES Continuous Assessment", desc: "SBA the GES way — class work, projects and quizzes weighted with the exam. Class score, exam score and position on a proper GES terminal report sheet." },
+              { icon: Award,         color: "#4f46e5", bg: "#eef2ff", featured: true, title: "GES Continuous Assessment", desc: "Class work, projects and quizzes weighted the GES way — with a proper terminal report sheet." },
               { icon: BookOpen,      color: "#8b5cf6", bg: "#ede9fe", featured: true, title: "Exams & Marksheets",     desc: "Enter marks once — Skula auto-ranks, generates BECE-style report cards, ready to print." },
               { icon: ClipboardList, color: "#0ea5e9", bg: "#e0f2fe", featured: true, title: "Attendance",             desc: "Daily & subject attendance from any device. Absent alerts to parents via SMS instantly." },
               { icon: Users,         color: "#6366f1", bg: "#eef2ff", title: "Students & Admissions", desc: "Online enrollment, student profiles, BECE tracking, digital ID cards and bulk promotions." },
@@ -657,14 +657,18 @@ export function HomepageClient() {
               { icon: Library,       color: "#f97316", bg: "#ffedd5", title: "Library",                desc: "Book catalog, issue & return tracking, overdue alerts and membership management." },
               { icon: Home,          color: "#8b5cf6", bg: "#f3e8ff", title: "Hostel",                 desc: "Boarding house rooms, allocations, room types and hostel fee management." },
               { icon: Smartphone,    color: "#0ea5e9", bg: "#e0f2fe", title: "Online Exams",           desc: "Set MCQ/theory exams. Students attempt online. Auto-grading with instant results." },
+              { icon: Package,       color: "#d97706", bg: "#fef3c7", title: "Inventory",              desc: "Track items, stores, suppliers, stock receipts and issues to staff or classrooms." },
               { icon: Building2,     color: "#64748b", bg: "#f1f5f9", title: "Front Office",           desc: "Visitor log, complaints, parent enquiries, dispatch records and reception management." },
               { icon: Globe,         color: "#6366f1", bg: "#eef2ff", title: "Free School Website",     desc: "Every school gets a public, branded website — hero, about, news, staff, events, contact and a one-click parent/student portal login." },
             ].map(({ icon: Icon, color, bg, title, desc, featured }) => (
               <motion.div key={title} variants={fadeUp}
-                className="group relative overflow-hidden p-6 rounded-2xl bg-white border hover:shadow-[0_10px_34px_-14px_rgba(15,23,42,0.20)] hover:-translate-y-0.5 transition-all duration-300 cursor-default"
+                className={`group relative overflow-hidden p-6 rounded-2xl bg-white border hover:-translate-y-0.5 transition-all duration-300 cursor-default ${
+                  featured ? "" : "hover:shadow-[0_10px_34px_-14px_rgba(15,23,42,0.20)]"}`}
                 style={featured
-                  ? { borderColor: `${color}4d`, backgroundColor: `${color}0f` }
-                  : { borderColor: "rgba(15,23,42,0.06)" }}>
+                  ? ({ borderColor: `${color}4d`, backgroundColor: `${color}0f`, "--feat-shadow": `0 14px 40px -16px ${color}59` } as React.CSSProperties)
+                  : { borderColor: "rgba(15,23,42,0.06)" }}
+                onMouseEnter={featured ? (e => { e.currentTarget.style.boxShadow = `0 14px 40px -16px ${color}59`; }) : undefined}
+                onMouseLeave={featured ? (e => { e.currentTarget.style.boxShadow = ""; }) : undefined}>
                 {/* Hairline accent in the module's colour — always lit on featured
                     modules, revealed on hover for the rest */}
                 <span className={`absolute inset-x-0 top-0 h-[2px] origin-left transition-transform duration-300 ease-out ${
@@ -674,7 +678,7 @@ export function HomepageClient() {
                   style={{ backgroundColor: bg, "--tw-ring-color": `${color}22` } as React.CSSProperties}>
                   <Icon className="h-5 w-5" style={{ color }} />
                 </div>
-                <h3 className="text-slate-900 font-bold text-[14px] mb-1.5 tracking-tight">{title}</h3>
+                <h3 className="text-slate-900 font-bold text-[15px] mb-1.5 tracking-tight">{title}</h3>
                 <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
               </motion.div>
             ))}
