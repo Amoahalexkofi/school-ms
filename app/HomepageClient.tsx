@@ -592,37 +592,87 @@ export function HomepageClient() {
             </motion.p>
           </motion.div>
 
+          {/* Featured tier — the four modules schools switch for */}
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}
-            variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              { icon: Users,         color: "#6366f1", bg: "#eef2ff", title: "Students & Admissions", desc: "Online enrollment, student profiles, BECE tracking, digital ID cards and bulk promotions." },
-              { icon: ClipboardList, color: "#0ea5e9", bg: "#e0f2fe", title: "Attendance",             desc: "Daily & subject attendance from any device. Absent alerts to parents via SMS instantly." },
-              { icon: DollarSign,    color: "#10b981", bg: "#dcfce7", title: "Fees & Payments",        desc: "Collect fees online or offline. GHS receipts, WhatsApp alerts, defaulter reminders." },
-              { icon: BookOpen,      color: "#8b5cf6", bg: "#ede9fe", title: "Exams & Marksheets",     desc: "Enter marks once — Skula auto-ranks, generates BECE-style report cards, ready to print." },
-              { icon: Award,         color: "#10b981", bg: "#dcfce7", title: "GES Continuous Assessment", desc: "SBA the GES way — class work, projects and quizzes weighted with the exam. Class score, exam score and position on a proper GES terminal report sheet." },
-              { icon: Banknote,      color: "#059669", bg: "#d1fae5", title: "Payroll",                desc: "Staff salary computation with allowances, deductions, payslips and bulk disbursement." },
-              { icon: MessageSquare, color: "#ec4899", bg: "#fce7f3", title: "Communication",          desc: "Bulk SMS, email alerts, homework, notice board, internal chat and parent portal." },
-              { icon: CalendarDays,  color: "#f59e0b", bg: "#fef3c7", title: "Timetable",              desc: "Build and publish class timetables. Teachers and students see live schedules instantly." },
-              { icon: Bus,           color: "#14b8a6", bg: "#ccfbf1", title: "Transport",              desc: "Routes, vehicles, pickup points, student assignment and transport fee management." },
-              { icon: Library,       color: "#f97316", bg: "#ffedd5", title: "Library",                desc: "Book catalog, issue & return tracking, overdue alerts and membership management." },
-              { icon: Home,          color: "#8b5cf6", bg: "#f3e8ff", title: "Hostel",                 desc: "Boarding house rooms, allocations, room types and hostel fee management." },
-              { icon: Smartphone,    color: "#0ea5e9", bg: "#e0f2fe", title: "Online Exams",           desc: "Set MCQ/theory exams. Students attempt online. Auto-grading with instant results." },
-              { icon: Building2,     color: "#64748b", bg: "#f1f5f9", title: "Front Office",           desc: "Visitor log, complaints, parent enquiries, dispatch records and reception management." },
-              { icon: Globe,         color: "#6366f1", bg: "#eef2ff", title: "Free School Website",     desc: "Every school gets a public, branded website — hero, about, news, staff, events, contact and a one-click parent/student portal login." },
-            ].map(({ icon: Icon, color, bg, title, desc }, i) => (
+              {
+                icon: DollarSign, color: "#10b981", bg: "#dcfce7", title: "Fees & Payments",
+                desc: "Collect fees online or offline and always know who owes what.",
+                points: ["GHS receipts sent to parents on WhatsApp", "Defaulter reminders go out automatically", "Daily collection and balance reports"],
+              },
+              {
+                icon: Award, color: "#4f46e5", bg: "#eef2ff", title: "GES Continuous Assessment",
+                desc: "SBA the GES way — no more end-of-term Excel marathons.",
+                points: ["Class work, projects & quizzes weighted with the exam", "Class score, exam score and position computed for you", "GES terminal report sheet, ready to print"],
+              },
+              {
+                icon: BookOpen, color: "#8b5cf6", bg: "#ede9fe", title: "Exams & Marksheets",
+                desc: "Enter marks once — Skula does the rest of the term's paperwork.",
+                points: ["BECE-style grading scales, or your own", "Auto totals, grades and class positions", "Branded report cards as print or PDF"],
+              },
+              {
+                icon: ClipboardList, color: "#0ea5e9", bg: "#e0f2fe", title: "Attendance",
+                desc: "Daily and period attendance from any device, even a phone.",
+                points: ["Absent alerts to parents by SMS & WhatsApp", "Per-subject period attendance off the timetable", "Monthly registers and percentages, one click"],
+              },
+            ].map(({ icon: Icon, color, bg, title, desc, points }) => (
               <motion.div key={title} variants={fadeUp}
-                className="group relative overflow-hidden p-6 rounded-2xl bg-white border border-slate-900/[0.06] hover:border-slate-900/[0.1] hover:shadow-[0_10px_34px_-14px_rgba(15,23,42,0.20)] hover:-translate-y-0.5 transition-all duration-300 cursor-default">
+                className="group relative overflow-hidden p-7 rounded-2xl bg-white border border-slate-900/[0.06] hover:border-slate-900/[0.1] hover:shadow-[0_10px_34px_-14px_rgba(15,23,42,0.20)] hover:-translate-y-0.5 transition-all duration-300 cursor-default">
                 {/* Hairline accent in the module's colour, revealed on hover */}
                 <span className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
                   style={{ background: `linear-gradient(90deg, ${color}, ${color}00)` }} />
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 ring-1 transition-transform duration-300 group-hover:scale-105"
-                  style={{ backgroundColor: bg, "--tw-ring-color": `${color}22` } as React.CSSProperties}>
-                  <Icon className="h-5 w-5" style={{ color }} />
+                <div className="flex items-center gap-3.5 mb-3">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ring-1 transition-transform duration-300 group-hover:scale-105"
+                    style={{ backgroundColor: bg, "--tw-ring-color": `${color}22` } as React.CSSProperties}>
+                    <Icon className="h-5 w-5" style={{ color }} />
+                  </div>
+                  <h3 className="text-slate-900 font-bold text-[16px] tracking-tight">{title}</h3>
                 </div>
-                <h3 className="text-slate-900 font-bold text-[14px] mb-1.5 tracking-tight">{title}</h3>
-                <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
+                <p className="text-slate-600 text-[14px] leading-relaxed mb-4">{desc}</p>
+                <ul className="space-y-2">
+                  {points.map(p => (
+                    <li key={p} className="flex items-start gap-2.5 text-[13px] text-slate-600 leading-snug">
+                      <Check className="h-3.5 w-3.5 mt-0.5 shrink-0" style={{ color }} />
+                      {p}
+                    </li>
+                  ))}
+                </ul>
               </motion.div>
             ))}
+          </motion.div>
+
+          {/* Supporting tier — the rest of the platform, quieter */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}
+            variants={stagger} className="mt-12">
+            <motion.div variants={fadeUp} className="flex items-center gap-4 mb-6">
+              <span className="h-px flex-1 bg-slate-900/[0.07]" />
+              <p className="text-[13px] text-slate-500 font-medium">…plus everything else a school runs on</p>
+              <span className="h-px flex-1 bg-slate-900/[0.07]" />
+            </motion.div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              {[
+                { icon: Users,         color: "#6366f1", title: "Students & Admissions", desc: "Enrollment, profiles, ID cards, promotions." },
+                { icon: MessageSquare, color: "#ec4899", title: "Communication",         desc: "Bulk SMS, notices, chat, parent portal." },
+                { icon: Globe,         color: "#6366f1", title: "Free School Website",   desc: "A branded public site for every school." },
+                { icon: Banknote,      color: "#059669", title: "Payroll",               desc: "Salaries, allowances, payslips." },
+                { icon: CalendarDays,  color: "#f59e0b", title: "Timetable",             desc: "Build and publish live schedules." },
+                { icon: Smartphone,    color: "#0ea5e9", title: "Online Exams",          desc: "MCQ & theory with auto-grading." },
+                { icon: Library,       color: "#f97316", title: "Library",               desc: "Catalog, issue & return, overdues." },
+                { icon: Bus,           color: "#14b8a6", title: "Transport",             desc: "Routes, vehicles and transport fees." },
+                { icon: Home,          color: "#8b5cf6", title: "Hostel",                desc: "Rooms, allocations and hostel fees." },
+                { icon: Building2,     color: "#64748b", title: "Front Office",          desc: "Visitors, enquiries, dispatch." },
+              ].map(({ icon: Icon, color, title, desc }) => (
+                <motion.div key={title} variants={fadeUp}
+                  className="p-4 rounded-xl bg-white border border-slate-900/[0.06] hover:border-slate-900/[0.1] transition-colors duration-300 cursor-default">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Icon className="h-4 w-4 shrink-0" style={{ color }} />
+                    <h3 className="text-slate-900 font-bold text-[13px] tracking-tight">{title}</h3>
+                  </div>
+                  <p className="text-slate-500 text-[12px] leading-relaxed">{desc}</p>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
       </section>
