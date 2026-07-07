@@ -41,6 +41,27 @@ const TABS: { id: ReportTab; label: string }[] = [
   { id: "library", label: "Library" },
 ];
 
+// ─── PDF helper — posts the same flat rows the CSV uses ──────────────────────
+
+async function downloadPDF(rows: Record<string, any>[], title: string, subtitle?: string) {
+  if (!rows.length) return alert("No data to export");
+  try {
+    const res = await fetch("/api/reports/pdf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, subtitle, rows }),
+    });
+    if (!res.ok) throw new Error((await res.json()).error ?? "Failed");
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e: any) { alert(e.message ?? "PDF export failed"); }
+}
+
 // ─── CSV helper ───────────────────────────────────────────────────────────────
 
 function downloadCSV(rows: Record<string, any>[], filename: string) {
@@ -144,12 +165,15 @@ export function ReportsClient({ sessions, classes, sections, classSections, depa
 
 // ─── Shared UI ────────────────────────────────────────────────────────────────
 
-function ReportActions({ onPrint, onCSV, count }: { onPrint: () => void; onCSV: () => void; count: number }) {
+function ReportActions({ onPrint, onCSV, onPDF, count }: { onPrint: () => void; onCSV: () => void; onPDF: () => void; count: number }) {
   return (
     <div className="flex items-center gap-2 print:hidden">
       <span className="text-sm text-gray-500">{count} record{count !== 1 ? "s" : ""}</span>
       <Button size="sm" variant="outline" onClick={onCSV}>
         <Download className="h-3.5 w-3.5 mr-1" /> CSV
+      </Button>
+      <Button size="sm" variant="outline" onClick={onPDF}>
+        <Download className="h-3.5 w-3.5 mr-1" /> PDF
       </Button>
       <Button size="sm" variant="outline" onClick={onPrint}>
         <Printer className="h-3.5 w-3.5 mr-1" /> Print
@@ -200,9 +224,7 @@ function StudentReport({ sessions, classes, sections, classSections, onPrint }: 
     finally { setLoading(false); }
   }
 
-  function csv() {
-    if (!rows) return;
-    downloadCSV(rows.map((s) => ({
+  const flatRows = () => (rows ?? []).map((s) => ({
       "Admission No": s.admissionNo,
       "First Name": s.firstName,
       "Last Name": s.lastName,
@@ -213,7 +235,14 @@ function StudentReport({ sessions, classes, sections, classSections, onPrint }: 
       "Status": s.isActive ? "Active" : "Inactive",
       "Mobile": s.mobile ?? "",
       "Date of Birth": s.dob ? new Date(s.dob).toLocaleDateString() : "",
-    })), "students.csv");
+    }));
+  function csv() {
+    if (!rows) return;
+    downloadCSV(flatRows(), "students.csv");
+  }
+  function pdf() {
+    if (!rows) return;
+    downloadPDF(flatRows(), "Student List Report");
   }
 
   return (
@@ -264,7 +293,7 @@ function StudentReport({ sessions, classes, sections, classSections, onPrint }: 
           <Button onClick={generate} disabled={loading} size="sm">
             <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Generate"}
           </Button>
-          {rows && <ReportActions onPrint={onPrint} onCSV={csv} count={rows.length} />}
+          {rows && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={rows.length} />}
         </div>
       </div>
 
@@ -345,9 +374,7 @@ function AttendanceReport({ sessions, classSections, onPrint }: {
     finally { setLoading(false); }
   }
 
-  function csv() {
-    if (!data) return;
-    downloadCSV(data.rows.map((r) => ({
+  const flatRows = () => (data?.rows ?? []).map((r) => ({
       "Admission No": r.student.admissionNo,
       "Name": `${r.student.firstName} ${r.student.lastName}`,
       "Branch": r.student.branch?.name ?? "",
@@ -355,7 +382,14 @@ function AttendanceReport({ sessions, classSections, onPrint }: {
       "Section": r.classSection?.section?.name ?? "",
       P: r.P, A: r.A, L: r.L, H: r.H, "Half Day": r.F,
       "Total": r.total, "%": r.pct,
-    })), "attendance.csv");
+    }));
+  function csv() {
+    if (!data) return;
+    downloadCSV(flatRows(), "attendance.csv");
+  }
+  function pdf() {
+    if (!data) return;
+    downloadPDF(flatRows(), "Attendance Report");
   }
 
   return (
@@ -392,7 +426,7 @@ function AttendanceReport({ sessions, classSections, onPrint }: {
           <Button onClick={generate} disabled={loading} size="sm">
             <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Generate"}
           </Button>
-          {data && <ReportActions onPrint={onPrint} onCSV={csv} count={data.rows.length} />}
+          {data && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={data.rows.length} />}
         </div>
       </div>
 
@@ -479,16 +513,21 @@ function StaffAttendanceReport({ departments, onPrint }: { departments: Props["d
     finally { setLoading(false); }
   }
 
-  function csv() {
-    if (!rows) return;
-    downloadCSV(rows.map((r) => ({
+  const flatRows = () => (rows ?? []).map((r) => ({
       "Employee ID": r.staff.employeeId ?? "",
       "Name": `${r.staff.firstName} ${r.staff.lastName}`,
       "Department": r.staff.department?.name ?? "",
       "Designation": r.staff.designation?.name ?? "",
       P: r.P, A: r.A, L: r.L, H: r.H, F: r.F,
       "Total": r.total, "%": r.pct,
-    })), "staff-attendance.csv");
+    }));
+  function csv() {
+    if (!rows) return;
+    downloadCSV(flatRows(), "staff-attendance.csv");
+  }
+  function pdf() {
+    if (!rows) return;
+    downloadPDF(flatRows(), "Staff Attendance Report");
   }
 
   return (
@@ -516,7 +555,7 @@ function StaffAttendanceReport({ departments, onPrint }: { departments: Props["d
           <Button onClick={generate} disabled={loading} size="sm">
             <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Generate"}
           </Button>
-          {rows && <ReportActions onPrint={onPrint} onCSV={csv} count={rows.length} />}
+          {rows && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={rows.length} />}
         </div>
       </div>
 
@@ -591,9 +630,7 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
     finally { setLoading(false); }
   }
 
-  function csv() {
-    if (!data) return;
-    downloadCSV(data.rows.map((r) => ({
+  const flatRows = () => (data?.rows ?? []).map((r) => ({
       "Admission No": r.student.admissionNo,
       "Name": `${r.student.firstName} ${r.student.lastName}`,
       "Branch": r.branch ?? "",
@@ -601,7 +638,14 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
       "Fee Group": r.feeGroup, "Fee Type": r.feeType,
       "Amount": r.amount.toFixed(2), "Payment Mode": r.paymentMode,
       "Pay Date": r.payDate ? new Date(r.payDate).toLocaleDateString() : "",
-    })), "fee-collection.csv");
+    }));
+  function csv() {
+    if (!data) return;
+    downloadCSV(flatRows(), "fee-collection.csv");
+  }
+  function pdf() {
+    if (!data) return;
+    downloadPDF(flatRows(), "Fee Collection Report");
   }
 
   return (
@@ -629,7 +673,7 @@ function FeeCollectionReport({ sessions, onPrint }: { sessions: Props["sessions"
           <Button onClick={generate} disabled={loading} size="sm">
             <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Generate"}
           </Button>
-          {data && <ReportActions onPrint={onPrint} onCSV={csv} count={data.rows.length} />}
+          {data && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={data.rows.length} />}
         </div>
       </div>
 
@@ -715,9 +759,7 @@ function DueFeesReport({ sessions, onPrint }: { sessions: Props["sessions"]; onP
     finally { setLoading(false); }
   }
 
-  function csv() {
-    if (!rows) return;
-    downloadCSV(rows.map((r) => ({
+  const flatRows = () => (rows ?? []).map((r) => ({
       "Admission No": r.student.admissionNo,
       "Name": `${r.student.firstName} ${r.student.lastName}`,
       "Branch": r.branch ?? "",
@@ -726,7 +768,14 @@ function DueFeesReport({ sessions, onPrint }: { sessions: Props["sessions"]; onP
       "Total Fee": r.totalFee.toFixed(2),
       "Paid": r.paid.toFixed(2),
       "Due": r.due.toFixed(2),
-    })), "due-fees.csv");
+    }));
+  function csv() {
+    if (!rows) return;
+    downloadCSV(flatRows(), "due-fees.csv");
+  }
+  function pdf() {
+    if (!rows) return;
+    downloadPDF(flatRows(), "Due Fees Report");
   }
 
   const totalDue = rows ? rows.reduce((s, r) => s + r.due, 0) : 0;
@@ -746,7 +795,7 @@ function DueFeesReport({ sessions, onPrint }: { sessions: Props["sessions"]; onP
           <Button onClick={generate} disabled={loading} size="sm">
             <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Generate"}
           </Button>
-          {rows && <ReportActions onPrint={onPrint} onCSV={csv} count={rows.length} />}
+          {rows && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={rows.length} />}
         </div>
       </div>
 
@@ -839,15 +888,13 @@ function ExamResultsReport({ examGroups, sessions, classSections, onPrint }: {
     finally { setLoading(false); }
   }
 
-  function csv() {
-    if (!data) return;
-    downloadCSV(data.rows.map((r) => {
+  const flatRows = () => (data?.rows ?? []).map((r) => {
       const row: Record<string, any> = {
         "Rank": r.rank,
         "Admission No": r.student.admissionNo,
         "Name": `${r.student.firstName} ${r.student.lastName}`,
       };
-      for (const sub of data.subjectNames) {
+      for (const sub of data?.subjectNames ?? []) {
         const s = r.subjects[sub];
         row[`${sub} (${s?.full ?? 0})`] = s?.obtained ?? "AB";
       }
@@ -855,7 +902,14 @@ function ExamResultsReport({ examGroups, sessions, classSections, onPrint }: {
       row["%"] = r.percentage;
       row["Result"] = r.passed ? "Pass" : "Fail";
       return row;
-    }), "exam-results.csv");
+    });
+  function csv() {
+    if (!data) return;
+    downloadCSV(flatRows(), "exam-results.csv");
+  }
+  function pdf() {
+    if (!data) return;
+    downloadPDF(flatRows(), "Exam Results Report");
   }
 
   return (
@@ -891,7 +945,7 @@ function ExamResultsReport({ examGroups, sessions, classSections, onPrint }: {
           <Button onClick={generate} disabled={loading} size="sm">
             <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Generate"}
           </Button>
-          {data && <ReportActions onPrint={onPrint} onCSV={csv} count={data.rows.length} />}
+          {data && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={data.rows.length} />}
         </div>
       </div>
 
@@ -973,12 +1027,11 @@ function TransportReport({ onPrint }: { onPrint: () => void }) {
     finally { setLoading(false); }
   }
 
-  function csv() {
-    if (!routes) return;
-    const rows: any[] = [];
-    for (const route of routes) {
+  const flatRows = () => {
+    const out: any[] = [];
+    for (const route of routes ?? []) {
       for (const sr of route.studentRoutes) {
-        rows.push({
+        out.push({
           "Route": route.title,
           "Vehicle": route.vehicle?.vehicleNo ?? "",
           "Driver": route.vehicle?.driverName ?? "",
@@ -990,7 +1043,15 @@ function TransportReport({ onPrint }: { onPrint: () => void }) {
         });
       }
     }
-    downloadCSV(rows, "transport-routes.csv");
+    return out;
+  };
+  function csv() {
+    if (!routes) return;
+    downloadCSV(flatRows(), "transport-routes.csv");
+  }
+  function pdf() {
+    if (!routes) return;
+    downloadPDF(flatRows(), "Transport Route Report");
   }
 
   const totalStudents = routes ? routes.reduce((s, r) => s + r.studentRoutes.length, 0) : 0;
@@ -1003,7 +1064,7 @@ function TransportReport({ onPrint }: { onPrint: () => void }) {
           <Button onClick={generate} disabled={loading} size="sm">
             <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Load Routes"}
           </Button>
-          {routes && <ReportActions onPrint={onPrint} onCSV={csv} count={totalStudents} />}
+          {routes && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={totalStudents} />}
         </div>
       </div>
 
@@ -1080,9 +1141,7 @@ function LibraryReport({ onPrint }: { onPrint: () => void }) {
     finally { setLoading(false); }
   }
 
-  function csv() {
-    if (!rows) return;
-    downloadCSV(rows.map((r) => ({
+  const flatRows = () => (rows ?? []).map((r) => ({
       "Book No": r.book.bookNo,
       "Title": r.book.title,
       "Author": r.book.author ?? "",
@@ -1095,7 +1154,14 @@ function LibraryReport({ onPrint }: { onPrint: () => void }) {
       "Returned": r.returnedAt ? new Date(r.returnedAt).toLocaleDateString() : "",
       "Status": r.status,
       "Fine": r.fine ? `₵${r.fine}` : "",
-    })), "library-issues.csv");
+    }));
+  function csv() {
+    if (!rows) return;
+    downloadCSV(flatRows(), "library-issues.csv");
+  }
+  function pdf() {
+    if (!rows) return;
+    downloadPDF(flatRows(), "Library Report");
   }
 
   const overdue = rows ? rows.filter((r) => r.status === "ISSUED" && new Date(r.dueDate) < new Date()).length : 0;
@@ -1127,7 +1193,7 @@ function LibraryReport({ onPrint }: { onPrint: () => void }) {
           <Button onClick={generate} disabled={loading} size="sm">
             <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Generate"}
           </Button>
-          {rows && <ReportActions onPrint={onPrint} onCSV={csv} count={rows.length} />}
+          {rows && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={rows.length} />}
         </div>
       </div>
 
