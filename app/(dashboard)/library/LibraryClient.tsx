@@ -1,25 +1,34 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, RotateCcw, Trash2, X, Upload } from "lucide-react";
 import { usePermission } from "@/components/PermissionsProvider";
+import { Pagination } from "@/components/Pagination";
 
-type Props = { books: any[]; issues: any[]; students: any[]; staff: any[]; members: any[] };
+type Props = {
+  books: any[]; issues: any[]; students: any[]; staff: any[]; members: any[];
+  booksTotal: number; page: number; totalPages: number; limit: number; initialSearch: string;
+};
 type Tab = "catalog" | "issues" | "members";
 
 const STATUS_STYLE: Record<string, string> = {
   ISSUED: "bg-blue-100 text-blue-700", RETURNED: "bg-green-100 text-green-700", OVERDUE: "bg-red-100 text-red-700",
 };
 
-export function LibraryClient({ books, issues, students, staff, members: initialMembers }: Props) {
+export function LibraryClient({
+  books, issues, students, staff, members: initialMembers,
+  booksTotal, page, totalPages, limit, initialSearch,
+}: Props) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const perm = usePermission("library");
   const [tab, setTab] = useState<Tab>("catalog");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
   const [returning,     setReturning]     = useState<string | null>(null);
   const [issueFromDate, setIssueFromDate] = useState("");
   const [issueToDate,   setIssueToDate]   = useState("");
@@ -42,7 +51,18 @@ export function LibraryClient({ books, issues, students, staff, members: initial
     setReturning(null);
   }
 
-  const filtered = books.filter(b => !search || [b.title, b.author, b.bookNo].some(v => v?.toLowerCase().includes(search.toLowerCase())));
+  // Book search is server-side (URL-driven, debounced) — books arrive pre-paged.
+  const debounce = useRef<ReturnType<typeof setTimeout>>(undefined);
+  function onSearch(v: string) {
+    setSearch(v);
+    clearTimeout(debounce.current);
+    debounce.current = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (v) params.set("search", v); else params.delete("search");
+      params.set("page", "1");
+      router.push(`${pathname}?${params}`);
+    }, 400);
+  }
 
   const filteredIssues = issues.filter((i: any) => {
     if (issueStatus && i.status !== issueStatus) return false;
@@ -102,7 +122,7 @@ export function LibraryClient({ books, issues, students, staff, members: initial
       {tab === "catalog" && (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <Input className="w-full sm:w-64" placeholder="Search books…" value={search} onChange={e => setSearch(e.target.value)} />
+            <Input className="w-full sm:w-64" placeholder="Search books…" value={search} onChange={e => onSearch(e.target.value)} />
             <div className="flex gap-2 shrink-0">
               {perm.canAdd && (
                 <Link href="/library/issue/new">
@@ -127,8 +147,8 @@ export function LibraryClient({ books, issues, students, staff, members: initial
                 <tr>{["Title","Author","Book No.","Subject","Rack","Total","Available",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y">
-                {filtered.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-400">No books found.</td></tr>
-                : filtered.map((b: any) => (
+                {books.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-400">No books found.</td></tr>
+                : books.map((b: any) => (
                   <tr key={b.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium max-w-[180px] truncate">{b.title}</td>
                     <td className="px-4 py-3 text-gray-600">{b.author}</td>
@@ -240,6 +260,7 @@ export function LibraryClient({ books, issues, students, staff, members: initial
                 ))}
               </tbody>
             </table>
+            <Pagination page={page} totalPages={totalPages} total={booksTotal} limit={limit} />
           </div>
         </div>
       )}

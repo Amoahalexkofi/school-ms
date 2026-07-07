@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
+import { usePermission } from "@/components/PermissionsProvider";
+import { Pagination } from "@/components/Pagination";import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Plus, Pencil, Trash2, GraduationCap, Calendar, X, User, Send, Mail } from "lucide-react";
@@ -29,18 +30,41 @@ type AlumniRecord = {
 const emptyForm = { studentId: "", currentEmail: "", currentPhone: "", occupation: "", address: "", note: "" };
 const emptyMail = { subject: "", message: "", channel: "IN_APP" };
 
-export function AlumniClient({ alumni: initial, sessions, classes, students }: {
+export function AlumniClient({
+  alumni: initial, sessions, classes, students,
+  total, page, totalPages, limit, counts, filters,
+}: {
   alumni: AlumniRecord[];
   sessions: { id: string; session: string }[];
   classes: { id: string; name: string }[];
   students: any[];
+  total: number; page: number; totalPages: number; limit: number;
+  counts: { total: number; thisYear: number; male: number; female: number };
+  filters: { search: string; sessionId: string; classId: string };
 }) {
   const perm = usePermission("alumni");
   const router = useRouter();
   const [alumni, setAlumni] = useState<AlumniRecord[]>(initial);
-  const [search, setSearch] = useState("");
-  const [filterSession, setFilterSession] = useState("");
-  const [filterClass, setFilterClass] = useState("");
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(filters.search);
+  const filterSession = filters.sessionId;
+  const filterClass = filters.classId;
+
+  const setParam = (updates: Record<string, string>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [k, v] of Object.entries(updates)) {
+      if (v) params.set(k, v); else params.delete(k);
+    }
+    params.set("page", "1");
+    router.push(`${pathname}?${params}`);
+  };
+  const debounce = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const onSearch = (v: string) => {
+    setSearch(v);
+    clearTimeout(debounce.current);
+    debounce.current = setTimeout(() => setParam({ search: v }), 400);
+  };
   const [showForm, setShowForm] = useState(false);
   const [showMail, setShowMail] = useState(false);
   const [editing, setEditing] = useState<AlumniRecord | null>(null);
@@ -49,16 +73,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
 
-  const filtered = useMemo(() => {
-    return alumni.filter((a) => {
-      const name = `${a.student.firstName} ${a.student.lastName}`.toLowerCase();
-      const matchSearch = !search || name.includes(search.toLowerCase()) || a.student.admissionNo.toLowerCase().includes(search.toLowerCase());
-      const sess = a.student.sessions?.[0];
-      const matchSession = !filterSession || sess?.session?.id === filterSession;
-      const matchClass = !filterClass || sess?.classSection?.class?.name === classes.find(c => c.id === filterClass)?.name;
-      return matchSearch && matchSession && matchClass;
-    });
-  }, [alumni, search, filterSession, filterClass, classes]);
+  const filtered = alumni; // filtering + paging are server-side (URL-driven)
 
   function openAdd() {
     setEditing(null);
@@ -144,10 +159,10 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
     <main className="flex-1 p-4 md:p-6 space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Total Alumni</p><p className="text-3xl font-bold">{alumni.length}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">This Year</p><p className="text-3xl font-bold">{alumni.filter(a => new Date(a.createdAt).getFullYear() === new Date().getFullYear()).length}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Male</p><p className="text-3xl font-bold">{alumni.filter(a => a.student.gender === "Male").length}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Female</p><p className="text-3xl font-bold">{alumni.filter(a => a.student.gender === "Female").length}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Total Alumni</p><p className="text-3xl font-bold">{counts.total}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">This Year</p><p className="text-3xl font-bold">{counts.thisYear}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Male</p><p className="text-3xl font-bold">{counts.male}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-gray-500 mb-1">Female</p><p className="text-3xl font-bold">{counts.female}</p></CardContent></Card>
       </div>
 
       {/* Toolbar */}
@@ -155,18 +170,18 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
         <div className="flex flex-wrap gap-3 items-end">
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-            <Input placeholder="Search by name or admission no…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 w-56" />
+            <Input placeholder="Search by name or admission no…" value={search} onChange={(e) => onSearch(e.target.value)} className="pl-8 w-56" />
           </div>
           <div>
             <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Pass-out Session</Label>
-            <select className={SEL + " w-44"} value={filterSession} onChange={(e) => setFilterSession(e.target.value)}>
+            <select className={SEL + " w-44"} value={filterSession} onChange={(e) => setParam({ sessionId: e.target.value })}>
               <option value="">All Sessions</option>
               {sessions.map((s) => <option key={s.id} value={s.id}>{s.session}</option>)}
             </select>
           </div>
           <div>
             <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Class</Label>
-            <select className={SEL + " w-36"} value={filterClass} onChange={(e) => setFilterClass(e.target.value)}>
+            <select className={SEL + " w-36"} value={filterClass} onChange={(e) => setParam({ classId: e.target.value })}>
               <option value="">All Classes</option>
               {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
@@ -192,7 +207,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
               <CardTitle className="text-sm text-indigo-800 flex items-center gap-2">
                 <Send className="h-4 w-4" />
                 Mail Alumni
-                <span className="font-normal text-indigo-500">— {mailLabel} ({filtered.length} recipients)</span>
+                <span className="font-normal text-indigo-500">— {mailLabel} ({total} recipients)</span>
               </CardTitle>
               <button onClick={() => setShowMail(false)}><X className="h-4 w-4 text-gray-400" /></button>
             </div>
@@ -223,7 +238,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
             <div className="flex items-end gap-2">
               <Button onClick={sendMail} disabled={sending} size="sm" className="bg-indigo-600 hover:bg-indigo-700">
                 <Send className="h-3.5 w-3.5 mr-1" />
-                {sending ? "Sending…" : `Send to ${filtered.length} Alumni`}
+                {sending ? "Sending…" : `Send to ${total} Alumni`}
               </Button>
               <Button variant="outline" size="sm" onClick={() => setShowMail(false)}>Cancel</Button>
             </div>
@@ -312,7 +327,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
                     const sess = a.student.sessions?.[0];
                     return (
                       <tr key={a.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-gray-400">{i + 1}</td>
+                        <td className="px-4 py-3 text-gray-400">{(page - 1) * limit + i + 1}</td>
                         <td className="px-4 py-3 font-mono text-xs">{a.student.admissionNo}</td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
@@ -342,6 +357,7 @@ export function AlumniClient({ alumni: initial, sessions, classes, students }: {
                 </tbody>
               </table>
             </div>
+            <Pagination page={page} totalPages={totalPages} total={total} limit={limit} />
           </CardContent>
         </Card>
       )}
