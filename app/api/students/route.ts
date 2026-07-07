@@ -221,21 +221,26 @@ export async function POST(req: NextRequest) {
       await markApplicationEnrolled(body.applicationId, student.id).catch(() => null);
     }
 
-    // Notify the parent (best-effort) with login details via email + WhatsApp.
+    // Notify the parent (best-effort) with login details. Email fires when a
+    // parent email was given; WhatsApp fires when a phone was given — either
+    // alone is enough (phone-only parents still get the student credentials).
     let delivery: any = null;
-    if (parentInfo && !parentInfo.conflict) {
+    const hasParentAccount = parentInfo && !parentInfo.conflict;
+    if (hasParentAccount || body.parentPhone) {
       const profile = await (db as any).schoolProfile.findFirst({ select: { name: true } }).catch(() => null);
       const schoolName = profile?.name ?? "Your School";
       const loginUrl = `${req.nextUrl.origin}/sign-in`;
       const credentials = [
         { label: "Student", name: `${body.firstName ?? ""} ${body.lastName ?? ""}`.trim(), username, email, tempPassword },
-        ...(parentInfo.existing ? [] : [{ label: "Parent", name: body.parentName || parentInfo.email, username: parentInfo.username, email: parentInfo.email, tempPassword: parentInfo.tempPassword }]),
+        ...(hasParentAccount && !parentInfo.existing
+          ? [{ label: "Parent", name: body.parentName || parentInfo.email, username: parentInfo.username, email: parentInfo.email, tempPassword: parentInfo.tempPassword }]
+          : []),
       ];
       delivery = await notifyParentCredentials(db, {
         schoolName, loginUrl,
-        parentEmail: parentInfo.email,
+        parentEmail: hasParentAccount ? parentInfo.email : null,
         parentPhone: body.parentPhone || null,
-        parentExisting: !!parentInfo.existing,
+        parentExisting: !!parentInfo?.existing,
         credentials,
       }).catch(() => null);
     }

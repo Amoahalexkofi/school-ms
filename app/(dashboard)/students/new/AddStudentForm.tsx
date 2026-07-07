@@ -128,11 +128,43 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
   const fp = { form: form as Record<string, any>, set };
   const tabIdx = TABS.indexOf(tab);
 
+  // Per-step validation — the stepper only advances past a valid step, so a
+  // student can't be created from Basic Info alone.
+  function validateStep(t: string): string | null {
+    switch (t) {
+      case "Basic Info":
+        if (!form.firstName || !form.lastName || !form.dateOfBirth || !form.gender)
+          return "First name, last name, date of birth and gender are required.";
+        return null;
+      case "Guardian":
+        if (!form.parentEmail.trim() && !form.parentPhone.trim())
+          return "Enter the parent's WhatsApp number and/or email (Parent Portal Login) — the login details are sent there.";
+        return null;
+      case "Academic":
+        if (!form.sessionId || !form.classSectionId)
+          return "Select the session and class/section for enrollment.";
+        return null;
+      default:
+        return null;
+    }
+  }
+
+  // Forward navigation validates every step being skipped over; going back is free.
+  function goToTab(target: string) {
+    const targetIdx = TABS.indexOf(target as typeof TABS[number]);
+    if (targetIdx <= tabIdx) { setError(""); setTab(target as typeof TABS[number]); return; }
+    for (let i = tabIdx; i < targetIdx; i++) {
+      const err = validateStep(TABS[i]);
+      if (err) { setTab(TABS[i]); setError(err); return; }
+    }
+    setError("");
+    setTab(target as typeof TABS[number]);
+  }
+
   async function handleSubmit() {
-    if (!form.firstName || !form.lastName || !form.dateOfBirth || !form.gender) {
-      setError("First name, last name, date of birth and gender are required.");
-      setTab("Basic Info");
-      return;
+    for (const t of TABS) {
+      const err = validateStep(t);
+      if (err) { setTab(t); setError(err); return; }
     }
     setLoading(true); setError("");
     try {
@@ -188,12 +220,19 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
               </div>
             )}
 
-            {/* Delivery status */}
-            {created.parent && !created.parent.conflict && created.delivery && (
+            {/* Delivery status — shown whenever a send was attempted (email
+                and/or WhatsApp), so a failed or unconfigured channel is
+                visible instead of silently implied. */}
+            {created.delivery && (
               <div className="border border-slate-200 rounded-lg p-3 space-y-1.5">
                 <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Login details sent to parent</p>
                 <DeliveryRow label="Email" state={created.delivery.email} />
                 <DeliveryRow label="WhatsApp" state={created.delivery.whatsapp} />
+              </div>
+            )}
+            {!created.delivery && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[12.5px] text-amber-800">
+                No parent contact was provided, so no login details were sent — share the passwords above yourself.
               </div>
             )}
 
@@ -253,7 +292,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
             <button
               key={t}
               type="button"
-              onClick={() => setTab(t)}
+              onClick={() => goToTab(t)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12.5px] font-semibold transition-all duration-150 whitespace-nowrap ${
                 tab === t
                   ? "bg-white text-slate-900 shadow-sm"
@@ -492,16 +531,17 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
                 <ArrowLeft className="h-3.5 w-3.5" /> Back
               </Button>
             )}
-            {tabIdx < TABS.length - 1 && (
-              <Button variant="outline" type="button" onClick={() => setTab(TABS[tabIdx + 1])}>
-                Next <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
-            )}
           </div>
-          <Button size="lg" type="button" disabled={loading} onClick={handleSubmit}>
-            {loading ? "Saving…" : "Add Student"}
-            {!loading && <ChevronRight className="h-4 w-4" />}
-          </Button>
+          {tabIdx < TABS.length - 1 ? (
+            <Button size="lg" type="button" onClick={() => goToTab(TABS[tabIdx + 1])}>
+              Next <ArrowRight className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button size="lg" type="button" disabled={loading} onClick={handleSubmit}>
+              {loading ? "Saving…" : "Add Student"}
+              {!loading && <ChevronRight className="h-4 w-4" />}
+            </Button>
+          )}
         </div>
       </div>
     </main>
