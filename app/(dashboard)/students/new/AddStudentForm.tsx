@@ -70,20 +70,34 @@ type Props = {
   fromApplication?: { name: string; appliedClass: string };
 };
 
-function DeliveryRow({ label, state }: { label: string; state: { ok: boolean; error?: string; skipped?: boolean } }) {
+function DeliveryRow({ label, state }: { label: string; state: { ok: boolean; error?: string; skipped?: boolean; via?: string } }) {
   const notConfigured = state.error === "SMTP not configured" || (state.error ?? "").includes("No active WhatsApp");
+  // WhatsApp "success" on a freeform text only means Meta ACCEPTED it — it is
+  // silently dropped unless the parent messaged the school's number in the
+  // last 24h. Only a template send is reliably delivered, so say so.
+  const acceptedOnly = state.ok && state.via === "freeform";
   const text = state.ok
-    ? "Sent"
+    ? acceptedOnly ? "Accepted — delivery not guaranteed" : "Sent"
     : state.skipped
       ? "Not attempted"
       : notConfigured
         ? "Channel not configured"
         : `Failed${state.error ? ` — ${state.error}` : ""}`;
-  const cls = state.ok ? "text-emerald-600" : state.skipped || notConfigured ? "text-slate-400" : "text-rose-600";
+  const cls = state.ok
+    ? acceptedOnly ? "text-amber-600" : "text-emerald-600"
+    : state.skipped || notConfigured ? "text-slate-400" : "text-rose-600";
   return (
-    <div className="flex items-center justify-between text-[12.5px]">
-      <span className="text-slate-600">{label}</span>
-      <span className={`font-medium ${cls}`}>{state.ok ? "✓ " : ""}{text}</span>
+    <div className="flex flex-col items-end">
+      <div className="flex items-center justify-between text-[12.5px] w-full">
+        <span className="text-slate-600">{label}</span>
+        <span className={`font-medium ${cls}`}>{state.ok && !acceptedOnly ? "✓ " : ""}{text}</span>
+      </div>
+      {acceptedOnly && (
+        <p className="text-[11px] text-amber-700/80 text-right mt-0.5 max-w-[300px]">
+          WhatsApp only delivers cold messages via an approved template — it reaches the parent
+          only if they&apos;ve messaged the school&apos;s WhatsApp in the last 24 hours.
+        </p>
+      )}
     </div>
   );
 }

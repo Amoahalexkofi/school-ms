@@ -20,7 +20,7 @@ export interface NotifyInput {
 
 export interface NotifyResult {
   email: { ok: boolean; error?: string; skipped?: boolean };
-  whatsapp: { ok: boolean; error?: string; skipped?: boolean };
+  whatsapp: { ok: boolean; error?: string; skipped?: boolean; via?: "template" | "freeform" };
 }
 
 function credRowsHtml(creds: Credential[]) {
@@ -129,7 +129,7 @@ export async function notifyParentCredentials(db: any, input: NotifyInput): Prom
             db
           )
         : await sendWhatsApp(input.parentPhone, buildWhatsAppText(input), db);
-      result.whatsapp = { ok: r.success, error: r.error };
+      result.whatsapp = { ok: r.success, error: r.error, via: templateName ? "template" : "freeform" };
     } catch (e: any) {
       result.whatsapp = { ok: false, error: e.message };
     }
