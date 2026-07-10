@@ -266,7 +266,7 @@
   }
 
   th, td {
-    border: 1px solid #ddd;
+    border: 1px solid oklch(0.928 0.006 264.5); /* light-theme --border, pinned: print must not inherit dark-mode border */
     padding: 4px 8px;
     text-align: left;
   }

@@ -990,6 +990,40 @@ export function HomepageClient() {
             ))}
           </motion.div>
 
+          {/* Long-term prepay strip — 5 & 7 year lock-ins */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+            className="mt-8 max-w-5xl mx-auto rounded-2xl border border-slate-900/[0.07] bg-white overflow-hidden"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+            <div className="px-6 pt-5 pb-4 border-b border-slate-900/[0.06] flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Prepay &amp; save</p>
+                <p className="text-[15px] font-bold text-slate-900">Lock in longer, save more.</p>
+              </div>
+              <p className="text-[12px] text-slate-400">One payment, your rate locked for the whole term.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-900/[0.06]">
+              {[
+                { term: "5 Years", price: "GH₵7,990", perMonth: "≈GH₵133/mo", save: "Save 33%" },
+                { term: "7 Years", price: "GH₵9,990", perMonth: "≈GH₵119/mo", save: "Save 40%" },
+              ].map(({ term, price, perMonth, save }) => (
+                <div key={term} className="flex flex-col min-[480px]:flex-row min-[480px]:items-center min-[480px]:justify-between gap-4 px-6 py-5">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">{term}</p>
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-[24px] font-black leading-none text-slate-900">{price}</p>
+                      <p className="text-[12px] text-slate-400">{perMonth}</p>
+                    </div>
+                    <p className="text-[12.5px] font-semibold text-emerald-600 mt-1.5">{save} vs monthly</p>
+                  </div>
+                  <Link href="/contact"
+                    className="shrink-0 self-start min-[480px]:self-auto inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-[13px] font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all">
+                    Get started →
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
           <motion.p variants={fadeUp} className="text-center text-[12px] text-slate-400 mt-6">
             Prices in GH₵, exclusive of taxes. Launch pricing — <Link href="/terms" className="text-slate-500 hover:text-indigo-600 underline underline-offset-2">terms &amp; conditions apply</Link>.
           </motion.p>
