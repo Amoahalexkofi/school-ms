@@ -12,7 +12,7 @@
 Two things in one codebase:
 
 1. **School Management System** — exact replica of Smart School v7.1.0, covering all academic, financial, HR and operations modules.
-2. **Novalss SaaS Platform** — multi-tenant hosting layer. Each school gets their own isolated Postgres schema. Novalss Admin (`/novalss-admin`) provisions and manages schools. Schools self-register at `/register`.
+2. **Novalss SaaS Platform** — multi-tenant hosting layer. Each school gets their own isolated Postgres schema. Novalss Admin (`/(see NOVALSS_ADMIN_KEY in .env — do not commit)min`) provisions and manages schools. Schools self-register at `/register`.
 
 ---
 
@@ -39,7 +39,7 @@ Before implementing any school feature, read the corresponding PHP model in:
 - `lib/registry.ts` — Prisma client always connected to `public` schema, used for `SchoolTenant` CRUD
 - `lib/provisioning.ts` — creates a new Postgres schema per school, copies table structure, seeds admin user
 - `lib/prisma.ts` — reads `DATABASE_SCHEMA` env var; sets `search_path` so all queries hit the school's schema
-- `app/(novalss-admin)/` — fully isolated route group (no school auth); uses cookie-based admin key auth
+- `app/((see NOVALSS_ADMIN_KEY in .env — do not commit)min)/` — fully isolated route group (no school auth); uses cookie-based admin key auth
 - `app/api/admin/` — school provisioning API (POST creates schema + seeds), PATCH updates status/plan
 - **TODO:** Per-request tenant routing — subdomain → schema lookup so one deployment serves all schools
 
@@ -63,7 +63,7 @@ Before implementing any school feature, read the corresponding PHP model in:
 | Super Admin | admin@school.edu | Admin@1234 |
 | Teacher | teacher@school.edu | Teacher@1234 |
 | Student | student@school.edu | Student@1234 |
-| Novalss Admin | — | key: `novalss-5d80bc6a1d4118dbd0ef00a3` (from `.env`) |
+| Novalss Admin | — | key: `(see NOVALSS_ADMIN_KEY in .env — do not commit)` (from `.env`) |
 
 ---
 
@@ -364,14 +364,14 @@ This is the multi-tenant hosting layer that wraps the school management system.
 - [x] `lib/prisma.ts` — reads `DATABASE_SCHEMA` env var, sets `search_path` so all queries hit the school's schema
 
 **20b. Novalss Admin Dashboard (COMPLETE)**
-- [x] Admin login — cookie-based key auth (`/novalss-admin/login`) — key from `NOVALSS_ADMIN_KEY` env var
-- [x] Admin dashboard — school list with stats (total, active, trial, suspended) (`/novalss-admin`)
+- [x] Admin login — cookie-based key auth (`/(see NOVALSS_ADMIN_KEY in .env — do not commit)min/login`) — key from `NOVALSS_ADMIN_KEY` env var
+- [x] Admin dashboard — school list with stats (total, active, trial, suspended) (`/(see NOVALSS_ADMIN_KEY in .env — do not commit)min`)
 - [x] Provision new school form — name, subdomain, admin email/password, plan
 - [x] Inline plan + status update per school
 - [x] Delete school (with confirm)
 - [x] API: GET/POST `/api/admin/schools`, PATCH/DELETE `/api/admin/schools/[id]`
 - [x] API: POST `/api/admin/auth` — validates key, sets `novalss_admin_key` cookie
-- [x] Routes excluded from school auth middleware (`/novalss-admin`, `/register`, `/api/admin`)
+- [x] Routes excluded from school auth middleware (`/(see NOVALSS_ADMIN_KEY in .env — do not commit)min`, `/register`, `/api/admin`)
 
 **20c. School Self-Registration (COMPLETE)**
 - [x] Public registration page (`/register`) — school name, subdomain, admin credentials

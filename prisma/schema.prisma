@@ -2628,6 +2628,18 @@ model StaffTimeline {
 
 // ─── SaaS Registry (lives in public schema — shared across all tenants) ───────
 
+// Platform (Novalss) staff account — lives ONLY in the public schema, like
+// SchoolTenant. Excluded from tenant provisioning. Auth: email + bcrypt
+// password; a successful login sets the same admin cookie as the legacy key.
+model PlatformAdmin {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+}
+
 model SchoolTenant {
   id           String    @id @default(cuid())
   name         String
