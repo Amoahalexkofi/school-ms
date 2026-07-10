@@ -108,7 +108,7 @@ export async function provisionSchool(input: {
     const tables = await client.query<{ tablename: string }>(`
       SELECT tablename FROM pg_tables
       WHERE schemaname = 'public'
-        AND tablename NOT IN ('SchoolTenant', 'PlatformAdmin', '_prisma_migrations')
+        AND tablename NOT IN ('SchoolTenant', '_prisma_migrations')
       ORDER BY tablename
     `);
 
