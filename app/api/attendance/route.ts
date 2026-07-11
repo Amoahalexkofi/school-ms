@@ -83,6 +83,16 @@ export async function POST(req: NextRequest) {
     if (!body.date)           return NextResponse.json({ error: "date is required" },           { status: 400 });
     if (!Array.isArray(body.records) || body.records.length === 0)
       return NextResponse.json({ error: "records must be a non-empty array" }, { status: 400 });
+    // Each record must carry the enrollment + type ids — otherwise prisma
+    // fails deep inside the transaction with a raw 500.
+    for (const r of body.records) {
+      if (!r?.studentSessionId || !r?.attendanceTypeId) {
+        return NextResponse.json(
+          { error: "each record requires studentSessionId and attendanceTypeId" },
+          { status: 422 }
+        );
+      }
+    }
 
     const date = new Date(body.date);
     await markAttendance({

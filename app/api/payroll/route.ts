@@ -42,7 +42,12 @@ export async function GET(req: NextRequest) {
 // POST — generate a new payslip for one staff member
 export async function POST(req: NextRequest) {
   try {
-    const { staffId, month, year } = await req.json();
+    const body = await req.json();
+    const staffId = body.staffId;
+    // Schema stores month/year as strings ("01"–"12" / "2026") — coerce so
+    // numeric JSON payloads don't blow up in prisma with a raw 500.
+    const month = body.month != null ? String(body.month).padStart(2, "0") : "";
+    const year  = body.year  != null ? String(body.year) : "";
     if (!staffId || !month || !year) return NextResponse.json({ error: "staffId, month and year required" }, { status: 422 });
 
     const staff = await ((await getDb()) as any).staff.findUnique({ where: { id: staffId }, select: { basicSalary: true } });
