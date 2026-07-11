@@ -721,31 +721,41 @@ export default function FeaturesPage() {
   const categories = [...new Set(MODULES.map(m => m.category))];
 
   return (
-    <div className="min-h-screen bg-white antialiased">
+    <div className="min-h-screen bg-white text-[#0d253d] antialiased"
+      style={{ fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif", fontFeatureSettings: '"ss01"' }}>
 
       <SkulaNav />
 
-      {/* HERO */}
-      <section className="bg-slate-950 pt-20 sm:pt-32 pb-12 sm:pb-20 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:"radial-gradient(circle at 1px 1px,rgba(255,255,255,0.04) 1px,transparent 0)", backgroundSize:"32px 32px" }} />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+      {/* HERO — gradient mesh, matches the homepage */}
+      <section className="relative pt-24 sm:pt-36 pb-14 sm:pb-24 overflow-hidden bg-white">
+        <div className="absolute inset-x-0 top-0 h-full pointer-events-none"
+          style={{
+            background: [
+              "radial-gradient(110% 80% at 85% 0%, rgba(83,58,253,0.30) 0%, transparent 55%)",
+              "radial-gradient(70% 60% at 100% 40%, rgba(234,34,97,0.16) 0%, transparent 55%)",
+              "radial-gradient(80% 70% at 25% 0%, rgba(245,233,212,0.85) 0%, transparent 65%)",
+              "radial-gradient(90% 80% at 0% 35%, rgba(185,185,249,0.40) 0%, transparent 60%)",
+              "linear-gradient(180deg, #f6f9fc 0%, #ffffff 100%)",
+            ].join(", "),
+            clipPath: "polygon(0 0, 100% 0, 100% 72%, 0 100%)",
+          }} />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <div className="inline-flex items-center gap-2 border border-white/10 bg-white/5 text-slate-400 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-8">
-            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
+          <div className="inline-flex items-center gap-2 border border-[#e3e8ee] bg-white/80 text-[#4434d4] text-xs font-semibold px-3.5 py-1.5 rounded-full mb-8">
+            <span className="w-1.5 h-1.5 bg-[#533afd] rounded-full" />
             {MODULES.length} modules · Everything included · No add-ons
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.02]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light text-[#0d253d] tracking-[-0.025em] leading-[1.04]">
             Every feature your<br />
-            <span className="text-indigo-400">school will ever need.</span>
+            <span className="text-[#533afd]">school will ever need.</span>
           </h1>
-          <p className="mt-6 text-slate-400 text-xl leading-relaxed max-w-2xl mx-auto">
+          <p className="mt-6 text-[#64748d] text-xl leading-relaxed max-w-2xl mx-auto">
             Skula is not a collection of bolt-on modules. Every feature below is included in every plan, fully connected, sharing one database — so data entered once flows everywhere.
           </p>
           {/* Category quick-links */}
           <div className="flex flex-wrap justify-center gap-2 mt-10">
             {categories.map(cat => (
               <a key={cat} href={`#${cat.toLowerCase()}`}
-                 className="text-sm font-semibold text-slate-400 border border-white/10 bg-white/5 px-4 py-1.5 rounded-full hover:bg-white/10 transition-colors">
+                 className="text-sm font-medium text-[#273951] border border-[#e3e8ee] bg-white/80 px-4 py-1.5 rounded-full hover:border-[#b9b9f9] hover:text-[#4434d4] transition-colors">
                 {cat}
               </a>
             ))}
@@ -760,7 +770,7 @@ export default function FeaturesPage() {
             {/* Category header */}
             <div className="flex items-center gap-4 mb-8 sm:mb-14">
               <div className="h-px flex-1 bg-gray-100" />
-              <span className="text-xs font-black text-gray-400 uppercase tracking-widest px-2">{cat}</span>
+              <span className="text-xs font-semibold text-[#64748d] uppercase tracking-widest px-2">{cat}</span>
               <div className="h-px flex-1 bg-gray-100" />
             </div>
 
@@ -782,9 +792,9 @@ export default function FeaturesPage() {
                         </div>
                         <span className={`text-xs font-black uppercase tracking-widest ${c.text}`}>{cat}</span>
                       </div>
-                      <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">{mod.name}</h2>
-                      <p className={`mt-1 text-lg font-bold ${c.text}`}>{mod.tagline}</p>
-                      <p className="mt-4 text-gray-500 leading-relaxed">{mod.description}</p>
+                      <h2 className="text-3xl sm:text-4xl font-light text-[#0d253d] tracking-[-0.02em]">{mod.name}</h2>
+                      <p className={`mt-1 text-lg font-medium ${c.text}`}>{mod.tagline}</p>
+                      <p className="mt-4 text-[#64748d] leading-relaxed">{mod.description}</p>
 
                       <div className={`mt-6 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider ${c.text} ${c.light} ${c.border} border px-3 py-1.5 rounded-full`}>
                         <UserCheck className="h-3 w-3" /> Used by: {mod.who}
@@ -792,7 +802,7 @@ export default function FeaturesPage() {
 
                       <ul className="mt-7 space-y-2.5">
                         {mod.features.map(f => (
-                          <li key={f} className="flex items-start gap-2.5 text-sm text-gray-600">
+                          <li key={f} className="flex items-start gap-2.5 text-sm text-[#273951]">
                             <CheckCircle2 className={`h-4 w-4 ${c.text} shrink-0 mt-0.5`} />
                             {f}
                           </li>
@@ -817,16 +827,16 @@ export default function FeaturesPage() {
       <section className="bg-white py-14 sm:py-20 border-t border-slate-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8">
-            <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.14em] mb-3">Optional add-ons</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Extend Skula as you grow</h2>
+            <p className="text-[11px] font-bold text-[#533afd] uppercase tracking-[0.14em] mb-3">Optional add-ons</p>
+            <h2 className="text-3xl sm:text-4xl font-light text-[#0d253d] tracking-[-0.02em]">Extend Skula as you grow</h2>
           </div>
-          <div className="max-w-3xl mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center shrink-0">
-              <Building2 className="h-6 w-6 text-white" />
+          <div className="max-w-3xl mx-auto border rounded-2xl p-6 flex flex-col sm:flex-row sm:items-start gap-4" style={{ background: "#f5e9d4", borderColor: "rgba(13,37,61,0.08)" }}>
+            <div className="w-12 h-12 rounded-xl bg-white/60 border border-[#0d253d]/10 flex items-center justify-center shrink-0">
+              <Building2 className="h-6 w-6 text-[#0d253d]" />
             </div>
             <div className="flex-1">
-              <h3 className="text-[16px] font-bold text-slate-900">Multi Branch</h3>
-              <p className="text-[14px] text-slate-500 mt-1 leading-relaxed">
+              <h3 className="text-[16px] font-semibold text-[#0d253d]">Multi Branch</h3>
+              <p className="text-[14px] text-[#273951] mt-1 leading-relaxed">
                 Manage multiple campuses under one account. Each branch runs separately — its own students, staff,
                 fees and attendance — while head office gets a consolidated view across every branch. Available as
                 an add-on on any paid plan.
@@ -837,18 +847,18 @@ export default function FeaturesPage() {
       </section>
 
       {/* BOTTOM CTA */}
-      <section className="bg-slate-950 py-14 sm:py-24 border-t border-slate-800">
+      <section className="py-14 sm:py-24" style={{ background: "#1c1e54" }}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
+          <h2 className="text-4xl sm:text-5xl font-light text-white tracking-[-0.02em]">
             All {MODULES.length} modules.<br />
-            <span className="text-indigo-400">One price. Live in 30 minutes.</span>
+            <span className="text-[#b9b9f9]">One price. Live in 30 minutes.</span>
           </h2>
-          <p className="mt-5 text-slate-400 text-lg">No feature is locked behind a higher plan. Everything you read on this page is available from day one.</p>
+          <p className="mt-5 text-[#b3c3e0] text-lg">No feature is locked behind a higher plan. Everything you read on this page is available from day one.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">
-            <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-4 rounded-xl font-black hover:bg-indigo-500 transition-colors shadow-2xl shadow-indigo-600/30">
+            <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-[#533afd] text-white px-8 py-3.5 rounded-full font-medium hover:bg-[#665efd] transition-colors">
               Get started <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link href="/" className="inline-flex items-center justify-center gap-2 border border-slate-700 text-slate-400 px-8 py-4 rounded-xl font-semibold hover:bg-slate-800 hover:text-white transition-colors">
+            <Link href="/" className="inline-flex items-center justify-center gap-2 border border-white/25 text-white px-8 py-3.5 rounded-full font-medium hover:bg-white/10 transition-colors">
               Back to home
             </Link>
           </div>
@@ -856,16 +866,14 @@ export default function FeaturesPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-gray-950 border-t border-gray-800 py-8">
+      <footer className="bg-white border-t border-[#e3e8ee] py-8">
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="inline-block bg-white rounded-lg px-2.5 py-1.5">
-            <img src="/images/skula-logomark.png" alt="Skula" className="h-7 object-contain" />
-          </div>
-          <p className="text-xs text-gray-700">© {new Date().getFullYear()} Novalss. All rights reserved.</p>
+          <img src="/images/skula-logomark.png" alt="Skula" className="h-7 object-contain" />
+          <p className="text-xs text-[#64748d]">© {new Date().getFullYear()} Novalss. All rights reserved.</p>
           <div className="flex gap-5">
-            <Link href="/" className="text-[13px] font-semibold text-slate-700 hover:text-gray-400">Home</Link>
-            <Link href="/#pricing" className="text-[13px] font-semibold text-slate-700 hover:text-gray-400">Pricing</Link>
-            <Link href="/sign-in" className="text-[13px] font-semibold text-slate-700 hover:text-gray-400">Sign in</Link>
+            <Link href="/" className="text-[13px] font-medium text-[#64748d] hover:text-[#0d253d] transition-colors">Home</Link>
+            <Link href="/#pricing" className="text-[13px] font-medium text-[#64748d] hover:text-[#0d253d] transition-colors">Pricing</Link>
+            <Link href="/sign-in" className="text-[13px] font-medium text-[#64748d] hover:text-[#0d253d] transition-colors">Sign in</Link>
           </div>
         </div>
       </footer>

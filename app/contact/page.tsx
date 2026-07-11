@@ -57,19 +57,20 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex"
+      style={{ fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif", fontFeatureSettings: '"ss01"' }}>
 
       {/* ── Left panel — hero gradient ── */}
       <div className="hidden lg:flex lg:w-[48%] relative flex-col overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 40%, #bae6fd 72%, #f8fafc 100%)" }}>
-
-        {/* Blobs */}
-        <div className="absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)" }} />
-        <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(139,92,246,0.13) 0%, transparent 70%)" }} />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.1) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        style={{
+          background: [
+            "radial-gradient(110% 70% at 90% 0%, rgba(83,58,253,0.30) 0%, transparent 55%)",
+            "radial-gradient(70% 55% at 100% 55%, rgba(234,34,97,0.14) 0%, transparent 55%)",
+            "radial-gradient(85% 70% at 15% 0%, rgba(245,233,212,0.9) 0%, transparent 65%)",
+            "radial-gradient(90% 80% at 0% 45%, rgba(185,185,249,0.45) 0%, transparent 60%)",
+            "linear-gradient(180deg, #f6f9fc 0%, #ffffff 100%)",
+          ].join(", "),
+        }}>
 
         <div className="relative flex flex-col h-full px-12 py-10 max-w-[600px]">
 
@@ -84,28 +85,26 @@ export default function ContactPage() {
           <div className="flex-1 min-h-0 overflow-y-auto">
             <div className="flex flex-col justify-center min-h-full">
 
-            <div className="inline-flex items-center gap-2 bg-white/65 border border-white/80 text-indigo-700 text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-6 w-fit backdrop-blur-sm shadow-sm">
-              <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
+            <div className="inline-flex items-center gap-2 bg-white/80 border border-[#e3e8ee] text-[#4434d4] text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-6 w-fit backdrop-blur-sm shadow-sm">
+              <span className="w-1.5 h-1.5 bg-[#533afd] rounded-full animate-pulse" />
               Built for African schools
             </div>
 
-            <h1 className="font-black text-slate-900 leading-[1.05] tracking-tight mb-4" style={{ fontSize: "clamp(34px, 3vw, 44px)" }}>
+            <h1 className="font-light text-[#0d253d] leading-[1.05] tracking-[-0.02em] mb-4" style={{ fontSize: "clamp(34px, 3vw, 44px)" }}>
               Get your school<br />running on{" "}
-              <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                Skula today.
-              </span>
+              <span className="text-[#533afd]">Skula today.</span>
             </h1>
 
-            <p className="text-slate-600 text-[15px] leading-relaxed mb-7 max-w-[420px]">
+            <p className="text-[#273951] text-[15px] leading-relaxed mb-7 max-w-[420px]">
               We'll set everything up together — classes, students, fees, timetables. Most schools are live the same day.
             </p>
 
             {/* Benefits */}
             <ul className="space-y-3.5 mb-8">
               {BENEFITS.map(({ icon: Icon, text }) => (
-                <li key={text} className="flex items-center gap-4 text-[14.5px] font-medium text-slate-700">
-                  <div className="w-8 h-8 rounded-xl bg-white/70 border border-white/90 flex items-center justify-center shrink-0 backdrop-blur-sm shadow-sm">
-                    <Icon className="h-4 w-4 text-indigo-600" />
+                <li key={text} className="flex items-center gap-4 text-[14.5px] font-medium text-[#273951]">
+                  <div className="w-8 h-8 rounded-xl bg-white/80 border border-[#e3e8ee] flex items-center justify-center shrink-0 backdrop-blur-sm shadow-sm">
+                    <Icon className="h-4 w-4 text-[#533afd]" />
                   </div>
                   {text}
                 </li>
@@ -113,14 +112,14 @@ export default function ContactPage() {
             </ul>
 
             {/* Steps */}
-            <div className="bg-white/55 border border-white/80 rounded-2xl p-5 backdrop-blur-sm max-w-[460px]">
-              <p className="text-[10.5px] font-black text-slate-400 uppercase tracking-[0.15em] mb-4">What happens next</p>
+            <div className="bg-white/80 border border-[#e3e8ee] rounded-2xl p-5 backdrop-blur-sm max-w-[460px]">
+              <p className="text-[10.5px] font-semibold text-[#64748d] uppercase tracking-[0.15em] mb-4">What happens next</p>
               <div className="space-y-4">
                 {STEPS.map(({ n, label, sub }, i) => (
                   <div key={n} className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0 text-white text-[12px] font-black shadow-md shadow-indigo-300/30">{n}</div>
+                    <div className="w-8 h-8 rounded-full bg-[#533afd] flex items-center justify-center shrink-0 text-white text-[12px] font-semibold">{n}</div>
                     <div className="flex-1 pt-0.5">
-                      <p className="text-[14px] font-bold text-slate-800">{label}</p>
+                      <p className="text-[14px] font-semibold text-[#0d253d]">{label}</p>
                       <p className="text-[12.5px] text-slate-500 mt-0.5">{sub}</p>
                     </div>
                     {i < STEPS.length - 1 && <ChevronRight className="h-4 w-4 text-slate-300 shrink-0 mt-1.5" />}
@@ -134,16 +133,7 @@ export default function ContactPage() {
       </div>
 
       {/* ── Right panel — form side ── */}
-      <div className="flex-1 flex flex-col relative"
-        style={{ background: "linear-gradient(160deg, #f8fafc 0%, #f1f5f9 60%, #f8fafc 100%)" }}>
-
-        {/* Subtle dot grid */}
-        <div className="absolute inset-0 pointer-events-none opacity-30"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)", backgroundSize: "20px 20px" }} />
-
-        {/* Left accent border */}
-        <div className="absolute left-0 top-0 bottom-0 w-[2px]"
-          style={{ background: "linear-gradient(180deg, transparent 5%, #6366f1 35%, #8b5cf6 65%, transparent 95%)" }} />
+      <div className="flex-1 flex flex-col relative" style={{ background: "#f6f9fc" }}>
 
         {/* Back link */}
         <div className="relative shrink-0 flex justify-end px-4 pt-5 sm:px-8 sm:pt-6">
@@ -158,17 +148,17 @@ export default function ContactPage() {
         </div>
 
         <div className="relative flex-1 flex flex-col items-center justify-center px-4 py-6 sm:px-10 sm:py-8">
-          <div className="w-full max-w-[520px] bg-white rounded-3xl border border-slate-200/80 px-5 py-8 sm:px-10 sm:py-10"
-            style={{ boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 8px 28px rgba(99,102,241,0.10), 0 32px 64px rgba(0,0,0,0.07)" }}>
+          <div className="w-full max-w-[520px] bg-white rounded-3xl border border-[#e3e8ee] px-5 py-8 sm:px-10 sm:py-10"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
 
             {sent ? (
               <div className="text-center py-6">
                 <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
                   <Check className="h-8 w-8 text-emerald-600" />
                 </div>
-                <h2 className="text-[24px] font-black text-slate-900 mb-2">Message sent!</h2>
+                <h2 className="text-[24px] font-light text-[#0d253d] mb-2">Message sent!</h2>
                 <p className="text-[14px] text-slate-500 mb-6">We'll get back to you within the hour. Check your WhatsApp.</p>
-                <button onClick={() => setSent(false)} className="text-[13px] text-indigo-600 font-bold hover:underline">
+                <button onClick={() => setSent(false)} className="text-[13px] text-[#533afd] font-semibold hover:underline">
                   Send another message
                 </button>
               </div>
@@ -176,45 +166,45 @@ export default function ContactPage() {
               <>
                 {/* Header */}
                 <img src="/images/skula-logomark.png" alt="Skula" className="h-10 object-contain mb-6" />
-                <h2 className="text-[28px] font-black text-slate-900 tracking-tight leading-tight">Talk to us</h2>
-                <p className="text-slate-400 text-[14px] mt-1.5 mb-7">We reply within the hour on WhatsApp.</p>
+                <h2 className="text-[28px] font-light text-[#0d253d] tracking-[-0.01em] leading-tight">Talk to us</h2>
+                <p className="text-[#64748d] text-[14px] mt-1.5 mb-7">We reply within the hour on WhatsApp.</p>
 
                 <div className="space-y-4">
                   {/* Name */}
                   <div>
-                    <label htmlFor="contact-name" className="block text-[13px] font-bold text-slate-700 mb-1.5">
+                    <label htmlFor="contact-name" className="block text-[13px] font-medium text-[#273951] mb-1.5">
                       Your name <span className="text-red-400">*</span>
                     </label>
                     <input
                       id="contact-name"
                       type="text" value={form.name} onChange={set("name")}
                       placeholder="e.g. Kofi Mensah"
-                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all"
+                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#533afd]/20 focus:border-[#a8c3de] focus:bg-white transition-all"
                     />
                     {touched && !form.name.trim() && <p className="text-[12px] text-red-500 mt-1">Name is required</p>}
                   </div>
 
                   {/* School */}
                   <div>
-                    <label htmlFor="contact-school" className="block text-[13px] font-bold text-slate-700 mb-1.5">
+                    <label htmlFor="contact-school" className="block text-[13px] font-medium text-[#273951] mb-1.5">
                       School name <span className="text-red-400">*</span>
                     </label>
                     <input
                       id="contact-school"
                       type="text" value={form.school} onChange={set("school")}
                       placeholder="e.g. Lincoln International School"
-                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all"
+                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#533afd]/20 focus:border-[#a8c3de] focus:bg-white transition-all"
                     />
                     {touched && !form.school.trim() && <p className="text-[12px] text-red-500 mt-1">School name is required</p>}
                   </div>
 
                   {/* Role */}
                   <div>
-                    <label htmlFor="contact-role" className="block text-[13px] font-bold text-slate-700 mb-1.5">Your role</label>
+                    <label htmlFor="contact-role" className="block text-[13px] font-medium text-[#273951] mb-1.5">Your role</label>
                     <select
                       id="contact-role"
                       value={form.role} onChange={set("role")}
-                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all appearance-none"
+                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#533afd]/20 focus:border-[#a8c3de] focus:bg-white transition-all appearance-none"
                       style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 14px center", paddingRight: "40px" }}
                     >
                       <option value="">— Select your role —</option>
@@ -228,14 +218,14 @@ export default function ContactPage() {
 
                   {/* Phone */}
                   <div>
-                    <label htmlFor="contact-phone" className="block text-[13px] font-bold text-slate-700 mb-1.5">
+                    <label htmlFor="contact-phone" className="block text-[13px] font-medium text-[#273951] mb-1.5">
                       WhatsApp number <span className="text-slate-400 font-normal">(optional)</span>
                     </label>
                     <input
                       id="contact-phone"
                       type="tel" value={form.phone} onChange={set("phone")}
                       placeholder="+233 XX XXX XXXX"
-                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white transition-all"
+                      className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#533afd]/20 focus:border-[#a8c3de] focus:bg-white transition-all"
                     />
                   </div>
                 </div>
@@ -244,14 +234,14 @@ export default function ContactPage() {
                 <div className="mt-7 space-y-3">
                   <button
                     onClick={handleWhatsApp}
-                    className="w-full inline-flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold h-12 rounded-2xl transition-colors text-[15px] shadow-lg shadow-emerald-300/40"
+                    className="w-full inline-flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-medium h-12 rounded-full transition-colors text-[15px]"
                   >
                     <MessageCircle className="h-5 w-5" />
                     Chat on WhatsApp
                   </button>
                   <button
                     onClick={handleEmail}
-                    className="w-full inline-flex items-center justify-center gap-2.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-semibold h-12 rounded-2xl transition-colors text-[14px]"
+                    className="w-full inline-flex items-center justify-center gap-2.5 border border-[#e3e8ee] bg-white hover:bg-[#f6f9fc] text-[#273951] font-medium h-12 rounded-full transition-colors text-[14px]"
                   >
                     <Mail className="h-4 w-4 text-slate-400" />
                     Send via email
@@ -260,7 +250,7 @@ export default function ContactPage() {
 
                 <p className="text-center text-[12px] text-slate-400 mt-5">
                   Not ready yet?{" "}
-                  <Link href="/demo" className="text-indigo-600 font-bold hover:underline">Try the live demo →</Link>
+                  <Link href="/demo" className="text-[#533afd] font-semibold hover:underline">Try the live demo →</Link>
                 </p>
               </>
             )}

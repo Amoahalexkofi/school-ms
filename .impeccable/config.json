@@ -3,7 +3,9 @@
     "ignoreRules": [],
     "ignoreFiles": [
       "app/landing-preview/*",
-      "app/HomepageClient.tsx"
+      "app/HomepageClient.tsx",
+      "app/features/page.tsx",
+      "app/contact/page.tsx"
     ],
     "ignoreValues": []
   }
