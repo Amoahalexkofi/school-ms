@@ -33,3 +33,4 @@ Before continuing any work, read these files:
 - `PRODUCT.md` (root) — strategic: register (`product`), users, purpose, brand personality (trustworthy/calm/efficient), anti-references, design principles, accessibility (WCAG 2.1 AA). Read before UI work.
 - `DESIGN.md` (root) — visual system: North Star "The Quiet Ledger", indigo accent, Plus Jakarta Sans + Montserrat, flat surfaces + hairline borders, status = color + label. Tokens are normative.
 - Managed by the `impeccable` skill (`.claude/skills/impeccable`). Run `/impeccable <command>` (craft, shape, critique, audit, polish, document, live…) for design work.
+- `~/.claude/awesome-design-md/design-md/<brand>/DESIGN.md` — 73 brand design systems as token files (stripe, linear.app, notion, vercel…). Reference for marketing pages or "like <brand>" requests. Root DESIGN.md (Quiet Ledger) stays normative for app UI.
