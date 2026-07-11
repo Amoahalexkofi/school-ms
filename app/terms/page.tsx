@@ -99,13 +99,13 @@ export default function TermsPage() {
       <SkulaNav />
 
       {/* Header band */}
-      <header className="border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white">
+      <header className="border-b border-[#e3e8ee] bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-5xl mx-auto px-6 pt-28 pb-12">
-          <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.16em] mb-3">Legal</p>
-          <h1 className="text-[34px] sm:text-[44px] font-black tracking-tight text-slate-900 font-[family-name:var(--font-montserrat)]">
+          <p className="text-[11px] font-bold text-[#533afd] uppercase tracking-[0.16em] mb-3">Legal</p>
+          <h1 className="text-[34px] sm:text-[44px] font-light tracking-[-0.02em] text-[#0d253d]">
             Terms &amp; Conditions
           </h1>
-          <p className="text-slate-500 text-[14px] mt-4">
+          <p className="text-[#64748d] text-[14px] mt-4">
             Last updated {LAST_UPDATED} · Novalss Technology Solutions
           </p>
         </div>
@@ -115,12 +115,12 @@ export default function TermsPage() {
         {/* Table of contents (sticky on desktop) */}
         <nav aria-label="On this page" className="hidden lg:block">
           <div className="sticky top-24">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">On this page</p>
-            <ul className="space-y-2 border-l border-slate-100">
+            <p className="text-[11px] font-bold text-[#64748d] uppercase tracking-wider mb-3">On this page</p>
+            <ul className="space-y-2 border-l border-[#e3e8ee]">
               {SECTIONS.map((s, i) => (
                 <li key={s.id}>
                   <a href={`#${s.id}`}
-                    className="block -ml-px border-l border-transparent hover:border-indigo-400 pl-3 text-[13px] text-slate-500 hover:text-indigo-600 transition-colors">
+                    className="block -ml-px border-l border-transparent hover:border-indigo-400 pl-3 text-[13px] text-[#64748d] hover:text-[#533afd] transition-colors">
                     {i + 1}. {s.h}
                   </a>
                 </li>
@@ -133,19 +133,19 @@ export default function TermsPage() {
         <article className="max-w-2xl">
           {SECTIONS.map((s, i) => (
             <section key={s.id} id={s.id} className="scroll-mt-28 mb-10">
-              <h2 className="text-[19px] font-bold text-slate-900 mb-3">
+              <h2 className="text-[19px] font-bold text-[#0d253d] mb-3">
                 <span className="text-slate-300 font-semibold mr-2">{i + 1}.</span>{s.h}
               </h2>
               {s.p.map((para, j) => (
-                <p key={j} className="text-[15px] text-slate-600 leading-[1.7] mb-3">{para}</p>
+                <p key={j} className="text-[15px] text-[#273951] leading-[1.7] mb-3">{para}</p>
               ))}
             </section>
           ))}
 
           {/* Contact box */}
-          <div className="mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-6">
-            <h3 className="text-[15px] font-bold text-slate-900">Questions about these terms?</h3>
-            <p className="text-[14px] text-slate-500 mt-1.5 mb-4">We're happy to clarify anything before you sign up.</p>
+          <div className="mt-12 rounded-2xl border border-[#e3e8ee] bg-slate-50 p-6">
+            <h3 className="text-[15px] font-bold text-[#0d253d]">Questions about these terms?</h3>
+            <p className="text-[14px] text-[#64748d] mt-1.5 mb-4">We're happy to clarify anything before you sign up.</p>
             <Link href="/contact"
               className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
               Contact us
@@ -155,11 +155,11 @@ export default function TermsPage() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-slate-100">
+      <footer className="border-t border-[#e3e8ee]">
         <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <Link href="/" className="text-[13px] font-semibold text-indigo-600 hover:underline">← Back to home</Link>
-          <div className="flex items-center gap-4 text-[12px] text-slate-400">
-            <Link href="/privacy" className="hover:text-slate-600">Privacy</Link>
+          <Link href="/" className="text-[13px] font-semibold text-[#533afd] hover:underline">← Back to home</Link>
+          <div className="flex items-center gap-4 text-[12px] text-[#64748d]">
+            <Link href="/privacy" className="hover:text-[#273951]">Privacy</Link>
             <span>© {new Date().getFullYear()} Novalss Technology Solutions</span>
           </div>
         </div>

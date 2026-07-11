@@ -24,7 +24,7 @@ const ROLES = [
 ] as const;
 
 const CM: Record<string, { activeBg: string; activeRing: string; tag: string; chip: string; chipText: string; dot: string }> = {
-  indigo:  { activeBg: "bg-indigo-600",  activeRing: "ring-indigo-400/40",  tag: "bg-indigo-50 text-indigo-700",   chip: "border-indigo-300/70 text-indigo-700",  chipText: "text-indigo-700",  dot: "bg-indigo-600"  },
+  indigo:  { activeBg: "bg-[#533afd]",  activeRing: "ring-indigo-400/40",  tag: "bg-indigo-50 text-[#4434d4]",   chip: "border-indigo-300/70 text-[#4434d4]",  chipText: "text-[#4434d4]",  dot: "bg-[#533afd]"  },
   blue:    { activeBg: "bg-blue-600",    activeRing: "ring-blue-400/40",    tag: "bg-blue-50 text-blue-700",       chip: "border-blue-300/70 text-blue-700",      chipText: "text-blue-700",    dot: "bg-blue-600"    },
   emerald: { activeBg: "bg-emerald-600", activeRing: "ring-emerald-400/40", tag: "bg-emerald-50 text-emerald-700", chip: "border-emerald-300/70 text-emerald-700",chipText: "text-emerald-700", dot: "bg-emerald-600" },
   violet:  { activeBg: "bg-violet-600",  activeRing: "ring-violet-400/40",  tag: "bg-violet-50 text-violet-700",   chip: "border-violet-300/70 text-violet-700",  chipText: "text-violet-700",  dot: "bg-violet-600"  },
@@ -63,7 +63,7 @@ export default function DemoPage() {
       >
         {/* Dot grid */}
         <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.13) 1px, transparent 0)",
+          backgroundImage: "radial-gradient(circle at 1px 1px, rgba(83,58,253,0.13) 1px, transparent 0)",
           backgroundSize: "30px 30px",
         }} />
         {/* Glow */}
@@ -81,21 +81,21 @@ export default function DemoPage() {
           <div className="flex-1 flex flex-col justify-center py-10">
 
             {/* Live badge */}
-            <div className="inline-flex items-center gap-2 bg-white/75 backdrop-blur-sm border border-indigo-300/50 text-indigo-700 text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-7 w-fit shadow-sm">
-              <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
+            <div className="inline-flex items-center gap-2 bg-white/75 backdrop-blur-sm border border-indigo-300/50 text-[#4434d4] text-[11px] font-bold px-3.5 py-1.5 rounded-full mb-7 w-fit shadow-sm">
+              <span className="w-1.5 h-1.5 bg-[#533afd] rounded-full animate-pulse" />
               Live interactive demo
             </div>
 
             {/* Headline */}
-            <h1 className="font-black tracking-tight leading-[1.02]" style={{ fontSize: "clamp(38px, 4vw, 52px)" }}>
-              <span className="text-slate-900">See Skula</span>
+            <h1 className="font-light tracking-[-0.02em] leading-[1.04]" style={{ fontSize: "clamp(38px, 4vw, 52px)" }}>
+              <span className="text-[#0d253d]">See Skula</span>
               <br />
-              <span style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              <span style={{ background: "linear-gradient(135deg, #533afd, #665efd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 in action.
               </span>
             </h1>
 
-            <p className="text-slate-600 text-[15px] mt-5 leading-relaxed max-w-[300px]">
+            <p className="text-[#273951] text-[15px] mt-5 leading-relaxed max-w-[300px]">
               Step inside as any role — no sign-up, no card, no setup. Just the real product.
             </p>
 
@@ -108,9 +108,9 @@ export default function DemoPage() {
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-3.5">
                   <div className="w-8 h-8 rounded-xl bg-white/65 backdrop-blur-sm border border-indigo-200/60 flex items-center justify-center shrink-0 shadow-sm">
-                    <Icon className="h-3.5 w-3.5 text-indigo-600" />
+                    <Icon className="h-3.5 w-3.5 text-[#533afd]" />
                   </div>
-                  <p className="text-slate-600 text-[13.5px] leading-snug">{text}</p>
+                  <p className="text-[#273951] text-[13.5px] leading-snug">{text}</p>
                 </div>
               ))}
             </div>
@@ -135,9 +135,9 @@ export default function DemoPage() {
 
           {/* Footer */}
           <div className="shrink-0 pt-7 border-t border-indigo-200/60">
-            <p className="text-slate-500 text-[12.5px]">
+            <p className="text-[#64748d] text-[12.5px]">
               Want your own school on Skula?{" "}
-              <Link href="/contact" className="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors">
+              <Link href="/contact" className="text-[#533afd] font-semibold hover:text-[#4434d4] transition-colors">
                 Talk to us →
               </Link>
             </p>
@@ -149,23 +149,23 @@ export default function DemoPage() {
       <div className="flex-1 flex flex-col bg-[#f4f5fb] overflow-y-auto">
 
         {/* Mobile nav */}
-        <div className="lg:hidden flex items-center justify-between px-5 py-3.5 bg-white border-b border-slate-100 sticky top-0 z-10">
+        <div className="lg:hidden flex items-center justify-between px-5 py-3.5 bg-white border-b border-[#e3e8ee] sticky top-0 z-10">
           <Link href="/">
             <img src="/images/skula-logomark.png" alt="Skula" className="h-8 object-contain" />
           </Link>
-          <Link href="/" className="text-[12px] font-semibold text-slate-400 hover:text-slate-600 transition-colors">← Back</Link>
+          <Link href="/" className="text-[12px] font-semibold text-[#64748d] hover:text-[#273951] transition-colors">← Back</Link>
         </div>
 
         {/* Mobile context banner — replaces the hidden left panel */}
         <div className="lg:hidden px-5 pt-5 pb-4">
-          <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3">
-            <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
+          <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-[#4434d4] text-[11px] font-bold px-3 py-1.5 rounded-full mb-3">
+            <span className="w-1.5 h-1.5 bg-[#533afd] rounded-full animate-pulse" />
             Live interactive demo
           </div>
-          <h1 className="text-[24px] font-black text-slate-900 tracking-tight leading-tight mb-1">
-            Try Skula. <span className="text-indigo-600">No sign‑up.</span>
+          <h1 className="text-[24px] font-light text-[#0d253d] tracking-[-0.01em] leading-tight mb-1">
+            Try Skula. <span className="text-[#533afd]">No sign‑up.</span>
           </h1>
-          <p className="text-slate-500 text-[13px] leading-relaxed">
+          <p className="text-[#64748d] text-[13px] leading-relaxed">
             Pick a role, credentials fill automatically — just tap Login.
           </p>
         </div>
@@ -174,19 +174,19 @@ export default function DemoPage() {
         <div className="flex-1 flex flex-col justify-center p-5 md:p-8">
           <div
             className="max-w-[580px] mx-auto w-full bg-white rounded-[28px] overflow-hidden"
-            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(99,102,241,0.09), 0 24px 56px rgba(0,0,0,0.09), 0 56px 96px rgba(99,102,241,0.05)" }}
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(83,58,253,0.09), 0 24px 56px rgba(0,0,0,0.09), 0 56px 96px rgba(83,58,253,0.05)" }}
           >
             {/* Card top accent */}
-            <div className="h-[3px]" style={{ background: "linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4)" }} />
+            <div className="h-[3px]" style={{ background: "linear-gradient(90deg, #533afd, #665efd, #06b6d4)" }} />
 
             <div className="px-7 pt-7 pb-8 md:px-9 md:pt-8 md:pb-9">
 
               {/* Heading */}
               <div className="mb-7">
-                <h2 className="text-[28px] font-black text-slate-900 tracking-tight leading-tight">Pick a role</h2>
-                <p className="text-[13.5px] text-slate-500 mt-1.5 leading-snug">
+                <h2 className="text-[28px] font-light text-[#0d253d] tracking-[-0.01em] leading-tight">Pick a role</h2>
+                <p className="text-[13.5px] text-[#64748d] mt-1.5 leading-snug">
                   Credentials fill automatically — just click{" "}
-                  <strong className="text-slate-700 font-semibold">Login</strong> to enter.
+                  <strong className="text-[#273951] font-semibold">Login</strong> to enter.
                 </p>
               </div>
 
@@ -204,20 +204,20 @@ export default function DemoPage() {
                       className={`group relative flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-all duration-150 outline-none ${
                         isActive
                           ? `bg-white border-slate-300 ring-2 ${c.activeRing}`
-                          : "bg-slate-50 border-slate-200 hover:bg-white hover:border-slate-300 hover:shadow-sm"
+                          : "bg-slate-50 border-[#e3e8ee] hover:bg-white hover:border-slate-300 hover:shadow-sm"
                       }`}
                       style={isActive ? { boxShadow: "0 2px 14px rgba(0,0,0,0.07)" } : undefined}
                     >
                       {/* Icon */}
                       <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                        isActive ? c.activeBg : "bg-white border border-slate-200 group-hover:border-slate-300"
+                        isActive ? c.activeBg : "bg-white border border-[#e3e8ee] group-hover:border-slate-300"
                       }`}>
-                        <Icon className={`h-4 w-4 transition-colors ${isActive ? "text-white" : "text-slate-500"}`} />
+                        <Icon className={`h-4 w-4 transition-colors ${isActive ? "text-white" : "text-[#64748d]"}`} />
                       </div>
 
                       {/* Label + tags */}
                       <div className="min-w-0 flex-1 mt-0.5">
-                        <p className={`text-[13px] font-bold leading-tight mb-1.5 ${isActive ? "text-slate-900" : "text-slate-700"}`}>
+                        <p className={`text-[13px] font-bold leading-tight mb-1.5 ${isActive ? "text-[#0d253d]" : "text-[#273951]"}`}>
                           {r.label}
                         </p>
                         <div className="flex flex-wrap gap-1">
@@ -225,7 +225,7 @@ export default function DemoPage() {
                             <span
                               key={tag}
                               className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md transition-colors ${
-                                isActive ? c.tag : "bg-slate-100 text-slate-500"
+                                isActive ? c.tag : "bg-slate-100 text-[#64748d]"
                               }`}
                             >
                               {tag}
@@ -234,7 +234,7 @@ export default function DemoPage() {
                         </div>
                       </div>
 
-                      {isActive && <CheckCircle2 className="h-3.5 w-3.5 text-indigo-600 shrink-0 mt-0.5 absolute top-3.5 right-3.5" />}
+                      {isActive && <CheckCircle2 className="h-3.5 w-3.5 text-[#533afd] shrink-0 mt-0.5 absolute top-3.5 right-3.5" />}
                     </button>
                   );
                 })}
@@ -246,33 +246,33 @@ export default function DemoPage() {
                   const c = CM[role.color];
                   const Icon = role.icon;
                   return (
-                    <div className="rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
+                    <div className="rounded-2xl border border-[#e3e8ee] overflow-hidden bg-slate-50">
                       {/* Role indicator bar */}
-                      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-slate-200 bg-white">
+                      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#e3e8ee] bg-white">
                         <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${c.activeBg}`}>
                           <Icon className="h-3.5 w-3.5 text-white" />
                         </div>
-                        <p className="text-[13px] font-bold text-slate-900">Signing in as {role.label}</p>
+                        <p className="text-[13px] font-bold text-[#0d253d]">Signing in as {role.label}</p>
                       </div>
 
                       <div className="p-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                           <div>
-                            <label className="block text-[10.5px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Email</label>
+                            <label className="block text-[10.5px] font-bold text-[#64748d] uppercase tracking-wider mb-1.5">Email</label>
                             <input
                               type="email" readOnly value={role.email}
-                              className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-[11.5px] font-mono text-slate-700 focus:outline-none cursor-default select-all"
+                              className="w-full h-9 rounded-lg border border-[#e3e8ee] bg-white px-3 text-[11.5px] font-mono text-[#273951] focus:outline-none cursor-default select-all"
                             />
                           </div>
                           <div>
-                            <label className="block text-[10.5px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Password</label>
+                            <label className="block text-[10.5px] font-bold text-[#64748d] uppercase tracking-wider mb-1.5">Password</label>
                             <div className="relative">
                               <input
                                 type={showPw ? "text" : "password"} readOnly value={DEMO_PASSWORD}
-                                className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 pr-9 text-[11.5px] font-mono text-slate-700 focus:outline-none cursor-default"
+                                className="w-full h-9 rounded-lg border border-[#e3e8ee] bg-white px-3 pr-9 text-[11.5px] font-mono text-[#273951] focus:outline-none cursor-default"
                               />
                               <button type="button" onClick={() => setShowPw(s => !s)} tabIndex={-1}
-                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#64748d] hover:text-[#273951] transition-colors">
                                 {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                               </button>
                             </div>
@@ -287,8 +287,8 @@ export default function DemoPage() {
 
                         <button
                           type="button" onClick={handleLogin} disabled={loading}
-                          className="w-full inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-60 text-white font-bold h-11 rounded-xl transition-colors text-[14px]"
-                          style={{ boxShadow: "0 2px 10px rgba(99,102,241,0.40), 0 1px 3px rgba(0,0,0,0.08)" }}
+                          className="w-full inline-flex items-center justify-center gap-2 bg-[#533afd] hover:bg-[#4434d4] active:bg-indigo-800 disabled:opacity-60 text-white font-bold h-11 rounded-xl transition-colors text-[14px]"
+                          style={{ boxShadow: "0 2px 10px rgba(83,58,253,0.40), 0 1px 3px rgba(0,0,0,0.08)" }}
                         >
                           {loading ? (
                             <>
@@ -310,16 +310,16 @@ export default function DemoPage() {
 
               {/* Empty state hint */}
               {!role && (
-                <p className="text-center text-[12.5px] text-slate-400 py-1 mb-5">
+                <p className="text-center text-[12.5px] text-[#64748d] py-1 mb-5">
                   Select a role above to see pre-filled credentials.
                 </p>
               )}
 
               {/* Footer */}
-              <div className="flex items-center justify-center gap-5 pt-5 border-t border-slate-100 text-[12.5px] text-slate-400">
-                <Link href="/" className="hover:text-slate-600 transition-colors">← Homepage</Link>
+              <div className="flex items-center justify-center gap-5 pt-5 border-t border-[#e3e8ee] text-[12.5px] text-[#64748d]">
+                <Link href="/" className="hover:text-[#273951] transition-colors">← Homepage</Link>
                 <span className="text-slate-200">|</span>
-                <Link href="/contact" className="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors">
+                <Link href="/contact" className="text-[#533afd] font-semibold hover:text-[#4434d4] transition-colors">
                   Get your own school →
                 </Link>
               </div>

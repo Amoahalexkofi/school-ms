@@ -314,7 +314,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
               }`}
             >
               <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
-                tab === t ? "bg-indigo-600 text-white" : "bg-slate-300/60 text-slate-500"
+                tab === t ? "bg-indigo-600 text-white" : "bg-slate-300/60 text-slate-700"
               }`}>{i + 1}</span>
               {t}
             </button>
@@ -353,24 +353,6 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
               <div /> {/* spacer */}
               <Field {...fp} label="Height (cm)" name="height" />
               <Field {...fp} label="Weight (kg)" name="weight" />
-              <div className="col-span-2">
-                <label className="flex items-center gap-3 cursor-pointer select-none group w-fit">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      id="rte"
-                      checked={form.rte as boolean}
-                      onChange={e => setForm(f => ({ ...f, rte: e.target.checked }))}
-                      className="sr-only peer"
-                    />
-                    <div className="w-9 h-5 rounded-full bg-slate-200 peer-checked:bg-indigo-600 transition-colors" />
-                    <div className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
-                  </div>
-                  <span className="text-[13.5px] font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
-                    RTE (Right to Education) student
-                  </span>
-                </label>
-              </div>
             </div>
           </div>
         )}
@@ -516,15 +498,14 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                   <Field {...fp} label="Account Number" name="bankAccountNo" />
                   <Field {...fp} label="Bank Name" name="bankName" />
-                  <Field {...fp} label="IFSC / Sort Code" name="ifscCode" />
+                  <Field {...fp} label="Sort Code" name="ifscCode" />
                   <Field {...fp} label="Branch" name="bankBranch" />
                 </div>
               </div>
               <div className="border-t border-slate-100 pt-6">
                 <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Identification</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                  <Field {...fp} label="National ID / Aadhar" name="aadharNo" />
-                  <Field {...fp} label="Samagra ID" name="samagraId" />
+                  <Field {...fp} label="Ghana Card No." name="aadharNo" />
                 </div>
               </div>
               <div className="border-t border-slate-100 pt-6">

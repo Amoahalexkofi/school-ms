@@ -138,9 +138,9 @@ export default async function StaffProfilePage({
                 ["Basic Salary",      staff.basicSalary ? `₵${Number(staff.basicSalary).toLocaleString()}` : null],
                 ["Bank Name",         staff.bankName],
                 ["Account No.",       staff.bankAccountNo],
-                ["IFSC / Sort Code",  staff.ifscCode],
+                ["Sort Code",  staff.ifscCode],
                 ["Bank Branch",       staff.bankBranch],
-                ["EPF / Pension No.", staff.epfNo],
+                ["SSNIT No.", staff.epfNo],
                 ["Location",          staff.location],
               ].map(([label, value]) => (
                 <div key={label as string}>

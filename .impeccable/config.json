@@ -5,7 +5,11 @@
       "app/landing-preview/*",
       "app/HomepageClient.tsx",
       "app/features/page.tsx",
-      "app/contact/page.tsx"
+      "app/contact/page.tsx",
+      "app/opengraph-image.tsx",
+      "app/terms/page.tsx",
+      "app/privacy/page.tsx",
+      "app/demo/page.tsx"
     ],
     "ignoreValues": []
   }

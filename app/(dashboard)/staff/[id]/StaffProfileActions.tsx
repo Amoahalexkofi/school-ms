@@ -232,7 +232,7 @@ export function StaffProfileActions({ staff, departments, designations }: Props)
             <Field label="Basic Salary" name="basicSalary" type="number" />
             <Field label="Bank Name" name="bankName" />
             <Field label="Account No." name="bankAccountNo" />
-            <Field label="IFSC / Sort Code" name="ifscCode" />
+            <Field label="Sort Code" name="ifscCode" />
             <Field label="Facebook" name="facebook" />
             <Field label="LinkedIn" name="linkedin" />
             <Field label="Note" name="note" textarea />

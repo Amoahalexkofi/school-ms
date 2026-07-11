@@ -242,13 +242,13 @@ export function AddStaffForm({ departments, designations }: Props) {
             <SectionHeading>Salary</SectionHeading>
             <Row>
               <Field label="Basic Salary (₵)" name="basicSalary" type="number" value={form.basicSalary} onChange={set("basicSalary")} />
-              <Field label="EPF / Pension No." name="epfNo" value={form.epfNo} onChange={set("epfNo")} />
+              <Field label="SSNIT No." name="epfNo" value={form.epfNo} onChange={set("epfNo")} />
             </Row>
             <SectionHeading>Bank Details</SectionHeading>
             <Row>
               <Field label="Bank Name" name="bankName" value={form.bankName} onChange={set("bankName")} />
               <Field label="Account Number" name="bankAccountNo" value={form.bankAccountNo} onChange={set("bankAccountNo")} />
-              <Field label="IFSC / Sort Code" name="ifscCode" value={form.ifscCode} onChange={set("ifscCode")} />
+              <Field label="Sort Code" name="ifscCode" value={form.ifscCode} onChange={set("ifscCode")} />
               <Field label="Bank Branch" name="bankBranch" value={form.bankBranch} onChange={set("bankBranch")} />
             </Row>
           </>}
