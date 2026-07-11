@@ -16,6 +16,7 @@ const PUBLIC_PREFIXES = [
   "/novalss-admin", "/api/admin",
   "/images",           // static public assets
   "/features",         // public marketing page
+  "/landing-preview",  // design-experiment preview of the landing page (noindex)
   "/forgot-password",  // password reset flow
   "/reset-password",   // password reset flow
   "/contact",          // contact form
