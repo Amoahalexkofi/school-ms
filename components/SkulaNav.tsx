@@ -52,16 +52,16 @@ export function SkulaNav() {
   }, [mobileOpen]);
 
   const links: [string, string][] = [
-    ["Features",     "#features"],
-    ["Solutions",    "#solutions"],
-    ["Pricing",      "#pricing"],
-    ["All Features", "/features"],
-    ["Contact",      "/contact"],
+    ["Features",  "/features"],
+    ["Solutions", "/#solutions"],
+    ["Pricing",   "/#pricing"],
+    ["FAQ",       "/#faq"],
+    ["Contact",   "/contact"],
   ];
 
   return (
     <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-200 ${
-      scrolled ? "bg-white/95 backdrop-blur-xl border-b border-slate-900/[0.06]" : "bg-transparent"
+      scrolled ? "bg-white/95 backdrop-blur-xl border-b border-[#e3e8ee]" : "bg-transparent"
     }`}>
       <div className="max-w-6xl mx-auto px-6 h-[60px] flex items-center justify-between">
         <Link href="/" className="flex items-center shrink-0">
@@ -71,7 +71,7 @@ export function SkulaNav() {
         <div className="hidden md:flex items-center gap-0.5">
           {links.map(([l, h]) => (
             <a key={l} href={h}
-              className="text-[13px] font-medium text-slate-500 hover:text-slate-900 px-3.5 py-2 rounded-lg hover:bg-slate-100/70 transition-all">
+              className="text-[13.5px] font-medium text-[#273951] hover:text-[#0d253d] px-3.5 py-2 rounded-full hover:bg-[#f6f9fc] transition-all">
               {l}
             </a>
           ))}
@@ -79,12 +79,11 @@ export function SkulaNav() {
 
         <div className="hidden md:flex items-center gap-2">
           <Link href="/demo"
-            className="text-[13px] font-semibold text-slate-600 hover:text-slate-900 px-4 py-2 rounded-lg hover:bg-slate-100/70 transition-all">
+            className="text-[13.5px] font-medium text-[#533afd] hover:text-[#4434d4] px-4 py-2 rounded-full hover:bg-[#f6f9fc] transition-all">
             View Demo
           </Link>
           <Link href="/contact"
-            className="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[13px] font-semibold px-4 py-2 rounded-lg transition-colors"
-            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.08)" }}>
+            className="inline-flex items-center gap-1.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white text-[13.5px] font-medium px-5 py-2 rounded-full transition-colors">
             Get Started <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
@@ -94,7 +93,7 @@ export function SkulaNav() {
           aria-expanded={mobileOpen}
           className={`md:hidden w-10 h-10 flex items-center justify-center rounded-xl transition-colors duration-200 active:scale-95 ${
             mobileOpen
-              ? "bg-slate-900 text-white"
+              ? "bg-[#0d253d] text-white"
               : scrolled
                 ? "text-slate-700 hover:bg-slate-100"
                 : "bg-white/60 text-slate-800 border border-white/70 backdrop-blur-sm hover:bg-white/80"
@@ -113,12 +112,12 @@ export function SkulaNav() {
             <motion.div
               initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.16 }}
-              className="md:hidden absolute inset-x-0 top-full z-50 mx-3 mt-1.5 bg-white rounded-2xl border border-slate-900/[0.07] overflow-hidden"
+              className="md:hidden absolute inset-x-0 top-full z-50 mx-3 mt-1.5 bg-white rounded-2xl border border-[#e3e8ee] overflow-hidden"
               style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
               <div className="p-2">
                 {links.map(([label, href]) => (
                   <a key={label} href={href} onClick={() => setMobileOpen(false)}
-                    className="group flex items-center justify-between px-4 py-3 rounded-xl text-[14px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
+                    className="group flex items-center justify-between px-4 py-3 rounded-xl text-[14px] font-medium text-[#273951] hover:bg-[#f6f9fc] transition-colors">
                     {label}
                     <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
                   </a>
@@ -126,11 +125,11 @@ export function SkulaNav() {
               </div>
               <div className="border-t border-slate-100 p-3 flex flex-col gap-2">
                 <Link href="/demo" onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center h-11 rounded-xl border border-slate-200 text-[14px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
+                  className="flex items-center justify-center h-11 rounded-full border border-[#e3e8ee] text-[14px] font-medium text-[#533afd] hover:bg-[#f6f9fc] transition-colors">
                   View Demo
                 </Link>
                 <Link href="/contact" onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 h-11 rounded-xl bg-slate-900 text-white text-[14px] font-bold transition-colors">
+                  className="flex items-center justify-center gap-2 h-11 rounded-full bg-[#533afd] hover:bg-[#4434d4] text-white text-[14px] font-medium transition-colors">
                   Get Started <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>

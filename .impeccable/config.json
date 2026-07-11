@@ -9,7 +9,8 @@
       "app/opengraph-image.tsx",
       "app/terms/page.tsx",
       "app/privacy/page.tsx",
-      "app/demo/page.tsx"
+      "app/demo/page.tsx",
+      "components/SkulaNav.tsx"
     ],
     "ignoreValues": []
   }
