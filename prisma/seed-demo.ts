@@ -12,7 +12,11 @@ import bcrypt from "bcryptjs";
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter }) as any;
 
-const FIRST = ["Kofi","Ama","Yaw","Akua","Kwabena","Abena","Kojo","Adwoa","Kwaku","Afua","Kwame","Akosua","Yaa","Fiifi","Esi","Nana","Efua","Kwesi","Kobina","Adjoa"];
+// Ghanaian day-names are gendered — gender must follow the name or the demo
+// loses credibility with any Ghanaian prospect instantly.
+const MALE_FIRST   = ["Kofi","Yaw","Kwabena","Kojo","Kwaku","Kwame","Fiifi","Kwesi","Kobina","Kwadwo"];
+const FEMALE_FIRST = ["Ama","Akua","Abena","Adwoa","Afua","Akosua","Yaa","Esi","Efua","Adjoa"];
+const FIRST = [...MALE_FIRST, ...FEMALE_FIRST]; // guardians can be either
 const LAST  = ["Mensah","Owusu","Boateng","Asante","Adjei","Annan","Darko","Appiah","Osei","Frimpong","Agyeman","Bediako","Acheampong","Gyasi","Ofori","Sarpong","Nkrumah","Quaye","Tetteh","Amponsah"];
 
 function pad(n: number) { return String(n).padStart(3, "0"); }
@@ -70,7 +74,7 @@ async function main() {
           admissionDate: new Date("2025-09-01"),
           bloodGroup: rand(["A+","B+","O+","AB+","O-"]),
           mobileNo: `+23320${pad(opts.seq)}4567`,
-          fatherName: `${rand(FIRST)} ${opts.lastName}`,
+          fatherName: `${rand(MALE_FIRST)} ${opts.lastName}`,
           fatherPhone: `+23324${pad(opts.seq)}1122`,
           guardianName: `${rand(FIRST)} ${opts.lastName}`,
           guardianPhone: `+23324${pad(opts.seq)}1122`,
@@ -102,8 +106,9 @@ async function main() {
   const created: any[] = [demoStudent];
   for (let i = 2; i <= 20; i++) {
     const cs = i % 2 === 0 ? csA : csB;
+    const gender = i % 2 === 0 ? "Male" : "Female";
     const s = await ensureStudent({
-      seq: i, firstName: rand(FIRST), lastName: rand(LAST), gender: i % 2 === 0 ? "Male" : "Female", cs,
+      seq: i, firstName: rand(gender === "Male" ? MALE_FIRST : FEMALE_FIRST), lastName: rand(LAST), gender, cs,
     });
     created.push(s);
   }

@@ -222,7 +222,7 @@ function NavContent({ role, onNavigate, addons = [] }: { role: Role; onNavigate?
           onClick={() => setShowUser(s => !s)}
           className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.07] transition-colors text-left group"
         >
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white shrink-0">
+          <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white shrink-0">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
@@ -326,7 +326,7 @@ export function Sidebar({ role = "ADMIN", addons = [] }: { role?: Role; addons?:
           </Link>
           <button
             onClick={() => setOpen(true)}
-            className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0"
+            className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0"
             aria-label="Open menu"
           >
             {initials}

@@ -98,6 +98,7 @@ export function Topbar({ title }: { title: string }) {
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => { setNotifOpen(o => !o); setProfileOpen(false); }}
+            aria-label={unread > 0 ? `Notifications (${unread} unread)` : "Notifications"}
             className="relative w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors"
           >
             <Bell className="h-[18px] w-[18px]" />
@@ -153,7 +154,7 @@ export function Topbar({ title }: { title: string }) {
             onClick={() => { setProfileOpen(o => !o); setNotifOpen(false); }}
             className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-slate-50 transition-colors"
           >
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-[11px] font-bold">
+            <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[11px] font-bold">
               {initials}
             </div>
             <div className="hidden sm:block text-left">

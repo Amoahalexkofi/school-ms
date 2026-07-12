@@ -20,13 +20,13 @@ function KpiCard({
 }) {
   const inner = (
     <div className="group bg-white rounded-xl border border-slate-200 p-5 h-full flex flex-col
-      hover:border-slate-300 hover:shadow-[0_4px_16px_-6px_rgba(15,23,42,0.12)] transition-all duration-200">
+      hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-200">
       <div className="flex items-center justify-between">
         <span className="text-[12.5px] font-medium text-slate-500">{label}</span>
         <Icon className="h-4 w-4 text-slate-300 group-hover:text-slate-400 transition-colors" />
       </div>
       <p className="text-[30px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight mt-4">{value}</p>
-      {sub && <p className="text-[12px] text-slate-400 mt-2">{sub}</p>}
+      {sub && <p className="text-[12px] text-slate-500 mt-2">{sub}</p>}
     </div>
   );
   return href ? <Link href={href} className="block h-full">{inner}</Link> : <div className="h-full">{inner}</div>;
@@ -61,10 +61,12 @@ export default async function DashboardPage() {
     .findFirst({ select: { name: true, currency: true } })
     .catch(() => null) : null;
 
-  const stats   = await getDashboardStats().catch(() => null);
+  let statsError = false;
+  const stats   = await getDashboardStats().catch(() => { statsError = true; return null; });
 
   const schoolName  = profile?.name ?? "Your School";
   const currency    = profile?.currency ?? "";
+  const money       = (n: number) => `${currency ? `${currency} ` : ""}${(n ?? 0).toLocaleString()}`;
   const totalStaff  = Object.values(stats?.staffByRole ?? {}).reduce((a: number, b) => a + (b as number), 0);
   const teacherCount = stats?.staffByRole?.["TEACHER"] ?? 0;
 
@@ -76,7 +78,8 @@ export default async function DashboardPage() {
 
   const now      = new Date();
   const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
-  const dayLabel = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const dayLabel   = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const monthLabel = now.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
   const userName = (session?.user as any)?.name || session?.user?.email?.split("@")[0] || "";
 
   // Multi Branch: when an admin is viewing "All Branches", show a per-branch breakdown.
@@ -112,7 +115,7 @@ export default async function DashboardPage() {
               )}
             </div>
           </div>
-          <p className="text-[13px] text-slate-400 hidden md:block shrink-0">{dayLabel}</p>
+          <p className="text-[13px] text-slate-500 hidden md:block shrink-0">{dayLabel}</p>
         </div>
 
         {/* ── All-branches breakdown (head office view) ── */}
@@ -121,12 +124,13 @@ export default async function DashboardPage() {
             <div className="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
               <Building className="h-4 w-4 text-slate-400" />
               <h2 className="text-[14px] font-semibold text-slate-900">All branches</h2>
-              <span className="text-[12px] text-slate-400">· {branchRows.length} branches · select one in the sidebar to drill in</span>
+              <span className="text-[12px] text-slate-500">· {branchRows.length} branches</span>
+              <span className="ml-auto text-[12px] text-slate-500 hidden sm:block">Select a branch in the sidebar to drill in</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-[11px] text-slate-400 font-medium uppercase tracking-wider border-b border-slate-100">
+                  <tr className="text-[11px] text-slate-500 font-medium uppercase tracking-wider border-b border-slate-100">
                     <th className="text-left px-5 py-2.5">Branch</th>
                     <th className="text-right px-4 py-2.5">Students</th>
                     <th className="text-right px-4 py-2.5">Staff</th>
@@ -143,7 +147,7 @@ export default async function DashboardPage() {
                       </td>
                       <td className="text-right px-4 py-3 tabular-nums text-slate-700">{b.students}</td>
                       <td className="text-right px-4 py-3 tabular-nums text-slate-700">{b.staff}</td>
-                      <td className="text-right px-4 py-3 tabular-nums text-slate-700">{currency}{b.collected.toLocaleString()}</td>
+                      <td className="text-right px-4 py-3 tabular-nums text-slate-700">{money(b.collected)}</td>
                       <td className="text-right px-5 py-3 tabular-nums text-slate-700">{b.attendancePct != null ? `${b.attendancePct}%` : "—"}</td>
                     </tr>
                   ))}
@@ -153,7 +157,7 @@ export default async function DashboardPage() {
                     <td className="px-5 py-3">Total</td>
                     <td className="text-right px-4 py-3 tabular-nums">{branchTotals.students}</td>
                     <td className="text-right px-4 py-3 tabular-nums">{branchTotals.staff}</td>
-                    <td className="text-right px-4 py-3 tabular-nums">{currency}{branchTotals.collected.toLocaleString()}</td>
+                    <td className="text-right px-4 py-3 tabular-nums">{money(branchTotals.collected)}</td>
                     <td className="px-5 py-3" />
                   </tr>
                 </tfoot>
@@ -162,11 +166,22 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        {!stats ? (
+        {statsError ? (
+          /* A failed fetch is not an empty school — never send someone to
+             "fix" a healthy config over a network blip. */
+          <div className="bg-white rounded-xl border border-slate-200 border-dashed py-20 text-center">
+            <AlertCircle className="h-8 w-8 mx-auto mb-3 text-slate-300" />
+            <p className="font-semibold text-slate-600">Couldn&apos;t load the dashboard</p>
+            <p className="text-sm text-slate-500 mt-1">Check your connection — your data is safe.</p>
+            <Link href="/dashboard" className="inline-flex items-center gap-1 mt-4 text-sm text-indigo-600 font-semibold hover:underline">
+              Retry <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        ) : !stats ? (
           <div className="bg-white rounded-xl border border-slate-200 border-dashed py-20 text-center">
             <AlertCircle className="h-8 w-8 mx-auto mb-3 text-slate-300" />
             <p className="font-semibold text-slate-600">No data yet</p>
-            <p className="text-sm text-slate-400 mt-1">Create an active academic session to populate the dashboard.</p>
+            <p className="text-sm text-slate-500 mt-1">Create an active academic session to populate the dashboard.</p>
             <Link href="/settings" className="inline-flex items-center gap-1 mt-4 text-sm text-indigo-600 font-semibold hover:underline">
               Go to Settings <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -180,16 +195,16 @@ export default async function DashboardPage() {
                 sub="Current session" href="/students" icon={Users}
               />
               <KpiCard
-                label="Teachers / Staff" value={`${teacherCount} / ${totalStaff}`}
-                sub="Active employees" href="/staff" icon={UserCog}
+                label="Teachers" value={teacherCount}
+                sub={`of ${totalStaff} total staff`} href="/staff" icon={UserCog}
               />
               <KpiCard
-                label="Fees collected" value={`${currency}${(stats.monthCollection ?? 0).toLocaleString()}`}
-                sub="This month" href="/fees" icon={Banknote}
+                label="Collected this month" value={money(stats.monthCollection ?? 0)}
+                sub={monthLabel} href="/fees" icon={Banknote}
               />
               <KpiCard
-                label="Expenses" value={`${currency}${(stats.monthExpense ?? 0).toLocaleString()}`}
-                sub="This month" href="/finance" icon={TrendingDown}
+                label="Expenses this month" value={money(stats.monthExpense ?? 0)}
+                sub={monthLabel} href="/finance" icon={TrendingDown}
               />
             </div>
 
@@ -201,7 +216,7 @@ export default async function DashboardPage() {
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">Student attendance</h2>
-                    <p className="text-[12px] text-slate-400 mt-0.5">Today's summary</p>
+                    <p className="text-[12px] text-slate-500 mt-0.5">Today's summary</p>
                   </div>
                   <Link href="/attendance"
                     className="inline-flex items-center gap-1.5 text-[12px] font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
@@ -215,7 +230,7 @@ export default async function DashboardPage() {
                       <ClipboardList className="h-5 w-5 text-slate-300" />
                     </div>
                     <p className="text-[14px] font-medium text-slate-600">Not marked today</p>
-                    <p className="text-[13px] text-slate-400 mt-1 mb-4">Take attendance to see today's breakdown.</p>
+                    <p className="text-[13px] text-slate-500 mt-1 mb-4">Take attendance to see today's breakdown.</p>
                     <Link href="/attendance"
                       className="inline-flex items-center gap-1.5 text-[13px] font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors">
                       Mark now
@@ -226,8 +241,8 @@ export default async function DashboardPage() {
                     {/* Present headline */}
                     <div className="shrink-0">
                       <p className="text-[44px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight">{presentPct}%</p>
-                      <p className="text-[12px] text-slate-400 mt-2">present today</p>
-                      <p className="text-[12px] text-slate-400 mt-0.5">{attTotal} students marked</p>
+                      <p className="text-[12px] text-slate-500 mt-2">present today</p>
+                      <p className="text-[12px] text-slate-500 mt-0.5">{attTotal} students marked</p>
                     </div>
                     <div className="flex-1 min-w-0">
                       {[
@@ -248,7 +263,7 @@ export default async function DashboardPage() {
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">Fee collection</h2>
-                    <p className="text-[12px] text-slate-400 mt-0.5">Current session</p>
+                    <p className="text-[12px] text-slate-500 mt-0.5">Current session</p>
                   </div>
                   <Link href="/fees"
                     className="inline-flex items-center gap-1.5 text-[12px] font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
@@ -259,21 +274,24 @@ export default async function DashboardPage() {
                 <div className="mb-5">
                   <div className="flex items-end justify-between mb-2.5">
                     <span className="text-[40px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight">{feesPaidPct}%</span>
-                    <span className="text-[12px] text-slate-400 mb-1">{stats.feesPaid + stats.feesUnpaid} invoices</span>
+                    <span className="text-[12px] text-slate-500 mb-1">{stats.feesPaid + stats.feesUnpaid} invoices</span>
                   </div>
                   <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                     <div className="h-full bg-emerald-500 rounded-full transition-all duration-700"
                       style={{ width: `${feesPaidPct}%` }} />
                   </div>
-                  <p className="text-[12px] text-slate-400 mt-2">collected this session</p>
+                  <p className="text-[12px] text-slate-500 mt-2">collected this session</p>
                 </div>
 
                 <div className="flex-1">
                   {[
-                    { label: "Paid",           value: String(stats.feesPaid),   vc: "text-slate-900" },
-                    { label: "Outstanding",    value: String(stats.feesUnpaid), vc: stats.feesUnpaid > 0 ? "text-rose-600" : "text-slate-900" },
-                    { label: "Month receipts", value: `${currency}${(stats.monthCollection ?? 0).toLocaleString()}`, vc: "text-slate-900" },
-                    { label: "Month expenses", value: `${currency}${(stats.monthExpense ?? 0).toLocaleString()}`,    vc: "text-slate-900" },
+                    { label: "Paid invoices", value: String(stats.feesPaid),   vc: "text-slate-900" },
+                    { label: "Outstanding",   value: String(stats.feesUnpaid), vc: stats.feesUnpaid > 0 ? "text-rose-600" : "text-slate-900" },
+                    { label: "Last payment",
+                      value: stats.todayPayments.length > 0
+                        ? `${new Date(stats.todayPayments[0].createdAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })} · ${money(stats.todayPayments[0].amount ?? 0)}`
+                        : "None today",
+                      vc: "text-slate-900" },
                   ].map(({ label, value, vc }) => (
                     <div key={label} className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
                       <span className="text-[13px] text-slate-500">{label}</span>
@@ -292,7 +310,7 @@ export default async function DashboardPage() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">Today's payments</h2>
-                    <p className="text-[12px] text-slate-400 mt-0.5">
+                    <p className="text-[12px] text-slate-500 mt-0.5">
                       {stats.todayPayments.length} transaction{stats.todayPayments.length !== 1 ? "s" : ""}
                     </p>
                   </div>
@@ -314,7 +332,7 @@ export default async function DashboardPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-[1fr_72px_80px] text-[11px] text-slate-400 font-medium uppercase tracking-wider pb-2 border-b border-slate-100 gap-4">
+                    <div className="grid grid-cols-[1fr_72px_80px] text-[11px] text-slate-500 font-medium uppercase tracking-wider pb-2 border-b border-slate-100 gap-4">
                       <span>Student</span>
                       <span className="text-right">Time</span>
                       <span className="text-right">Amount</span>
@@ -324,22 +342,22 @@ export default async function DashboardPage() {
                         <div key={i} className="grid grid-cols-[1fr_72px_80px] items-center py-3 gap-4">
                           <div className="flex items-center gap-3 min-w-0">
                             <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-[10px] font-semibold text-slate-500">
-                              {(p.studentName || "?").slice(0, 2).toUpperCase()}
+                              {(p.studentName || "?").split(/\s+/).filter(Boolean).slice(0, 2).map((w: string) => w[0]).join("").toUpperCase()}
                             </div>
                             <span className="text-[13px] text-slate-800 font-medium truncate">{p.studentName || "—"}</span>
                           </div>
-                          <span className="text-[12px] text-slate-400 tabular-nums text-right">
+                          <span className="text-[12px] text-slate-500 tabular-nums text-right">
                             {new Date(p.createdAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
                           </span>
                           <span className="text-[13px] font-semibold text-slate-900 tabular-nums text-right">
-                            {currency}{(p.amount ?? 0).toLocaleString()}
+                            {money(p.amount ?? 0)}
                           </span>
                         </div>
                       ))}
                     </div>
                     {stats.todayPayments.length > 8 && (
                       <div className="pt-3 text-center">
-                        <Link href="/fees" className="text-[12px] text-slate-400 hover:text-indigo-600 transition-colors font-medium">
+                        <Link href="/fees" className="text-[12px] text-slate-500 hover:text-indigo-600 transition-colors font-medium">
                           + {stats.todayPayments.length - 8} more payments today
                         </Link>
                       </div>
