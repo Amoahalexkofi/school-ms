@@ -368,50 +368,14 @@ function HeroProduct() {
         <DashboardMockup />
       </motion.div>
 
-      {/* Fee received — top-left */}
-      <FloatCard delay={0.35} className={`${STAT_CARD} top-0 left-[-16px]`} style={STAT_SHADOW}>
+      {/* One live event — a notification, not a stat, so it can't contradict the product */}
+      <FloatCard delay={0.55} className={`${STAT_CARD} top-8 right-[-8px]`} style={STAT_SHADOW}>
         <div className="w-9 h-9 rounded-xl bg-emerald-50 ring-1 ring-emerald-500/15 flex items-center justify-center shrink-0">
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
         </div>
         <div>
-          <p className="text-[12px] font-bold text-[#0d253d] leading-none">Fee Received</p>
-          <p className="text-[11px] text-[#64748d] mt-1">GH₵ 450 · Kwame Boateng</p>
-        </div>
-      </FloatCard>
-
-      {/* Students count — top-right */}
-      <FloatCard delay={0.5} className={`${STAT_CARD} top-6 right-[-16px]`} style={STAT_SHADOW}>
-        <div className="w-9 h-9 rounded-xl bg-indigo-50 ring-1 ring-indigo-500/15 flex items-center justify-center shrink-0">
-          <Users className="h-4 w-4 text-[#533afd]" />
-        </div>
-        <div>
-          <p className="text-[12px] font-bold text-[#0d253d] leading-none">1,250 Students</p>
-          <div className="flex items-center gap-1 mt-1">
-            <TrendingUp className="h-3 w-3 text-[#533afd]" />
-            <p className="text-[11px] text-[#533afd] font-semibold">+12 this term</p>
-          </div>
-        </div>
-      </FloatCard>
-
-      {/* Fees collected — bottom-left */}
-      <FloatCard delay={0.65} className={`${STAT_CARD} bottom-4 left-[-16px]`} style={STAT_SHADOW}>
-        <div className="w-9 h-9 rounded-xl bg-amber-50 ring-1 ring-amber-500/15 flex items-center justify-center shrink-0">
-          <DollarSign className="h-4 w-4 text-amber-600" />
-        </div>
-        <div>
-          <p className="text-[12px] font-bold text-[#0d253d] leading-none">GH₵ 450K Collected</p>
-          <p className="text-[11px] text-amber-600 font-semibold mt-1">Term 2 · 2025/26</p>
-        </div>
-      </FloatCard>
-
-      {/* Attendance — bottom-right */}
-      <FloatCard delay={0.8} className={`${STAT_CARD} bottom-0 right-[-16px]`} style={STAT_SHADOW}>
-        <div className="w-9 h-9 rounded-xl bg-rose-50 ring-1 ring-rose-500/15 flex items-center justify-center shrink-0">
-          <Star className="h-4 w-4 text-rose-500 fill-rose-500" />
-        </div>
-        <div>
-          <p className="text-[12px] font-bold text-[#0d253d] leading-none">94% Attendance</p>
-          <p className="text-[11px] text-rose-500 font-semibold mt-1">Best week this term</p>
+          <p className="text-[12px] font-bold text-[#0d253d] leading-none">Fee received</p>
+          <p className="text-[11px] text-[#64748d] mt-1">GH₵ 450 · Kwame Boateng · receipt on WhatsApp</p>
         </div>
       </FloatCard>
     </div>
