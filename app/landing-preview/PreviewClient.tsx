@@ -355,18 +355,18 @@ const STAT_SHADOW: React.CSSProperties = {
 function HeroProduct() {
   return (
     <div className="relative flex items-end justify-center h-[520px]">
-      {/* Grounding glow behind the student */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[360px] h-[360px] rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(83,58,253,0.20) 0%, transparent 68%)" }} />
-      {/* Soft contact shadow ellipse to seat the figure on the page */}
-      <div className="absolute bottom-7 left-1/2 -translate-x-1/2 w-[280px] h-7 rounded-[50%] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse, rgba(15,23,42,0.13) 0%, transparent 70%)", filter: "blur(3px)" }} />
+      {/* Grounding glow behind the product */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[420px] h-[320px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(83,58,253,0.18) 0%, transparent 68%)" }} />
 
-      {/* Student image */}
-      <div className="relative z-10 w-full max-w-[460px] h-full flex items-end justify-center">
-        <img src="/images/hero-1.webp" alt="Student using Skula"
-          className="w-full h-full object-contain object-bottom drop-shadow-2xl" />
-      </div>
+      {/* The actual product, breaking out of the mesh — the hero IS the dashboard */}
+      <motion.div
+        initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 w-[660px] max-w-none rounded-2xl overflow-hidden ring-1 ring-slate-900/[0.08] rotate-[1.2deg]"
+        style={{ boxShadow: "0 2px 6px rgba(13,37,61,0.08), 0 40px 90px -24px rgba(13,37,61,0.38)" }}>
+        <DashboardMockup />
+      </motion.div>
 
       {/* Fee received — top-left */}
       <FloatCard delay={0.35} className={`${STAT_CARD} top-0 left-[-16px]`} style={STAT_SHADOW}>
@@ -533,7 +533,7 @@ function HomeContactForm() {
 }
 
 /* ─── MAIN COMPONENT ─── */
-export function HomepageClient() {
+export function PreviewClient() {
   return (
     <div className="min-h-screen bg-white text-[#0d253d] antialiased overflow-x-hidden"
       style={{
@@ -595,7 +595,7 @@ export function HomepageClient() {
 
               {/* Honest reassurance row — no fabricated social proof */}
               <motion.ul variants={fadeUp} className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1">
-                {["No credit card needed", "Same-day setup", "Cancel anytime"].map((t) => (
+                {["GES-aligned SBA & report cards", "WhatsApp fee receipts", "Works on any phone", "No card needed · Cancel anytime"].map((t) => (
                   <li key={t} className="flex items-center gap-1.5 text-[13px] text-[#64748d] font-medium">
                     <CheckCircle2 className="h-4 w-4 text-[#533afd] shrink-0" />
                     {t}
@@ -613,10 +613,14 @@ export function HomepageClient() {
               <HeroProduct />
             </motion.div>
 
-            {/* Mobile hero image */}
-            <motion.div variants={fadeUp} className="lg:hidden flex justify-center -mt-2">
-              <img src="/images/hero-1.webp" alt="Student using Skula"
-                className="h-56 sm:h-72 object-contain drop-shadow-xl" />
+            {/* Mobile hero: the product itself, scaled */}
+            <motion.div variants={fadeUp} className="lg:hidden -mt-2">
+              <div className="rounded-xl overflow-hidden ring-1 ring-slate-900/[0.08]"
+                style={{ boxShadow: "0 24px 60px -20px rgba(13,37,61,0.35)", height: "calc(376px * 0.6)" }}>
+                <div style={{ transform: "scale(0.6)", transformOrigin: "top left", width: "calc(100% / 0.6)", pointerEvents: "none" }}>
+                  <DashboardMockup />
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -882,35 +886,42 @@ export function HomepageClient() {
         </div>
       </section>
 
-      {/* ── STATS ── */}
-      <section className="py-16 md:py-24 bg-[#533afd] relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)", backgroundSize: "28px 28px" }} />
-        <div className="absolute -top-24 -left-24 w-[400px] h-[400px] bg-indigo-500/30 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 w-[400px] h-[400px] bg-violet-600/20 rounded-full blur-[100px] pointer-events-none" />
-        <div className="relative max-w-5xl mx-auto px-6">
-          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-            className="grid grid-cols-2 md:grid-cols-4">
-            {[
-              { n: "15+",  l: "Modules",        icon: GraduationCap },
-              { n: "7",    l: "User roles",     icon: Users },
-              { n: "24/7", l: "Cloud access",   icon: Shield },
-              { n: "Same day", l: "To go live", icon: Clock },
-            ].map(({ n, l, icon: Icon }, i) => (
-              <motion.div key={l} variants={fadeUp}
-                className={`group text-center py-10 px-4 border-white/15 ${
-                  i === 0 ? "border-r border-b md:border-b-0" :
-                  i === 1 ? "md:border-r border-b md:border-b-0" :
-                  i === 2 ? "border-r" : ""
-                }`}>
-                <div className="w-11 h-11 mx-auto mb-4 rounded-xl bg-white/10 ring-1 ring-white/15 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white/20">
-                  <Icon className="h-5 w-5 text-white" />
-                </div>
-                <p className="text-4xl sm:text-5xl font-light text-white mb-1.5 tracking-tight">{n}</p>
-                <p className="text-[#c7d2fe] text-[13px] font-medium">{l}</p>
-              </motion.div>
-            ))}
+      {/* ── PRODUCT MOMENT — the ledger and the report card, together ── */}
+      <section className="py-16 md:py-24 border-t border-[#e3e8ee]" style={{ background: "#f6f9fc" }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
+            <motion.h2 variants={fadeUp}
+              className="text-[34px] sm:text-[44px] font-light tracking-[-0.02em] text-[#0d253d] leading-[1.1] font-[family-name:var(--font-preview-display)]">
+              The ledger and the report card.<br />
+              <span className="text-[#533afd]">Both live, all term.</span>
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-[#64748d] text-[15px] mt-4 max-w-xl mx-auto leading-relaxed">
+              Fees on one side, GES assessment on the other — the two documents every
+              Ghanaian school runs on, kept up to date by the same system.
+            </motion.p>
           </motion.div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+              className="rounded-2xl overflow-hidden ring-1 ring-slate-900/[0.07] bg-white"
+              style={{ boxShadow: "0 24px 60px -24px rgba(13,37,61,0.25)" }}>
+              <div className="lg:hidden overflow-hidden" style={{ height: "calc(376px * 0.62)" }}>
+                <div style={{ transform: "scale(0.62)", transformOrigin: "top left", width: "calc(100% / 0.62)", pointerEvents: "none" }}>
+                  <DashboardMockup />
+                </div>
+              </div>
+              <div className="hidden lg:block"><DashboardMockup /></div>
+            </motion.div>
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+              className="rounded-2xl overflow-hidden ring-1 ring-slate-900/[0.07] bg-white"
+              style={{ boxShadow: "0 24px 60px -24px rgba(13,37,61,0.25)" }}>
+              <div className="lg:hidden overflow-hidden" style={{ height: "calc(376px * 0.62)" }}>
+                <div style={{ transform: "scale(0.62)", transformOrigin: "top left", width: "calc(100% / 0.62)", pointerEvents: "none" }}>
+                  <TerminalReportMockup />
+                </div>
+              </div>
+              <div className="hidden lg:block"><TerminalReportMockup /></div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
