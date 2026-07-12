@@ -355,27 +355,63 @@ const STAT_SHADOW: React.CSSProperties = {
 function HeroProduct() {
   return (
     <div className="relative flex items-end justify-center h-[520px]">
-      {/* Grounding glow behind the product */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[420px] h-[320px] rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(83,58,253,0.18) 0%, transparent 68%)" }} />
+      {/* Grounding glow behind the student */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[360px] h-[360px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(83,58,253,0.20) 0%, transparent 68%)" }} />
+      {/* Soft contact shadow ellipse to seat the figure on the page */}
+      <div className="absolute bottom-7 left-1/2 -translate-x-1/2 w-[280px] h-7 rounded-[50%] pointer-events-none"
+        style={{ background: "radial-gradient(ellipse, rgba(15,23,42,0.13) 0%, transparent 70%)", filter: "blur(3px)" }} />
 
-      {/* The actual product, breaking out of the mesh — the hero IS the dashboard */}
-      <motion.div
-        initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 w-[660px] max-w-none rounded-2xl overflow-hidden ring-1 ring-slate-900/[0.08] rotate-[1.2deg]"
-        style={{ boxShadow: "0 2px 6px rgba(13,37,61,0.08), 0 40px 90px -24px rgba(13,37,61,0.38)" }}>
-        <DashboardMockup />
-      </motion.div>
+      {/* Student image */}
+      <div className="relative z-10 w-full max-w-[460px] h-full flex items-end justify-center">
+        <img src="/images/hero-1.webp" alt="Student using Skula"
+          className="w-full h-full object-contain object-bottom drop-shadow-2xl" />
+      </div>
 
-      {/* One live event — a notification, not a stat, so it can't contradict the product */}
-      <FloatCard delay={0.55} className={`${STAT_CARD} top-8 right-[-8px]`} style={STAT_SHADOW}>
+      {/* Fee received — top-left */}
+      <FloatCard delay={0.35} className={`${STAT_CARD} top-0 left-[-16px]`} style={STAT_SHADOW}>
         <div className="w-9 h-9 rounded-xl bg-emerald-50 ring-1 ring-emerald-500/15 flex items-center justify-center shrink-0">
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
         </div>
         <div>
-          <p className="text-[12px] font-bold text-[#0d253d] leading-none">Fee received</p>
-          <p className="text-[11px] text-[#64748d] mt-1">GH₵ 450 · Kwame Boateng · receipt on WhatsApp</p>
+          <p className="text-[12px] font-bold text-[#0d253d] leading-none">Fee Received</p>
+          <p className="text-[11px] text-[#64748d] mt-1">GH₵ 450 · Kwame Boateng</p>
+        </div>
+      </FloatCard>
+
+      {/* Students count — top-right */}
+      <FloatCard delay={0.5} className={`${STAT_CARD} top-6 right-[-16px]`} style={STAT_SHADOW}>
+        <div className="w-9 h-9 rounded-xl bg-indigo-50 ring-1 ring-indigo-500/15 flex items-center justify-center shrink-0">
+          <Users className="h-4 w-4 text-[#533afd]" />
+        </div>
+        <div>
+          <p className="text-[12px] font-bold text-[#0d253d] leading-none">1,250 Students</p>
+          <div className="flex items-center gap-1 mt-1">
+            <TrendingUp className="h-3 w-3 text-[#533afd]" />
+            <p className="text-[11px] text-[#533afd] font-semibold">+12 this term</p>
+          </div>
+        </div>
+      </FloatCard>
+
+      {/* Fees collected — bottom-left */}
+      <FloatCard delay={0.65} className={`${STAT_CARD} bottom-4 left-[-16px]`} style={STAT_SHADOW}>
+        <div className="w-9 h-9 rounded-xl bg-amber-50 ring-1 ring-amber-500/15 flex items-center justify-center shrink-0">
+          <DollarSign className="h-4 w-4 text-amber-600" />
+        </div>
+        <div>
+          <p className="text-[12px] font-bold text-[#0d253d] leading-none">GH₵ 450K Collected</p>
+          <p className="text-[11px] text-amber-600 font-semibold mt-1">Term 2 · 2025/26</p>
+        </div>
+      </FloatCard>
+
+      {/* Attendance — bottom-right */}
+      <FloatCard delay={0.8} className={`${STAT_CARD} bottom-0 right-[-16px]`} style={STAT_SHADOW}>
+        <div className="w-9 h-9 rounded-xl bg-rose-50 ring-1 ring-rose-500/15 flex items-center justify-center shrink-0">
+          <Star className="h-4 w-4 text-rose-500 fill-rose-500" />
+        </div>
+        <div>
+          <p className="text-[12px] font-bold text-[#0d253d] leading-none">94% Attendance</p>
+          <p className="text-[11px] text-rose-500 font-semibold mt-1">Best week this term</p>
         </div>
       </FloatCard>
     </div>
@@ -577,14 +613,10 @@ export function PreviewClient() {
               <HeroProduct />
             </motion.div>
 
-            {/* Mobile hero: the product itself, scaled */}
-            <motion.div variants={fadeUp} className="lg:hidden -mt-2">
-              <div className="rounded-xl overflow-hidden ring-1 ring-slate-900/[0.08]"
-                style={{ boxShadow: "0 24px 60px -20px rgba(13,37,61,0.35)", height: "calc(376px * 0.6)" }}>
-                <div style={{ transform: "scale(0.6)", transformOrigin: "top left", width: "calc(100% / 0.6)", pointerEvents: "none" }}>
-                  <DashboardMockup />
-                </div>
-              </div>
+            {/* Mobile hero image */}
+            <motion.div variants={fadeUp} className="lg:hidden flex justify-center -mt-2">
+              <img src="/images/hero-1.webp" alt="Student using Skula"
+                className="h-56 sm:h-72 object-contain drop-shadow-xl" />
             </motion.div>
           </div>
         </div>
