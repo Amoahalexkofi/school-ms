@@ -223,8 +223,9 @@ The single exception is functional, not decorative: the **primary button** carri
 - **Labels:** Always present, above the field, 12px medium in muted-text. Native `select` elements are styled to match input height/radius for consistency.
 
 ### Navigation
-- **Style:** Persistent left sidebar grouped by module, white surface, indigo accent on the active item; top bar carries page title + role badge. Item text is body-weight; active state uses Indigo Signal text/indicator, not a heavy fill.
-- **Mobile:** Sidebar collapses; layouts reflow to single column (most staff and nearly all parents are on phones).
+- **Style:** Persistent left sidebar grouped by module on a **dark ink surface (`slate-900`)** — the one deliberately dark region of the app, anchoring the otherwise light workspace. Section labels are muted uppercase micro-type; items are body-weight in slate-300, white on hover. The active item carries a solid Indigo Signal pill — the sidebar's dark ground is what licenses this heavier fill (on light surfaces the One Accent Rule still forbids it; use text/indicator there). Top bar stays white and carries page title + role badge.
+- **Budget:** The active pill counts toward the ≤10% indigo budget of the visible screen; nothing else in the sidebar may be indigo-filled, and adjacent chrome (banners, badges) must stay muted so the pill remains the single landmark.
+- **Mobile:** Sidebar collapses behind a hamburger into a dark drawer of the same vocabulary; layouts reflow to single column (most staff and nearly all parents are on phones).
 
 ### Tables (signature surface)
 The densest, highest-stakes component. Hairline `slate-100` row dividers, muted 12px column headers, ink-weight values, generous row height for tap targets. Status cells use chips, not raw color. Money, mark, and count columns render in **Tabular** type (`tnum`) so digits align and totals scan (the Tabular-Figures Rule). Tables stay flat and bordered — never striped with heavy fills or boxed in shadows.

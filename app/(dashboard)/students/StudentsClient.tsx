@@ -7,7 +7,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Users, Plus, Search, Eye, GraduationCap, CreditCard, Upload, UserX, Mail, Trash2, Layers } from "lucide-react";
+import { Users, Plus, Search, Eye, GraduationCap, CreditCard, Upload, UserX, Mail, Trash2, Layers, MoreHorizontal } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { usePermission } from "@/components/PermissionsProvider";
 import { Pagination } from "@/components/Pagination";
 
@@ -156,28 +159,6 @@ export function StudentsClient({ students, classSections, total, page, totalPage
           <span className="text-sm text-gray-500 shrink-0">{total} student{total !== 1 ? "s" : ""}</span>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <Link href="/students/id-card">
-            <Button variant="outline" size="sm">
-              <CreditCard className="h-4 w-4 mr-1" /> ID Cards
-            </Button>
-          </Link>
-          <Link href="/students/disabled">
-            <Button variant="outline" size="sm">
-              <UserX className="h-4 w-4 mr-1" /> Disabled
-            </Button>
-          </Link>
-          <Link href="/students/promote">
-            <Button variant="outline" size="sm">
-              <GraduationCap className="h-4 w-4 mr-1" /> Promote
-            </Button>
-          </Link>
-          {perm.canEdit && (
-            <Link href="/students/multiclass">
-              <Button variant="outline" size="sm">
-                <Layers className="h-4 w-4 mr-1" /> Multi-Class
-              </Button>
-            </Link>
-          )}
           {perm.canAdd && (
             <Link href="/students/import">
               <Button variant="outline" size="sm">
@@ -185,6 +166,29 @@ export function StudentsClient({ students, classSections, total, page, totalPage
               </Button>
             </Link>
           )}
+          {/* Secondary flows live behind one menu — Add Student stays the
+              single primary action (One Accent Rule). */}
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
+              <MoreHorizontal className="h-4 w-4 mr-1" /> More
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-48">
+              <DropdownMenuItem render={<Link href="/students/id-card" />}>
+                <CreditCard className="h-4 w-4" /> ID Cards
+              </DropdownMenuItem>
+              <DropdownMenuItem render={<Link href="/students/promote" />}>
+                <GraduationCap className="h-4 w-4" /> Promote students
+              </DropdownMenuItem>
+              {perm.canEdit && (
+                <DropdownMenuItem render={<Link href="/students/multiclass" />}>
+                  <Layers className="h-4 w-4" /> Multi-class enrollment
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem render={<Link href="/students/disabled" />}>
+                <UserX className="h-4 w-4" /> Disabled students
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           {perm.canAdd && (
             <Link href="/students/new">
               <Button size="sm">
@@ -239,8 +243,9 @@ export function StudentsClient({ students, classSections, total, page, totalPage
                       const enroll = s.sessions?.[0];
                       const cls    = enroll?.classSection;
                       return (
-                        <tr key={s.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3"><input type="checkbox" checked={selected.has(s.id)} onChange={() => toggle(s.id)} aria-label={`Select ${s.firstName}`} /></td>
+                        <tr key={s.id} className="hover:bg-gray-50 cursor-pointer"
+                          onClick={() => router.push(`/students/${s.id}`)}>
+                          <td className="px-4 py-3" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selected.has(s.id)} onChange={() => toggle(s.id)} aria-label={`Select ${s.firstName}`} /></td>
                           <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.admissionNo}</td>
                           <td className="px-4 py-3">
                             <div className="font-medium">
@@ -261,11 +266,12 @@ export function StudentsClient({ students, classSections, total, page, totalPage
                               {s.isActive ? "Active" : "Inactive"}
                             </span>
                           </td>
-                          <td className="px-4 py-3">
-                            <Link href={`/students/${s.id}`}>
-                              <Button size="sm" variant="outline">
-                                <Eye className="h-3.5 w-3.5 mr-1" /> View
-                              </Button>
+                          <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                            {/* Row itself navigates; keep an explicit link for keyboard/AT users */}
+                            <Link href={`/students/${s.id}`}
+                              aria-label={`View ${s.firstName} ${s.lastName}`}
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
+                              <Eye className="h-4 w-4" />
                             </Link>
                           </td>
                         </tr>
