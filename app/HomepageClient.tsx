@@ -595,7 +595,7 @@ export function HomepageClient() {
 
               {/* Honest reassurance row — no fabricated social proof */}
               <motion.ul variants={fadeUp} className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1">
-                {["No credit card needed", "Same-day setup", "Cancel anytime"].map((t) => (
+                {["GES-aligned SBA & report cards", "WhatsApp fee receipts", "Works on any phone", "No card needed · Cancel anytime"].map((t) => (
                   <li key={t} className="flex items-center gap-1.5 text-[13px] text-[#64748d] font-medium">
                     <CheckCircle2 className="h-4 w-4 text-[#533afd] shrink-0" />
                     {t}
