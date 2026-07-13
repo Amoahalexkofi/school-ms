@@ -40,6 +40,79 @@ function monthDelta(current: number, previous: number): string | null {
   return `${pct > 0 ? "+" : ""}${pct}% vs last month`;
 }
 
+// ─── Charts — hand-drawn SVG, axes + dashed gridlines, no chart library ──────
+function niceMax(v: number) {
+  if (v <= 0) return 100;
+  const mag = 10 ** Math.floor(Math.log10(v));
+  return Math.ceil(v / mag) * mag;
+}
+
+function AreaChart({ data, height = 200 }: { data: { label: string; amount: number }[]; height?: number }) {
+  const w = 560, h = height, padL = 46, padR = 12, padT = 10, padB = 26;
+  const iw = w - padL - padR, ih = h - padT - padB;
+  const max = niceMax(Math.max(...data.map(d => d.amount), 1));
+  const x = (i: number) => padL + (i * iw) / (data.length - 1);
+  const y = (v: number) => padT + ih - (v / max) * ih;
+  const pts = data.map((d, i) => `${x(i).toFixed(1)},${y(d.amount).toFixed(1)}`).join(" ");
+  const area = `${padL},${padT + ih} ${pts} ${x(data.length - 1)},${padT + ih}`;
+  const ticks = [0, 0.25, 0.5, 0.75, 1].map(f => Math.round(max * f));
+  const fmt = (v: number) => v >= 1000 ? `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k` : String(v);
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" role="img" aria-label="Fee collection by month">
+      <defs>
+        <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="#4f46e5" stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      {ticks.map(t => (
+        <g key={t}>
+          <line x1={padL} x2={w - padR} y1={y(t)} y2={y(t)} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="3 4" />
+          <text x={padL - 8} y={y(t) + 3.5} textAnchor="end" fontSize="10.5" fill="#64748b" style={{ fontVariantNumeric: "tabular-nums" }}>{fmt(t)}</text>
+        </g>
+      ))}
+      <polygon points={area} fill="url(#areaFill)" />
+      <polyline points={pts} fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      {data.map((d, i) => (
+        <text key={d.label + i} x={x(i)} y={h - 8} textAnchor={i === 0 ? "start" : i === data.length - 1 ? "end" : "middle"}
+          fontSize="10.5" fill="#64748b">{d.label}</text>
+      ))}
+    </svg>
+  );
+}
+
+function BarChart({ data, height = 200 }: { data: { name: string; avg: number }[]; height?: number }) {
+  const w = 560, h = height, padL = 40, padR = 12, padT = 10, padB = 26;
+  const iw = w - padL - padR, ih = h - padT - padB;
+  const max = 100; // scores are percentages
+  const band = iw / data.length;
+  const barW = Math.min(56, band * 0.62);
+  const y = (v: number) => padT + ih - (v / max) * ih;
+  const ticks = [0, 25, 50, 75, 100];
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" role="img" aria-label="Average score by class">
+      {ticks.map(t => (
+        <g key={t}>
+          <line x1={padL} x2={w - padR} y1={y(t)} y2={y(t)} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="3 4" />
+          <text x={padL - 8} y={y(t) + 3.5} textAnchor="end" fontSize="10.5" fill="#64748b" style={{ fontVariantNumeric: "tabular-nums" }}>{t}</text>
+        </g>
+      ))}
+      {data.map((d, i) => {
+        const cx = padL + band * i + band / 2;
+        return (
+          <g key={d.name}>
+            <rect x={cx - barW / 2} y={y(d.avg)} width={barW} height={Math.max(2, (d.avg / max) * ih)}
+              rx="4" fill="#1e293b" />
+            <text x={cx} y={y(d.avg) - 5} textAnchor="middle" fontSize="10" fill="#334155"
+              style={{ fontVariantNumeric: "tabular-nums" }} fontWeight="600">{d.avg}</text>
+            <text x={cx} y={h - 8} textAnchor="middle" fontSize="10.5" fill="#64748b">{d.name}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 // ─── KPI Card — calm, neutral ─────────────────────────────────────────────────
 function KpiCard({
   label, value, sub, href, icon: Icon, spark,
@@ -357,6 +430,30 @@ export default async function DashboardPage() {
                 </div>
               </div>
             </div>
+
+            {/* ── Trend charts ── */}
+            {(stats.monthlyCollections?.some((m: any) => m.amount > 0) || stats.classAverages?.length > 0) && (
+              <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "175ms" }}>
+                {stats.monthlyCollections?.some((m: any) => m.amount > 0) && (
+                  <div className={`col-span-12 ${stats.classAverages?.length > 0 ? "lg:col-span-6" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+                    <div className="mb-4">
+                      <h2 className="text-[15px] font-semibold text-slate-900">Monthly revenue</h2>
+                      <p className="text-[12px] text-slate-500 mt-0.5">Fee collection trend{currency ? ` (${currency})` : ""} · last 6 months</p>
+                    </div>
+                    <AreaChart data={stats.monthlyCollections} />
+                  </div>
+                )}
+                {stats.classAverages?.length > 0 && (
+                  <div className={`col-span-12 ${stats.monthlyCollections?.some((m: any) => m.amount > 0) ? "lg:col-span-6" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+                    <div className="mb-4">
+                      <h2 className="text-[15px] font-semibold text-slate-900">Student performance</h2>
+                      <p className="text-[12px] text-slate-500 mt-0.5">Average score by class · current session</p>
+                    </div>
+                    <BarChart data={stats.classAverages} />
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* ── Payments + Side column ── */}
             <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "210ms" }}>

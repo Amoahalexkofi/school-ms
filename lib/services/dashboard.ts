@@ -23,6 +23,8 @@ export interface DashboardStats {
   lastMonthExpense: number;
   attendanceTrend: { date: string; pct: number }[];
   outstandingByClass: { name: string; unpaid: number; total: number }[];
+  monthlyCollections: { label: string; amount: number }[];
+  classAverages: { name: string; avg: number }[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -257,6 +259,56 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .sort((a, b) => b.unpaid - a.unpaid)
     .slice(0, 5);
 
+  // ── Chart data: 6-month collection trend + average score by class ─────────
+  const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const [sixMonthDeposits, sessionMarks] = await Promise.all([
+    safe(() => (prisma as any).feeDeposit.findMany({
+      where: { createdAt: { gte: sixMonthsAgo }, isActive: true, ...depWhere },
+      select: { createdAt: true, amountDetail: true },
+    }), []),
+    safe(() => sid
+      ? (prisma as any).markEntry.findMany({
+          where: {
+            marksObtained: { not: null },
+            examSchedule: { sessionId: sid },
+            ...(branchId ? { student: { branchId } } : {}),
+          },
+          select: {
+            marksObtained: true,
+            examSchedule: {
+              select: {
+                fullMarks: true,
+                classSection: { select: { class: { select: { name: true } } } },
+              },
+            },
+          },
+        })
+      : [], []),
+  ]);
+
+  const monthlyCollections = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+    const next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+    const amount = sixMonthDeposits
+      .filter((r: any) => { const t = new Date(r.createdAt); return t >= d && t < next; })
+      .reduce((sum: number, r: any) => sum + sumDeposit(r), 0);
+    return { label: d.toLocaleDateString("en-GB", { month: "short" }), amount };
+  });
+
+  const scoreByClass: Record<string, { sum: number; n: number }> = {};
+  for (const m of sessionMarks) {
+    const full = Number(m.examSchedule?.fullMarks ?? 0);
+    if (full <= 0) continue;
+    const name = m.examSchedule?.classSection?.class?.name ?? "Unassigned";
+    const pct = (Number(m.marksObtained) / full) * 100;
+    const bucket = scoreByClass[name] ?? (scoreByClass[name] = { sum: 0, n: 0 });
+    bucket.sum += pct; bucket.n += 1;
+  }
+  const classAverages = Object.entries(scoreByClass)
+    .map(([name, v]) => ({ name, avg: Math.round(v.sum / v.n) }))
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+    .slice(0, 8);
+
   return {
     totalStudents,
     staffByRole,
@@ -283,5 +335,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     lastMonthExpense: Number(lastMonthExpenseAgg._sum?.amount ?? 0),
     attendanceTrend,
     outstandingByClass,
+    monthlyCollections,
+    classAverages,
   };
 }
