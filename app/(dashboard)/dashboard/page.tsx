@@ -12,11 +12,39 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+// ─── Sparkline — a quiet 7-day line, no axes, no junk ─────────────────────────
+function Sparkline({ data, stroke = "#4f46e5" }: { data: number[]; stroke?: string }) {
+  if (!data?.length || data.every(v => v === 0)) return null;
+  const w = 96, h = 28, pad = 2;
+  const max = Math.max(...data), min = Math.min(...data);
+  const span = max - min || 1;
+  const pts = data.map((v, i) => {
+    const x = pad + (i * (w - pad * 2)) / (data.length - 1);
+    const y = h - pad - ((v - min) / span) * (h - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden className="shrink-0">
+      <polyline points={pts} fill="none" stroke={stroke} strokeWidth="1.5"
+        strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+    </svg>
+  );
+}
+
+// Month-over-month delta, spoken plainly. Neutral color — a rise in expenses
+// is not "good news green", and a quiet dashboard editorializes sparingly.
+function monthDelta(current: number, previous: number): string | null {
+  if (previous <= 0) return null;
+  const pct = Math.round(((current - previous) / previous) * 100);
+  if (pct === 0) return "same as last month";
+  return `${pct > 0 ? "+" : ""}${pct}% vs last month`;
+}
+
 // ─── KPI Card — calm, neutral ─────────────────────────────────────────────────
 function KpiCard({
-  label, value, sub, href, icon: Icon,
+  label, value, sub, href, icon: Icon, spark,
 }: {
-  label: string; value: string | number; sub?: string; href?: string; icon: React.ElementType;
+  label: string; value: string | number; sub?: string; href?: string; icon: React.ElementType; spark?: number[];
 }) {
   const inner = (
     <div className="group bg-white rounded-xl border border-slate-200 p-5 h-full flex flex-col
@@ -25,7 +53,10 @@ function KpiCard({
         <span className="text-[12.5px] font-medium text-slate-500">{label}</span>
         <Icon className="h-4 w-4 text-slate-300 group-hover:text-slate-400 transition-colors" />
       </div>
-      <p className="text-[30px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight mt-4">{value}</p>
+      <div className="flex items-end justify-between gap-2 mt-4">
+        <p className="text-[30px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight">{value}</p>
+        {spark && <Sparkline data={spark} />}
+      </div>
       {sub && <p className="text-[12px] text-slate-500 mt-2">{sub}</p>}
     </div>
   );
@@ -200,11 +231,13 @@ export default async function DashboardPage() {
               />
               <KpiCard
                 label="Collected this month" value={money(stats.monthCollection ?? 0)}
-                sub={monthLabel} href="/fees" icon={Banknote}
+                sub={monthDelta(stats.monthCollection ?? 0, stats.lastMonthCollection ?? 0) ?? monthLabel}
+                href="/fees" icon={Banknote} spark={stats.sparklines?.fees}
               />
               <KpiCard
                 label="Expenses this month" value={money(stats.monthExpense ?? 0)}
-                sub={monthLabel} href="/finance" icon={TrendingDown}
+                sub={monthDelta(stats.monthExpense ?? 0, stats.lastMonthExpense ?? 0) ?? monthLabel}
+                href="/finance" icon={TrendingDown} spark={stats.sparklines?.expenses}
               />
             </div>
 
@@ -253,6 +286,29 @@ export default async function DashboardPage() {
                       ].map(({ label, v, bar }) => (
                         <StatRow key={label} label={label} value={v} bar={bar} barPct={attPct(v)} />
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 10-day trend — % present per marked school day */}
+                {stats.attendanceTrend?.length > 1 && (
+                  <div className="mt-5 pt-4 border-t border-slate-100">
+                    <div className="flex items-center justify-between mb-2.5">
+                      <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Last {stats.attendanceTrend.length} school days</p>
+                      <p className="text-[11px] text-slate-500 tabular-nums">% present</p>
+                    </div>
+                    <div className="flex items-end gap-1.5 h-12">
+                      {stats.attendanceTrend.map((d: any, i: number) => {
+                        const isLast = i === stats.attendanceTrend.length - 1;
+                        return (
+                          <div key={d.date} className="flex-1 flex flex-col items-center justify-end h-full gap-1"
+                            title={`${new Date(d.date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} — ${d.pct}% present`}>
+                            <span className={`text-[9.5px] tabular-nums leading-none ${isLast ? "text-indigo-600 font-semibold" : "text-slate-400"}`}>{d.pct}</span>
+                            <div className={`w-full rounded-sm ${isLast ? "bg-indigo-600" : "bg-slate-200"}`}
+                              style={{ height: `${Math.max(6, d.pct * 0.6)}%` }} />
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -390,6 +446,36 @@ export default async function DashboardPage() {
                     ))}
                   </div>
                 </div>
+
+                {/* Outstanding by class — where the unpaid invoices live */}
+                {stats.outstandingByClass?.length > 0 && (
+                  <div className="bg-white rounded-xl border border-slate-200 p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-[13px] font-semibold text-slate-900">Outstanding by class</h2>
+                      <Link href="/fees" className="text-[11px] text-indigo-600 font-medium hover:text-indigo-700 transition-colors">
+                        Chase up →
+                      </Link>
+                    </div>
+                    <div className="space-y-2.5">
+                      {stats.outstandingByClass.map((c: any) => {
+                        const pct = c.total > 0 ? Math.round((c.unpaid / c.total) * 100) : 0;
+                        return (
+                          <div key={c.name}>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[12.5px] text-slate-600 truncate">{c.name}</span>
+                              <span className="text-[12px] font-semibold tabular-nums text-slate-900">
+                                {c.unpaid}<span className="font-normal text-slate-500"> of {c.total} unpaid</span>
+                              </span>
+                            </div>
+                            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                              <div className="h-full bg-rose-400 rounded-full" style={{ width: `${pct}%` }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Staff + Library */}
                 <div className="bg-white rounded-xl border border-slate-200 p-5 flex-1">

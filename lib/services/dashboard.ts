@@ -19,6 +19,10 @@ export interface DashboardStats {
   currentSession: string;
   currentSessionId: string | null;
   sparklines: { fees: number[]; expenses: number[] };
+  lastMonthCollection: number;
+  lastMonthExpense: number;
+  attendanceTrend: { date: string; pct: number }[];
+  outstandingByClass: { name: string; unpaid: number; total: number }[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,6 +52,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthEnd   = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
 
   const currentSession = await safe(() =>
     (prisma as any).academicSession.findFirst({
@@ -187,6 +193,70 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       .reduce((s: number, r: any) => s + Number(r.amount ?? 0), 0);
   });
 
+  // ── Trend analytics: last month comparison, attendance trend, debt map ────
+  const fourteenDaysAgo = new Date(today);
+  fourteenDaysAgo.setDate(today.getDate() - 13);
+
+  const [lastMonthDeposits, lastMonthExpenseAgg, recentAttendanceDays, unpaidMasters] = await Promise.all([
+    safe(() => (prisma as any).feeDeposit.findMany({
+      where: { createdAt: { gte: lastMonthStart, lte: lastMonthEnd }, isActive: true, ...depWhere },
+      select: { amountDetail: true },
+    }), []),
+    safe(() => (prisma as any).transaction.aggregate({
+      where: { type: "EXPENSE", date: { gte: lastMonthStart, lte: lastMonthEnd } },
+      _sum: { amount: true },
+    }), { _sum: { amount: 0 } }),
+    safe(() => (prisma as any).attendanceDay.findMany({
+      where: { date: { gte: fourteenDaysAgo, lte: today } },
+      select: {
+        date: true,
+        studentAttendances: { select: { attendanceTypeId: true }, where: studWhere.student ? { student: studWhere.student } : {} },
+      },
+      orderBy: { date: "asc" },
+    }), []),
+    safe(() => sid
+      ? (prisma as any).studentFeesMaster.findMany({
+          where: { studentSession: { sessionId: sid }, isActive: true, ...studWhere },
+          select: {
+            deposits: { select: { id: true } },
+            studentSession: { select: { classSection: { select: { class: { select: { name: true } } } } } },
+          },
+        })
+      : [], []),
+  ]);
+
+  const lastMonthCollection = lastMonthDeposits.reduce((s: number, d: any) => s + sumDeposit(d), 0);
+
+  // % present per marked school day (days without records are skipped)
+  const trendByDate: Record<string, { present: number; total: number }> = {};
+  for (const day of recentAttendanceDays) {
+    const k = dayKey(new Date(day.date));
+    const bucket = trendByDate[k] ?? (trendByDate[k] = { present: 0, total: 0 });
+    for (const a of day.studentAttendances ?? []) {
+      bucket.total += 1;
+      if (presentType && a.attendanceTypeId === presentType.id) bucket.present += 1;
+    }
+  }
+  const attendanceTrend = Object.entries(trendByDate)
+    .filter(([, v]) => v.total > 0)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(-10)
+    .map(([date, v]) => ({ date, pct: Math.round((v.present / v.total) * 100) }));
+
+  // Where the unpaid invoices live, by class
+  const byClass: Record<string, { unpaid: number; total: number }> = {};
+  for (const fm of unpaidMasters) {
+    const name = fm.studentSession?.classSection?.class?.name ?? "Unassigned";
+    const bucket = byClass[name] ?? (byClass[name] = { unpaid: 0, total: 0 });
+    bucket.total += 1;
+    if (!fm.deposits?.length) bucket.unpaid += 1;
+  }
+  const outstandingByClass = Object.entries(byClass)
+    .map(([name, v]) => ({ name, ...v }))
+    .filter(c => c.unpaid > 0)
+    .sort((a, b) => b.unpaid - a.unpaid)
+    .slice(0, 5);
+
   return {
     totalStudents,
     staffByRole,
@@ -209,5 +279,9 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     currentSession: currentSession?.session ?? "No active session",
     currentSessionId: sid,
     sparklines: { fees: feesByDay, expenses: expensesByDay },
+    lastMonthCollection,
+    lastMonthExpense: Number(lastMonthExpenseAgg._sum?.amount ?? 0),
+    attendanceTrend,
+    outstandingByClass,
   };
 }
