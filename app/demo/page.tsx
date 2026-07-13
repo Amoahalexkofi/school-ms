@@ -7,7 +7,7 @@ import Link from "next/link";
 import {
   ShieldCheck, Shield, BookOpen, Wallet,
   Library, UserCircle, Users, Eye, EyeOff, ArrowRight,
-  CheckCircle2, Database, Zap, RefreshCw, ConciergeBell,
+  CheckCircle2, Database, Zap, RefreshCw, ConciergeBell, ChevronRight,
 } from "lucide-react";
 
 const DEMO_PASSWORD = "Demo@Skula2026";
@@ -59,16 +59,16 @@ export default function DemoPage() {
       {/* ── LEFT: gradient brand panel ── */}
       <div
         className="hidden lg:flex lg:w-[44%] xl:w-[42%] relative flex-col overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 40%, #bae6fd 72%, #f8fafc 100%)" }}
+        style={{
+          background: [
+            "radial-gradient(110% 70% at 90% 0%, rgba(83,58,253,0.28) 0%, transparent 55%)",
+            "radial-gradient(70% 55% at 100% 55%, rgba(234,34,97,0.13) 0%, transparent 55%)",
+            "radial-gradient(85% 70% at 15% 0%, rgba(245,233,212,0.9) 0%, transparent 65%)",
+            "radial-gradient(90% 80% at 0% 45%, rgba(185,185,249,0.42) 0%, transparent 60%)",
+            "linear-gradient(180deg, #f6f9fc 0%, #ffffff 100%)",
+          ].join(", "),
+        }}
       >
-        {/* Dot grid */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: "radial-gradient(circle at 1px 1px, rgba(83,58,253,0.13) 1px, transparent 0)",
-          backgroundSize: "30px 30px",
-        }} />
-        {/* Glow */}
-        <div className="absolute -top-20 -right-20 w-[360px] h-[360px] bg-white/50 rounded-full blur-[90px] pointer-events-none" />
-        <div className="absolute bottom-0 -left-10 w-[280px] h-[280px] bg-indigo-400/15 rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative flex flex-col h-full px-10 py-10">
 
@@ -90,9 +90,7 @@ export default function DemoPage() {
             <h1 className="font-light tracking-[-0.02em] leading-[1.04]" style={{ fontSize: "clamp(38px, 4vw, 52px)" }}>
               <span className="text-[#0d253d]">See Skula</span>
               <br />
-              <span style={{ background: "linear-gradient(135deg, #533afd, #665efd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                in action.
-              </span>
+              <span className="text-[#533afd]">in action.</span>
             </h1>
 
             <p className="text-[#273951] text-[15px] mt-5 leading-relaxed max-w-[300px]">
@@ -115,21 +113,23 @@ export default function DemoPage() {
               ))}
             </div>
 
-            {/* Role chips */}
-            <div className="mt-10 flex flex-wrap gap-2">
-              {ROLES.map(r => {
-                const c = CM[r.color];
-                const Icon = r.icon;
-                return (
-                  <span
-                    key={r.key}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/65 backdrop-blur-sm border ${c.chip} text-[11.5px] font-semibold shadow-sm`}
-                  >
-                    <Icon className="h-3 w-3" />
-                    {r.label}
-                  </span>
-                );
-              })}
+            {/* Worth trying first — concrete flows, not a second role picker */}
+            <div className="mt-10 bg-white/80 border border-[#e3e8ee] rounded-2xl p-5 max-w-[400px]">
+              <p className="text-[10.5px] font-semibold text-[#64748d] uppercase tracking-[0.15em] mb-3.5">Worth trying first</p>
+              <div className="space-y-3">
+                {[
+                  ["Collect a fee", "a WhatsApp receipt fires instantly"],
+                  ["Enter SBA marks", "the GES report card builds itself"],
+                  ["Mark attendance", "absent parents get an SMS"],
+                ].map(([action, result]) => (
+                  <div key={action} className="flex items-start gap-2.5">
+                    <ChevronRight className="h-3.5 w-3.5 text-[#533afd] shrink-0 mt-0.5" />
+                    <p className="text-[13px] leading-snug text-[#273951]">
+                      <span className="font-semibold text-[#0d253d]">{action}</span> — {result}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -177,7 +177,6 @@ export default function DemoPage() {
             style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(83,58,253,0.09), 0 24px 56px rgba(0,0,0,0.09), 0 56px 96px rgba(83,58,253,0.05)" }}
           >
             {/* Card top accent */}
-            <div className="h-[3px]" style={{ background: "linear-gradient(90deg, #533afd, #665efd, #06b6d4)" }} />
 
             <div className="px-7 pt-7 pb-8 md:px-9 md:pt-8 md:pb-9">
 

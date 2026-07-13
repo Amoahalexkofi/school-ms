@@ -165,9 +165,8 @@ export default function ContactPage() {
             ) : (
               <>
                 {/* Header */}
-                <img src="/images/skula-logomark.png" alt="Skula" className="h-10 object-contain mb-6" />
-                <h2 className="text-[28px] font-light text-[#0d253d] tracking-[-0.01em] leading-tight">Talk to us</h2>
-                <p className="text-[#64748d] text-[14px] mt-1.5 mb-7">We reply within the hour on WhatsApp.</p>
+                <h2 className="text-[30px] font-light text-[#0d253d] tracking-[-0.015em] leading-tight">Talk to us</h2>
+                <p className="text-[#64748d] text-[14px] mt-2 mb-8">Tell us who you are — we reply within the hour on WhatsApp.</p>
 
                 <div className="space-y-4">
                   {/* Name */}
