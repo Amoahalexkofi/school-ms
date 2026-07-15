@@ -418,6 +418,134 @@ function HeroProduct() {
   );
 }
 
+/* ─── PRODUCT TOUR — tabbed showcase, one section instead of four rows ─── */
+const TOUR_TABS = [
+  {
+    key: "dashboard", label: "Dashboard", icon: BarChart2, accent: "#533afd", accentBg: "#eef2ff",
+    eyebrow: "Live Analytics",
+    title: "The whole school on one screen.",
+    desc: "Money, attendance and academics — live, with trends. The head sees this morning's collections next to last month's, and exactly which class owes fees.",
+    bullets: ["Collections & expenses with month-over-month trends", "Attendance over the last 10 school days", "Outstanding fees mapped by class", "Every role sees what matters to them"],
+    Mockup: DashboardMockup,
+  },
+  {
+    key: "students", label: "Students", icon: Users, accent: "#533afd", accentBg: "#eef2ff",
+    eyebrow: "Student Information System",
+    title: "Every student. Every detail. One place.",
+    desc: "Enroll students, manage profiles, track BECE candidates, issue ID cards and promote entire classes in minutes — not days.",
+    bullets: ["Bulk enrollment & promotion", "BECE candidate management", "Digital ID card generation", "Parent portal access"],
+    Mockup: StudentsMockup,
+  },
+  {
+    key: "fees", label: "Fees & Receipts", icon: DollarSign, accent: "#10b981", accentBg: "#dcfce7",
+    eyebrow: "Finance & Fee Management",
+    title: "Collect fees. Track every pesewa.",
+    desc: "From setting up fee structures to issuing digital receipts on WhatsApp — Skula automates your entire finance workflow.",
+    bullets: ["Automated GHS receipts", "Defaulter tracking & reminders", "Term-by-term fee reports", "WhatsApp receipt on every payment"],
+    Mockup: FeesMockup,
+  },
+  {
+    key: "exams", label: "Exams & Marks", icon: BookOpen, accent: "#665efd", accentBg: "#ede9fe",
+    eyebrow: "Exams & Academic Performance",
+    title: "From marks to report cards automatically.",
+    desc: "Teachers enter marks once. Skula calculates rankings, generates BECE-style report cards, and makes results available to parents instantly.",
+    bullets: ["Automated grade calculation", "Class ranking & reports", "BECE-style report cards", "Parent result portal"],
+    Mockup: ExamsMockup,
+  },
+  {
+    key: "sba", label: "GES Report", icon: Award, accent: "#533afd", accentBg: "#eef2ff",
+    eyebrow: "GES Continuous Assessment",
+    title: "SBA done the GES way. Automatically.",
+    desc: "Class work, projects and quizzes captured through the term; Skula applies the GES weighting and produces the terminal report sheet — print-ready.",
+    bullets: ["Weighted SBA components, fully configurable", "Class score / exam score split computed for you", "Terminal report sheet, print-ready", "Attendance, conduct & remarks included"],
+    Mockup: TerminalReportMockup,
+  },
+];
+
+function ProductTour() {
+  const [active, setActive] = useState(0);
+  const tab = TOUR_TABS[active];
+  const { Mockup } = tab;
+  return (
+    <section id="solutions" className="scroll-mt-20 py-16 md:py-24 bg-white border-t border-[#e3e8ee]">
+      <div className="max-w-6xl mx-auto px-6">
+        <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-10">
+          <motion.p variants={fadeUp} className="text-[11px] font-bold text-[#533afd] uppercase tracking-[0.14em] mb-4">Inside Skula</motion.p>
+          <motion.h2 variants={fadeUp}
+            className="text-[36px] sm:text-[46px] font-light tracking-[-0.02em] text-[#0d253d] leading-[1.1] font-[family-name:var(--font-preview-display)]">
+            Don&apos;t take our word for it.<br /><span className="text-[#533afd]">Look inside.</span>
+          </motion.h2>
+        </motion.div>
+
+        {/* Tabs */}
+        <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+          className="flex gap-1.5 overflow-x-auto pb-2 mb-8 justify-start sm:justify-center [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {TOUR_TABS.map((t, i) => {
+            const Icon = t.icon;
+            const isActive = i === active;
+            return (
+              <button key={t.key} onClick={() => setActive(i)}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-[13.5px] font-medium whitespace-nowrap transition-all ${
+                  isActive
+                    ? "bg-[#0d253d] text-white"
+                    : "bg-white text-[#273951] border border-[#e3e8ee] hover:border-[#b9b9f9] hover:text-[#4434d4]"
+                }`}>
+                <Icon className="h-4 w-4" style={isActive ? {} : { color: t.accent }} />
+                {t.label}
+              </button>
+            );
+          })}
+        </motion.div>
+
+        {/* Active pane */}
+        <AnimatePresence mode="wait">
+          <motion.div key={tab.key}
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div className="lg:col-span-5">
+              <span className="inline-flex items-center text-[11px] font-bold px-3 py-1.5 rounded-full mb-5"
+                style={{ backgroundColor: tab.accentBg, color: tab.accent }}>{tab.eyebrow}</span>
+              <h3 className="text-[26px] sm:text-[32px] font-light tracking-[-0.015em] text-[#0d253d] leading-[1.12] mb-4">
+                {tab.title}
+              </h3>
+              <p className="text-[#64748d] text-[15px] leading-relaxed mb-6">{tab.desc}</p>
+              <ul className="space-y-2.5 mb-7">
+                {tab.bullets.map(b => (
+                  <li key={b} className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: tab.accentBg }}>
+                      <Check className="h-3 w-3" style={{ color: tab.accent }} />
+                    </div>
+                    <span className="text-[#273951] text-[14px] font-medium">{b}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/demo"
+                className="inline-flex items-center gap-2 font-medium text-[13px] px-5 py-2.5 rounded-full transition-all hover:gap-3"
+                style={{ backgroundColor: tab.accentBg, color: tab.accent }}>
+                Try this live <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="lg:col-span-7">
+              <div className="rounded-2xl overflow-hidden bg-white ring-1 ring-slate-900/[0.07]"
+                style={{ boxShadow: `0 8px 24px ${tab.accent}14, 0 32px 64px ${tab.accent}0f` }}>
+                <div className="lg:hidden overflow-hidden" style={{ height: "calc(376px * 0.62)" }}>
+                  <div style={{ transform: "scale(0.62)", transformOrigin: "top left", width: "calc(100% / 0.62)", pointerEvents: "none" }}>
+                    <Mockup />
+                  </div>
+                </div>
+                <div className="hidden lg:block">
+                  <Mockup />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+}
+
 /* ─── FAQ ─── */
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -729,65 +857,8 @@ export function HomepageClient() {
         </div>
       </section>
 
-      {/* ── DASHBOARD SHOWCASE ── */}
-      <section id="solutions" className="scroll-mt-20 py-16 md:py-24 bg-white border-t border-[#e3e8ee]">
-        <div className="max-w-6xl mx-auto px-6 space-y-16 md:space-y-28">
-          {[
-            { eyebrow: "Student Information System",   title: "Every student. Every detail. One place.",      desc: "Enroll students, manage profiles, track BECE candidates, issue ID cards and promote entire classes in minutes — not days.", bullets: ["Bulk enrollment & promotion","BECE candidate management","Digital ID card generation","Parent portal access"], flip: false, accent: "#533afd", accentBg: "#eef2ff", Mockup: StudentsMockup },
-            { eyebrow: "Finance & Fee Management",     title: "Collect fees. Track every pesewa.",             desc: "From setting up fee structures to issuing digital receipts on WhatsApp — Skula automates your entire finance workflow.",    bullets: ["Automated GHS receipts","Defaulter tracking & reminders","Term-by-term fee reports","Multi-currency support"],   flip: true,  accent: "#10b981", accentBg: "#dcfce7", Mockup: FeesMockup    },
-            { eyebrow: "Exams & Academic Performance", title: "From marks to report cards automatically.",     desc: "Teachers enter marks once. Skula calculates rankings, generates BECE-style report cards, and makes results available to parents instantly.", bullets: ["Automated grade calculation","Class ranking & reports","BECE-style report cards","Parent result portal"],    flip: false, accent: "#665efd", accentBg: "#ede9fe", Mockup: ExamsMockup   },
-            { eyebrow: "GES Continuous Assessment",    title: "SBA done the GES way. Automatically.",          desc: "Teachers capture class work, projects and quizzes through the term; Skula applies the GES weighting and produces the terminal report sheet — class score, exam score, position and remarks.", bullets: ["Weighted SBA components, fully configurable","Class score / exam score split computed for you","Terminal report sheet, print-ready","Attendance, conduct & remarks included"], flip: true, accent: "#533afd", accentBg: "#eef2ff", Mockup: TerminalReportMockup },
-          ].map(({ eyebrow, title, desc, bullets, flip, accent, accentBg, Mockup }) => (
-            <motion.div key={title} initial="hidden" whileInView="show"
-              viewport={{ once: true, margin: "-80px" }} variants={stagger}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-              <div className={flip ? "lg:order-2" : ""}>
-                <motion.div variants={fadeUp}>
-                  <span className="inline-flex items-center text-[11px] font-bold px-3 py-1.5 rounded-full mb-5"
-                    style={{ backgroundColor: accentBg, color: accent }}>{eyebrow}</span>
-                </motion.div>
-                <motion.h3 variants={fadeUp}
-                  className="text-[30px] sm:text-[38px] font-light tracking-tight text-[#0d253d] leading-[1.1] mb-5 font-[family-name:var(--font-preview-display)]">
-                  {title}
-                </motion.h3>
-                <motion.p variants={fadeUp} className="text-[#64748d] text-[15px] leading-relaxed mb-7">{desc}</motion.p>
-                <motion.ul variants={stagger} className="space-y-2.5 mb-8">
-                  {bullets.map(b => (
-                    <motion.li key={b} variants={fadeUp} className="flex items-center gap-3">
-                      <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: accentBg }}>
-                        <Check className="h-3 w-3" style={{ color: accent }} />
-                      </div>
-                      <span className="text-[#273951] text-[14px] font-medium">{b}</span>
-                    </motion.li>
-                  ))}
-                </motion.ul>
-                <motion.div variants={fadeUp}>
-                  <Link href="/demo"
-                    className="inline-flex items-center gap-2 font-medium text-[13px] px-5 py-2.5 rounded-full transition-all hover:gap-3"
-                    style={{ backgroundColor: accentBg, color: accent }}>
-                    See it live <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </motion.div>
-              </div>
-              <motion.div variants={fadeIn} className={flip ? "lg:order-1" : ""}>
-                <div className="rounded-2xl overflow-hidden bg-white transition-transform duration-500 ease-out hover:-translate-y-1.5"
-                  style={{ boxShadow: `0 0 0 1px rgba(0,0,0,0.05), 0 8px 24px ${accent}15, 0 32px 64px ${accent}10` }}>
-                  {/* Mobile scaled */}
-                  <div className="lg:hidden overflow-hidden" style={{ height: "calc(340px * 0.62)" }}>
-                    <div style={{ transform: "scale(0.62)", transformOrigin: "top left", width: "calc(100% / 0.62)", pointerEvents: "none" }}>
-                      <Mockup />
-                    </div>
-                  </div>
-                  {/* Desktop full */}
-                  <div className="hidden lg:block">
-                    <Mockup />
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      {/* ── PRODUCT TOUR ── */}
+      <ProductTour />
 
       {/* ── INTEGRATIONS ── */}
       <section className="py-16 md:py-24 border-t border-[#e3e8ee]" style={{ background: "#f6f9fc" }}>
