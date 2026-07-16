@@ -66,6 +66,25 @@ model AcademicSession {
   alumniEvents         AlumniEvent[]
   routePickupPoints    RoutePickupPoint[]
   transportFeemasters  TransportFeemaster[]
+  terms                Term[]
+}
+
+// A session (academic year) is split into terms — the unit Ghanaian schools
+// actually plan and report in (3 terms/year is the norm). Additive: existing
+// data works without terms; term-scoping is opt-in.
+model Term {
+  id         String          @id @default(cuid())
+  sessionId  String
+  session    AcademicSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  termNumber Int             // 1, 2, 3
+  name       String          // "Term 1", "First Term", etc.
+  startDate  DateTime        @db.Date
+  endDate    DateTime        @db.Date
+  isCurrent  Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+
+  @@unique([sessionId, termNumber])
+  @@index([sessionId])
 }
 
 // ─── Classes & Sections (independent masters, reused across sessions) ─────────

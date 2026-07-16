@@ -5,6 +5,7 @@ import { getDb } from "@/lib/db";
 import { getActiveBranchId } from "@/lib/branch";
 import { isAddonEnabled } from "@/lib/addons";
 import { getBranchBreakdown } from "@/lib/services/branches";
+import { getCurrentTerm } from "@/lib/services/term";
 import { Topbar } from "@/components/Topbar";
 import {
   ArrowRight, AlertCircle, Users, UserCog, Banknote, TrendingDown,
@@ -220,6 +221,7 @@ export default async function DashboardPage() {
   const mbEnabled     = isAdmin ? await isAddonEnabled("multi_branch").catch(() => false) : false;
   const activeBranch  = await getActiveBranchId().catch(() => null);
   const branchRows    = mbEnabled && !activeBranch ? await getBranchBreakdown().catch(() => []) : [];
+  const currentTerm   = await getCurrentTerm(stats?.currentSessionId ?? null).catch(() => null);
   const showBreakdown = branchRows.length > 1;
   const branchTotals  = branchRows.reduce(
     (t: any, b: any) => ({ students: t.students + b.students, staff: t.staff + b.staff, collected: t.collected + b.collected }),
@@ -246,14 +248,23 @@ export default async function DashboardPage() {
                   <span className="font-medium text-slate-600">{stats.currentSession}</span>
                 </>
               )}
-              {stats?.sessionProgress && (
+              {currentTerm ? (
+                <>
+                  <span className="text-slate-300">·</span>
+                  <span className="font-medium text-slate-600">{currentTerm.name}</span>
+                  <span className="text-slate-300">·</span>
+                  <span className="tabular-nums">
+                    Week {currentTerm.week} · {currentTerm.schoolDaysLeft} school day{currentTerm.schoolDaysLeft !== 1 ? "s" : ""} to vacation
+                  </span>
+                </>
+              ) : stats?.sessionProgress ? (
                 <>
                   <span className="text-slate-300">·</span>
                   <span className="tabular-nums">
                     {stats.sessionProgress.schoolDaysLeft} school day{stats.sessionProgress.schoolDaysLeft !== 1 ? "s" : ""} to vacation
                   </span>
                 </>
-              )}
+              ) : null}
             </div>
           </div>
           <p className="text-[13px] text-slate-500 hidden md:block shrink-0">{dayLabel}</p>

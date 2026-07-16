@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink, Home, Bell, Mail, MessageSquare, Clock, Landmark, Building2, CreditCard } from "lucide-react";
 import Link from "next/link";
+import { TermsCard } from "./TermsCard";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
@@ -184,6 +185,9 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
             )}
           </CardContent>
         </Card>
+
+        {/* Terms */}
+        <TermsCard sessions={sessions} />
 
         {/* Classes & Sections */}
         <Card>

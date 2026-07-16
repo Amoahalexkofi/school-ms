@@ -271,6 +271,7 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   },
   // Settings APIs
   { prefix: "/api/sessions",  roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/terms",     roles: ["SUPER_ADMIN", "ADMIN"] },
   { prefix: "/api/classes",   roles: ["SUPER_ADMIN", "ADMIN"] },
   { prefix: "/api/sections",  roles: ["SUPER_ADMIN", "ADMIN"] },
   { prefix: "/api/subjects",  roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
