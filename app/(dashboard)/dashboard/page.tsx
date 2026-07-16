@@ -528,6 +528,9 @@ export default async function DashboardPage() {
 
                 <div className="flex-1">
                   {[
+                    ...(stats.termCollection
+                      ? [{ label: `Collected · ${stats.termCollection.name}`, value: money(stats.termCollection.amount), vc: "text-slate-900" }]
+                      : []),
                     { label: "Paid invoices", value: String(stats.feesPaid),   vc: "text-slate-900" },
                     { label: "Outstanding",   value: String(stats.feesUnpaid), vc: stats.feesUnpaid > 0 ? "text-rose-600" : "text-slate-900" },
                     { label: "Last payment",

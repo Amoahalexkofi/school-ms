@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { TermQuickPick } from "@/components/TermQuickPick";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,12 +19,12 @@ type DailyRow = {
   paymentMode: string; receivedBy: string;
 };
 
-type Props = { sessions: any[]; classSections: any[]; sessionGroups: any[] };
+type Props = { sessions: any[]; classSections: any[]; sessionGroups: any[]; terms: any[] };
 
 const SEL = "w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400";
 const todayStr = () => new Date().toISOString().slice(0, 10);
 
-export function FeeReportClient({ sessions, classSections, sessionGroups }: Props) {
+export function FeeReportClient({ sessions, classSections, sessionGroups, terms }: Props) {
   const [reportType, setReportType] = useState<"balance" | "daily">("balance");
 
   // Balance/Due report state
@@ -139,6 +140,9 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
         ) : (
           <>
             <h2 className="text-sm font-semibold text-gray-800 mb-4">Daily Collection Report</h2>
+            <div className="mb-4">
+              <TermQuickPick terms={terms} onPick={(f, t) => { setFrom(f); setTo(t); }} />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">From *</label>

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { TermQuickPick } from "@/components/TermQuickPick";
 import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +12,7 @@ import { Download, Printer, Search, FileText } from "lucide-react";
 
 type Props = {
   sessions: { id: string; name: string }[];
+  terms: any[];
   classes: { id: string; name: string }[];
   sections: { id: string; name: string }[];
   classSections: { id: string; class: { name: string }; section: { name: string } }[];
@@ -105,7 +107,7 @@ function BranchSummary({ rows, valueKey, prefix = "" }: { rows: any[]; valueKey:
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export function ReportsClient({ sessions, classes, sections, classSections, departments, examGroups }: Props) {
+export function ReportsClient({ sessions, classes, sections, classSections, departments, examGroups, terms }: Props) {
   const perm = usePermission("reports");
   const [tab, setTab] = useState<ReportTab>("students");
   const printRef = useRef<HTMLDivElement>(null);
@@ -138,10 +140,10 @@ export function ReportsClient({ sessions, classes, sections, classSections, depa
           <StudentReport sessions={sessions} classes={classes} sections={sections} classSections={classSections} onPrint={handlePrint} />
         )}
         {tab === "attendance" && (
-          <AttendanceReport sessions={sessions} classSections={classSections} onPrint={handlePrint} />
+          <AttendanceReport sessions={sessions} classSections={classSections} terms={terms} onPrint={handlePrint} />
         )}
         {tab === "staff-attendance" && (
-          <StaffAttendanceReport departments={departments} onPrint={handlePrint} />
+          <StaffAttendanceReport departments={departments} terms={terms} onPrint={handlePrint} />
         )}
         {tab === "fees" && (
           <FeeCollectionReport sessions={sessions} onPrint={handlePrint} />
@@ -352,7 +354,8 @@ function StudentReport({ sessions, classes, sections, classSections, onPrint }: 
 
 // ─── 2. Attendance Report ─────────────────────────────────────────────────────
 
-function AttendanceReport({ sessions, classSections, onPrint }: {
+function AttendanceReport({ sessions, classSections, terms, onPrint }: {
+  terms: any[];
   sessions: Props["sessions"]; classSections: Props["classSections"]; onPrint: () => void;
 }) {
   const [sessionId, setSessionId] = useState("");
@@ -421,6 +424,9 @@ function AttendanceReport({ sessions, classSections, onPrint }: {
             <Label>To *</Label>
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </div>
+        </div>
+        <div className="mt-3">
+          <TermQuickPick terms={terms} sessionId={sessionId || undefined} onPick={(f, t) => { setFrom(f); setTo(t); }} />
         </div>
         <div className="flex items-center justify-between mt-3">
           <Button onClick={generate} disabled={loading} size="sm">
@@ -494,7 +500,7 @@ function AttendanceReport({ sessions, classSections, onPrint }: {
 
 // ─── 3. Staff Attendance Report ───────────────────────────────────────────────
 
-function StaffAttendanceReport({ departments, onPrint }: { departments: Props["departments"]; onPrint: () => void }) {
+function StaffAttendanceReport({ departments, terms, onPrint }: { departments: Props["departments"]; terms: any[]; onPrint: () => void }) {
   const [departmentId, setDepartmentId] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -550,6 +556,9 @@ function StaffAttendanceReport({ departments, onPrint }: { departments: Props["d
             <Label>To *</Label>
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </div>
+        </div>
+        <div className="mt-3">
+          <TermQuickPick terms={terms} onPick={(f, t) => { setFrom(f); setTo(t); }} />
         </div>
         <div className="flex items-center justify-between mt-3">
           <Button onClick={generate} disabled={loading} size="sm">

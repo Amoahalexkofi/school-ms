@@ -3,7 +3,7 @@ import { Topbar } from "@/components/Topbar";
 import { FeeReportClient } from "./FeeReportClient";
 
 export default async function FeeReportPage() {
-  const [sessions, classSections, sessionGroups] = await Promise.all([
+  const [sessions, classSections, sessionGroups, terms] = await Promise.all([
     ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
     ((await getDb()) as any).classSection.findMany({
       include: { class: true, section: true },
@@ -13,12 +13,13 @@ export default async function FeeReportPage() {
       include: { feeGroup: { select: { name: true } }, session: { select: { session: true } } },
       orderBy: { createdAt: "desc" },
     }),
+    ((await getDb()) as any).term.findMany({ orderBy: { termNumber: "asc" } }).catch(() => []),
   ]);
 
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Fee Reports" />
-      <FeeReportClient sessions={sessions} classSections={classSections} sessionGroups={sessionGroups} />
+      <FeeReportClient sessions={sessions} classSections={classSections} sessionGroups={sessionGroups} terms={terms} />
     </div>
   );
 }

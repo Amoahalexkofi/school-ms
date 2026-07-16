@@ -27,6 +27,7 @@ export interface DashboardStats {
   classAverages: { name: string; avg: number }[];
   sessionProgress: { week: number; schoolDaysLeft: number } | null;
   unmarkedSections: string[];
+  termCollection: { name: string; amount: number } | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -332,6 +333,25 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     }
   }
 
+  // ── Collected this term (when the school has set terms) ───────────────────
+  let termCollection: { name: string; amount: number } | null = null;
+  const coveringTerm = sid ? await safe(async () => {
+    const ts = await (prisma as any).term.findMany({ where: { sessionId: sid } });
+    const mid = today.getTime();
+    return ts.find((t: any) => mid >= new Date(t.startDate).getTime() && mid <= new Date(t.endDate).getTime())
+      ?? ts.find((t: any) => t.isCurrent) ?? null;
+  }, null) : null;
+  if (coveringTerm) {
+    const termDeposits = await safe(() => (prisma as any).feeDeposit.findMany({
+      where: { createdAt: { gte: new Date(coveringTerm.startDate), lte: new Date(new Date(coveringTerm.endDate).setHours(23, 59, 59)) }, isActive: true, ...depWhere },
+      select: { amountDetail: true },
+    }), []);
+    termCollection = {
+      name: coveringTerm.name,
+      amount: termDeposits.reduce((s2: number, d: any) => s2 + sumDeposit(d), 0),
+    };
+  }
+
   // ── Which class sections haven't marked attendance today (compliance) ─────
   const [allSections, markedToday] = await Promise.all([
     safe(() => (prisma as any).classSection.findMany({
@@ -378,5 +398,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     classAverages,
     sessionProgress,
     unmarkedSections,
+    termCollection,
   };
 }
