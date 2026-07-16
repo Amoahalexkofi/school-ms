@@ -52,7 +52,7 @@ export default async function StudentsPage({
         schoolHouse: true,
         branch: { select: { name: true } },
       },
-      orderBy: { firstName: "asc" },
+      orderBy: [{ lastName: "asc" }, { firstName: "asc" }], // roster order: surname first
       skip,
       take: LIMIT,
     }),

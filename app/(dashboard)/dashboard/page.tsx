@@ -188,8 +188,35 @@ export default async function DashboardPage() {
   const monthLabel = now.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
   const userName = (session?.user as any)?.name || session?.user?.email?.split("@")[0] || "";
 
-  // Multi Branch: when an admin is viewing "All Branches", show a per-branch breakdown.
+  // Role shaping: money is for money roles; teachers open to their classes.
   const isAdmin       = role === "ADMIN" || role === "SUPER_ADMIN";
+  const canSeeMoney   = isAdmin || role === "ACCOUNTANT";
+  const moneyFirst    = role === "ACCOUNTANT";
+
+  // Teacher: which of MY sections are marked today?
+  let mySections: { id: string; name: string; marked: boolean }[] = [];
+  if (role === "TEACHER" && db) {
+    const staffRow = await (db as any).staff.findFirst({
+      where: { userId: (session?.user as any)?.id }, select: { id: true },
+    }).catch(() => null);
+    if (staffRow) {
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const secs = await (db as any).classSection.findMany({
+        where: { teacherId: staffRow.id },
+        select: { id: true, class: { select: { name: true } }, section: { select: { name: true } } },
+      }).catch(() => []);
+      const marked = await (db as any).attendanceDay.findMany({
+        where: { date: todayStart, classSectionId: { in: secs.map((x: any) => x.id) } },
+        select: { classSectionId: true },
+      }).catch(() => []);
+      const markedSet = new Set(marked.map((m: any) => m.classSectionId));
+      mySections = secs.map((x: any) => ({
+        id: x.id,
+        name: `${x.class?.name ?? "?"} ${x.section?.name ?? ""}`.trim(),
+        marked: markedSet.has(x.id),
+      }));
+    }
+  }
   const mbEnabled     = isAdmin ? await isAddonEnabled("multi_branch").catch(() => false) : false;
   const activeBranch  = await getActiveBranchId().catch(() => null);
   const branchRows    = mbEnabled && !activeBranch ? await getBranchBreakdown().catch(() => []) : [];
@@ -302,33 +329,84 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <>
-            {/* ── KPI Cards ── */}
+            {/* ── KPI Cards — money only for money roles; accountants lead with it ── */}
             <div className="dash-rise grid grid-cols-2 xl:grid-cols-4 gap-4" style={{ animationDelay: "70ms" }}>
-              <KpiCard
-                label="Students enrolled" value={stats.totalStudents}
-                sub="Current session" href="/students" icon={Users}
-              />
-              <KpiCard
-                label="Teachers" value={teacherCount}
-                sub={`of ${totalStaff} total staff`} href="/staff" icon={UserCog}
-              />
-              <KpiCard
-                label="Collected this month" value={money(stats.monthCollection ?? 0)}
-                sub={monthDelta(stats.monthCollection ?? 0, stats.lastMonthCollection ?? 0) ?? monthLabel}
-                href="/fees" icon={Banknote} spark={stats.sparklines?.fees}
-              />
-              <KpiCard
-                label="Expenses this month" value={money(stats.monthExpense ?? 0)}
-                sub={monthDelta(stats.monthExpense ?? 0, stats.lastMonthExpense ?? 0) ?? monthLabel}
-                href="/finance" icon={TrendingDown} spark={stats.sparklines?.expenses}
-              />
+              {(canSeeMoney ? (moneyFirst
+                ? ["collected", "expenses", "students", "teachers"]
+                : ["students", "teachers", "collected", "expenses"])
+                : ["students", "teachers", "present", "vacation"]
+              ).map((k) => {
+                switch (k) {
+                  case "collected": return (
+                    <KpiCard key={k} label="Collected this month" value={money(stats.monthCollection ?? 0)}
+                      sub={monthDelta(stats.monthCollection ?? 0, stats.lastMonthCollection ?? 0) ?? monthLabel}
+                      href="/fees" icon={Banknote} spark={stats.sparklines?.fees} />
+                  );
+                  case "expenses": return (
+                    <KpiCard key={k} label="Expenses this month" value={money(stats.monthExpense ?? 0)}
+                      sub={monthDelta(stats.monthExpense ?? 0, stats.lastMonthExpense ?? 0) ?? monthLabel}
+                      href="/finance" icon={TrendingDown} spark={stats.sparklines?.expenses} />
+                  );
+                  case "teachers": return (
+                    <KpiCard key={k} label="Teachers" value={teacherCount}
+                      sub={`of ${totalStaff} total staff`} href={isAdmin ? "/staff" : undefined} icon={UserCog} />
+                  );
+                  case "present": return (
+                    <KpiCard key={k} label="Present today" value={attTotal > 0 ? `${presentPct}%` : "—"}
+                      sub={attTotal > 0 ? `${attTotal} students marked` : "not marked yet"} icon={ClipboardList} />
+                  );
+                  case "vacation": return (
+                    <KpiCard key={k} label="School days left" value={stats.sessionProgress?.schoolDaysLeft ?? "—"}
+                      sub="to vacation" icon={BarChart2} />
+                  );
+                  default: return (
+                    <KpiCard key={k} label="Students enrolled" value={stats.totalStudents}
+                      sub="Current session" href="/students" icon={Users} />
+                  );
+                }
+              })}
             </div>
+
+            {/* ── Teacher: my classes today ── */}
+            {role === "TEACHER" && (
+              <div className="dash-rise bg-white rounded-xl border border-slate-200 p-5" style={{ animationDelay: "100ms" }}>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-[15px] font-semibold text-slate-900">My classes</h2>
+                    <p className="text-[12px] text-slate-500 mt-0.5">Attendance status · today</p>
+                  </div>
+                  <Link href="/attendance"
+                    className="inline-flex items-center gap-1.5 text-[12px] font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+                    <ClipboardList className="h-3.5 w-3.5" /> Mark attendance
+                  </Link>
+                </div>
+                {mySections.length === 0 ? (
+                  <p className="text-[13px] text-slate-500 py-2">
+                    No classes are assigned to you yet — ask your admin to set you as a class teacher.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {mySections.map((sec) => (
+                      <Link key={sec.id} href="/attendance"
+                        className="flex items-center justify-between gap-3 border border-slate-200 rounded-lg px-4 py-3 hover:border-slate-300 transition-colors">
+                        <span className="text-[13.5px] font-medium text-slate-800">{sec.name}</span>
+                        {sec.marked ? (
+                          <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">Marked ✓</span>
+                        ) : (
+                          <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">Not marked</span>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* ── Attendance + Fees ── */}
             <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "140ms" }}>
 
               {/* Attendance */}
-              <div className="col-span-12 lg:col-span-7 bg-white rounded-xl border border-slate-200 p-5">
+              <div className={`col-span-12 ${canSeeMoney ? "lg:col-span-7" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">Student attendance</h2>
@@ -411,7 +489,8 @@ export default async function DashboardPage() {
                 )}
               </div>
 
-              {/* Fee Collection */}
+              {/* Fee Collection — money roles only */}
+              {canSeeMoney && (
               <div className="col-span-12 lg:col-span-5 bg-white rounded-xl border border-slate-200 p-5 flex flex-col">
                 <div className="flex items-center justify-between mb-5">
                   <div>
@@ -453,12 +532,13 @@ export default async function DashboardPage() {
                   ))}
                 </div>
               </div>
+              )}
             </div>
 
             {/* ── Trend charts ── */}
-            {(stats.monthlyCollections?.some((m: any) => m.amount > 0) || stats.classAverages?.length > 0) && (
+            {((canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0)) || stats.classAverages?.length > 0) && (
               <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "175ms" }}>
-                {stats.monthlyCollections?.some((m: any) => m.amount > 0) && (
+                {canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0) && (
                   <div className={`col-span-12 ${stats.classAverages?.length > 0 ? "lg:col-span-6" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
                     <div className="mb-4">
                       <h2 className="text-[15px] font-semibold text-slate-900">Monthly revenue</h2>
@@ -468,7 +548,7 @@ export default async function DashboardPage() {
                   </div>
                 )}
                 {stats.classAverages?.length > 0 && (
-                  <div className={`col-span-12 ${stats.monthlyCollections?.some((m: any) => m.amount > 0) ? "lg:col-span-6" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+                  <div className={`col-span-12 ${canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0) ? "lg:col-span-6" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
                     <div className="mb-4">
                       <h2 className="text-[15px] font-semibold text-slate-900">Student performance</h2>
                       <p className="text-[12px] text-slate-500 mt-0.5">Average score by class · current session</p>
@@ -482,7 +562,8 @@ export default async function DashboardPage() {
             {/* ── Payments + Side column ── */}
             <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "210ms" }}>
 
-              {/* Recent payments */}
+              {/* Recent payments — money roles only */}
+              {canSeeMoney && (
               <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border border-slate-200 p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -543,8 +624,10 @@ export default async function DashboardPage() {
                 )}
               </div>
 
+              )}
+
               {/* Side column */}
-              <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+              <div className={`col-span-12 ${canSeeMoney ? "lg:col-span-4" : ""} flex flex-col gap-4`}>
 
                 {/* Quick actions */}
                 <div className="bg-white rounded-xl border border-slate-200 p-5">
@@ -569,7 +652,7 @@ export default async function DashboardPage() {
                 </div>
 
                 {/* Outstanding by class — where the unpaid invoices live */}
-                {stats.outstandingByClass?.length > 0 && (
+                {canSeeMoney && stats.outstandingByClass?.length > 0 && (
                   <div className="bg-white rounded-xl border border-slate-200 p-5">
                     <div className="flex items-center justify-between mb-3">
                       <h2 className="text-[13px] font-semibold text-slate-900">Outstanding by class</h2>

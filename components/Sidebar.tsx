@@ -8,7 +8,7 @@ import {
   FileText, BarChart2, Banknote, Library, Bus, Building, Package,
   ConciergeBell, Monitor, UserPlus, ShieldCheck, Settings, ScrollText,
   Megaphone, Send, MessageCircle, Layers, Home, CreditCard, CheckSquare,
-  Bell, ChevronDown, Globe,
+  Bell, ChevronDown, Globe, HelpCircle,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
@@ -215,6 +215,16 @@ function NavContent({ role, onNavigate, addons = [] }: { role: Role; onNavigate?
           </div>
         ))}
       </nav>
+
+      {/* Help — non-technical staff get support where they already live */}
+      <div className="shrink-0 px-4 pb-1.5">
+        <a href="https://wa.me/233595111461?text=Hi%20Skula%20support%2C%20I%20need%20help%20with%20"
+          target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 text-[11px] text-slate-500 hover:text-slate-300 transition-colors py-1.5">
+          <HelpCircle className="h-3.5 w-3.5 shrink-0" />
+          Need help? WhatsApp us
+        </a>
+      </div>
 
       {/* User footer */}
       <div className="shrink-0 px-2 pb-3 pt-2 border-t border-white/[0.06]">
