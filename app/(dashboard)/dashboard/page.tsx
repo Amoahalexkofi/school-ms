@@ -219,6 +219,14 @@ export default async function DashboardPage() {
                   <span className="font-medium text-slate-600">{stats.currentSession}</span>
                 </>
               )}
+              {stats?.sessionProgress && (
+                <>
+                  <span className="text-slate-300">·</span>
+                  <span className="tabular-nums">
+                    Week {stats.sessionProgress.week} · {stats.sessionProgress.schoolDaysLeft} school day{stats.sessionProgress.schoolDaysLeft !== 1 ? "s" : ""} to vacation
+                  </span>
+                </>
+              )}
             </div>
           </div>
           <p className="text-[13px] text-slate-500 hidden md:block shrink-0">{dayLabel}</p>
@@ -362,6 +370,20 @@ export default async function DashboardPage() {
                         <StatRow key={label} label={label} value={v} bar={bar} barPct={attPct(v)} />
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {/* Which sections haven't marked today — the head's chase list */}
+                {isAdmin && stats.unmarkedSections?.length > 0 && attTotal > 0 && (
+                  <div className="mt-4 flex items-start gap-2 text-[12.5px] bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
+                    <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-px" />
+                    <span className="text-amber-800">
+                      Not marked today:{" "}
+                      <span className="font-semibold">{stats.unmarkedSections.slice(0, 4).join(", ")}</span>
+                      {stats.unmarkedSections.length > 4 && ` +${stats.unmarkedSections.length - 4} more`}
+                      {" — "}
+                      <Link href="/attendance" className="underline underline-offset-2 hover:text-amber-900">remind or mark now</Link>
+                    </span>
                   </div>
                 )}
 

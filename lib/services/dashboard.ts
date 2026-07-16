@@ -25,6 +25,8 @@ export interface DashboardStats {
   outstandingByClass: { name: string; unpaid: number; total: number }[];
   monthlyCollections: { label: string; amount: number }[];
   classAverages: { name: string; avg: number }[];
+  sessionProgress: { week: number; schoolDaysLeft: number } | null;
+  unmarkedSections: string[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -315,6 +317,37 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
     .slice(0, 8);
 
+  // ── Session progress: schools think in weeks and days-to-vacation ─────────
+  let sessionProgress: { week: number; schoolDaysLeft: number } | null = null;
+  if (currentSession?.startDate && currentSession?.endDate) {
+    const start = new Date(currentSession.startDate);
+    const end = new Date(currentSession.endDate);
+    if (today >= start && today <= end) {
+      const week = Math.max(1, Math.ceil(((today.getTime() - start.getTime()) / 86400000 + 1) / 7));
+      let schoolDaysLeft = 0;
+      for (let d = new Date(today); d <= end; d.setDate(d.getDate() + 1)) {
+        if (d.getDay() !== 0 && d.getDay() !== 6) schoolDaysLeft++;
+      }
+      sessionProgress = { week, schoolDaysLeft };
+    }
+  }
+
+  // ── Which class sections haven't marked attendance today (compliance) ─────
+  const [allSections, markedToday] = await Promise.all([
+    safe(() => (prisma as any).classSection.findMany({
+      select: { id: true, class: { select: { name: true } }, section: { select: { name: true } } },
+    }), []),
+    safe(() => (prisma as any).attendanceDay.findMany({
+      where: { date: today },
+      select: { classSectionId: true },
+    }), []),
+  ]);
+  const markedIds = new Set(markedToday.map((m: any) => m.classSectionId));
+  const unmarkedSections = allSections
+    .filter((cs: any) => !markedIds.has(cs.id))
+    .map((cs: any) => `${cs.class?.name ?? "?"} ${cs.section?.name ?? ""}`.trim())
+    .sort((a: string, b: string) => a.localeCompare(b, undefined, { numeric: true }));
+
   return {
     totalStudents,
     staffByRole,
@@ -343,5 +376,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     outstandingByClass,
     monthlyCollections,
     classAverages,
+    sessionProgress,
+    unmarkedSections,
   };
 }
