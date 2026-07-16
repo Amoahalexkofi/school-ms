@@ -12,11 +12,11 @@ const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[
 
 const EXAM_TYPES = ["TERM", "MIDTERM", "FINAL", "UNIT_TEST", "MOCK", "OTHER"];
 
-export function NewExamGroupForm() {
+export function NewExamGroupForm({ suggestedName = "" }: { suggestedName?: string }) {
   const router = useRouter();
   const [form, setForm] = useState({
-    name: "",
-    examType: "",
+    name: suggestedName,
+    examType: suggestedName ? "TERM" : "",
     description: "",
     passingPercentage: "33",
   });
