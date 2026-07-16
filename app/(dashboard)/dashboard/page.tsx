@@ -36,8 +36,8 @@ function Sparkline({ data, stroke = "#4f46e5" }: { data: number[]; stroke?: stri
 function monthDelta(current: number, previous: number): string | null {
   if (previous <= 0) return null;
   const pct = Math.round(((current - previous) / previous) * 100);
-  if (pct === 0) return "same as last month";
-  return `${pct > 0 ? "+" : ""}${pct}% vs last month`;
+  if (pct === 0) return "level with last month";
+  return `${pct > 0 ? "+" : ""}${pct}% vs same time last month`;
 }
 
 // ─── Charts — hand-drawn SVG, axes + dashed gridlines, no chart library ──────

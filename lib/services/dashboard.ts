@@ -55,7 +55,13 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
   const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  const lastMonthEnd   = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+  // Compare month-to-date against the SAME days of last month — a half-finished
+  // month measured against a whole one reads as a crash that never happened.
+  const daysInLastMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+  const lastMonthEnd = new Date(
+    now.getFullYear(), now.getMonth() - 1,
+    Math.min(now.getDate(), daysInLastMonth), 23, 59, 59
+  );
 
   const currentSession = await safe(() =>
     (prisma as any).academicSession.findFirst({
