@@ -24,9 +24,11 @@ function Sparkline({ data, stroke = "#4f46e5" }: { data: number[]; stroke?: stri
     return `${x.toFixed(1)},${y.toFixed(1)}`;
   }).join(" ");
   return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden className="shrink-0">
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden
+      className="w-full max-w-[96px] h-7">
       <polyline points={pts} fill="none" stroke={stroke} strokeWidth="1.5"
-        strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+        strokeLinecap="round" strokeLinejoin="round" opacity="0.85"
+        vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }
@@ -126,9 +128,9 @@ function KpiCard({
         <span className="text-[12.5px] font-medium text-slate-500">{label}</span>
         <Icon className="h-4 w-4 text-slate-300 group-hover:text-slate-400 transition-colors" />
       </div>
-      <div className="flex items-end justify-between gap-2 mt-4">
-        <p className="text-[30px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight">{value}</p>
-        {spark && <Sparkline data={spark} />}
+      <div className="flex items-end gap-3 mt-4">
+        <p className="text-[30px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight whitespace-nowrap">{value}</p>
+        {spark && <div className="flex-1 min-w-0 flex justify-end"><Sparkline data={spark} /></div>}
       </div>
       {sub && <p className="text-[12px] text-slate-500 mt-2">{sub}</p>}
     </div>
