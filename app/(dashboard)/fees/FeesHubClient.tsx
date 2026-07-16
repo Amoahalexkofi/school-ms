@@ -14,11 +14,12 @@ type Props = {
   totalMasters: number;
   totalCollected: number;
   classSections: ClassSection[];
+  activeSessionId: string | null;
 };
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
-export function FeesHubClient({ totalStudents, totalMasters, totalCollected, classSections }: Props) {
+export function FeesHubClient({ totalStudents, totalMasters, totalCollected, classSections, activeSessionId }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const perm = usePermission("fees_collection");
@@ -35,6 +36,10 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [searchError, setSearchError] = useState("");
+  // studentId → outstanding balance, so the collect list answers "who owes?"
+  // without a trip to the reports screen.
+  const [balances, setBalances] = useState<Record<string, number> | null>(null);
+  const [owingOnly, setOwingOnly] = useState(false);
 
   // Distinct classes, and sections available for the selected class
   const classes = useMemo(() => {
@@ -48,10 +53,27 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
     [classSections, classId]
   );
 
+  async function fetchBalances() {
+    if (!activeSessionId) return;
+    try {
+      const res = await fetch(`/api/fees/report?sessionId=${activeSessionId}`);
+      if (!res.ok) return;
+      const rows = await res.json();
+      const map: Record<string, number> = {};
+      for (const r of rows) {
+        const sid = r?.student?.id;
+        if (!sid) continue;
+        map[sid] = (map[sid] ?? 0) + Number(r.balance ?? 0);
+      }
+      setBalances(map);
+    } catch { /* badge is progressive enhancement — the list still works */ }
+  }
+
   async function fetchStudents(qs: string) {
     setLoading(true);
     setSearched(true);
     setSearchError("");
+    if (!balances) fetchBalances();
     try {
       const res = await fetch(`/api/students?isActive=true&${qs}`);
       if (res.ok) {
@@ -221,24 +243,59 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
 
             {/* Student list */}
             {results.length > 0 && (
-              <div className="border rounded-lg divide-y overflow-hidden">
-                {results.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => router.push(`/fees/collect/${s.id}${classId ? `?classId=${classId}${sectionId ? `&sectionId=${sectionId}` : ""}` : ""}`)}
-                    className="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-blue-50 transition-colors text-left"
-                  >
-                    <div className="min-w-0">
-                      <span className="font-medium text-gray-900">{rosterName(s)}</span>
-                      <span className="text-xs text-gray-400 ml-2 font-mono">{s.admissionNo}</span>
-                      {rosterClass(s) && <span className="text-xs text-gray-400 ml-2">· {rosterClass(s)}</span>}
-                    </div>
-                    <span className="flex items-center gap-1 text-xs font-semibold text-green-600 shrink-0">
-                      <DollarSign className="h-3.5 w-3.5" /> Collect <ArrowRight className="h-3.5 w-3.5" />
+              <>
+                {balances && (
+                  <div className="flex items-center justify-between">
+                    <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" checked={owingOnly} onChange={(e) => setOwingOnly(e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30" />
+                      <span className="text-sm font-medium text-slate-700">Show only students owing</span>
+                    </label>
+                    <span className="text-xs text-slate-500 tabular-nums">
+                      {results.filter((s) => (balances[s.id] ?? 0) > 0).length} of {results.length} owing
                     </span>
-                  </button>
-                ))}
-              </div>
+                  </div>
+                )}
+                <div className="border rounded-lg divide-y overflow-hidden">
+                  {results
+                    .filter((s) => !owingOnly || !balances || (balances[s.id] ?? 0) > 0)
+                    .map((s) => {
+                      const bal = balances?.[s.id];
+                      return (
+                        <button
+                          key={s.id}
+                          onClick={() => router.push(`/fees/collect/${s.id}${classId ? `?classId=${classId}${sectionId ? `&sectionId=${sectionId}` : ""}` : ""}`)}
+                          className="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-blue-50 transition-colors text-left"
+                        >
+                          <div className="min-w-0">
+                            <span className="font-medium text-gray-900">{rosterName(s)}</span>
+                            <span className="text-xs text-gray-400 ml-2 font-mono">{s.admissionNo}</span>
+                            {rosterClass(s) && <span className="text-xs text-gray-400 ml-2">· {rosterClass(s)}</span>}
+                          </div>
+                          <span className="flex items-center gap-3 shrink-0">
+                            {bal != null && (
+                              bal > 0 ? (
+                                <span className="text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full tabular-nums">
+                                  Owes ₵{bal.toLocaleString()}
+                                </span>
+                              ) : (
+                                <span className="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                                  Paid up
+                                </span>
+                              )
+                            )}
+                            <span className="flex items-center gap-1 text-xs font-semibold text-green-600">
+                              <DollarSign className="h-3.5 w-3.5" /> Collect <ArrowRight className="h-3.5 w-3.5" />
+                            </span>
+                          </span>
+                        </button>
+                      );
+                    })}
+                </div>
+                {owingOnly && balances && results.every((s) => (balances[s.id] ?? 0) <= 0) && (
+                  <p className="text-sm text-slate-500 text-center py-4">Nobody owes in this class — fully collected. 🎉</p>
+                )}
+              </>
             )}
             {searchError && !loading && (
               <p role="alert" className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-center">

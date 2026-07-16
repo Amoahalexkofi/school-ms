@@ -1,7 +1,7 @@
 // One-off: give the demo school living activity so the analytics features
 // (sparklines, month deltas, monthly revenue curve, attendance trend, last
 // payment) actually render for prospects. Public schema = the demo tenant.
-import { PrismaClient } from "./app/generated/prisma/client";
+import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 
 const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL! });

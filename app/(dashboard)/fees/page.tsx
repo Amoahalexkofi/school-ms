@@ -27,14 +27,20 @@ async function getStats() {
 
 export default async function FeesPage() {
   const data = await getStats();
-  const classSections = await ((await getDb()) as any).classSection.findMany({
-    include: { class: true, section: true },
-    orderBy: [{ class: { name: "asc" } }, { section: { name: "asc" } }],
-  });
+  const [classSections, activeSession] = await Promise.all([
+    ((await getDb()) as any).classSection.findMany({
+      include: { class: true, section: true },
+      orderBy: [{ class: { name: "asc" } }, { section: { name: "asc" } }],
+    }),
+    ((await getDb()) as any).academicSession.findFirst({
+      orderBy: [{ isActive: "desc" }, { startDate: "desc" }],
+      select: { id: true },
+    }),
+  ]);
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Fees" />
-      <FeesHubClient {...data} classSections={classSections} />
+      <FeesHubClient {...data} classSections={classSections} activeSessionId={activeSession?.id ?? null} />
     </div>
   );
 }
