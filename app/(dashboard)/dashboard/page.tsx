@@ -223,7 +223,7 @@ export default async function DashboardPage() {
                 <>
                   <span className="text-slate-300">·</span>
                   <span className="tabular-nums">
-                    Week {stats.sessionProgress.week} · {stats.sessionProgress.schoolDaysLeft} school day{stats.sessionProgress.schoolDaysLeft !== 1 ? "s" : ""} to vacation
+                    {stats.sessionProgress.schoolDaysLeft} school day{stats.sessionProgress.schoolDaysLeft !== 1 ? "s" : ""} to vacation
                   </span>
                 </>
               )}
