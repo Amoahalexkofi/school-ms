@@ -31,6 +31,7 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
   const [classSectionId, setCsId]      = useState("");
   const [sessionId,      setSessionId] = useState(sessions[0]?.id ?? "");
   const [rows,           setRows]      = useState<Row[]>([]);
+  const [owingOnly,      setOwingOnly] = useState(false);
 
   // Daily collection report state
   const [from, setFrom] = useState(todayStr());
@@ -72,6 +73,9 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
     setReportType(t); setGenerated(false); setError("");
   }
 
+  // "Owing only" narrows the table to unpaid/partial rows — the chase list.
+  const visibleRows    = owingOnly ? rows.filter(r => r.balance > 0) : rows;
+  const owingCount     = rows.filter(r => r.balance > 0).length;
   const totalCollected = rows.reduce((s, r) => s + r.paid, 0);
   const totalDue       = rows.reduce((s, r) => s + r.balance, 0);
   const dailyTotal     = daily.reduce((s, r) => s + r.amount, 0);
@@ -171,7 +175,7 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
               {[
                 { label: "Total Collected", value: `₵${totalCollected.toLocaleString()}`, cls: "text-green-700" },
                 { label: "Total Due",       value: `₵${totalDue.toLocaleString()}`,       cls: "text-red-700" },
-                { label: "Students",        value: rows.length,                            cls: "text-gray-900" },
+                { label: "Students owing",  value: `${owingCount} of ${rows.length}`,      cls: owingCount > 0 ? "text-red-700" : "text-gray-900" },
               ].map(({ label, value, cls }) => (
                 <Card key={label}><CardContent className="pt-4">
                   <p className="text-xs text-gray-400">{label}</p>
@@ -180,10 +184,29 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
               ))}
             </div>
           )}
+          {rows.length > 0 && (
+            <div className="flex items-center justify-between">
+              <label className="inline-flex items-center gap-2.5 cursor-pointer select-none">
+                <input type="checkbox" checked={owingOnly} onChange={e => setOwingOnly(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30" />
+                <span className="text-sm font-medium text-slate-700">Show only students owing</span>
+              </label>
+              {owingOnly && (
+                <span className="text-xs text-slate-500 tabular-nums">
+                  {visibleRows.length} owing · ₵{visibleRows.reduce((t, r) => t + r.balance, 0).toLocaleString()} outstanding
+                </span>
+              )}
+            </div>
+          )}
           {rows.length === 0 ? (
             <Card><CardContent className="py-12 text-center text-gray-400">
               <BarChart3 className="h-10 w-10 mx-auto mb-2 opacity-30" />
               <p className="text-sm">No records for the selected filters.</p>
+            </CardContent></Card>
+          ) : visibleRows.length === 0 ? (
+            <Card><CardContent className="py-12 text-center text-gray-400">
+              <BarChart3 className="h-10 w-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">Nobody owes in this selection — fully collected. 🎉</p>
             </CardContent></Card>
           ) : (
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
@@ -196,7 +219,7 @@ export function FeeReportClient({ sessions, classSections, sessionGroups }: Prop
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {rows.map((r, i) => (
+                  {visibleRows.map((r, i) => (
                     <tr key={i} className="hover:bg-gray-50">
                       <td className="px-4 py-3 font-medium text-gray-900">{r.student.firstName} {r.student.lastName}</td>
                       <td className="px-4 py-3 font-mono text-xs text-gray-500">{r.student.admissionNo}</td>
