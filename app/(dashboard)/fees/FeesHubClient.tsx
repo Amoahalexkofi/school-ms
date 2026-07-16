@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { DollarSign, Settings, Users, Search, ArrowRight, BarChart3, ArrowRightLeft, Tag, Loader2 } from "lucide-react";
@@ -20,13 +20,16 @@ const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-s
 
 export function FeesHubClient({ totalStudents, totalMasters, totalCollected, classSections }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const perm = usePermission("fees_collection");
 
   // Mirrors Smart School's studentfeeSearch: two search modes — by class/section,
   // and by keyword — feeding one student list with a Collect action per student.
+  // Class/section live in the URL so "Collect next student" round-trips keep the
+  // list loaded — the accountant's fee-day loop must not reset between students.
   const [mode, setMode] = useState<"class" | "keyword">("class");
-  const [classId, setClassId] = useState("");
-  const [sectionId, setSectionId] = useState("");
+  const [classId, setClassId] = useState(searchParams.get("classId") ?? "");
+  const [sectionId, setSectionId] = useState(searchParams.get("sectionId") ?? "");
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -75,8 +78,18 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
     if (!classId) return;
     const params = new URLSearchParams({ classId, limit: "100" });
     if (sectionId) params.set("sectionId", sectionId);
+    // remember the selection in the URL (no history spam)
+    const url = new URLSearchParams({ classId });
+    if (sectionId) url.set("sectionId", sectionId);
+    window.history.replaceState(null, "", `/fees?${url}`);
     fetchStudents(params.toString());
   }
+
+  // Arriving with ?classId= (back from a collect) → reload the list unprompted
+  useEffect(() => {
+    if (classId) classSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Keyword: debounced live search (kept from the original quick-search UX)
   useEffect(() => {
@@ -212,7 +225,7 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
                 {results.map((s) => (
                   <button
                     key={s.id}
-                    onClick={() => router.push(`/fees/collect/${s.id}`)}
+                    onClick={() => router.push(`/fees/collect/${s.id}${classId ? `?classId=${classId}${sectionId ? `&sectionId=${sectionId}` : ""}` : ""}`)}
                     className="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-blue-50 transition-colors text-left"
                   >
                     <div className="min-w-0">

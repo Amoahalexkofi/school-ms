@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, DollarSign, CheckCircle2, AlertCircle, Receipt, CreditCard, Trash2, ChevronDown, Undo2 } from "lucide-react";
+import { ArrowLeft, DollarSign, CheckCircle2, AlertCircle, Receipt, CreditCard, Trash2, ChevronDown, Undo2, Users } from "lucide-react";
 
 const PAYMENT_MODES = ["CASH", "BANK_TRANSFER", "CHEQUE", "MOBILE_MONEY", "ONLINE"];
 const MODE_LABELS: Record<string, string> = {
@@ -56,6 +56,14 @@ const todayStr = () => new Date().toISOString().slice(0, 10);
 
 export function FeeCollectClient({ student, masters, gateway, discounts = [] }: Props) {
   const router = useRouter();
+  // Class context from the fees hub — keeps the fee-day loop unbroken:
+  // collect → back to the still-loaded class list → next student.
+  const searchParams = useSearchParams();
+  const backClassId   = searchParams.get("classId");
+  const backSectionId = searchParams.get("sectionId");
+  const classListHref = backClassId
+    ? `/fees?classId=${backClassId}${backSectionId ? `&sectionId=${backSectionId}` : ""}`
+    : "/fees";
   const [payDialog,       setPayDialog]       = useState<{ master: Master; item: any; idx: number } | null>(null);
   const [amount,          setAmount]          = useState("");
   const [fine,            setFine]            = useState("");
@@ -190,8 +198,8 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
 
   return (
     <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50">
-      <Link href="/fees" className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors">
-        <ArrowLeft className="h-4 w-4" /> Back to Fees
+      <Link href={classListHref} className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+        <ArrowLeft className="h-4 w-4" /> {backClassId ? "Back to class list" : "Back to Fees"}
       </Link>
 
       {/* Student header — flat, neutral avatar, balance emphasized */}
@@ -240,10 +248,16 @@ export function FeeCollectClient({ student, masters, gateway, discounts = [] }: 
       {lastDepositId && (
         <div className="flex items-center justify-between gap-3 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3" role="status">
           <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0" /> Payment recorded successfully.</span>
-          <Link href={`/fees/receipt/${lastDepositId}/${lastSubInvoice ?? 1}`} target="_blank"
-            className="flex items-center gap-1 font-medium text-green-800 hover:underline shrink-0">
-            <Receipt className="h-4 w-4" /> Print Receipt
-          </Link>
+          <span className="flex items-center gap-4 shrink-0">
+            <Link href={`/fees/receipt/${lastDepositId}/${lastSubInvoice ?? 1}`} target="_blank"
+              className="flex items-center gap-1 font-medium text-green-800 hover:underline">
+              <Receipt className="h-4 w-4" /> Print Receipt
+            </Link>
+            <Link href={classListHref}
+              className="flex items-center gap-1.5 font-semibold text-white bg-green-700 hover:bg-green-800 px-3 py-1.5 rounded-lg transition-colors">
+              <Users className="h-4 w-4" /> Collect next student →
+            </Link>
+          </span>
         </div>
       )}
 
