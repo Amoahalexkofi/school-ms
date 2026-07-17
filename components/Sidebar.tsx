@@ -45,6 +45,7 @@ const adminGroups: NavGroup[] = [
       { href: "/results",        label: "Results",       icon: TrendingUp,    roles: ["SUPER_ADMIN","ADMIN","TEACHER"], perm: "academics" },
       { href: "/timetable",      label: "Timetable",     icon: Calendar,      roles: ["SUPER_ADMIN","ADMIN","TEACHER"], perm: "academics" },
       { href: "/homework",       label: "Homework",      icon: FileText,      roles: ["SUPER_ADMIN","ADMIN","TEACHER"], perm: "homework" },
+      { href: "/behaviour",      label: "Behaviour",     icon: ShieldCheck,   roles: ["SUPER_ADMIN","ADMIN","TEACHER"], perm: "behaviour" },
       { href: "/lesson-plans",   label: "Lesson Plans",  icon: ScrollText,    roles: ["SUPER_ADMIN","ADMIN","TEACHER"], perm: "lesson_plan" },
       { href: "/subject-groups", label: "Subjects",      icon: Layers,        roles: ["SUPER_ADMIN","ADMIN","TEACHER"], perm: "academics" },
       { href: "/online-exams",   label: "Online Exams",  icon: Monitor,       roles: ["SUPER_ADMIN","ADMIN","TEACHER"], perm: "online_examination" },

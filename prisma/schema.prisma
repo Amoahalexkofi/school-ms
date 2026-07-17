@@ -468,6 +468,7 @@ model Student {
   hostelAllocation         HostelAllocation?
   examAttempts             ExamAttempt[]
   leaveRequests            StudentLeaveRequest[]
+  incidents                StudentIncident[]
   feesMasters              StudentFeesMaster[]
   appliedDiscounts         StudentAppliedDiscount[]
   alumni                   Alumni?
@@ -2700,4 +2701,34 @@ model WebsiteSettings {
   primaryColor String   @default("#6366f1")
   showStats    Boolean  @default(true)
   updatedAt    DateTime @updatedAt
+}
+
+// ─── Behaviour Records (Smart School addon parity) ────────────────────────────
+// Merit/demerit incidents logged against students; points roll up to a
+// conduct score the terminal report can lean on.
+
+model IncidentType {
+  id          String   @id @default(cuid())
+  title       String
+  points      Int      // negative = demerit, positive = merit
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  incidents StudentIncident[]
+}
+
+model StudentIncident {
+  id             String       @id @default(cuid())
+  studentId      String
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  incidentTypeId String
+  incidentType   IncidentType @relation(fields: [incidentTypeId], references: [id])
+  date           DateTime     @db.Date
+  note           String?
+  assignedById   String?      // staff id (relation-less to avoid schema churn)
+  createdAt      DateTime     @default(now())
+
+  @@index([studentId])
+  @@index([date])
 }

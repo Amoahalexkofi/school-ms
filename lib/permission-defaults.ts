@@ -26,6 +26,7 @@ export const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
     examination:          ALLOW,  // create exams, enter marks
     academics:            ALLOW,  // timetable, subjects, results
     homework:             ALLOW,
+    behaviour:            WRITE,  // log incidents; admins delete
     lesson_plan:          ALLOW,
     online_examination:   ALLOW,
     communicate:          WRITE,  // post notices, not delete
@@ -85,6 +86,7 @@ const API_MODULE_MAP: { prefix: string; module: string }[] = [
   { prefix: "/api/mark-divisions",      module: "examination" },
   { prefix: "/api/marksheets",          module: "examination" },
   { prefix: "/api/homework",            module: "homework" },
+  { prefix: "/api/behaviour",           module: "behaviour" },
   { prefix: "/api/lessons",             module: "lesson_plan" },
   { prefix: "/api/topics",              module: "lesson_plan" },
   { prefix: "/api/syllabus",            module: "lesson_plan" },
