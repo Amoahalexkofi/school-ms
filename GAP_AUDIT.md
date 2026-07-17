@@ -57,7 +57,7 @@ Legend: ✅ full · 🟡 partial · ❌ missing · 🔴 bug
 
 - **Gmeet & Zoom Live Classes** — absent
 - **Online Course / Video Tutorial** — absent
-- **Behaviour Records** — absent
+- **Behaviour Records** — ✅ built (dd77235): incident types w/ merit-demerit points, per-student log, conduct watch list, starter set
 - **CBSE Examination** (GPA engine) — absent
 - **Calendar / Events** — absent
 - **QR Code Attendance** — not a base SS v7.1.0 feature (greenfield if wanted)
