@@ -2015,12 +2015,13 @@ model ChatRoom {
 }
 
 model ChatParticipant {
-  id       String   @id @default(cuid())
-  roomId   String
-  room     ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  userId   String
-  user     User     @relation(fields: [userId], references: [id])
-  joinedAt DateTime @default(now())
+  id         String    @id @default(cuid())
+  roomId     String
+  room       ChatRoom  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  joinedAt   DateTime  @default(now())
+  lastReadAt DateTime? // null = never opened; drives the unread badge
 
   @@unique([roomId, userId])
 }

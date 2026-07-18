@@ -361,7 +361,10 @@ export function Sidebar({ role = "ADMIN", addons = [] }: { role?: Role; addons?:
       )}
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-56 shrink-0 bg-slate-900 min-h-screen">
+      {/* h-screen (not min-h-screen) so the nav's own overflow-y-auto has a
+          bound to scroll within — otherwise the aside grows past the viewport
+          and the whole document becomes the scroller. */}
+      <aside className="hidden lg:flex flex-col w-56 shrink-0 bg-slate-900 h-screen sticky top-0">
         <NavContent role={role} addons={addons} />
       </aside>
     </>

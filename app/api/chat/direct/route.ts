@@ -13,6 +13,8 @@ export async function POST(req: NextRequest) {
     const room = await getOrCreateDirectRoom(myId, userId);
     return NextResponse.json(room, { status: 201 });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Failed to start chat" }, { status: 500 });
+    if (err.code === "VALIDATION") return NextResponse.json({ error: err.message }, { status: 422 });
+    console.error("[chat/direct]", err);
+    return NextResponse.json({ error: "Failed to start chat" }, { status: 500 });
   }
 }
