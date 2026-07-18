@@ -10,21 +10,22 @@ type Message = {
   id: string;
   content: string;
   createdAt: string;
-  sender: { id: string; email: string; staff?: { firstName: string; lastName: string } | null; student?: { firstName: string; lastName: string } | null };
+  sender: { id: string; email: string; username?: string; staff?: { firstName: string; lastName: string } | null; student?: { firstName: string; lastName: string } | null };
 };
 
 type Room = {
   id: string;
   name: string | null;
   type: "DIRECT" | "GROUP";
-  participants: { user: { id: string; email: string; staff?: { firstName: string; lastName: string } | null } }[];
+  participants: { user: { id: string; email: string; username?: string; staff?: { firstName: string; lastName: string } | null } }[];
   messages: Message[];
 };
 
 function senderName(sender: Message["sender"]) {
   if (sender.staff) return `${sender.staff.firstName} ${sender.staff.lastName}`;
   if (sender.student) return `${sender.student.firstName} ${sender.student.lastName}`;
-  return sender.email;
+  // admin accounts without a staff record: username beats a raw email
+  return sender.username || sender.email.split("@")[0];
 }
 
 function roomLabel(room: Room, myId: string) {
@@ -33,7 +34,8 @@ function roomLabel(room: Room, myId: string) {
     const other = room.participants.find((p) => p.user.id !== myId);
     if (!other) return "Direct";
     const u = other.user;
-    return u.staff ? `${u.staff.firstName} ${u.staff.lastName}` : u.email;
+    if (u.staff) return `${u.staff.firstName} ${u.staff.lastName}`;
+    return u.username || u.email.split("@")[0];
   }
   return "Group";
 }
