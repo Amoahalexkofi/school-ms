@@ -12,6 +12,7 @@ export async function GET() {
   if (!myId) return NextResponse.json([]);
   const db = await getDb();
 
+  try {
   const [staff, adminUsers] = await Promise.all([
     (db as any).staff.findMany({
       where: { isActive: true, userId: { not: myId } },
@@ -20,13 +21,8 @@ export async function GET() {
     }),
     (db as any).user.findMany({
       where: { role: { in: ["SUPER_ADMIN", "ADMIN"] }, id: { not: myId }, isActive: true },
-      select: { id: true, email: true, name: true, role: true },
-    }).catch(() =>
-      (db as any).user.findMany({
-        where: { role: { in: ["SUPER_ADMIN", "ADMIN"] }, id: { not: myId } },
-        select: { id: true, email: true, name: true, role: true },
-      })
-    ),
+      select: { id: true, email: true, username: true, role: true },
+    }),
   ]);
 
   const out: { userId: string; name: string; role: string }[] = [];
@@ -39,8 +35,12 @@ export async function GET() {
   for (const u of adminUsers) {
     if (seen.has(u.id)) continue;
     seen.add(u.id);
-    out.push({ userId: u.id, name: u.name || u.email.split("@")[0], role: u.role });
+    out.push({ userId: u.id, name: u.username || u.email.split("@")[0], role: u.role });
   }
   out.sort((a, b) => a.name.localeCompare(b.name));
   return NextResponse.json(out);
+  } catch (err: any) {
+    console.error("[chat/users]", err);
+    return NextResponse.json({ error: "Failed to load directory" }, { status: 500 });
+  }
 }
