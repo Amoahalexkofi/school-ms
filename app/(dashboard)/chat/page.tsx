@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Topbar } from "@/components/Topbar";
-import { Send, MessageCircle, Users } from "lucide-react";
+import { Send, MessageCircle, Users, Plus, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Message = {
@@ -56,12 +56,40 @@ export default function ChatPage() {
   }, [session]);
 
   // Load rooms
-  useEffect(() => {
+  const loadRooms = useCallback(() => {
     fetch("/api/chat")
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data)) setRooms(data); })
       .catch(() => {});
   }, []);
+  useEffect(() => { loadRooms(); }, [loadRooms]);
+
+  // ── New chat: staff directory picker ──
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [directory, setDirectory] = useState<{ userId: string; name: string; role: string }[]>([]);
+  const [pickerQ, setPickerQ] = useState("");
+  const [starting, setStarting] = useState(false);
+
+  useEffect(() => {
+    if (!pickerOpen || directory.length) return;
+    fetch("/api/chat/users").then(r => r.json()).then(d => { if (Array.isArray(d)) setDirectory(d); }).catch(() => {});
+  }, [pickerOpen, directory.length]);
+
+  async function startChat(userId: string) {
+    setStarting(true);
+    try {
+      const res = await fetch("/api/chat/direct", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      if (res.ok) {
+        const room = await res.json();
+        setPickerOpen(false); setPickerQ("");
+        loadRooms();
+        setActiveRoomId(room.id);
+      }
+    } finally { setStarting(false); }
+  }
 
   // Load messages and poll
   const loadMessages = useCallback(async (roomId: string) => {
@@ -108,12 +136,43 @@ export default function ChatPage() {
 
         {/* Room list */}
         <aside className="w-64 shrink-0 border-r bg-white flex flex-col">
-          <div className="p-3 border-b">
+          <div className="p-3 border-b flex items-center justify-between">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Conversations</p>
+            <button onClick={() => setPickerOpen(o => !o)} aria-label="New chat"
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-2 py-1 rounded-full transition-colors">
+              {pickerOpen ? <X className="h-3 w-3" /> : <Plus className="h-3 w-3" />} New
+            </button>
           </div>
+          {pickerOpen && (
+            <div className="border-b bg-slate-50 p-2 space-y-1.5">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                <input autoFocus value={pickerQ} onChange={e => setPickerQ(e.target.value)}
+                  placeholder="Search staff…"
+                  className="w-full border rounded-lg pl-8 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400" />
+              </div>
+              <div className="max-h-52 overflow-y-auto">
+                {directory
+                  .filter(u => !pickerQ.trim() || u.name.toLowerCase().includes(pickerQ.toLowerCase()))
+                  .map(u => (
+                    <button key={u.userId} onClick={() => startChat(u.userId)} disabled={starting}
+                      className="w-full text-left px-2 py-1.5 rounded-md hover:bg-white text-sm flex items-center justify-between disabled:opacity-50">
+                      <span className="text-gray-800 truncate">{u.name}</span>
+                      <span className="text-[10px] text-gray-400 uppercase shrink-0 ml-2">{u.role.replace("_", " ").toLowerCase()}</span>
+                    </button>
+                  ))}
+                {directory.length === 0 && <p className="text-xs text-gray-400 text-center py-3">Loading staff…</p>}
+              </div>
+            </div>
+          )}
           <div className="flex-1 overflow-y-auto">
             {rooms.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center mt-8 px-3">No conversations yet.</p>
+              <div className="text-center mt-8 px-3">
+                <p className="text-xs text-gray-400 mb-2">No conversations yet.</p>
+                <button onClick={() => setPickerOpen(true)} className="text-xs font-semibold text-indigo-600 hover:underline">
+                  Start one →
+                </button>
+              </div>
             ) : (
               rooms.map((room) => {
                 const last = room.messages[0];
