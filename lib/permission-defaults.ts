@@ -8,13 +8,22 @@ export type PermissionMap = Record<string, PermEntry>;
 const ALLOW: PermEntry = { canView: true,  canAdd: true,  canEdit: true,  canDelete: true  };
 const VIEW:  PermEntry = { canView: true,  canAdd: false, canEdit: false, canDelete: false };
 const WRITE: PermEntry = { canView: true,  canAdd: true,  canEdit: true,  canDelete: false };
+// Read plus create-own — portal actions like sending a chat message, starting
+// an online-exam attempt, or initiating a fee payment.
+const SUBMIT: PermEntry = { canView: true, canAdd: true, canEdit: false, canDelete: false };
 
 export const ALLOW_ALL: PermEntry = ALLOW;
 
 /**
  * Default permissions per auth role.
- * null = unrestricted (SUPER_ADMIN / ADMIN).
+ * null = unrestricted (SUPER_ADMIN / ADMIN) — a deliberate choice.
  * Non-null = restricted to listed modules; Super Admin can extend via AppRole.
+ *
+ * EVERY role must appear here. A role that is merely *absent* reads as
+ * `undefined`, and callers that treat `undefined` like `null` hand it full
+ * access — which is exactly how STUDENT, PARENT and RECEPTIONIST used to skip
+ * the granular gate entirely. Adding a role to UserRole without adding it here
+ * is now a denial, not a bypass.
  */
 export const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
   SUPER_ADMIN: null,
@@ -50,6 +59,32 @@ export const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
     library:              ALLOW,
     communicate:          VIEW,
     chat:                 ALLOW,
+  },
+
+  RECEPTIONIST: {
+    front_office:         ALLOW,  // visitors, enquiries, calls, dispatch
+    chat:                 WRITE,
+  },
+
+  // Portal roles. These mirror what the coarse gate (canAccessApiRoute)
+  // already allows, so today's access is unchanged — the point is that the
+  // matrix now *governs* them instead of waving them through.
+  // Homework and library are deliberately absent: the coarse gate already
+  // denies STUDENT/PARENT on /api/homework and /api/library, so the portals
+  // read that data server-side. Listing them here would grant access these
+  // roles have never had.
+  STUDENT: {
+    chat:                 WRITE,
+    online_examination:   SUBMIT, // start/submit own attempt; proxy's method
+                                  // guard still blocks create/edit/publish
+    fees_collection:      SUBMIT, // initiate own payment (/api/fees/pay)
+    academics:            VIEW,   // timetable
+  },
+
+  PARENT: {
+    chat:                 WRITE,
+    fees_collection:      SUBMIT, // pay a child's fees
+    academics:            VIEW,
   },
 };
 

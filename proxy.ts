@@ -103,7 +103,11 @@ async function isApiCallPermitted(
   pathname: string, method: string, role: string, schema: string, userId: string
 ): Promise<boolean> {
   const defaults = ROLE_DEFAULTS[role];
-  if (defaults === null || defaults === undefined) return true; // unrestricted role
+  // `null` is a deliberate "unrestricted" (SUPER_ADMIN / ADMIN). `undefined`
+  // means the role has no entry at all — deny rather than wave it through,
+  // otherwise adding a role without defaults silently grants it everything.
+  if (defaults === null) return true;
+  if (defaults === undefined) return false;
   const module = moduleForApiPath(pathname);
   if (!module) return true; // unmapped route → coarse gate only
 

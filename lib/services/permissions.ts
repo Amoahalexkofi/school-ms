@@ -34,8 +34,11 @@ export async function getUserPermissions(userId: string): Promise<PermissionMap 
     const authRole = user.role as string;
     const defaults = ROLE_DEFAULTS[authRole];
 
-    // ADMIN / SUPER_ADMIN → unrestricted
-    if (defaults === null || defaults === undefined) return null;
+    // ADMIN / SUPER_ADMIN → unrestricted (an explicit null in ROLE_DEFAULTS).
+    if (defaults === null) return null;
+    // A role with no entry is not "unrestricted", it is unconfigured — show it
+    // nothing rather than everything.
+    if (defaults === undefined) return {};
 
     // Find staff record for custom AppRole lookup
     const staff = await (db as any).staff.findUnique({
