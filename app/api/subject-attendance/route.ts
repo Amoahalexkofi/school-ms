@@ -38,8 +38,13 @@ async function notifyPeriodAbsent(db: any, records: any[], timetableSlotId: stri
     const phones = [s.mobileNo, s.guardianPhone, s.fatherPhone].filter(Boolean) as string[];
     if (!phones.length) continue;
     const msg = `${schoolName}: ${s.firstName} ${s.lastName ?? ""} was marked Absent in ${subjectName}${period} on ${date}.`;
-    sendSms(phones, msg, db).catch(() => null);
-    sendWhatsApp(phones, msg, db).catch(() => null);
+    const who = `${s.firstName} ${s.lastName ?? ""}`;
+    sendSms(phones, msg, db)
+      .then((r) => { if (!r.success) console.error("[subject-attendance] SMS failed for", who, r.error); })
+      .catch((err) => console.error("[subject-attendance] SMS threw for", who, err));
+    sendWhatsApp(phones, msg, db)
+      .then((r) => { if (!r.success) console.error("[subject-attendance] WhatsApp failed for", who, r.error); })
+      .catch((err) => console.error("[subject-attendance] WhatsApp threw for", who, err));
   }
 }
 

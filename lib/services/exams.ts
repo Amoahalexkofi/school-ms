@@ -64,19 +64,26 @@ export async function announceExamResults(db: any, examGroupId: string) {
     const emails = [s.email, s.guardianEmail || s.fatherEmail || s.motherEmail].filter(Boolean) as string[];
     const phones = [s.mobileNo, s.guardianPhone || s.fatherPhone || s.motherPhone].filter(Boolean) as string[];
 
+    const who = `${s.firstName} ${s.lastName ?? ""}`.trim();
     if (emails.length) {
       sendEmail(db, {
         to: emails,
         subject,
         html: bulkMessageEmail({
-          recipientName: `${s.firstName} ${s.lastName ?? ""}`.trim(),
+          recipientName: who,
           message, schoolName, subject,
         }),
-      }).catch(() => null);
+      })
+        .then((r) => { if (!r.ok) console.error("[exams] result email failed for", who, r.error); })
+        .catch((err) => console.error("[exams] result email threw for", who, err));
     }
     if (phones.length) {
-      sendSms(phones, message, db).catch(() => null);
-      sendWhatsApp(phones, message, db).catch(() => null);
+      sendSms(phones, message, db)
+        .then((r) => { if (!r.success) console.error("[exams] result SMS failed for", who, r.error); })
+        .catch((err) => console.error("[exams] result SMS threw for", who, err));
+      sendWhatsApp(phones, message, db)
+        .then((r) => { if (!r.success) console.error("[exams] result WhatsApp failed for", who, r.error); })
+        .catch((err) => console.error("[exams] result WhatsApp threw for", who, err));
     }
     if (emails.length || phones.length) notified++;
   }

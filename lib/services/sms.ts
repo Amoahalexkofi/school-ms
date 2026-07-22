@@ -34,14 +34,21 @@ async function sendViaAfricasTalking(
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok || data?.SMSMessageData?.Recipients?.[0]?.status === "InvalidPhoneNumber") {
-    return { success: false, provider: "africas_talking", error: data?.SMSMessageData?.Recipients?.[0]?.status ?? `HTTP ${res.status}` };
+  if (!res.ok) {
+    return { success: false, provider: "africas_talking", error: data?.SMSMessageData?.Message ?? `HTTP ${res.status}` };
   }
   const firstRecipient = data?.SMSMessageData?.Recipients?.[0];
+  if (!firstRecipient) {
+    return { success: false, provider: "africas_talking", error: data?.SMSMessageData?.Message ?? "No recipient status returned" };
+  }
+  // Africa's Talking returns HTTP 200 even when a recipient is rejected
+  // (bad number, insufficient balance, blacklist, etc.) — the per-recipient
+  // status is the only real signal of whether the message actually sent.
   return {
-    success: firstRecipient?.status === "Success" || res.ok,
+    success: firstRecipient.status === "Success",
     provider: "africas_talking",
-    messageId: firstRecipient?.messageId,
+    messageId: firstRecipient.messageId,
+    error: firstRecipient.status !== "Success" ? firstRecipient.status : undefined,
   };
 }
 

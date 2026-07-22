@@ -4,9 +4,10 @@ import { markAttendance } from "@/lib/services/attendance";
 import { getActiveBranchId } from "@/lib/branch";
 import { sendSms, attendanceSms } from "@/lib/services/sms";
 import { sendWhatsApp, whatsAppAttendanceAlert } from "@/lib/services/whatsapp";
+import { sendEmail, attendanceEmail } from "@/lib/email";
 
 // Notify the guardians of absent students (Smart School student_absent_attendence).
-// Fire-and-forget; silently no-ops if the school has no SMS/WhatsApp provider.
+// Fire-and-forget; silently no-ops if the school has no SMS/email/WhatsApp provider.
 async function notifyAbsent(db: any, records: any[], date: Date) {
   const absentType = await db.attendanceType.findFirst({ where: { keyValue: "A" } }).catch(() => null);
   if (!absentType) return;
@@ -16,7 +17,7 @@ async function notifyAbsent(db: any, records: any[], date: Date) {
   const [students, profile] = await Promise.all([
     db.student.findMany({
       where: { id: { in: absentIds } },
-      select: { firstName: true, lastName: true, mobileNo: true, guardianPhone: true, fatherPhone: true },
+      select: { firstName: true, lastName: true, mobileNo: true, guardianPhone: true, fatherPhone: true, email: true, guardianEmail: true },
     }),
     db.schoolProfile.findFirst({ select: { name: true } }),
   ]);
@@ -25,10 +26,27 @@ async function notifyAbsent(db: any, records: any[], date: Date) {
 
   for (const s of students) {
     const phones = [s.mobileNo, s.guardianPhone, s.fatherPhone].filter(Boolean) as string[];
-    if (!phones.length) continue;
-    const p = { studentName: `${s.firstName} ${s.lastName}`, status: "Absent", date: dateStr, schoolName };
-    sendSms(phones, attendanceSms(p), db).catch(() => null);
-    sendWhatsApp(phones, whatsAppAttendanceAlert(p), db).catch(() => null);
+    const emails = [s.email, s.guardianEmail].filter(Boolean) as string[];
+    const studentName = `${s.firstName} ${s.lastName}`;
+    const p = { studentName, status: "Absent", date: dateStr, schoolName };
+
+    if (phones.length) {
+      sendSms(phones, attendanceSms(p), db)
+        .then((r) => { if (!r.success) console.error("[attendance] SMS failed for", studentName, r.error); })
+        .catch((err) => console.error("[attendance] SMS threw for", studentName, err));
+      sendWhatsApp(phones, whatsAppAttendanceAlert(p), db)
+        .then((r) => { if (!r.success) console.error("[attendance] WhatsApp failed for", studentName, r.error); })
+        .catch((err) => console.error("[attendance] WhatsApp threw for", studentName, err));
+    }
+    if (emails.length) {
+      sendEmail(db, {
+        to: emails,
+        subject: `Attendance Notice — ${studentName}`,
+        html: attendanceEmail(p),
+      })
+        .then((r) => { if (!r.ok) console.error("[attendance] Email failed for", studentName, r.error); })
+        .catch((err) => console.error("[attendance] Email threw for", studentName, err));
+    }
   }
 }
 

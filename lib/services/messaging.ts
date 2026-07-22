@@ -65,7 +65,10 @@ export async function sendBulkMessage(input: {
     // Dedupe and send in batches of 100 (Africa's Talking limit)
     const unique = [...new Set(phones)];
     for (let i = 0; i < unique.length; i += 100) {
-      await sendSms(unique.slice(i, i + 100), input.message).catch(() => null);
+      const batch = unique.slice(i, i + 100);
+      await sendSms(batch, input.message)
+        .then((r) => { if (!r.success) console.error("[messaging] bulk SMS batch failed", i, "-", i + batch.length, r.error); })
+        .catch((err) => console.error("[messaging] bulk SMS batch threw", i, "-", i + batch.length, err));
     }
   }
 

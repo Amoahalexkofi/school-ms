@@ -142,9 +142,13 @@ export async function POST(req: NextRequest) {
       // SMS
       const phones = [student.mobileNo, student.guardianPhone, student.fatherPhone].filter(Boolean) as string[];
       if (phones.length) {
-        sendSms(phones, feeReceiptSms({ studentName, amount: amountStr, currency, receiptNo, schoolName })).catch(() => null);
+        sendSms(phones, feeReceiptSms({ studentName, amount: amountStr, currency, receiptNo, schoolName }))
+          .then((r) => { if (!r.success) console.error("[fees/collect] SMS failed for", studentName, r.error); })
+          .catch((err) => console.error("[fees/collect] SMS threw for", studentName, err));
         // WhatsApp receipt (fire-and-forget, silently skips if no WhatsApp provider configured)
-        sendWhatsApp(phones, whatsAppFeeReceipt({ studentName, amount: amountStr, currency, receiptNo, schoolName, paymentMode: paymentMode || "Cash" })).catch(() => null);
+        sendWhatsApp(phones, whatsAppFeeReceipt({ studentName, amount: amountStr, currency, receiptNo, schoolName, paymentMode: paymentMode || "Cash" }))
+          .then((r) => { if (!r.success) console.error("[fees/collect] WhatsApp failed for", studentName, r.error); })
+          .catch((err) => console.error("[fees/collect] WhatsApp threw for", studentName, err));
       }
 
       // Email
@@ -162,7 +166,9 @@ export async function POST(req: NextRequest) {
             paymentMode: paymentMode || "CASH",
             date: date,
           }),
-        }).catch(() => null);
+        })
+          .then((r) => { if (!r.ok) console.error("[fees/collect] Email failed for", studentName, r.error); })
+          .catch((err) => console.error("[fees/collect] Email threw for", studentName, err));
       }
     }
 

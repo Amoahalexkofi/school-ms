@@ -131,6 +131,32 @@ export function bulkMessageEmail({
   `;
 }
 
+export function attendanceEmail({
+  studentName,
+  status,
+  date,
+  schoolName,
+}: {
+  studentName: string;
+  status: string;
+  date: string;
+  schoolName: string;
+}): string {
+  return `
+    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#111">
+      <div style="background:#4f46e5;padding:24px 32px;border-radius:12px 12px 0 0">
+        <h1 style="color:#fff;margin:0;font-size:20px">${schoolName}</h1>
+        <p style="color:#c7d2fe;margin:4px 0 0;font-size:13px">Attendance Notice</p>
+      </div>
+      <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:28px 32px;border-radius:0 0 12px 12px">
+        <p style="margin:0 0 16px">Dear Parent,</p>
+        <p style="margin:0 0 16px"><strong>${studentName}</strong> was marked <strong>${status}</strong> on ${date}.</p>
+        <p style="color:#6b7280;font-size:13px;margin:0">Contact the school office if you believe this is a mistake.</p>
+      </div>
+    </div>
+  `;
+}
+
 export function passwordResetEmail({
   username,
   resetUrl,

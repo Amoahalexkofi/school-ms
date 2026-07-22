@@ -56,6 +56,42 @@ Legend: ✅ full · 🟡 partial · ❌ missing · 🔴 bug
 - ✅ **Chat IDOR** — `/api/chat/[roomId]` checked only that you were signed in,
   never that you were a participant. Both verbs now 404 for non-participants.
 
+**Re-verified 2026-07-22** — most of this list had already been closed since
+the last pass (commits between 2026-06-20 and 2026-07-11); the doc just hadn't
+caught up. Updated below.
+
+**Closed since 2026-06-21 (verified 2026-07-22):**
+
+- ✅ **Secrets in cleartext to browser** — `lib/config-secrets.ts`
+  (`redactSecrets`/`redactList`/`keepSecret`) now redacts `apiKey`/`password`/
+  `smtpPassword` on every config GET/POST response
+  (`048a8d1`, `app/api/{email,sms,whatsapp}-config/route.ts`).
+- ✅ **Audit Log permanently empty** — `c1d6884` instrumented 23 sensitive
+  mutations; 21 files now call `audit()`.
+- ✅ **Fee discounts never applied at collection** — `80c4b5e` wired a discount
+  picker into `FeeCollectClient.tsx`, which sends `discountIds` to
+  `app/api/fees/collect/route.ts`, which resolves and applies them.
+- ✅ **Latent IDOR on fees/receipt** — `app/(dashboard)/fees/receipt/ownership.ts`
+  (`assertCanViewReceipt`) now gates the `[depositId]/[subInvoiceId]` page;
+  STUDENT sees only their own record, PARENT only linked children.
+- ✅ **Parent portal empty for real parents** — `User.childs` is now set from
+  `app/api/parents/link/route.ts`, `app/api/students/route.ts`,
+  `app/api/students/import/route.ts`, and `lib/services/students.ts`, not just
+  the demo seed.
+- ✅ **No `branchId` scoping** — `7def35c` added branch scoping across
+  operations modules for Multi Branch correctness.
+- ✅ **SMS/WhatsApp false success** (2026-07-22) — every fire-and-forget call
+  site (`attendance`, `subject-attendance`, `fees/collect`,
+  `cron/fee-reminders`, `exams`, `messaging`) now checks `.success`/`.ok` and
+  logs failures instead of swallowing them via bare `.catch(() => null)`.
+  Also fixed a real masking bug in `sendViaAfricasTalking`
+  (`lib/services/sms.ts`): a 200 HTTP response with a per-recipient failure
+  status (`InsufficientBalance`, `Rejected`, etc.) was reported as
+  `success: true` because of an `|| res.ok` fallback — removed.
+- ✅ **Duplicate `/homework` rule** (2026-07-22) — merged into the single
+  `middleware-utils.ts` rule (`SUPER_ADMIN, ADMIN, TEACHER, STUDENT, PARENT`);
+  dead second entry removed.
+
 **Still open:**
 
 - 🔴 **The permission matrix cannot revoke.** `mergePerms`
@@ -65,30 +101,20 @@ Legend: ✅ full · 🟡 partial · ❌ missing · 🔴 bug
   a restricted teacher. This is a **product decision**, not a bug to quietly
   flip — changing it alters what the screen means for every school already
   using it.
-- 🟡 **41 of 74 API route groups have no granular module mapping**
-  (`API_MODULE_MAP`), so the matrix does not reach them; they are governed by
-  the coarse role gate alone.
-- 🟡 **Duplicate `/homework` rule** — declared at `middleware-utils.ts:78`
-  (ADMIN/TEACHER) and again at `:148` (adding STUDENT/PARENT). Equal prefix
-  length means the tie goes to the first, so the second is dead. Students reach
-  homework through the server-rendered `/my-homework` page, so nothing is
-  visibly broken; the rule is misleading rather than harmful.
-- **Secrets in cleartext to browser** — Email/SMS/WhatsApp configs store API
-  keys and passwords plaintext and echo them back to the client.
-- **SMS/WhatsApp false success** — senders don't check the HTTP response and
-  report `success:true` even on provider failure.
-- **No `branchId` scoping** in operations modules despite the paid Multi Branch
-  add-on → records leak across branches within a tenant.
-- **Parent portal empty for real parents** — `User.childs` is written ONLY in
-  `seed-demo.ts`; no admin, admission or API path sets it.
-- **Audit Log permanently empty** — `audit.log()` has 0 callers.
-- **Fee discounts never applied at collection** — the Collect dialog never
-  sends `discountIds`; "paid" is defined inconsistently across
-  collect/report/carry-forward.
-- **Payroll net = basic only** on the Finance page path; a richer payslip flow
-  also exists (duplicate systems).
-- Latent IDOR on `fees/receipt/[id]` (findUnique, no ownership check) — safe
-  only because the route is staff-gated today.
+- 🟡 **40 of 74 API route groups have no granular module mapping**
+  (`API_MODULE_MAP` in `lib/permission-defaults.ts` covers 34/74), so the
+  matrix does not reach them; they are governed by the coarse role gate alone.
+  Mapping the rest is a large, error-prone pass (wrong module → silently locks
+  out or opens up a whole route group) — do as a dedicated, reviewed task, not
+  a drive-by.
+- **Payroll net = basic only** on the Finance page path
+  (`lib/services/finance.ts:generatePayroll`, backed by `Payroll`/
+  `PayrollEntry`) — no allowances/deductions/tax concept at all. A separate,
+  richer flow exists on `/payroll` (backed by `StaffPayslip`,
+  `app/api/payroll/*`) with allowances/deductions/tax and a correct
+  `netSalary` recalculation once those are added. Two parallel payroll
+  systems, not one bug — reconciling them (pick one canonical model, migrate
+  the other's data/UI) is a product decision, not a quick patch.
 
 ## P2 — Feature gaps (works, but thinner than Smart School)
 

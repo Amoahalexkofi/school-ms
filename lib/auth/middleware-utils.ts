@@ -76,7 +76,7 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   },
   {
     prefix: "/homework",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT", "PARENT"],
   },
   {
     prefix: "/behaviour",
@@ -143,10 +143,6 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   {
     prefix: "/designations",
     roles: ["SUPER_ADMIN", "ADMIN"],
-  },
-  {
-    prefix: "/homework",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT", "PARENT"],
   },
   {
     prefix: "/dashboard",

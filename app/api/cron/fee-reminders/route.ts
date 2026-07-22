@@ -77,9 +77,13 @@ async function processSchema(schema: string): Promise<number> {
         dueDate: ymd(target),
         schoolName,
       };
-      await sendSms(phones, feeReminderSms(params), db).catch(() => null);
-      await sendWhatsApp(phones, whatsAppFeeReminder(params), db).catch(() => null);
-      sent++;
+      const [smsResult, waResult] = await Promise.all([
+        sendSms(phones, feeReminderSms(params), db).catch((err) => ({ success: false, provider: "sms", error: String(err) })),
+        sendWhatsApp(phones, whatsAppFeeReminder(params), db).catch((err) => ({ success: false, provider: "whatsapp", error: String(err) })),
+      ]);
+      if (!smsResult.success) console.error("[fee-reminders]", schema, "SMS failed for", params.studentName, smsResult.error);
+      if (!waResult.success) console.error("[fee-reminders]", schema, "WhatsApp failed for", params.studentName, waResult.error);
+      if (smsResult.success || waResult.success) sent++;
     }
   }
   return sent;
