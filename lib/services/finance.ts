@@ -66,49 +66,11 @@ export async function getFinanceSummary() {
   return { totalIncome, totalExpense, balance: totalIncome - totalExpense };
 }
 
-export async function generatePayroll(month: number, year: number) {
-  const prisma = await getDb();
-  const existing = await (prisma as any).payroll.findUnique({ where: { month_year: { month, year } } });
-  if (existing) throw Object.assign(new Error("Payroll already generated for this month"), { code: "CONFLICT" });
-
-  const staffList = await (prisma as any).staff.findMany({ where: { isActive: true } });
-  if (staffList.length === 0) throw Object.assign(new Error("No active staff found"), { code: "VALIDATION" });
-
-  // Staff without a salary can't be paid — exclude them rather than writing
-  // meaningless ₵0 entries, and tell the accountant exactly what was skipped.
-  const payable = staffList.filter((s: any) => Number(s.basicSalary ?? 0) > 0);
-  const skippedNoSalary = staffList.length - payable.length;
-  if (payable.length === 0) {
-    throw Object.assign(
-      new Error("No staff have a basic salary set — add salaries on the staff records first"),
-      { code: "VALIDATION" }
-    );
-  }
-
-  // Staff has no allowances/deductions columns — bulk payroll uses basic salary
-  // as net. (Per-staff allowance line items live in the StaffPayslip flow.)
-  const payroll = await (prisma as any).payroll.create({
-    data: {
-      month,
-      year,
-      entries: {
-        create: payable.map((s: any) => {
-          const basic = Number(s.basicSalary ?? 0);
-          return {
-            staffId: s.id,
-            basicSalary: basic,
-            allowances: 0,
-            deductions: 0,
-            netSalary: basic,
-          };
-        }),
-      },
-    },
-    include: { entries: { include: { staff: true } } },
-  });
-  return { ...payroll, skippedNoSalary };
-}
-
+// Payroll *generation* lives entirely in the StaffPayslip flow now
+// (lib/services/payroll.ts / app/api/payroll/*), which supports per-staff
+// allowances, deductions and tax. This legacy Payroll/PayrollEntry model is
+// read-only from here on — markPayrollPaid remains only so historical runs
+// already in the table can still be marked paid from the Finance page.
 export async function markPayrollPaid(payrollId: string) {
   const prisma = await getDb();
   const payroll = await (prisma as any).payroll.findUnique({ where: { id: payrollId } });

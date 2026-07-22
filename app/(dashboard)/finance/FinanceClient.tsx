@@ -26,7 +26,6 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [headForm, setHeadForm] = useState({ name: "", type: "INCOME" });
-  const [payrollForm, setPayrollForm] = useState({ month: String(new Date().getMonth() + 1), year: String(new Date().getFullYear()) });
 
   const totalIncome = transactions.filter((t: any) => t.type === "INCOME").reduce((s: number, t: any) => s + Number(t.amount), 0);
   const totalExpense = transactions.filter((t: any) => t.type === "EXPENSE").reduce((s: number, t: any) => s + Number(t.amount), 0);
@@ -89,16 +88,22 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
         </CardContent>
       </Card>
 
-      {/* Payroll */}
+      {/* Payroll — generation moved to /payroll (has allowances/deductions/tax; this
+          card's own Generate flow computed net salary as basic pay only). */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2"><Users className="h-4 w-4 text-purple-600" /> Payroll</CardTitle>
-          <Button size="sm" onClick={() => { setError(""); setOpen("payroll"); }}>
-            <Plus className="h-4 w-4 mr-1" /> Generate
-          </Button>
+          <Link href="/payroll">
+            <Button size="sm" variant="outline">Manage Payroll →</Button>
+          </Link>
         </CardHeader>
         <CardContent>
-          {payrolls.length === 0 ? <p className="text-sm text-gray-500 text-center py-8">No payroll generated yet.</p> : (
+          {payrolls.length === 0 ? (
+            <p className="text-sm text-gray-500 text-center py-8">
+              No payroll runs here yet. Generate and manage payroll on the{" "}
+              <Link href="/payroll" className="underline">Payroll page</Link>.
+            </p>
+          ) : (
             <div className="space-y-4">
               {payrolls.map((p: any) => {
                 const totalNet = p.entries.reduce((s: number, e: any) => s + Number(e.netSalary), 0);
@@ -145,27 +150,6 @@ export function FinanceClient({ transactions, payrolls, incomeHeads, expenseHead
         </DialogContent>
       </Dialog>
 
-      {/* Generate Payroll Dialog */}
-      <Dialog open={open === "payroll"} onOpenChange={o => !o && setOpen(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Generate Payroll</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <Label>Month</Label>
-                <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={payrollForm.month} onChange={e => setPayrollForm(f => ({ ...f, month: e.target.value }))}>
-                  {MONTHS.map((m, i) => <option key={i} value={String(i + 1)}>{m}</option>)}
-                </select>
-              </div>
-              <div><Label>Year</Label><Input className="mt-1" type="number" value={payrollForm.year} onChange={e => setPayrollForm(f => ({ ...f, year: e.target.value }))} /></div>
-            </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Button className="w-full" disabled={loading} onClick={() => submit("/api/finance/payroll", payrollForm)}>
-              {loading ? "Generating…" : "Generate Payroll"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </main>
   );
 }
