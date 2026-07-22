@@ -50,7 +50,7 @@ export const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
     student_information:  VIEW,   // read-only (find students for fees)
     fees_collection:      ALLOW,
     expense:              ALLOW,
-    human_resource:       VIEW,   // view payroll, not edit staff
+    human_resource:       VIEW,   // read-only /api/staff (look staff up for fees/payroll, not edit their record)
     reports:              VIEW,
     communicate:          VIEW,
     chat:                 ALLOW,

@@ -128,12 +128,11 @@ caught up. Updated below.
   RECEPTIONIST already has `ALLOW` on (matches Smart School's own seed:
   Admission Enquiry lives under Front Office), so no access change for
   anyone using it correctly today.
-- **Left deliberately unmapped: `/api/payroll`.** ACCOUNTANT's
-  `human_resource: VIEW` comment ("view payroll, not edit staff") could be
-  read as meaning ACCOUNTANT shouldn't be able to generate payroll at all —
-  but `/payroll`'s coarse gate explicitly admits ACCOUNTANT, and mapping this
-  risks silently breaking a live accountant's payroll-generation workflow.
-  Needs a product call, not a drive-by fix.
+- ✅ **`/api/payroll` left unmapped — confirmed intentional.** Accountants
+  are meant to be able to generate/edit payroll, not just view it. The
+  `human_resource: VIEW` comment on `ACCOUNTANT` was about read-only access
+  to `/api/staff` records, not payroll (payroll isn't mapped to
+  `human_resource` at all) — comment reworded to stop implying otherwise.
 
 ## P2 — Feature gaps (works, but thinner than Smart School)
 
