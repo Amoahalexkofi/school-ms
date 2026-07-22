@@ -228,6 +228,19 @@ export async function proxy(request: NextRequest) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
     }
+    // Branches: TEACHER/ACCOUNTANT/LIBRARIAN are coarse-gated in only for the
+    // branch-switcher's read (no permission-module exists for this Skula-only
+    // Multi Branch add-on). Without this, they could also create/edit/delete
+    // branch records — restrict them to GET.
+    if (
+      pathname.startsWith("/api/branches") &&
+      (role === "TEACHER" || role === "ACCOUNTANT" || role === "LIBRARIAN")
+    ) {
+      const method = request.method.toUpperCase();
+      if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    }
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 

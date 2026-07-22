@@ -130,6 +130,7 @@ const API_MODULE_MAP: { prefix: string; module: string }[] = [
   { prefix: "/api/fees",                module: "fees_collection" },
   { prefix: "/api/finance",             module: "expense" },
   { prefix: "/api/staff",               module: "human_resource" },
+  { prefix: "/api/admissions",          module: "front_office" },
   { prefix: "/api/timetable",           module: "academics" },
   { prefix: "/api/subjects",            module: "academics" },
   { prefix: "/api/subject-groups",      module: "academics" },
