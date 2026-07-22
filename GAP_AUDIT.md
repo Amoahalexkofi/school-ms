@@ -92,29 +92,48 @@ caught up. Updated below.
   `middleware-utils.ts` rule (`SUPER_ADMIN, ADMIN, TEACHER, STUDENT, PARENT`);
   dead second entry removed.
 
-**Still open:**
+**Closed 2026-07-22:**
 
-- 🔴 **The permission matrix cannot revoke.** `mergePerms`
-  (`lib/permission-defaults.ts`) ORs base with custom
-  (`result.canDelete || entry.canDelete`), so unchecking a box in Roles &
-  Permissions does nothing if the base role already grants it. You cannot build
-  a restricted teacher. This is a **product decision**, not a bug to quietly
-  flip — changing it alters what the screen means for every school already
-  using it.
-- 🟡 **40 of 74 API route groups have no granular module mapping**
-  (`API_MODULE_MAP` in `lib/permission-defaults.ts` covers 34/74), so the
-  matrix does not reach them; they are governed by the coarse role gate alone.
-  Mapping the rest is a large, error-prone pass (wrong module → silently locks
-  out or opens up a whole route group) — do as a dedicated, reviewed task, not
-  a drive-by.
-- **Payroll net = basic only** on the Finance page path
-  (`lib/services/finance.ts:generatePayroll`, backed by `Payroll`/
-  `PayrollEntry`) — no allowances/deductions/tax concept at all. A separate,
-  richer flow exists on `/payroll` (backed by `StaffPayslip`,
-  `app/api/payroll/*`) with allowances/deductions/tax and a correct
-  `netSalary` recalculation once those are added. Two parallel payroll
-  systems, not one bug — reconciling them (pick one canonical model, migrate
-  the other's data/UI) is a product decision, not a quick patch.
+- ✅ **The permission matrix cannot revoke.** Fixed: `mergePerms`
+  (`lib/permission-defaults.ts`) now treats a custom AppRole's entry for a
+  module as authoritative (`{...base, ...extra}`) instead of OR-ing it onto
+  the base default — it can grant OR restrict. The save endpoint
+  (`app/api/roles/[id]/permissions`) also no longer silently drops a
+  fully-unchecked category, so a deliberate full revoke actually persists.
+  `__tests__/auth/permission-defaults.test.ts` locks in extend/restrict/
+  fallback semantics; `scripts/check-permission-gate.ts` (49 cases) unaffected
+  since it only exercises the base-role-only path.
+- ✅ **Payroll: two parallel systems.** Fixed by retiring the weaker one —
+  the Finance page's "Generate Payroll" (`Payroll`/`PayrollEntry`, netSalary =
+  basic salary only, no allowances/deductions/tax) now links to `/payroll`
+  (`StaffPayslip`) instead of generating its own entries. `markPayrollPaid`
+  kept so historical legacy rows can still be closed out. No schema change,
+  no data touched.
+- ✅ **Stray abandoned worktrees removed** — four `.claude/worktrees/agent-*`
+  checkouts (and their branches) rooted at a commit hundreds behind main;
+  uncommitted diffs weren't salvageable.
+
+**Investigated 2026-07-22 — mostly a non-issue:**
+
+- 🟡 **40 of 74 API route groups have no granular module mapping.** Audited
+  all 40: the large majority are already SUPER_ADMIN/ADMIN-only at the coarse
+  gate, where `ROLE_DEFAULTS` is `null` (unrestricted) — mapping those would
+  be a no-op, not a fix. Two were real and are now closed: `/api/branches`
+  let TEACHER/ACCOUNTANT/LIBRARIAN (coarse-gated in for the branch-switcher's
+  read) also POST/PATCH/DELETE branch records with nothing to stop them — no
+  permission category exists for this Skula-only add-on, so restricted them
+  to GET via a `proxy.ts` method-guard (same pattern as the existing
+  online-exams one). `/api/admissions` had no mapping despite granting
+  RECEPTIONIST through the coarse gate — mapped to `front_office`, which
+  RECEPTIONIST already has `ALLOW` on (matches Smart School's own seed:
+  Admission Enquiry lives under Front Office), so no access change for
+  anyone using it correctly today.
+- **Left deliberately unmapped: `/api/payroll`.** ACCOUNTANT's
+  `human_resource: VIEW` comment ("view payroll, not edit staff") could be
+  read as meaning ACCOUNTANT shouldn't be able to generate payroll at all —
+  but `/payroll`'s coarse gate explicitly admits ACCOUNTANT, and mapping this
+  risks silently breaking a live accountant's payroll-generation workflow.
+  Needs a product call, not a drive-by fix.
 
 ## P2 — Feature gaps (works, but thinner than Smart School)
 
