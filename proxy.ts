@@ -114,7 +114,7 @@ async function isApiCallPermitted(
   const custom = await getCustomPermMap(schema, userId);
   if (custom !== "error" && custom.superAdmin) return true;
   // DB blip: fall back to role defaults so a transient error can't lock staff
-  // out of modules their role always had (custom roles only ever ADD access).
+  // out of modules their role always had.
   const merged = custom === "error" || !custom.map
     ? defaults
     : mergePerms(defaults, custom.map);

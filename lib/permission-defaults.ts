@@ -17,7 +17,9 @@ export const ALLOW_ALL: PermEntry = ALLOW;
 /**
  * Default permissions per auth role.
  * null = unrestricted (SUPER_ADMIN / ADMIN) — a deliberate choice.
- * Non-null = restricted to listed modules; Super Admin can extend via AppRole.
+ * Non-null = restricted to listed modules; a custom AppRole (Settings →
+ * Roles & Permissions) can both extend and restrict these per module — see
+ * mergePerms below.
  *
  * EVERY role must appear here. A role that is merely *absent* reads as
  * `undefined`, and callers that treat `undefined` like `null` hand it full
@@ -88,21 +90,14 @@ export const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
   },
 };
 
+// A custom AppRole's entry for a module is authoritative — it can grant
+// access the base auth-role default lacks, and it can just as validly revoke
+// access the default has (e.g. View allowed, Delete explicitly withheld).
+// Module codes the custom role never touches at all fall back to the base
+// default. Without this, "Roles & Permissions" could show a box unchecked
+// while the auth-role baseline silently kept granting it underneath.
 export function mergePerms(base: PermissionMap, extra: PermissionMap): PermissionMap {
-  const result: PermissionMap = { ...base };
-  for (const [code, entry] of Object.entries(extra)) {
-    if (result[code]) {
-      result[code] = {
-        canView:   result[code].canView   || entry.canView,
-        canAdd:    result[code].canAdd    || entry.canAdd,
-        canEdit:   result[code].canEdit   || entry.canEdit,
-        canDelete: result[code].canDelete || entry.canDelete,
-      };
-    } else {
-      result[code] = entry;
-    }
-  }
-  return result;
+  return { ...base, ...extra };
 }
 
 // ── API-route → permission-module mapping (middleware enforcement) ────────────

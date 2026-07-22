@@ -27,14 +27,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     // Delete all existing permissions for this role
     await ((await getDb()) as any).rolePermission.deleteMany({ where: { roleId } });
 
-    // Insert new ones (only where at least one action is enabled)
-    const toInsert = permissions.filter(
-      (p) => p.canView || p.canAdd || p.canEdit || p.canDelete
-    );
-
-    if (toInsert.length > 0) {
+    // Insert one row per category the client sent — including all-false
+    // rows. A category with every box unchecked is a deliberate "this custom
+    // role has no access here", which must persist so it can override an
+    // auth-role default that would otherwise grant it (see mergePerms).
+    // Categories the admin never touched at all simply aren't in this array.
+    if (permissions.length > 0) {
       await ((await getDb()) as any).rolePermission.createMany({
-        data: toInsert.map((p) => ({
+        data: permissions.map((p) => ({
           roleId,
           permCatId: p.permCatId,
           canView:   Boolean(p.canView),
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       });
     }
 
-    return NextResponse.json({ saved: toInsert.length });
+    return NextResponse.json({ saved: permissions.length });
   } catch (err: any) {
     console.error(err);
     return NextResponse.json({ error: "Failed to save permissions" }, { status: 500 });

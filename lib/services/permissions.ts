@@ -91,7 +91,8 @@ export async function getUserPermissions(userId: string): Promise<PermissionMap 
       customMap[groupCode].canDelete = customMap[groupCode].canDelete || Boolean(perm.canDelete);
     }
 
-    // Merge: defaults OR custom (custom only extends, never restricts)
+    // Merge: a custom role's entry for a module overrides the auth-role
+    // default (can extend or restrict); untouched modules fall back to it.
     return mergePerms(defaults, customMap);
   } catch {
     return null;
