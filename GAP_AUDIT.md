@@ -137,14 +137,20 @@ caught up. Updated below.
 ## P2 — Feature gaps (works, but thinner than Smart School)
 
 - **Custom fields inert** — definitions stored, values never captured/rendered.
-- **Promotion** lacks pass/fail + continue/leave + auto-alumni; **Student
-  Transfer** module missing.
+- ✅ **Promotion** — built (`438aa17`): per-student pass/fail, continue/leave,
+  auto-alumni on leave. `app/api/students/promote/route.ts` +
+  `PromoteClient.tsx`. (Doc was stale — this was already done.)
+- **Student Transfer** module still missing — no matching files anywhere in
+  `app/`.
 - **Subjects/Classes/Sections** add-only (no edit/delete `[id]` routes).
 - **Most Operations modules** are create+list only; dropped form fields (room
   `costPerBed`/`floor`, vehicle photo, pickup lat/long).
 - **Library** membership never enforced at issue; duplicate return logic;
   hard-delete orphans history.
-- **Fees**: no fine/late-fee at collection; one report only (no
+- **Fees**: fine/late-fee at collection is a **won't-fix** — schools do not
+  charge late fees, so `FeeGroupItem.fineType/finePercentage/fineAmount/
+  finePerDay` and `CumulativeFine` staying uncomputed at collection is
+  intentional, not a gap. Still real: one report only (no
   daily/class-wise/CSV); fee reminders config-only (no cron sends); gateway
   keys DB-only; Flutterwave currency hard-coded `GHS`.
 - **Exams**: no CSV mark import, no all-subjects grid, no teacher
