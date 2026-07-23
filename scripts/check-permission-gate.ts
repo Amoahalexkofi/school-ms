@@ -42,6 +42,10 @@ const CASES: Case[] = [
   // exception for the student submit action, not exercised by this script.)
   { role: "STUDENT", path: "/api/library", method: "GET", want: false, why: "/api/library is staff-only" },
   { role: "STUDENT", path: "/api/homework", method: "GET", want: false, why: "/api/homework is staff-only" },
+  // /api/notifications/send GET is readable by every role (announcements
+  // targeted at them); POST/DELETE is admin-only via a proxy.ts method
+  // guard, not exercised by this script's coarse+granular check.
+  { role: "STUDENT", path: "/api/notifications/send", method: "GET", want: true, why: "read announcements targeted at students" },
 
   { role: "PARENT", path: "/api/chat", method: "GET", want: true, why: "read conversations" },
   { role: "PARENT", path: "/api/chat/abc", method: "POST", want: true, why: "message the school" },

@@ -366,7 +366,10 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // Library members
   { prefix: "/api/library/members",      roles: ["SUPER_ADMIN", "ADMIN", "LIBRARIAN"] },
   // Broadcast notifications
-  { prefix: "/api/notifications/send",   roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Broadcast announcements: everyone can read the ones targeted at their
+  // role (GET); only admins can compose/retire one — enforced by a method
+  // guard in proxy.ts since this coarse table has no per-verb granularity.
+  { prefix: "/api/notifications/send",   roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"] },
   // Parent ↔ student linking
   { prefix: "/api/parents",              roles: ["SUPER_ADMIN", "ADMIN"] },
 ];

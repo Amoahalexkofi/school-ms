@@ -1,13 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { auth } from "@/lib/auth";
 
 // Mirrors Smart School's Notification_model — send_notification table
 // Admin-broadcast notifications with role-based visibility
 
+// Admins see every broadcast (their own management view); everyone else only
+// sees the ones actually targeted at their role bucket, once published.
 export async function GET() {
+  const session = await auth().catch(() => null);
+  const role = (session?.user as any)?.role;
   const db = await getDb();
+
+  const where: any = { isActive: true };
+  if (role !== "SUPER_ADMIN" && role !== "ADMIN") {
+    where.publishDate = { lte: new Date() };
+    if (role === "STUDENT") where.visibleStudent = true;
+    else if (role === "PARENT") where.visibleParent = true;
+    else where.visibleStaff = true; // TEACHER/ACCOUNTANT/LIBRARIAN/RECEPTIONIST
+  }
+
   const notifications = await (db as any).sendNotification.findMany({
-    where: { isActive: true },
+    where,
     include: { notificationRoles: true },
     orderBy: { createdAt: "desc" },
   });

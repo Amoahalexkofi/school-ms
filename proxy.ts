@@ -253,6 +253,17 @@ export async function proxy(request: NextRequest) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
     }
+    // Broadcast announcements: every role can read the ones targeted at them,
+    // but only admins may compose or retire one.
+    if (
+      pathname.startsWith("/api/notifications/send") &&
+      role !== "SUPER_ADMIN" && role !== "ADMIN"
+    ) {
+      const method = request.method.toUpperCase();
+      if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    }
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
