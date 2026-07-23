@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { DollarSign, Settings, Users, Search, ArrowRight, BarChart3, ArrowRightLeft, Tag, Loader2 } from "lucide-react";
+import { DollarSign, Settings, Users, Search, ArrowRight, BarChart3, ArrowRightLeft, Tag, Loader2, Bell } from "lucide-react";
 import { usePermission } from "@/components/PermissionsProvider";
 
 type ClassSection = { id: string; class: { id: string; name: string }; section: { id: string; name: string } };
@@ -322,6 +322,7 @@ export function FeesHubClient({ totalStudents, totalMasters, totalCollected, cla
               { href: "/fees/discounts",     label: "Assign Discounts", sub: "Assign discounts to students by class", icon: Tag,            color: "bg-green-50 text-green-600" },
               { href: "/fees/carry-forward", label: "Carry Forward",    sub: "Roll over outstanding balances",        icon: ArrowRightLeft, color: "bg-orange-50 text-orange-600" },
               { href: "/fees/report",        label: "Fee Reports",      sub: "Collection & due fee reports",          icon: BarChart3,      color: "bg-amber-50 text-amber-600" },
+              { href: "/fees/reminders",     label: "Fee Reminders",    sub: "SMS/WhatsApp rules for due fees",       icon: Bell,           color: "bg-rose-50 text-rose-600" },
             ].map(({ href, label, sub, icon: Icon, color }) => (
               <Link key={href} href={href}>
                 <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 transition-colors cursor-pointer">
