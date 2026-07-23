@@ -136,7 +136,10 @@ caught up. Updated below.
 
 ## P2 — Feature gaps (works, but thinner than Smart School)
 
-- **Custom fields inert** — definitions stored, values never captured/rendered.
+- ✅ **Custom fields** — fixed 2026-07-22 for students (definitions stored,
+  values now captured in the Add form's "Other" tab and shown/editable on the
+  profile page via `CustomFieldsCard`). Staff custom fields still need the
+  same treatment.
 - ✅ **Promotion** — built (`438aa17`): per-student pass/fail, continue/leave,
   auto-alumni on leave. `app/api/students/promote/route.ts` +
   `PromoteClient.tsx`. (Doc was stale — this was already done.)
@@ -171,9 +174,12 @@ caught up. Updated below.
   Now enforced server-side (403 if the schedule's subject isn't theirs) and
   reflected in the UI — the exam-group detail page disables "Marks" for
   subjects the signed-in teacher isn't assigned to.
-  Still real: **Grades & Marks-Division** have no settings UI
-  (API-only); no single "all subjects at once" mark-entry grid (entry is
-  one exam-schedule/subject at a time via `/exams/[id]/marks/[scheduleId]`).
+  ❎ **"Grades & Marks-Division API-only" — also wrong.** `/settings/grading`
+  (`GradingClient.tsx`) already has full CRUD for both Grade Ranges and Mark
+  Divisions, wired to `/api/grade-ranges` and `/api/mark-divisions`
+  (both have working `[id]` PATCH/DELETE routes too). Still real: no single
+  "all subjects at once" mark-entry grid (entry is one exam-schedule/subject
+  at a time via `/exams/[id]/marks/[scheduleId]`).
 - **Subject-wise Attendance** API-only; broadcast Notification backend has no
   UI; Notification Settings decorative.
 - **Reports**: 8 of ~16 types; no PDF export; no payroll/finance/inventory/
