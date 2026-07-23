@@ -160,7 +160,13 @@ caught up. Updated below.
   UI; Notification Settings decorative.
 - **Reports**: 8 of ~16 types; no PDF export; no payroll/finance/inventory/
   hostel reports.
-- **Homework** no grading/submission; **Syllabus**/**Content Share** API-only.
+- ✅ **Homework grading/submission** — fixed 2026-07-22. Grading already
+  worked (`HomeworkClient.tsx` Evaluate modal). Submission was fully broken
+  (`lib/services/homework.ts` referenced fields that didn't exist on the
+  schema; the one caller would have thrown; no UI called it anyway) — student
+  self-service ("Mark done" / "Attach & submit", via `/api/upload`) is now
+  real, and teachers see each submission link in the Evaluate modal.
+- **Syllabus**/**Content Share** still API-only.
 
 ## P3 — Missing modules (Smart School paid add-ons / extras)
 
