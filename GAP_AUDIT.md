@@ -167,11 +167,16 @@ caught up. Updated below.
   cascade onto its rooms, Item↔StockMovement/ItemIssue) — switched all to
   soft-delete, matching the app-wide convention, and added `isActive`
   filters to every listing query so a deleted record actually disappears.
-  Still open: **pickup points** have the same pattern and haven't been
-  done. `costPerBed` is captured now (was already in the API, added to
-  the new edit dialog) — no `floor` field exists anywhere in the schema,
-  so that part of the original claim doesn't apply. Vehicle photo and
-  pickup lat/long are still genuinely dropped from their forms.
+  ✅ **Pickup points** done too — also found and fixed a real bug: PATCH
+  referenced a `location` field that never existed on the model (would
+  have thrown if ever called with it); real fields are name/latitude/
+  longitude/isActive. Added lat/long to create + a new edit dialog
+  (closing "pickup lat/long dropped from forms"), switched DELETE to
+  soft-delete. `costPerBed` was already in the room API, now also in its
+  edit dialog — no `floor` field exists anywhere in the schema, so that
+  part of the original claim never applied. Only **vehicle photo** is
+  still genuinely dropped from its form. Operations "working API, no UI"
+  cluster is now fully closed.
 - **Library** membership never enforced at issue; duplicate return logic;
   hard-delete orphans history.
 - **Fees**: fine/late-fee at collection is a **won't-fix** — schools do not
