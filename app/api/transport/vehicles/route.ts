@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
 export async function GET() {
-  const v = await ((await getDb()) as any).vehicle.findMany({ orderBy: { vehicleNo: "asc" } });
+  const v = await ((await getDb()) as any).vehicle.findMany({ where: { isActive: true }, orderBy: { vehicleNo: "asc" } });
   return NextResponse.json(v);
 }
 export async function POST(req: NextRequest) {

@@ -6,7 +6,9 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bus, MapPin, Users, Plus, X, ChevronDown, ChevronUp, Trash2, Banknote } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Bus, MapPin, Users, Plus, X, ChevronDown, ChevronUp, Trash2, Pencil, Banknote } from "lucide-react";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 import { usePermission } from "@/components/PermissionsProvider";
@@ -47,6 +49,46 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
   const [routes, setRoutes] = useState(initialRoutes);
   const [pickupPoints, setPickupPoints] = useState(initialPoints);
   const [students, setStudents] = useState(initialStudents);
+  const [vehicleList, setVehicleList] = useState(vehicles);
+  const [editVehicle, setEditVehicle] = useState<any | null>(null);
+  const [vehicleForm, setVehicleForm] = useState({ vehicleNo: "", vehicleModel: "", manufactureYear: "", driverName: "", driverContact: "", driverLicence: "" });
+  const [vehicleSaving, setVehicleSaving] = useState(false);
+  const [vehicleError, setVehicleError] = useState("");
+
+  function openEditVehicle(v: any) {
+    setEditVehicle(v);
+    setVehicleForm({
+      vehicleNo: v.vehicleNo ?? "", vehicleModel: v.vehicleModel ?? "", manufactureYear: v.manufactureYear ?? "",
+      driverName: v.driverName ?? "", driverContact: v.driverContact ?? "", driverLicence: v.driverLicence ?? "",
+    });
+    setVehicleError("");
+  }
+
+  async function saveVehicle() {
+    if (!editVehicle) return;
+    if (!vehicleForm.vehicleNo.trim()) { setVehicleError("Vehicle registration number is required"); return; }
+    setVehicleSaving(true); setVehicleError("");
+    try {
+      const res = await fetch(`/api/transport/vehicles/${editVehicle.id}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(vehicleForm),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || "Failed");
+      setVehicleList(list => list.map(v => v.id === editVehicle.id ? d : v));
+      setEditVehicle(null);
+    } catch (e: any) {
+      setVehicleError(e.message || "Failed");
+    } finally {
+      setVehicleSaving(false);
+    }
+  }
+
+  async function deleteVehicle(id: string) {
+    if (!confirm("Delete this vehicle? Routes using it will show \"No vehicle\".")) return;
+    const res = await fetch(`/api/transport/vehicles/${id}`, { method: "DELETE" });
+    if (!res.ok) { const d = await res.json(); alert(d.error || "Failed"); return; }
+    setVehicleList(list => list.filter(v => v.id !== id));
+  }
 
   // Routes tab — which route is expanded
   const [expandedRouteId, setExpandedRouteId] = useState<string | null>(null);
@@ -178,7 +220,7 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
       {tab === "vehicles" && (
         <div className="space-y-4">
           <div className="flex justify-between">
-            <p className="text-sm text-gray-500">{vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-gray-500">{vehicleList.length} vehicle{vehicleList.length !== 1 ? "s" : ""}</p>
             {perm.canAdd && (
               <Link href="/transport/vehicles/new">
                 <Button><Plus className="h-4 w-4 mr-1.5" /> Add Vehicle</Button>
@@ -188,14 +230,14 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b">
-                <tr>{["Reg No.", "Model", "Year", "Driver", "Contact", "Licence"].map(h =>
+                <tr>{["Reg No.", "Model", "Year", "Driver", "Contact", "Licence", ""].map(h =>
                   <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
                 )}</tr>
               </thead>
               <tbody className="divide-y">
-                {vehicles.length === 0
-                  ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No vehicles yet.</td></tr>
-                  : vehicles.map((v: any) => (
+                {vehicleList.length === 0
+                  ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-400">No vehicles yet.</td></tr>
+                  : vehicleList.map((v: any) => (
                     <tr key={v.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 font-mono font-medium">{v.vehicleNo}</td>
                       <td className="px-4 py-3 text-gray-600">{v.vehicleModel ?? "—"}</td>
@@ -203,6 +245,16 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                       <td className="px-4 py-3 text-gray-700">{v.driverName ?? "—"}</td>
                       <td className="px-4 py-3 text-gray-500">{v.driverContact ?? "—"}</td>
                       <td className="px-4 py-3 text-gray-500">{v.driverLicence ?? "—"}</td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="inline-flex items-center gap-2">
+                          <button onClick={() => openEditVehicle(v)} className="text-gray-400 hover:text-gray-600" title="Edit vehicle">
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button onClick={() => deleteVehicle(v.id)} className="text-gray-400 hover:text-red-600" title="Delete vehicle">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
               </tbody>
@@ -578,6 +630,44 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
           </div>
         </div>
       )}
+
+      <Dialog open={!!editVehicle} onOpenChange={o => !o && setEditVehicle(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Vehicle</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>Registration No. *</Label>
+              <Input className="mt-1" value={vehicleForm.vehicleNo} onChange={e => setVehicleForm(f => ({ ...f, vehicleNo: e.target.value }))} />
+            </div>
+            <div>
+              <Label>Model</Label>
+              <Input className="mt-1" value={vehicleForm.vehicleModel} onChange={e => setVehicleForm(f => ({ ...f, vehicleModel: e.target.value }))} />
+            </div>
+            <div>
+              <Label>Manufacture Year</Label>
+              <Input className="mt-1" value={vehicleForm.manufactureYear} onChange={e => setVehicleForm(f => ({ ...f, manufactureYear: e.target.value }))} />
+            </div>
+            <div>
+              <Label>Driver Name</Label>
+              <Input className="mt-1" value={vehicleForm.driverName} onChange={e => setVehicleForm(f => ({ ...f, driverName: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Driver Contact</Label>
+                <Input className="mt-1" value={vehicleForm.driverContact} onChange={e => setVehicleForm(f => ({ ...f, driverContact: e.target.value }))} />
+              </div>
+              <div>
+                <Label>Licence No.</Label>
+                <Input className="mt-1" value={vehicleForm.driverLicence} onChange={e => setVehicleForm(f => ({ ...f, driverLicence: e.target.value }))} />
+              </div>
+            </div>
+            {vehicleError && <p className="text-sm text-red-600">{vehicleError}</p>}
+            <Button className="w-full" disabled={vehicleSaving} onClick={saveVehicle}>
+              {vehicleSaving ? "Saving…" : "Save Changes"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }

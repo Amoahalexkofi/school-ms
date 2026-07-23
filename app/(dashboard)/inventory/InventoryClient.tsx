@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { usePermission } from "@/components/PermissionsProvider";import { Input } from "@/components/ui/input";
-import { Plus, TrendingUp, TrendingDown, AlertTriangle, X, ArrowUpRight, Trash2 } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, AlertTriangle, X, ArrowUpRight, Trash2, Pencil } from "lucide-react";
 
 type Props = { categories: any[]; suppliers: any[]; stores: any[]; items: any[]; issues: any[]; staff: any[] };
 type Tab = "items" | "categories" | "suppliers" | "stores" | "issues";
@@ -38,6 +40,37 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
   const [storeForm, setStoreForm] = useState({ name: "", location: "" });
   const [miscLoad, setMiscLoad] = useState(false);
 
+  // Item edit dialog
+  const [editItem, setEditItem] = useState<any | null>(null);
+  const [itemForm, setItemForm] = useState({ name: "", unit: "", categoryId: "", supplierId: "", storeId: "", lowStockAlert: "5" });
+  const [itemSaving, setItemSaving] = useState(false);
+  const [itemError, setItemError] = useState("");
+
+  function openEditItem(i: any) {
+    setEditItem(i);
+    setItemForm({
+      name: i.name ?? "", unit: i.unit ?? "", categoryId: i.categoryId ?? "",
+      supplierId: i.supplierId ?? "", storeId: i.storeId ?? "", lowStockAlert: String(i.lowStockAlert ?? 5),
+    });
+    setItemError("");
+  }
+
+  async function saveItem() {
+    if (!editItem) return;
+    if (!itemForm.name.trim()) { setItemError("Item name is required"); return; }
+    setItemSaving(true); setItemError("");
+    try {
+      await post(`/api/inventory/items/${editItem.id}`, itemForm, "PATCH");
+      setEditItem(null);
+      router.refresh();
+    } catch (e: any) {
+      setItemError(e.message || "Failed");
+    } finally {
+      setItemSaving(false);
+    }
+  }
+
+
   async function saveSupplier() {
     if (!supForm.name.trim()) { alert("Supplier name is required"); return; }
     setMiscLoad(true);
@@ -55,8 +88,8 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
     try { await fetch(url, { method: "DELETE" }); router.refresh(); } catch { alert("Failed"); }
   }
 
-  async function post(url: string, body: object) {
-    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  async function post(url: string, body: object, method: "POST" | "PATCH" = "POST") {
+    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const d = await res.json(); if (!res.ok) throw new Error(d.error); return d;
   }
 
@@ -240,6 +273,13 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
                         <Button size="sm" variant="outline" className="text-red-600 border-red-200"
                           onClick={() => openStock("OUT", i.id)}>
                           <TrendingDown className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => openEditItem(i)} title="Edit item">
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-gray-500"
+                          onClick={() => delMisc(`/api/inventory/items/${i.id}`)} title="Delete item">
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </td>
                     </tr>
@@ -446,6 +486,53 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
           </div>
         </div>
       )}
+
+      <Dialog open={!!editItem} onOpenChange={o => !o && setEditItem(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Item</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>Name *</Label>
+              <Input className="mt-1" value={itemForm.name} onChange={e => setItemForm(f => ({ ...f, name: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Unit</Label>
+                <Input className="mt-1" value={itemForm.unit} onChange={e => setItemForm(f => ({ ...f, unit: e.target.value }))} placeholder="e.g. pcs, kg, box" />
+              </div>
+              <div>
+                <Label>Low Stock Alert</Label>
+                <Input className="mt-1" type="number" min="0" value={itemForm.lowStockAlert} onChange={e => setItemForm(f => ({ ...f, lowStockAlert: e.target.value }))} />
+              </div>
+            </div>
+            <div>
+              <Label>Category</Label>
+              <select className={`${SEL} mt-1`} value={itemForm.categoryId} onChange={e => setItemForm(f => ({ ...f, categoryId: e.target.value }))}>
+                <option value="">— none —</option>
+                {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <Label>Supplier</Label>
+              <select className={`${SEL} mt-1`} value={itemForm.supplierId} onChange={e => setItemForm(f => ({ ...f, supplierId: e.target.value }))}>
+                <option value="">— none —</option>
+                {suppliers.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <Label>Store</Label>
+              <select className={`${SEL} mt-1`} value={itemForm.storeId} onChange={e => setItemForm(f => ({ ...f, storeId: e.target.value }))}>
+                <option value="">— none —</option>
+                {stores.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+            {itemError && <p className="text-sm text-red-600">{itemError}</p>}
+            <Button className="w-full" disabled={itemSaving} onClick={saveItem}>
+              {itemSaving ? "Saving…" : "Save Changes"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
