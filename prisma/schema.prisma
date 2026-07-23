@@ -1227,13 +1227,15 @@ model HomeworkEvaluation {
 }
 
 model HomeworkAcknowledgement {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   homeworkId   String
-  homework     Homework @relation(fields: [homeworkId], references: [id])
+  homework     Homework  @relation(fields: [homeworkId], references: [id])
   studentId    String
-  student      Student  @relation(fields: [studentId], references: [id])
-  acknowledged Boolean  @default(false)
-  createdAt    DateTime @default(now())
+  student      Student   @relation(fields: [studentId], references: [id])
+  acknowledged Boolean   @default(false)
+  attachment   String?
+  submittedAt  DateTime?
+  createdAt    DateTime  @default(now())
 
   @@unique([homeworkId, studentId])
 }

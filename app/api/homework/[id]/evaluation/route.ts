@@ -16,6 +16,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
         evaluationDate: true, evaluatedBy: true,
         subject: { select: { name: true } },
         evaluations: { select: { studentId: true, marks: true, note: true, status: true } },
+        acknowledgements: { select: { studentId: true, attachment: true, submittedAt: true } },
       },
     });
     if (!hw) return NextResponse.json({ error: "Homework not found" }, { status: 404 });
@@ -29,10 +30,13 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
     const evalByStudent: Record<string, any> = {};
     for (const e of hw.evaluations) evalByStudent[e.studentId] = e;
+    const ackByStudent: Record<string, any> = {};
+    for (const a of hw.acknowledgements) ackByStudent[a.studentId] = a;
 
     const students = enrollments.map((en: any) => {
       const s = en.student;
       const ev = evalByStudent[s.id];
+      const ack = ackByStudent[s.id];
       return {
         studentId: s.id,
         name: [s.firstName, s.middleName, s.lastName].filter(Boolean).join(" "),
@@ -41,6 +45,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
         marks: ev?.marks ?? null,
         note: ev?.note ?? "",
         evaluated: !!ev,
+        submission: ack?.attachment ?? null,
+        submittedAt: ack?.submittedAt ?? null,
       };
     });
 

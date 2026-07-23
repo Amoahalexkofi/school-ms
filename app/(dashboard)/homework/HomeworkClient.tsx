@@ -410,7 +410,18 @@ export function HomeworkClient({ classes, staff, session }: {
                       <tr key={r.studentId} className="border-b last:border-0">
                         <td className="py-2 pr-2">
                           <div className="font-medium text-gray-800">{r.name}</div>
-                          <div className="text-[11px] text-gray-400">{r.admissionNo}{r.rollNo ? ` · Roll ${r.rollNo}` : ""}{r.evaluated && <span className="ml-1 text-green-600">• evaluated</span>}</div>
+                          <div className="text-[11px] text-gray-400 flex items-center flex-wrap gap-x-1">
+                            <span>{r.admissionNo}{r.rollNo ? ` · Roll ${r.rollNo}` : ""}</span>
+                            {r.evaluated && <span className="text-green-600">• evaluated</span>}
+                            {r.submission ? (
+                              <a href={r.submission} target="_blank" rel="noopener noreferrer"
+                                 className="inline-flex items-center gap-0.5 text-indigo-600 hover:underline">
+                                <Paperclip className="h-2.5 w-2.5" /> submitted
+                              </a>
+                            ) : (
+                              <span className="text-gray-300">• not submitted</span>
+                            )}
+                          </div>
                         </td>
                         <td className="py-2 px-2">
                           <Input type="number" min="0" step="0.5" max={evalMax ?? undefined}

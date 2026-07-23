@@ -36,16 +36,18 @@ const CASES: Case[] = [
   { role: "STUDENT", path: "/api/fees/pay", method: "POST", want: true, why: "initiate own payment" },
   { role: "STUDENT", path: "/api/timetable", method: "GET", want: true, why: "view timetable" },
   // Pre-existing coarse-gate behaviour, asserted so it can't drift silently:
-  // /api/library is staff-only, and the duplicate "/homework" rule at
-  // middleware-utils.ts:78 shadows the one at :148 that lists STUDENT/PARENT.
+  // /api/library and /api/homework are staff-only by design — STUDENT/PARENT
+  // have no "homework" entry in ROLE_DEFAULTS, so the portal reads homework
+  // data server-side. (proxy.ts carves out a narrow PATCH .../acknowledge
+  // exception for the student submit action, not exercised by this script.)
   { role: "STUDENT", path: "/api/library", method: "GET", want: false, why: "/api/library is staff-only" },
-  { role: "STUDENT", path: "/api/homework", method: "GET", want: false, why: "shadowed /homework rule" },
+  { role: "STUDENT", path: "/api/homework", method: "GET", want: false, why: "/api/homework is staff-only" },
 
   { role: "PARENT", path: "/api/chat", method: "GET", want: true, why: "read conversations" },
   { role: "PARENT", path: "/api/chat/abc", method: "POST", want: true, why: "message the school" },
   { role: "PARENT", path: "/api/fees/pay", method: "POST", want: true, why: "pay a child's fees" },
   { role: "PARENT", path: "/api/timetable", method: "GET", want: true, why: "see timetable" },
-  { role: "PARENT", path: "/api/homework", method: "GET", want: false, why: "shadowed /homework rule" },
+  { role: "PARENT", path: "/api/homework", method: "GET", want: false, why: "/api/homework is staff-only" },
 
   { role: "RECEPTIONIST", path: "/api/front-office/visitors", method: "GET", want: true, why: "visitor book" },
   { role: "RECEPTIONIST", path: "/api/front-office/visitors", method: "POST", want: true, why: "log a visitor" },

@@ -2,7 +2,8 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
-import { CheckSquare, BookOpen } from "lucide-react";
+import { CheckSquare, BookOpen, Paperclip } from "lucide-react";
+import { HomeworkSubmit } from "./HomeworkSubmit";
 
 function NoProfile() {
   return (
@@ -139,6 +140,20 @@ function HomeworkList({ title, items, variant }: {
                   </span>
                   {h.staff && <span>· By {h.staff.firstName} {h.staff.lastName}</span>}
                 </div>
+                {variant === "submitted" ? (
+                  h.acknowledgements[0]?.attachment && (
+                    <a
+                      href={h.acknowledgements[0].attachment}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:underline"
+                    >
+                      <Paperclip className="h-3 w-3" /> View my submission
+                    </a>
+                  )
+                ) : (
+                  <HomeworkSubmit homeworkId={h.id} />
+                )}
               </div>
               <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${c.badge}`}>
                 {variant === "submitted" ? "✓ Submitted" : variant === "overdue" ? "Overdue" : "Pending"}

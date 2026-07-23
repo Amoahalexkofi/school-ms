@@ -200,6 +200,18 @@ export async function proxy(request: NextRequest) {
 
   // API routes: enforce role-based access (resource permission), 403 if denied.
   if (pathname.startsWith("/api/")) {
+    // Homework submission: a student may PATCH their own acknowledgement (mark
+    // done / attach a file), even though /api/homework is otherwise staff-only
+    // — the portal reads homework data server-side and never hits this API for
+    // anything else. Route itself resolves the student from the session, not
+    // from the request body, so this can't be used to act as another student.
+    if (
+      role === "STUDENT" &&
+      request.method === "PATCH" &&
+      /^\/api\/homework\/[^/]+\/acknowledge$/.test(pathname)
+    ) {
+      return NextResponse.next({ request: { headers: requestHeaders } });
+    }
     if (!role || !canAccessApiRoute(pathname, role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
