@@ -249,6 +249,11 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/lesson-plans",
     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
   },
+  // Content share (page path differs from /api/share-contents, needs its own rule)
+  {
+    prefix: "/content-share",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
+  },
   // Notice board
   {
     prefix: "/notice-board",
