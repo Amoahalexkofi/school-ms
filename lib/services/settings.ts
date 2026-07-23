@@ -49,7 +49,7 @@ export async function createSection(input: { name: string; classId?: string }) {
 }
 
 export async function listSubjects(classId?: string, sessionId?: string) {
-  const where: any = {};
+  const where: any = { isActive: true };
   if (classId)   where.classId   = classId;
   if (sessionId) where.sessionId = sessionId;
   const prisma = await getDb();
@@ -78,4 +78,45 @@ export async function createSubject(input: { name: string; code: string; classId
   return (prisma as any).subject.create({
     data: { name: input.name.trim(), code: input.code.trim().toUpperCase(), classId: input.classId, sessionId },
   });
+}
+
+export async function updateSubject(id: string, input: { name?: string; code?: string }) {
+  const data: any = {};
+  if (input.name !== undefined) {
+    if (!input.name.trim()) throw Object.assign(new Error("Subject name is required"), { code: "VALIDATION" });
+    data.name = input.name.trim();
+  }
+  if (input.code !== undefined) {
+    if (!input.code.trim()) throw Object.assign(new Error("Subject code is required"), { code: "VALIDATION" });
+    data.code = input.code.trim().toUpperCase();
+  }
+  const prisma = await getDb();
+  return (prisma as any).subject.update({ where: { id }, data });
+}
+
+export async function deleteSubject(id: string) {
+  const prisma = await getDb();
+  return (prisma as any).subject.update({ where: { id }, data: { isActive: false } });
+}
+
+export async function updateClass(id: string, input: { name: string }) {
+  if (!input.name.trim()) throw Object.assign(new Error("Class name is required"), { code: "VALIDATION" });
+  const prisma = await getDb();
+  return (prisma as any).class.update({ where: { id }, data: { name: input.name.trim() } });
+}
+
+export async function deleteClass(id: string) {
+  const prisma = await getDb();
+  return (prisma as any).class.update({ where: { id }, data: { isActive: false } });
+}
+
+export async function updateSection(id: string, input: { name: string }) {
+  if (!input.name.trim()) throw Object.assign(new Error("Section name is required"), { code: "VALIDATION" });
+  const prisma = await getDb();
+  return (prisma as any).section.update({ where: { id }, data: { name: input.name.trim() } });
+}
+
+export async function deleteSection(id: string) {
+  const prisma = await getDb();
+  return (prisma as any).section.update({ where: { id }, data: { isActive: false } });
 }

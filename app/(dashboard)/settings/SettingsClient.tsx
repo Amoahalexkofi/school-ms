@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink, Home, Bell, Mail, MessageSquare, Clock, Landmark, Building2, CreditCard } from "lucide-react";
+import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink, Home, Bell, Mail, MessageSquare, Clock, Landmark, Building2, CreditCard, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { TermsCard } from "./TermsCard";
 
@@ -85,6 +85,25 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
   async function removeSection(id: string) {
     if (!confirm("Remove this section from the class?")) return;
     const res = await fetch(`/api/class-sections/${id}`, { method: "DELETE" });
+    const d = await res.json();
+    if (!res.ok) { alert(d.error); return; }
+    router.refresh();
+  }
+
+  async function renameEntity(kind: "classes" | "sections" | "subjects", id: string, currentName: string) {
+    const name = prompt(`Rename to:`, currentName);
+    if (!name || !name.trim() || name.trim() === currentName) return;
+    const res = await fetch(`/api/${kind}/${id}`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim() }),
+    });
+    const d = await res.json();
+    if (!res.ok) { alert(d.error); return; }
+    router.refresh();
+  }
+
+  async function deleteEntity(kind: "classes" | "sections" | "subjects", id: string, label: string) {
+    if (!confirm(`Delete "${label}"? It will be hidden everywhere but existing records referencing it are untouched.`)) return;
+    const res = await fetch(`/api/${kind}/${id}`, { method: "DELETE" });
     const d = await res.json();
     if (!res.ok) { alert(d.error); return; }
     router.refresh();
@@ -270,12 +289,20 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                           <p className="font-semibold">{cls.name}</p>
                           <p className="text-xs text-gray-400">{cls._count?.subjects ?? 0} subject{cls._count?.subjects !== 1 ? "s" : ""} · {linkedSections.length} section{linkedSections.length !== 1 ? "s" : ""}</p>
                         </div>
-                        <Button
-                          size="sm" variant="outline"
-                          onClick={() => { setLinkingClassId(isLinking ? null : cls.id); setLinkSectionId(""); setLinkTeacherId(""); setError(""); }}
-                        >
-                          <Plus className="h-3.5 w-3.5 mr-1" /> Add Section
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => renameEntity("classes", cls.id, cls.name)} className="text-gray-400 hover:text-gray-600" title="Rename class">
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button onClick={() => deleteEntity("classes", cls.id, cls.name)} className="text-gray-400 hover:text-red-600" title="Delete class">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                          <Button
+                            size="sm" variant="outline"
+                            onClick={() => { setLinkingClassId(isLinking ? null : cls.id); setLinkSectionId(""); setLinkTeacherId(""); setError(""); }}
+                          >
+                            <Plus className="h-3.5 w-3.5 mr-1" /> Add Section
+                          </Button>
+                        </div>
                       </div>
 
                       {/* Linked sections table */}
@@ -300,7 +327,9 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                                 <td className="px-2 py-1.5 text-gray-500 text-xs">
                                   {cs.teacher ? `${cs.teacher.firstName} ${cs.teacher.lastName}` : "—"}
                                 </td>
-                                <td className="px-2 py-1.5 text-right">
+                                <td className="px-2 py-1.5 text-right space-x-2 whitespace-nowrap">
+                                  <button onClick={() => renameEntity("sections", cs.sectionId, cs.section?.name ?? "")} className="text-gray-400 hover:text-gray-600 text-xs" title="Rename section">Rename</button>
+                                  <button onClick={() => deleteEntity("sections", cs.sectionId, cs.section?.name ?? "")} className="text-red-400 hover:text-red-600 text-xs" title="Delete section everywhere">Delete</button>
                                   <button onClick={() => removeSection(cs.id)} className="text-red-400 hover:text-red-600 text-xs">Remove</button>
                                 </td>
                               </tr>
@@ -406,6 +435,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                   <th className="text-left px-3 py-2 font-medium text-gray-600">Name</th>
                   <th className="text-left px-3 py-2 font-medium text-gray-600">Code</th>
                   <th className="text-left px-3 py-2 font-medium text-gray-600">Class</th>
+                  <th className="px-3 py-2"></th>
                 </tr></thead>
                 <tbody className="divide-y">
                   {subjects.map((sub: any) => (
@@ -413,6 +443,16 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                       <td className="px-3 py-2.5 font-medium">{sub.name}</td>
                       <td className="px-3 py-2.5 font-mono text-xs text-gray-500">{sub.code ?? "—"}</td>
                       <td className="px-3 py-2.5 text-gray-600">{sub.class?.name ?? "—"}</td>
+                      <td className="px-3 py-2.5 text-right">
+                        <div className="inline-flex items-center gap-2">
+                          <button onClick={() => renameEntity("subjects", sub.id, sub.name)} className="text-gray-400 hover:text-gray-600" title="Rename subject">
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button onClick={() => deleteEntity("subjects", sub.id, sub.name)} className="text-gray-400 hover:text-red-600" title="Delete subject">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -6,8 +6,10 @@ async function getSettingsData() {
   const [sessions, classes, sections, subjects, profile, staff] = await Promise.all([
     ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
     ((await getDb()) as any).class.findMany({
+      where: { isActive: true },
       include: {
         classSections: {
+          where: { section: { isActive: true } },
           select: {
             id: true,
             sectionId: true,
@@ -20,8 +22,9 @@ async function getSettingsData() {
       },
       orderBy: { name: "asc" },
     }),
-    ((await getDb()) as any).section.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).section.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
     ((await getDb()) as any).subject.findMany({
+      where: { isActive: true },
       include: { class: { select: { id: true, name: true } } },
       orderBy: { name: "asc" },
     }),
