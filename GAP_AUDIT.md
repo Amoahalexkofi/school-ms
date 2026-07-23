@@ -152,7 +152,10 @@ caught up. Updated below.
   (`transfercertificate.php` is just one certificate print template, not a
   distinct workflow). This entry was a phantom gap from the original
   2026-06-21 pass.
-- **Subjects/Classes/Sections** add-only (no edit/delete `[id]` routes).
+- ✅ **Subjects/Classes/Sections** — fixed 2026-07-22: added PATCH (rename)
+  + DELETE (soft, `isActive: false`) for all three, wired into
+  `SettingsClient.tsx`. Listing queries now filter `isActive` so a deleted
+  entity actually disappears.
 - **Most Operations modules** are create+list only; dropped form fields (room
   `costPerBed`/`floor`, vehicle photo, pickup lat/long).
 - **Library** membership never enforced at issue; duplicate return logic;
