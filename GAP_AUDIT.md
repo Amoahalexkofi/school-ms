@@ -177,8 +177,15 @@ caught up. Updated below.
   part of the original claim never applied. Only **vehicle photo** is
   still genuinely dropped from its form. Operations "working API, no UI"
   cluster is now fully closed.
-- **Library** membership never enforced at issue; duplicate return logic;
-  hard-delete orphans history.
+- ✅ **Library** — all three fixed 2026-07-22. Membership: `/api/library/
+  issues` POST now requires an active `LibraryMember` (mirrors Smart
+  School — issuing is done FROM a member's page), and the Issue Book
+  form's pickers are filtered to actual members. Duplicate return logic:
+  deleted `lib/services/library.ts` (`returnBook`, plus dead
+  `listBooks`/`addBook`/`issueBook`) and the unused `.../return` route —
+  zero real callers, the UI only ever used the inline `PATCH .../[id]`
+  path. Hard-delete: `Book` DELETE now soft-deletes (`isActive: false`)
+  instead of throwing on any `BookIssue` history row.
 - **Fees**: fine/late-fee at collection is a **won't-fix** — schools do not
   charge late fees, so `FeeGroupItem.fineType/finePercentage/fineAmount/
   finePerDay` and `CumulativeFine` staying uncomputed at collection is
