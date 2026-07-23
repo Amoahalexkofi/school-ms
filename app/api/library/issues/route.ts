@@ -23,7 +23,24 @@ export async function POST(req: NextRequest) {
     if (!bookId || !dueDate) return NextResponse.json({ error: "bookId and dueDate required" }, { status: 422 });
     if (!studentId && !staffId) return NextResponse.json({ error: "Either studentId or staffId required" }, { status: 422 });
 
-    const book = await ((await getDb()) as any).book.findUnique({ where: { id: bookId }, select: { available: true } });
+    const db = await getDb();
+
+    // Mirrors Smart School: issuing is done FROM a library member's page
+    // (admin/Member::issue), so a book can only ever be issued to someone who
+    // is already a registered, active member.
+    const member = await (db as any).libraryMember.findUnique({
+      where: {
+        memberType_memberId: {
+          memberType: studentId ? "student" : "teacher",
+          memberId: studentId || staffId,
+        },
+      },
+    });
+    if (!member || !member.isActive) {
+      return NextResponse.json({ error: "Not a registered library member — add them as a member first" }, { status: 422 });
+    }
+
+    const book = await (db as any).book.findUnique({ where: { id: bookId }, select: { available: true } });
     if (!book || book.available < 1) return NextResponse.json({ error: "No copies available" }, { status: 409 });
 
     const issue = await ((await getDb()) as any).$transaction(async (tx: any) => {

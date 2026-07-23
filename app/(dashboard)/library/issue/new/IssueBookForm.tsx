@@ -110,6 +110,11 @@ export function IssueBookForm({ books, students, staff }: Props) {
                     <option key={s.id} value={s.id}>{s.firstName} {s.lastName} ({s.admissionNo})</option>
                   ))}
                 </select>
+                {students.length === 0 && (
+                  <p className="text-xs text-gray-400 mt-1.5">
+                    Only registered library members can borrow — <Link href="/library" className="underline">register a student</Link> first.
+                  </p>
+                )}
               </div>
             ) : (
               <div className="md:col-span-2">
@@ -120,6 +125,11 @@ export function IssueBookForm({ books, students, staff }: Props) {
                     <option key={s.id} value={s.id}>{s.firstName} {s.lastName} ({s.employeeId})</option>
                   ))}
                 </select>
+                {staff.length === 0 && (
+                  <p className="text-xs text-gray-400 mt-1.5">
+                    Only registered library members can borrow — <Link href="/library" className="underline">register a staff member</Link> first.
+                  </p>
+                )}
               </div>
             )}
 
