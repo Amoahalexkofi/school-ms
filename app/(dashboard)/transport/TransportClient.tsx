@@ -135,7 +135,14 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
   // Pickup Points tab — add form
   const [showAddPoint, setShowAddPoint] = useState(false);
   const [pName, setPName] = useState("");
+  const [pLat, setPLat] = useState("");
+  const [pLng, setPLng] = useState("");
   const [pLoad, setPLoad] = useState(false);
+
+  const [editPoint, setEditPoint] = useState<any | null>(null);
+  const [pointForm, setPointForm] = useState({ name: "", latitude: "", longitude: "" });
+  const [pointSaving, setPointSaving] = useState(false);
+  const [pointError, setPointError] = useState("");
 
   // Student assign
   const [showAssign, setShowAssign] = useState(false);
@@ -186,9 +193,9 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
     if (!pName.trim()) { alert("Name required"); return; }
     setPLoad(true);
     try {
-      const p = await api("POST", "/api/transport/pickup-points", { name: pName.trim() });
+      const p = await api("POST", "/api/transport/pickup-points", { name: pName.trim(), latitude: pLat, longitude: pLng });
       setPickupPoints(pts => [...pts, p].sort((a, b) => a.name.localeCompare(b.name)));
-      setPName("");
+      setPName(""); setPLat(""); setPLng("");
       setShowAddPoint(false);
     } catch (e: any) { alert(e.message); }
     finally { setPLoad(false); }
@@ -201,6 +208,27 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
       setPickupPoints(pts => pts.filter(p => p.id !== id));
       router.refresh();
     } catch (e: any) { alert(e.message); }
+  }
+
+  function openEditPoint(p: any) {
+    setEditPoint(p);
+    setPointForm({ name: p.name ?? "", latitude: p.latitude != null ? String(p.latitude) : "", longitude: p.longitude != null ? String(p.longitude) : "" });
+    setPointError("");
+  }
+
+  async function savePointEdit() {
+    if (!editPoint) return;
+    if (!pointForm.name.trim()) { setPointError("Name is required"); return; }
+    setPointSaving(true); setPointError("");
+    try {
+      const p = await api("PATCH", `/api/transport/pickup-points/${editPoint.id}`, pointForm);
+      setPickupPoints(pts => pts.map(x => x.id === editPoint.id ? p : x).sort((a, b) => a.name.localeCompare(b.name)));
+      setEditPoint(null);
+    } catch (e: any) {
+      setPointError(e.message || "Failed");
+    } finally {
+      setPointSaving(false);
+    }
   }
 
   // ── Student assign ────────────────────────────────────────────────────────
@@ -466,6 +494,10 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                 placeholder="e.g. Legon Interchange"
                 onKeyDown={e => e.key === "Enter" && savePoint()}
               />
+              <div className="grid grid-cols-2 gap-3">
+                <Input value={pLat} onChange={e => setPLat(e.target.value)} placeholder="Latitude (optional)" type="number" step="any" />
+                <Input value={pLng} onChange={e => setPLng(e.target.value)} placeholder="Longitude (optional)" type="number" step="any" />
+              </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowAddPoint(false)}>Cancel</Button>
                 <Button disabled={pLoad} onClick={savePoint}>{pLoad ? "Saving…" : "Add"}</Button>
@@ -495,15 +527,20 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                         <td className="px-4 py-3 font-medium text-gray-800">{p.name}</td>
                         <td className="px-4 py-3 text-gray-500">{routeCount} route{routeCount !== 1 ? "s" : ""}</td>
                         <td className="px-4 py-3 text-right">
-                          {perm.canDelete && (
-                            <button
-                              onClick={() => deletePoint(p.id, p.name)}
-                              className="text-gray-300 hover:text-red-500 transition-colors"
-                              title="Delete"
-                            >
-                              <Trash2 className="h-4 w-4" />
+                          <div className="inline-flex items-center gap-2">
+                            <button onClick={() => openEditPoint(p)} className="text-gray-300 hover:text-gray-600 transition-colors" title="Edit">
+                              <Pencil className="h-4 w-4" />
                             </button>
-                          )}
+                            {perm.canDelete && (
+                              <button
+                                onClick={() => deletePoint(p.id, p.name)}
+                                className="text-gray-300 hover:text-red-500 transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );
@@ -732,6 +769,32 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
             {routeError && <p className="text-sm text-red-600">{routeError}</p>}
             <Button className="w-full" disabled={routeSaving} onClick={saveRoute}>
               {routeSaving ? "Saving…" : "Save Changes"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editPoint} onOpenChange={o => !o && setEditPoint(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Pickup Point</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>Name *</Label>
+              <Input className="mt-1" value={pointForm.name} onChange={e => setPointForm(f => ({ ...f, name: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Latitude</Label>
+                <Input className="mt-1" type="number" step="any" value={pointForm.latitude} onChange={e => setPointForm(f => ({ ...f, latitude: e.target.value }))} />
+              </div>
+              <div>
+                <Label>Longitude</Label>
+                <Input className="mt-1" type="number" step="any" value={pointForm.longitude} onChange={e => setPointForm(f => ({ ...f, longitude: e.target.value }))} />
+              </div>
+            </div>
+            {pointError && <p className="text-sm text-red-600">{pointError}</p>}
+            <Button className="w-full" disabled={pointSaving} onClick={savePointEdit}>
+              {pointSaving ? "Saving…" : "Save Changes"}
             </Button>
           </div>
         </DialogContent>
