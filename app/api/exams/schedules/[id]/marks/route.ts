@@ -1,17 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { audit } from "@/lib/services/audit";
 import { filterToExamRoster } from "@/lib/services/exams";
+
+// A TEACHER may only view/enter marks for a subject they're assigned to
+// (TeacherSubject) — ADMIN/SUPER_ADMIN/ACCOUNTANT etc. are unrestricted here;
+// this is a subject-level check the coarse+granular permission matrix can't
+// express (it only knows about the "examination" module as a whole).
+async function assertCanTouchSubject(db: any, subjectId: string): Promise<NextResponse | null> {
+  const session = await auth().catch(() => null);
+  const role = (session?.user as any)?.role;
+  if (role !== "TEACHER") return null; // not a teacher — matrix already governs this
+
+  const userId = (session?.user as any)?.id;
+  const staff = userId ? await db.staff.findUnique({ where: { userId }, select: { id: true } }) : null;
+  if (!staff) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const assigned = await db.teacherSubject.findFirst({ where: { staffId: staff.id, subjectId } });
+  if (!assigned) return NextResponse.json({ error: "You are not assigned to this subject" }, { status: 403 });
+  return null;
+}
 
 // GET — students enrolled in this exam's classSection + existing marks
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: scheduleId } = await params;
 
-  const schedule = await ((await getDb()) as any).examSchedule.findUnique({
+  const db0 = await getDb();
+  const schedule = await (db0 as any).examSchedule.findUnique({
     where: { id: scheduleId },
     include: { subject: true, classSection: { include: { class: true, section: true } } },
   });
   if (!schedule) return NextResponse.json({ error: "Schedule not found" }, { status: 404 });
+
+  const forbidden = await assertCanTouchSubject(db0 as any, schedule.subjectId);
+  if (forbidden) return forbidden;
 
   const [enrollments, existingMarks, gradingScales, components, componentMarks] = await Promise.all([
     ((await getDb()) as any).studentSession.findMany({
@@ -70,6 +93,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       select: { fullMarks: true, passingMarks: true, subjectId: true },
     });
     if (!schedule) return NextResponse.json({ error: "Schedule not found" }, { status: 404 });
+
+    const forbidden = await assertCanTouchSubject(db as any, schedule.subjectId);
+    if (forbidden) return forbidden;
 
     // Fetch grading scale for grade computation (canonical = first created)
     const gradingScale = await (db as any).gradingScale.findFirst({

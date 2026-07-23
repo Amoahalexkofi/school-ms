@@ -160,9 +160,20 @@ caught up. Updated below.
   intentional, not a gap. Still real: one report only (no
   daily/class-wise/CSV); fee reminders config-only (no cron sends); gateway
   keys DB-only; Flutterwave currency hard-coded `GHS`.
-- **Exams**: no CSV mark import, no all-subjects grid, no teacher
-  subject-scoping, no rank override, no result SMS/PDF; **Grades &
-  Marks-Division** are API-only.
+- **Exams** — re-verified 2026-07-22, most of this was already wrong: ✅ CSV
+  mark import (`MarkEntryClient.tsx`, adm-no matched, sample-CSV download),
+  ✅ rank override (`app/api/exams/results/[examGroupId]/rank`), ✅ result
+  PDF (`.../pdf`, `@react-pdf/renderer`), ✅ result email+SMS+WhatsApp
+  (`lib/services/exams.ts`). ✅ **Teacher subject-scoping** — fixed
+  2026-07-22: a `TeacherSubject` table already existed (staff↔subject
+  assignment, admin-managed) but nothing checked it — any TEACHER could
+  view/enter marks for any subject via `/api/exams/schedules/[id]/marks`.
+  Now enforced server-side (403 if the schedule's subject isn't theirs) and
+  reflected in the UI — the exam-group detail page disables "Marks" for
+  subjects the signed-in teacher isn't assigned to.
+  Still real: **Grades & Marks-Division** have no settings UI
+  (API-only); no single "all subjects at once" mark-entry grid (entry is
+  one exam-schedule/subject at a time via `/exams/[id]/marks/[scheduleId]`).
 - **Subject-wise Attendance** API-only; broadcast Notification backend has no
   UI; Notification Settings decorative.
 - **Reports**: 8 of ~16 types; no PDF export; no payroll/finance/inventory/

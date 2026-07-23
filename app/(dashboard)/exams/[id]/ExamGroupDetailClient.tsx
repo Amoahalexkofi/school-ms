@@ -9,9 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, Plus, Pencil, Trash2, ClipboardEdit, Globe, Lock, UserCheck } from "lucide-react";
 
-type Props = { group: any; sessions: any[]; classSections: any[]; subjects: any[] };
+type Props = { group: any; sessions: any[]; classSections: any[]; subjects: any[]; mySubjectIds: string[] | null };
 
-export function ExamGroupDetailClient({ group, sessions, classSections, subjects }: Props) {
+export function ExamGroupDetailClient({ group, sessions, classSections, subjects, mySubjectIds }: Props) {
   const router = useRouter();
   const [addOpen,  setAddOpen]  = useState(false);
   const [loading,  setLoading]  = useState(false);
@@ -157,11 +157,18 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
                           </span>
                         </td>
                         <td className="px-4 py-3 flex gap-2 justify-end">
-                          <Link href={`/exams/${group.id}/marks/${sch.id}`}>
-                            <Button size="sm" variant="outline" className="text-indigo-600 border-indigo-200 hover:bg-indigo-50">
+                          {mySubjectIds !== null && !mySubjectIds.includes(sch.subjectId) ? (
+                            <Button size="sm" variant="outline" disabled title="You are not assigned to this subject"
+                              className="text-gray-400 border-gray-200">
                               <ClipboardEdit className="h-3.5 w-3.5 mr-1" /> Marks
                             </Button>
-                          </Link>
+                          ) : (
+                            <Link href={`/exams/${group.id}/marks/${sch.id}`}>
+                              <Button size="sm" variant="outline" className="text-indigo-600 border-indigo-200 hover:bg-indigo-50">
+                                <ClipboardEdit className="h-3.5 w-3.5 mr-1" /> Marks
+                              </Button>
+                            </Link>
+                          )}
                           <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
                             onClick={() => handleDeleteSchedule(sch.id)}>
                             <Trash2 className="h-3.5 w-3.5" />
