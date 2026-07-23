@@ -247,7 +247,13 @@ caught up. Updated below.
   schema; the one caller would have thrown; no UI called it anyway) — student
   self-service ("Mark done" / "Attach & submit", via `/api/upload`) is now
   real, and teachers see each submission link in the Evaluate modal.
-- **Syllabus**/**Content Share** still API-only.
+- ❎ **"Syllabus API-only" — wrong.** The "Weekly Plan" scheduler inside
+  `LessonPlanClient.tsx` is a full UI over `/api/syllabus` (create/edit/
+  delete scheduled lesson entries). ✅ **Content Share** — fixed
+  2026-07-22, this one was real: added `/content-share` (list/share/edit/
+  delete), sidebar link, and a page-level coarse-gate rule. This closes
+  out the entire P2 list — everything in it is now either done or
+  confirmed as never having been a real gap.
 
 ## P3 — Missing modules (Smart School paid add-ons / extras)
 
