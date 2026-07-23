@@ -213,8 +213,23 @@ caught up. Updated below.
   (both have working `[id]` PATCH/DELETE routes too). Still real: no single
   "all subjects at once" mark-entry grid (entry is one exam-schedule/subject
   at a time via `/exams/[id]/marks/[scheduleId]`).
-- **Subject-wise Attendance** API-only; broadcast Notification backend has no
-  UI; Notification Settings decorative.
+- ❎ **"Subject-wise Attendance API-only" — wrong.** A 362-line
+  `SubjectAttendanceClient.tsx` already exists at `/attendance/subject`,
+  linked from the main Attendance page. Nothing to build.
+- ✅ **Broadcast Notification** — fixed 2026-07-22. `SendNotification`/
+  `NotificationRole` had a full backend and zero UI; `/api/notifications/
+  send` was also coarse-gated to admins for every verb (would have
+  blocked the intended readers). Opened GET to all roles (method-guarded
+  to admin-only POST/DELETE, role-filtered server-side), added a compose
+  dialog + Announcements section on `/notifications`.
+- 🟡 **Notification Settings is still genuinely decorative.** Confirmed:
+  `NotificationSetting` rows are written by `/settings/notifications` and
+  read by nothing else anywhere in the codebase — toggling "SMS off" for
+  an event does not stop that SMS from sending. Fixing this properly
+  means adding a settings check to every notification call site
+  (attendance, exams, fees, homework, …), a cross-cutting change touching
+  many files — deliberately not attempted in this pass to avoid a
+  half-wired result that's worse than the current honest "does nothing."
 - ✅ **Reports** — mostly wrong, fixed 2026-07-22. "No PDF export" was
   false: `/api/reports/pdf` (generic flat-rows → PDF via
   `@react-pdf/renderer`) already existed and was wired into all 8
