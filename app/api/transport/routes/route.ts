@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 
 export async function GET() {
   const routes = await ((await getDb()) as any).route.findMany({
+    where: { isActive: true },
     include: { vehicle: { select: { vehicleNo: true, driverName: true } }, routePickupPoints: { include: { pickupPoint: true }, orderBy: { order: "asc" } }, _count: { select: { studentRoutes: true } } },
     orderBy: { title: "asc" },
   });

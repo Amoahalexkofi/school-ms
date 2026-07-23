@@ -6,6 +6,7 @@ export default async function TransportPage() {
   const [vehicles, routes, pickupPoints, students] = await Promise.all([
     ((await getDb()) as any).vehicle.findMany({ where: { isActive: true }, orderBy: { vehicleNo: "asc" } }),
     ((await getDb()) as any).route.findMany({
+      where: { isActive: true },
       include: {
         vehicle: { select: { vehicleNo: true } },
         routePickupPoints: { include: { pickupPoint: true }, orderBy: { order: "asc" } },

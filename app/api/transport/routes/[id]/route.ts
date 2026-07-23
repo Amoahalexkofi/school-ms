@@ -14,8 +14,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const r = await ((await getDb()) as any).route.update({ where: { id }, data: { title: body.title, vehicleId: body.vehicleId || null } });
   return NextResponse.json(r);
 }
+// Soft delete — a hard delete would throw on any StudentRoute still
+// referencing this route; matches the app-wide isActive convention.
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  await ((await getDb()) as any).route.delete({ where: { id } });
+  await ((await getDb()) as any).route.update({ where: { id }, data: { isActive: false } });
   return NextResponse.json({ ok: true });
 }

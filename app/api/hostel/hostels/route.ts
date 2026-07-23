@@ -5,7 +5,8 @@ import { resolveBranchForCreate } from "@/lib/services/branches";
 
 export async function GET() {
   return NextResponse.json(await ((await getDb()) as any).hostel.findMany({
-    include: { rooms: { include: { roomType: true, _count: { select: { allocations: true } } } } },
+    where: { isActive: true },
+    include: { rooms: { where: { isActive: true }, include: { roomType: true, _count: { select: { allocations: true } } } } },
     orderBy: { name: "asc" },
   }));
 }

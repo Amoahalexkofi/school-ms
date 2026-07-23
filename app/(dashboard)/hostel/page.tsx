@@ -9,9 +9,10 @@ export default async function HostelPage() {
   const [roomTypes, hostels, students] = await Promise.all([
     ((await getDb()) as any).roomType.findMany({ orderBy: { name: "asc" } }),
     ((await getDb()) as any).hostel.findMany({
-      where: { ...bScope },
+      where: { isActive: true, ...bScope },
       include: {
         rooms: {
+          where: { isActive: true },
           include: { roomType: { select: { name: true } }, _count: { select: { allocations: true } } },
           orderBy: { roomNo: "asc" },
         },

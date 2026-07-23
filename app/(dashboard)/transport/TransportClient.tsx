@@ -95,6 +95,43 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
   const [stopForm, setStopForm] = useState({ pickupPointId: "", timing: "", fees: "" });
   const [stopLoading, setStopLoading] = useState(false);
 
+  const [editRoute, setEditRoute] = useState<any | null>(null);
+  const [routeForm, setRouteForm] = useState({ title: "", vehicleId: "" });
+  const [routeSaving, setRouteSaving] = useState(false);
+  const [routeError, setRouteError] = useState("");
+
+  function openEditRoute(r: any) {
+    setEditRoute(r);
+    setRouteForm({ title: r.title ?? "", vehicleId: r.vehicleId ?? "" });
+    setRouteError("");
+  }
+
+  async function saveRoute() {
+    if (!editRoute) return;
+    if (!routeForm.title.trim()) { setRouteError("Route title is required"); return; }
+    setRouteSaving(true); setRouteError("");
+    try {
+      const res = await fetch(`/api/transport/routes/${editRoute.id}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(routeForm),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || "Failed");
+      setEditRoute(null);
+      router.refresh();
+    } catch (e: any) {
+      setRouteError(e.message || "Failed");
+    } finally {
+      setRouteSaving(false);
+    }
+  }
+
+  async function deleteRoute(id: string) {
+    if (!confirm("Delete this route? Students assigned to it keep their record but lose the route link.")) return;
+    const res = await fetch(`/api/transport/routes/${id}`, { method: "DELETE" });
+    if (!res.ok) { const d = await res.json(); alert(d.error || "Failed"); return; }
+    router.refresh();
+  }
+
   // Pickup Points tab — add form
   const [showAddPoint, setShowAddPoint] = useState(false);
   const [pName, setPName] = useState("");
@@ -294,15 +331,23 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
                           {r.vehicle?.vehicleNo ?? "No vehicle"} · {r._count?.studentRoutes ?? r.routePickupPoints.length} students
                         </p>
                       </div>
-                      <button
-                        onClick={() => {
-                          setExpandedRouteId(expanded ? null : r.id);
-                          setStopForm({ pickupPointId: "", timing: "", fees: "" });
-                        }}
-                        className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
-                      >
-                        Manage stops {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => openEditRoute(r)} className="text-gray-400 hover:text-gray-600" title="Edit route">
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button onClick={() => deleteRoute(r.id)} className="text-gray-400 hover:text-red-600" title="Delete route">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setExpandedRouteId(expanded ? null : r.id);
+                            setStopForm({ pickupPointId: "", timing: "", fees: "" });
+                          }}
+                          className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                        >
+                          Manage stops {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        </button>
+                      </div>
                     </div>
 
                     {/* Stop badges (collapsed view) */}
@@ -664,6 +709,29 @@ export function TransportClient({ vehicles, routes: initialRoutes, pickupPoints:
             {vehicleError && <p className="text-sm text-red-600">{vehicleError}</p>}
             <Button className="w-full" disabled={vehicleSaving} onClick={saveVehicle}>
               {vehicleSaving ? "Saving…" : "Save Changes"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editRoute} onOpenChange={o => !o && setEditRoute(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Route</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>Title *</Label>
+              <Input className="mt-1" value={routeForm.title} onChange={e => setRouteForm(f => ({ ...f, title: e.target.value }))} />
+            </div>
+            <div>
+              <Label>Vehicle</Label>
+              <select className={`${SEL} mt-1`} value={routeForm.vehicleId} onChange={e => setRouteForm(f => ({ ...f, vehicleId: e.target.value }))}>
+                <option value="">— none —</option>
+                {vehicleList.map((v: any) => <option key={v.id} value={v.id}>{v.vehicleNo}</option>)}
+              </select>
+            </div>
+            {routeError && <p className="text-sm text-red-600">{routeError}</p>}
+            <Button className="w-full" disabled={routeSaving} onClick={saveRoute}>
+              {routeSaving ? "Saving…" : "Save Changes"}
             </Button>
           </div>
         </DialogContent>

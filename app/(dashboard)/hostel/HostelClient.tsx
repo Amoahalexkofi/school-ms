@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { usePermission } from "@/components/PermissionsProvider";import { Plus, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { usePermission } from "@/components/PermissionsProvider";import { Plus, X, Pencil, Trash2 } from "lucide-react";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
@@ -40,6 +43,67 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
 
   // All rooms flat list for allocation
   const allRooms = hostels.flatMap((h: any) => h.rooms.map((r: any) => ({ ...r, hostelName: h.name })));
+
+  const [editHostel, setEditHostel] = useState<any | null>(null);
+  const [hostelForm, setHostelForm] = useState({ name: "", type: "", address: "", intake: "", description: "" });
+  const [editRoom, setEditRoom] = useState<any | null>(null);
+  const [roomForm, setRoomForm] = useState({ roomNo: "", roomTypeId: "", capacity: "1", costPerBed: "" });
+  const [savingEntity, setSavingEntity] = useState(false);
+  const [entityError, setEntityError] = useState("");
+
+  function openEditHostel(h: any) {
+    setEditHostel(h);
+    setHostelForm({ name: h.name ?? "", type: h.type ?? "", address: h.address ?? "", intake: h.intake ? String(h.intake) : "", description: h.description ?? "" });
+    setEntityError("");
+  }
+  async function saveHostel() {
+    if (!editHostel) return;
+    if (!hostelForm.name.trim()) { setEntityError("Hostel name is required"); return; }
+    setSavingEntity(true); setEntityError("");
+    try {
+      const res = await fetch(`/api/hostel/hostels/${editHostel.id}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(hostelForm),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || "Failed");
+      setEditHostel(null);
+      router.refresh();
+    } catch (e: any) { setEntityError(e.message || "Failed"); }
+    finally { setSavingEntity(false); }
+  }
+  async function deleteHostel(id: string) {
+    if (!confirm("Delete this hostel and all its rooms?")) return;
+    const res = await fetch(`/api/hostel/hostels/${id}`, { method: "DELETE" });
+    if (!res.ok) { const d = await res.json(); alert(d.error || "Failed"); return; }
+    router.refresh();
+  }
+
+  function openEditRoom(r: any) {
+    setEditRoom(r);
+    setRoomForm({ roomNo: r.roomNo ?? "", roomTypeId: r.roomTypeId ?? "", capacity: String(r.capacity ?? 1), costPerBed: r.costPerBed ? String(r.costPerBed) : "" });
+    setEntityError("");
+  }
+  async function saveRoom() {
+    if (!editRoom) return;
+    if (!roomForm.roomNo.trim()) { setEntityError("Room number is required"); return; }
+    setSavingEntity(true); setEntityError("");
+    try {
+      const res = await fetch(`/api/hostel/rooms/${editRoom.id}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(roomForm),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || "Failed");
+      setEditRoom(null);
+      router.refresh();
+    } catch (e: any) { setEntityError(e.message || "Failed"); }
+    finally { setSavingEntity(false); }
+  }
+  async function deleteRoom(id: string) {
+    if (!confirm("Delete this room?")) return;
+    const res = await fetch(`/api/hostel/rooms/${id}`, { method: "DELETE" });
+    if (!res.ok) { const d = await res.json(); alert(d.error || "Failed"); return; }
+    router.refresh();
+  }
 
   const TABS = [
     { key: "roomtypes" as Tab, label: "Room Types" },
@@ -96,11 +160,19 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
                       <p className="font-semibold text-gray-900">{h.name}</p>
                       {h.type && <p className="text-xs text-gray-400">{h.type}</p>}
                     </div>
-                    <p className="text-xs text-gray-500">{h.rooms.length} room{h.rooms.length !== 1 ? "s" : ""}</p>
+                    <div className="flex items-center gap-3">
+                      <p className="text-xs text-gray-500">{h.rooms.length} room{h.rooms.length !== 1 ? "s" : ""}</p>
+                      <button onClick={() => openEditHostel(h)} className="text-gray-400 hover:text-gray-600" title="Edit hostel">
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button onClick={() => deleteHostel(h.id)} className="text-gray-400 hover:text-red-600" title="Delete hostel">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
                   {h.rooms.length > 0 && (
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50"><tr>{["Room No.","Type","Capacity","Occupied"].map(c => <th key={c} className="text-left px-3 py-2 text-xs font-medium text-gray-500">{c}</th>)}</tr></thead>
+                      <thead className="bg-gray-50"><tr>{["Room No.","Type","Capacity","Occupied",""].map(c => <th key={c} className="text-left px-3 py-2 text-xs font-medium text-gray-500">{c}</th>)}</tr></thead>
                       <tbody className="divide-y">
                         {h.rooms.map((r: any) => (
                           <tr key={r.id}>
@@ -111,6 +183,16 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
                               <span className={`text-xs px-2 py-0.5 rounded-full ${r._count.allocations >= r.capacity ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
                                 {r._count.allocations}/{r.capacity}
                               </span>
+                            </td>
+                            <td className="px-3 py-2 text-right">
+                              <div className="inline-flex items-center gap-2">
+                                <button onClick={() => openEditRoom(r)} className="text-gray-400 hover:text-gray-600" title="Edit room">
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </button>
+                                <button onClick={() => deleteRoom(r.id)} className="text-gray-400 hover:text-red-600" title="Delete room">
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -183,6 +265,42 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
           </div>
         </div>
       )}
+
+      <Dialog open={!!editHostel} onOpenChange={o => !o && setEditHostel(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Hostel</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div><Label>Name *</Label><Input className="mt-1" value={hostelForm.name} onChange={e => setHostelForm(f => ({ ...f, name: e.target.value }))} /></div>
+            <div><Label>Type</Label><Input className="mt-1" value={hostelForm.type} onChange={e => setHostelForm(f => ({ ...f, type: e.target.value }))} placeholder="e.g. Boys, Girls" /></div>
+            <div><Label>Address</Label><Input className="mt-1" value={hostelForm.address} onChange={e => setHostelForm(f => ({ ...f, address: e.target.value }))} /></div>
+            <div><Label>Intake</Label><Input className="mt-1" type="number" min="0" value={hostelForm.intake} onChange={e => setHostelForm(f => ({ ...f, intake: e.target.value }))} /></div>
+            {entityError && <p className="text-sm text-red-600">{entityError}</p>}
+            <Button className="w-full" disabled={savingEntity} onClick={saveHostel}>{savingEntity ? "Saving…" : "Save Changes"}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editRoom} onOpenChange={o => !o && setEditRoom(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Room</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div><Label>Room No. *</Label><Input className="mt-1" value={roomForm.roomNo} onChange={e => setRoomForm(f => ({ ...f, roomNo: e.target.value }))} /></div>
+            <div>
+              <Label>Room Type</Label>
+              <select className={`${SEL} mt-1`} value={roomForm.roomTypeId} onChange={e => setRoomForm(f => ({ ...f, roomTypeId: e.target.value }))}>
+                <option value="">— none —</option>
+                {roomTypes.map((rt: any) => <option key={rt.id} value={rt.id}>{rt.name}</option>)}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Capacity</Label><Input className="mt-1" type="number" min="1" value={roomForm.capacity} onChange={e => setRoomForm(f => ({ ...f, capacity: e.target.value }))} /></div>
+              <div><Label>Cost / Bed</Label><Input className="mt-1" type="number" min="0" value={roomForm.costPerBed} onChange={e => setRoomForm(f => ({ ...f, costPerBed: e.target.value }))} /></div>
+            </div>
+            {entityError && <p className="text-sm text-red-600">{entityError}</p>}
+            <Button className="w-full" disabled={savingEntity} onClick={saveRoom}>{savingEntity ? "Saving…" : "Save Changes"}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
