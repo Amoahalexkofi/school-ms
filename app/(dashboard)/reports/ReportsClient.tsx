@@ -30,7 +30,10 @@ type ReportTab =
   | "due-fees"
   | "exam-results"
   | "transport"
-  | "library";
+  | "library"
+  | "finance"
+  | "payroll"
+  | "inventory";
 
 const TABS: { id: ReportTab; label: string }[] = [
   { id: "students", label: "Student List" },
@@ -41,6 +44,9 @@ const TABS: { id: ReportTab; label: string }[] = [
   { id: "exam-results", label: "Exam Results" },
   { id: "transport", label: "Transport" },
   { id: "library", label: "Library" },
+  { id: "finance", label: "Finance" },
+  { id: "payroll", label: "Payroll" },
+  { id: "inventory", label: "Inventory" },
 ];
 
 // ─── PDF helper — posts the same flat rows the CSV uses ──────────────────────
@@ -159,6 +165,15 @@ export function ReportsClient({ sessions, classes, sections, classSections, depa
         )}
         {tab === "library" && (
           <LibraryReport onPrint={handlePrint} />
+        )}
+        {tab === "finance" && (
+          <FinanceReport onPrint={handlePrint} />
+        )}
+        {tab === "payroll" && (
+          <PayrollReport onPrint={handlePrint} />
+        )}
+        {tab === "inventory" && (
+          <InventoryReport onPrint={handlePrint} />
         )}
       </div>
     </main>
@@ -1269,6 +1284,318 @@ function LibraryReport({ onPrint }: { onPrint: () => void }) {
                     </tr>
                   );
                 })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FinanceReport({ onPrint }: { onPrint: () => void }) {
+  const [type, setType] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [data, setData] = useState<{ rows: any[]; totalIncome: number; totalExpense: number; balance: number } | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function generate() {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (type) params.set("type", type);
+      if (from) params.set("from", from);
+      if (to) params.set("to", to);
+      const res = await fetch(`/api/reports/finance?${params}`);
+      setData(await res.json());
+    } catch { alert("Failed"); }
+    finally { setLoading(false); }
+  }
+
+  const flatRows = () => (data?.rows ?? []).map((r) => ({
+    "Date": new Date(r.date).toLocaleDateString(),
+    "Type": r.type,
+    "Head": r.head,
+    "Name": r.name,
+    "Invoice No": r.invoiceNo,
+    "Amount": r.amount,
+    "Note": r.note,
+  }));
+  function csv() { if (data) downloadCSV(flatRows(), "finance-report.csv"); }
+  function pdf() { if (data) downloadPDF(flatRows(), "Finance Report"); }
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white border rounded-lg p-4 print:hidden">
+        <h3 className="font-semibold text-sm mb-3">Finance Report — Income &amp; Expense</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <Label>Type</Label>
+            <select className={SEL} value={type} onChange={(e) => setType(e.target.value)}>
+              <option value="">All</option>
+              <option value="INCOME">Income</option>
+              <option value="EXPENSE">Expense</option>
+            </select>
+          </div>
+          <div>
+            <Label>From</Label>
+            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+          </div>
+          <div>
+            <Label>To</Label>
+            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+          </div>
+        </div>
+        <div className="flex items-center justify-between mt-3">
+          <Button onClick={generate} disabled={loading} size="sm">
+            <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Generate"}
+          </Button>
+          {data && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={data.rows.length} />}
+        </div>
+      </div>
+
+      {loading ? <LoadingState /> : data === null ? <EmptyState /> : data.rows.length === 0 ? (
+        <div className="text-center py-10 text-gray-400 text-sm">No transactions found.</div>
+      ) : (
+        <div className="bg-white border rounded-lg overflow-hidden">
+          <div className="grid grid-cols-3 divide-x border-b">
+            <div className="p-4 text-center">
+              <p className="text-xs text-gray-400">Total Income</p>
+              <p className="text-lg font-bold text-green-600">₵{data.totalIncome.toLocaleString()}</p>
+            </div>
+            <div className="p-4 text-center">
+              <p className="text-xs text-gray-400">Total Expense</p>
+              <p className="text-lg font-bold text-red-600">₵{data.totalExpense.toLocaleString()}</p>
+            </div>
+            <div className="p-4 text-center">
+              <p className="text-xs text-gray-400">Balance</p>
+              <p className={`text-lg font-bold ${data.balance >= 0 ? "text-gray-900" : "text-red-600"}`}>₵{data.balance.toLocaleString()}</p>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Date</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Type</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Head</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Name</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {data.rows.map((r: any, i: number) => (
+                  <tr key={i} className="hover:bg-gray-50">
+                    <td className="px-4 py-2.5 text-gray-500">{new Date(r.date).toLocaleDateString()}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.type === "INCOME" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                        {r.type}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 text-gray-700">{r.head}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{r.name || "—"}</td>
+                    <td className={`px-4 py-2.5 text-right font-medium ${r.type === "INCOME" ? "text-green-600" : "text-red-600"}`}>
+                      ₵{r.amount.toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PayrollReport({ onPrint }: { onPrint: () => void }) {
+  const MONTHS = ["01","02","03","04","05","06","07","08","09","10","11","12"];
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
+  const [data, setData] = useState<{ rows: any[]; totalNet: number } | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function generate() {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (month) params.set("month", month);
+      if (year) params.set("year", year);
+      const res = await fetch(`/api/reports/payroll?${params}`);
+      setData(await res.json());
+    } catch { alert("Failed"); }
+    finally { setLoading(false); }
+  }
+
+  const flatRows = () => (data?.rows ?? []).map((r) => ({
+    "Staff": r.staff,
+    "Employee ID": r.employeeId,
+    "Designation": r.designation,
+    "Month": r.month,
+    "Year": r.year,
+    "Basic": r.basicSalary,
+    "Allowance": r.allowance,
+    "Deduction": r.deduction,
+    "Tax": r.tax,
+    "Net Salary": r.netSalary,
+    "Status": r.status,
+  }));
+  function csv() { if (data) downloadCSV(flatRows(), "payroll-report.csv"); }
+  function pdf() { if (data) downloadPDF(flatRows(), "Payroll Report"); }
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white border rounded-lg p-4 print:hidden">
+        <h3 className="font-semibold text-sm mb-3">Payroll Report</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <Label>Month</Label>
+            <select className={SEL} value={month} onChange={(e) => setMonth(e.target.value)}>
+              <option value="">All</option>
+              {MONTHS.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          <div>
+            <Label>Year</Label>
+            <Input placeholder="e.g. 2026" value={year} onChange={(e) => setYear(e.target.value)} />
+          </div>
+        </div>
+        <div className="flex items-center justify-between mt-3">
+          <Button onClick={generate} disabled={loading} size="sm">
+            <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Generate"}
+          </Button>
+          {data && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={data.rows.length} />}
+        </div>
+      </div>
+
+      {loading ? <LoadingState /> : data === null ? <EmptyState /> : data.rows.length === 0 ? (
+        <div className="text-center py-10 text-gray-400 text-sm">No payslips found.</div>
+      ) : (
+        <div className="bg-white border rounded-lg overflow-hidden">
+          <div className="px-4 py-3 border-b text-sm text-gray-600">
+            Total Net Salary: <span className="font-bold text-gray-900">₵{data.totalNet.toLocaleString()}</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Staff</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Designation</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Month/Year</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">Basic</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">Net Salary</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {data.rows.map((r: any, i: number) => (
+                  <tr key={i} className="hover:bg-gray-50">
+                    <td className="px-4 py-2.5">
+                      <p className="font-medium">{r.staff}</p>
+                      <p className="text-xs text-gray-400">{r.employeeId}</p>
+                    </td>
+                    <td className="px-4 py-2.5 text-gray-500">{r.designation || "—"}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{r.month}/{r.year}</td>
+                    <td className="px-4 py-2.5 text-right text-gray-600">₵{r.basicSalary.toLocaleString()}</td>
+                    <td className="px-4 py-2.5 text-right font-medium text-gray-900">₵{r.netSalary.toLocaleString()}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.status === "PAID" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+                        {r.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InventoryReport({ onPrint }: { onPrint: () => void }) {
+  const [lowStockOnly, setLowStockOnly] = useState(false);
+  const [rows, setRows] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function generate() {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (lowStockOnly) params.set("lowStockOnly", "true");
+      const res = await fetch(`/api/reports/inventory?${params}`);
+      setRows(await res.json());
+    } catch { alert("Failed"); }
+    finally { setLoading(false); }
+  }
+
+  const flatRows = () => (rows ?? []).map((r) => ({
+    "Item": r.name,
+    "Category": r.category,
+    "Supplier": r.supplier,
+    "Store": r.store,
+    "Quantity": r.quantity,
+    "Unit": r.unit,
+    "Low Stock Alert": r.lowStockAlert,
+    "Status": r.status,
+  }));
+  function csv() { if (rows) downloadCSV(flatRows(), "inventory-report.csv"); }
+  function pdf() { if (rows) downloadPDF(flatRows(), "Inventory Report"); }
+
+  const lowStockCount = rows ? rows.filter((r) => r.status === "Low Stock").length : 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white border rounded-lg p-4 print:hidden">
+        <h3 className="font-semibold text-sm mb-3">Inventory Stock Report</h3>
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <input type="checkbox" checked={lowStockOnly} onChange={(e) => setLowStockOnly(e.target.checked)} />
+          Low stock items only
+        </label>
+        <div className="flex items-center justify-between mt-3">
+          <Button onClick={generate} disabled={loading} size="sm">
+            <Search className="h-3.5 w-3.5 mr-1" /> {loading ? "Loading…" : "Generate"}
+          </Button>
+          {rows && <ReportActions onPrint={onPrint} onCSV={csv} onPDF={pdf} count={rows.length} />}
+        </div>
+      </div>
+
+      {loading ? <LoadingState /> : rows === null ? <EmptyState /> : rows.length === 0 ? (
+        <div className="text-center py-10 text-gray-400 text-sm">No items found.</div>
+      ) : (
+        <div className="bg-white border rounded-lg overflow-hidden">
+          {lowStockCount > 0 && (
+            <div className="px-4 py-2 bg-amber-50 border-b text-sm text-amber-700">
+              {lowStockCount} item{lowStockCount !== 1 ? "s" : ""} below the low-stock threshold
+            </div>
+          )}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Item</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Category</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Store</th>
+                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">Quantity</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {rows.map((r: any, i: number) => (
+                  <tr key={i} className={`hover:bg-gray-50 ${r.status === "Low Stock" ? "bg-amber-50" : ""}`}>
+                    <td className="px-4 py-2.5 font-medium">{r.name}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{r.category || "—"}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{r.store || "—"}</td>
+                    <td className="px-4 py-2.5 text-right text-gray-700">{r.quantity} {r.unit}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.status === "Low Stock" ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"}`}>
+                        {r.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
