@@ -215,8 +215,17 @@ caught up. Updated below.
   at a time via `/exams/[id]/marks/[scheduleId]`).
 - **Subject-wise Attendance** API-only; broadcast Notification backend has no
   UI; Notification Settings decorative.
-- **Reports**: 8 of ~16 types; no PDF export; no payroll/finance/inventory/
-  hostel reports.
+- ✅ **Reports** — mostly wrong, fixed 2026-07-22. "No PDF export" was
+  false: `/api/reports/pdf` (generic flat-rows → PDF via
+  `@react-pdf/renderer`) already existed and was wired into all 8
+  existing report tabs' PDF buttons. Added the 3 genuinely missing types
+  found by checking the reference source — **Finance** (income/expense,
+  matches `Financereports::income/expense`), **Payroll** (matches
+  `Financereports::payroll`), **Inventory** (matches
+  `Report::inventory/inventorystock`) — all reuse existing data
+  (Transaction/StaffPayslip/Item), no schema change. "No hostel reports"
+  was a phantom gap — no such report exists in Smart School either, so
+  nothing built for it.
 - ✅ **Homework grading/submission** — fixed 2026-07-22. Grading already
   worked (`HomeworkClient.tsx` Evaluate modal). Submission was fully broken
   (`lib/services/homework.ts` referenced fields that didn't exist on the
