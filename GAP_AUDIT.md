@@ -156,8 +156,16 @@ caught up. Updated below.
   + DELETE (soft, `isActive: false`) for all three, wired into
   `SettingsClient.tsx`. Listing queries now filter `isActive` so a deleted
   entity actually disappears.
-- **Most Operations modules** are create+list only; dropped form fields (room
-  `costPerBed`/`floor`, vehicle photo, pickup lat/long).
+- **Operations modules — re-verified 2026-07-22, claim was backwards.**
+  Vehicles, Routes, Hostel Rooms/Hostels, and Inventory Items all already
+  had full PATCH/DELETE APIs — the actual gap was 100% in the UI (no edit
+  icon, no delete button anywhere). ✅ Fixed for **Vehicles** and
+  **Inventory Items**: edit dialog + delete wired in, and DELETE switched
+  from a hard delete (would throw on any Route/StockMovement/ItemIssue
+  still referencing the record) to soft-delete (`isActive: false`),
+  matching the app-wide convention. **Still need the same UI wiring**:
+  Routes, Hostel Rooms, Hostels, pickup points. Dropped form fields (room
+  `costPerBed`/`floor`, vehicle photo, pickup lat/long) not yet addressed.
 - **Library** membership never enforced at issue; duplicate return logic;
   hard-delete orphans history.
 - **Fees**: fine/late-fee at collection is a **won't-fix** — schools do not
