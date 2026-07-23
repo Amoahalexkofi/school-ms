@@ -16,10 +16,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
   return NextResponse.json(await ((await getDb()) as any).book.update({ where: { id }, data }));
 }
+// Soft delete — a hard delete would throw on any BookIssue (even a long-since
+// returned one) still referencing this book; matches the app-wide isActive
+// convention. Still blocks while a copy is out, same as before.
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const active = await ((await getDb()) as any).bookIssue.count({ where: { bookId: id, status: "ISSUED" } });
   if (active > 0) return NextResponse.json({ error: "Book has active issues" }, { status: 409 });
-  await ((await getDb()) as any).book.delete({ where: { id } });
+  await ((await getDb()) as any).book.update({ where: { id }, data: { isActive: false } });
   return NextResponse.json({ ok: true });
 }
