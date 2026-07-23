@@ -140,8 +140,15 @@ caught up. Updated below.
 - ✅ **Promotion** — built (`438aa17`): per-student pass/fail, continue/leave,
   auto-alumni on leave. `app/api/students/promote/route.ts` +
   `PromoteClient.tsx`. (Doc was stale — this was already done.)
-- **Student Transfer** module still missing — no matching files anywhere in
-  `app/`.
+- ❎ **"Student Transfer module missing" — not a real gap.** Checked the PHP
+  reference source: the controller literally named `Stdtransfer.php`
+  (`application/controllers/admin/Stdtransfer.php`) only has `index()` +
+  `promote()` — it IS Promotion, already built above ("Mirrors Smart School's
+  Stdtransfer" is even in the route's own comment). No separate transfer-to-
+  another-school model/controller exists anywhere in the source
+  (`transfercertificate.php` is just one certificate print template, not a
+  distinct workflow). This entry was a phantom gap from the original
+  2026-06-21 pass.
 - **Subjects/Classes/Sections** add-only (no edit/delete `[id]` routes).
 - **Most Operations modules** are create+list only; dropped form fields (room
   `costPerBed`/`floor`, vehicle photo, pickup lat/long).
