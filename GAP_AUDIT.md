@@ -163,9 +163,13 @@ caught up. Updated below.
 - **Fees**: fine/late-fee at collection is a **won't-fix** — schools do not
   charge late fees, so `FeeGroupItem.fineType/finePercentage/fineAmount/
   finePerDay` and `CumulativeFine` staying uncomputed at collection is
-  intentional, not a gap. Still real: one report only (no
-  daily/class-wise/CSV); fee reminders config-only (no cron sends); gateway
-  keys DB-only; Flutterwave currency hard-coded `GHS`.
+  intentional, not a gap.
+  ✅ **Fee reminders** — fixed 2026-07-22. The claim had it backwards: the
+  cron and send logic already worked; the actual gap was no UI to ever
+  create a `FeeReminder` row, so the cron ran daily against an empty
+  table. Added `/fees/reminders` (add/pause/activate/delete rules).
+  Still real: one report only (no daily/class-wise/CSV); gateway keys
+  DB-only; Flutterwave currency hard-coded `GHS`.
 - **Exams** — re-verified 2026-07-22, most of this was already wrong: ✅ CSV
   mark import (`MarkEntryClient.tsx`, adm-no matched, sample-CSV download),
   ✅ rank override (`app/api/exams/results/[examGroupId]/rank`), ✅ result
