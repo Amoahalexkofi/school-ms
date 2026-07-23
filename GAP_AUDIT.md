@@ -156,16 +156,22 @@ caught up. Updated below.
   + DELETE (soft, `isActive: false`) for all three, wired into
   `SettingsClient.tsx`. Listing queries now filter `isActive` so a deleted
   entity actually disappears.
-- **Operations modules — re-verified 2026-07-22, claim was backwards.**
+- ✅ **Operations modules — claim was backwards, now fixed.**
   Vehicles, Routes, Hostel Rooms/Hostels, and Inventory Items all already
   had full PATCH/DELETE APIs — the actual gap was 100% in the UI (no edit
-  icon, no delete button anywhere). ✅ Fixed for **Vehicles** and
-  **Inventory Items**: edit dialog + delete wired in, and DELETE switched
-  from a hard delete (would throw on any Route/StockMovement/ItemIssue
-  still referencing the record) to soft-delete (`isActive: false`),
-  matching the app-wide convention. **Still need the same UI wiring**:
-  Routes, Hostel Rooms, Hostels, pickup points. Dropped form fields (room
-  `costPerBed`/`floor`, vehicle photo, pickup lat/long) not yet addressed.
+  icon, no delete button anywhere). Fixed for all five: edit dialog +
+  delete wired into Vehicles, Routes, Hostels, Hostel Rooms, and Inventory
+  Items. DELETE on every one of them was a hard delete despite each model
+  already having `isActive` — would throw on any live record still
+  referenced (Route↔StudentRoute, HostelRoom↔HostelAllocation, Hostel's
+  cascade onto its rooms, Item↔StockMovement/ItemIssue) — switched all to
+  soft-delete, matching the app-wide convention, and added `isActive`
+  filters to every listing query so a deleted record actually disappears.
+  Still open: **pickup points** have the same pattern and haven't been
+  done. `costPerBed` is captured now (was already in the API, added to
+  the new edit dialog) — no `floor` field exists anywhere in the schema,
+  so that part of the original claim doesn't apply. Vehicle photo and
+  pickup lat/long are still genuinely dropped from their forms.
 - **Library** membership never enforced at issue; duplicate return logic;
   hard-delete orphans history.
 - **Fees**: fine/late-fee at collection is a **won't-fix** — schools do not
