@@ -21,7 +21,8 @@ const ALLOWED_FIELDS = [
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const student = await ((await getDb()) as any).student.findUnique({
+  const db = (await getDb()) as any;
+  const student = await db.student.findUnique({
     where: { id },
     include: {
       user: { select: { email: true, username: true, role: true, isActive: true } },
@@ -38,7 +39,15 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     },
   });
   if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 });
-  return NextResponse.json(student);
+
+  // CustomFieldValue is polymorphic (belongTableId, no direct FK/relation) —
+  // fetched separately rather than via `include`.
+  const customFieldValues = await db.customFieldValue.findMany({
+    where: { belongTableId: id, customField: { tableName: "students" } },
+    include: { customField: true },
+  });
+
+  return NextResponse.json({ ...student, customFieldValues });
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -67,6 +76,22 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const db = await getDb();
     const student = await (db as any).student.update({ where: { id }, data });
+
+    // Custom fields (Settings → Custom Fields, tableName "students"): { [customFieldId]: value }
+    if (body.customFieldValues && typeof body.customFieldValues === "object") {
+      for (const [customFieldId, value] of Object.entries(body.customFieldValues as Record<string, string>)) {
+        const fieldValue = value === undefined || value === null ? "" : String(value).trim();
+        if (fieldValue === "") {
+          await (db as any).customFieldValue.deleteMany({ where: { customFieldId, belongTableId: id } });
+        } else {
+          await (db as any).customFieldValue.upsert({
+            where: { customFieldId_belongTableId: { customFieldId, belongTableId: id } },
+            create: { customFieldId, belongTableId: id, fieldValue },
+            update: { fieldValue },
+          });
+        }
+      }
+    }
 
     // Disabling/enabling a student must also gate their login account —
     // Smart School blocks sign-in on students.is_active, we mirror via User.isActive.

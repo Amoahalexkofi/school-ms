@@ -65,6 +65,7 @@ type Props = {
   sessions: any[];
   classSections: any[];
   schoolHouses: any[];
+  customFieldDefs: { id: string; fieldLabel: string; fieldType: string; options: string | null; isRequired: boolean }[];
   initial?: Record<string, any>;
   applicationId?: string;
   fromApplication?: { name: string; appliedClass: string };
@@ -102,7 +103,7 @@ function DeliveryRow({ label, state }: { label: string; state: { ok: boolean; er
   );
 }
 
-export function AddStudentForm({ sessions, classSections, schoolHouses, initial, applicationId, fromApplication }: Props) {
+export function AddStudentForm({ sessions, classSections, schoolHouses, customFieldDefs, initial, applicationId, fromApplication }: Props) {
   const router = useRouter();
   const [tab, setTab]       = useState<Tab>("Basic Info");
   const [loading, setLoading] = useState(false);
@@ -140,6 +141,16 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
       setForm(f => ({ ...f, [k]: e.target.value }));
 
   const fp = { form: form as Record<string, any>, set };
+
+  // Custom fields (Settings → Custom Fields, tableName "students") — dynamic,
+  // so kept in their own map (keyed by CustomField id) rather than the fixed `form` shape.
+  const [customFieldValues, setCustomFieldValues] = useState<Record<string, string>>(
+    () => Object.fromEntries(customFieldDefs.map(d => [d.id, ""]))
+  );
+  const setCustom = (k: string) =>
+    (e: React.ChangeEvent<any>) =>
+      setCustomFieldValues(f => ({ ...f, [k]: e.target.value }));
+  const cfp = { form: customFieldValues as Record<string, any>, set: setCustom };
   const tabIdx = TABS.indexOf(tab);
 
   // Per-step validation — the stepper only advances past a valid step, so a
@@ -185,7 +196,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
       const res  = await fetch("/api/students", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, applicationId }),
+        body: JSON.stringify({ ...form, applicationId, customFieldValues }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed");
@@ -514,6 +525,25 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, initial,
                   <Field {...fp} label="About" name="about" textarea />
                 </div>
               </div>
+              {customFieldDefs.length > 0 && (
+                <div className="border-t border-slate-100 pt-6">
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Additional Information</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                    {customFieldDefs.map(d => (
+                      <Field
+                        key={d.id}
+                        {...cfp}
+                        label={d.fieldLabel}
+                        name={d.id}
+                        required={d.isRequired}
+                        type={d.fieldType === "NUMBER" ? "number" : d.fieldType === "DATE" ? "date" : "text"}
+                        textarea={d.fieldType === "TEXTAREA"}
+                        options={d.fieldType === "SELECT" ? (d.options ?? "").split(",").map(o => o.trim()).filter(Boolean) : undefined}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

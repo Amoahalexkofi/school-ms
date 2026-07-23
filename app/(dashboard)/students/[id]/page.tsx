@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ClipboardList, DollarSign, BookOpen, Calendar, User, GraduationCap } from "lucide-react";
 import { StudentProfileActions, StudentAvatar } from "./StudentProfileActions";
 import { ParentLinkCard } from "./ParentLinkCard";
+import { CustomFieldsCard } from "./CustomFieldsCard";
 
 async function getStudent(id: string) {
   return ((await getDb()) as any).student.findUnique({
@@ -70,6 +71,14 @@ export default async function StudentProfilePage({
   const linkedParent = await ((await getDb()) as any).user
     .findFirst({ where: { role: "PARENT", childs: { contains: id } }, select: { email: true } })
     .catch(() => null);
+
+  // Custom fields (Settings → Custom Fields, tableName "students"). Polymorphic
+  // (belongTableId, no direct FK) — fetched separately from the student query.
+  const db = (await getDb()) as any;
+  const [customFieldDefs, customFieldValues] = await Promise.all([
+    db.customField.findMany({ where: { tableName: "students", isActive: true }, orderBy: { order: "asc" } }),
+    db.customFieldValue.findMany({ where: { belongTableId: id, customField: { tableName: "students" } } }),
+  ]);
 
   const currentSession = student.sessions[0];
   const classLabel = currentSession
@@ -244,6 +253,10 @@ export default async function StudentProfilePage({
 
         {/* Parent login linking */}
         <ParentLinkCard studentId={student.id} linkedEmail={linkedParent?.email ?? null} defaultEmail={student.guardianEmail ?? student.fatherEmail ?? student.motherEmail} />
+
+        {customFieldDefs.length > 0 && (
+          <CustomFieldsCard studentId={student.id} definitions={customFieldDefs} values={customFieldValues} />
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Attendance summary */}

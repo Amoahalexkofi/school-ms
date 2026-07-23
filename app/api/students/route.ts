@@ -211,6 +211,20 @@ export async function POST(req: NextRequest) {
           parentInfo = { email: parentEmail, username: np.username, tempPassword: pTemp, existing: false };
         }
       }
+      // Custom fields (Settings → Custom Fields, tableName "students"): { [customFieldId]: value }
+      if (body.customFieldValues && typeof body.customFieldValues === "object") {
+        const entries = Object.entries(body.customFieldValues as Record<string, string>)
+          .filter(([, v]) => v !== undefined && v !== null && String(v).trim() !== "");
+        if (entries.length > 0) {
+          await tx.customFieldValue.createMany({
+            data: entries.map(([customFieldId, fieldValue]) => ({
+              customFieldId, belongTableId: s.id, fieldValue: String(fieldValue),
+            })),
+            skipDuplicates: true,
+          });
+        }
+      }
+
       return { student: s, parentInfo };
     });
 

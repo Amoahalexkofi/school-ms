@@ -4,15 +4,16 @@ import { AddStudentForm } from "./AddStudentForm";
 import { getApplication } from "@/lib/services/admissions";
 
 async function getData() {
-  const [sessions, classSections, schoolHouses] = await Promise.all([
+  const [sessions, classSections, schoolHouses, customFieldDefs] = await Promise.all([
     ((await getDb()) as any).academicSession.findMany({ orderBy: { startDate: "desc" } }),
     ((await getDb()) as any).classSection.findMany({
       include: { class: true, section: true },
       orderBy: { class: { name: "asc" } },
     }),
     ((await getDb()) as any).schoolHouse.findMany({ orderBy: { name: "asc" } }),
+    ((await getDb()) as any).customField.findMany({ where: { tableName: "students", isActive: true }, orderBy: { order: "asc" } }),
   ]);
-  return { sessions, classSections, schoolHouses };
+  return { sessions, classSections, schoolHouses, customFieldDefs };
 }
 
 // Map an approved online application onto the student-form fields.
