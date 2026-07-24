@@ -1,6 +1,7 @@
 import { sendEmail, bulkMessageEmail } from "@/lib/email";
 import { sendSms } from "@/lib/services/sms";
 import { sendWhatsApp } from "@/lib/services/whatsapp";
+import { isChannelEnabled } from "@/lib/services/notification-settings";
 
 // Exam roster (Smart School exam_group_class_batch_exam_students): when any
 // ExamGroupStudent rows exist for this (examGroup, classSection), only those
@@ -52,6 +53,11 @@ export async function announceExamResults(db: any, examGroupId: string) {
   const schoolName = profile?.name ?? "School";
   const subject = `${group.name} results published`;
 
+  const [emailOn, smsOn] = await Promise.all([
+    isChannelEnabled(db, "exam_result", "email"),
+    isChannelEnabled(db, "exam_result", "sms"),
+  ]);
+
   const seen = new Set<string>();
   let notified = 0;
   for (const e of enrollments) {
@@ -65,7 +71,7 @@ export async function announceExamResults(db: any, examGroupId: string) {
     const phones = [s.mobileNo, s.guardianPhone || s.fatherPhone || s.motherPhone].filter(Boolean) as string[];
 
     const who = `${s.firstName} ${s.lastName ?? ""}`.trim();
-    if (emails.length) {
+    if (emails.length && emailOn) {
       sendEmail(db, {
         to: emails,
         subject,
@@ -77,7 +83,7 @@ export async function announceExamResults(db: any, examGroupId: string) {
         .then((r) => { if (!r.ok) console.error("[exams] result email failed for", who, r.error); })
         .catch((err) => console.error("[exams] result email threw for", who, err));
     }
-    if (phones.length) {
+    if (phones.length && smsOn) {
       sendSms(phones, message, db)
         .then((r) => { if (!r.success) console.error("[exams] result SMS failed for", who, r.error); })
         .catch((err) => console.error("[exams] result SMS threw for", who, err));
@@ -85,7 +91,7 @@ export async function announceExamResults(db: any, examGroupId: string) {
         .then((r) => { if (!r.success) console.error("[exams] result WhatsApp failed for", who, r.error); })
         .catch((err) => console.error("[exams] result WhatsApp threw for", who, err));
     }
-    if (emails.length || phones.length) notified++;
+    if ((emails.length && emailOn) || (phones.length && smsOn)) notified++;
   }
   return { notified };
 }

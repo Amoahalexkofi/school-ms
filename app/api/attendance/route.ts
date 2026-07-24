@@ -5,6 +5,7 @@ import { getActiveBranchId } from "@/lib/branch";
 import { sendSms, attendanceSms } from "@/lib/services/sms";
 import { sendWhatsApp, whatsAppAttendanceAlert } from "@/lib/services/whatsapp";
 import { sendEmail, attendanceEmail } from "@/lib/email";
+import { isChannelEnabled } from "@/lib/services/notification-settings";
 
 // Notify the guardians of absent students (Smart School student_absent_attendence).
 // Fire-and-forget; silently no-ops if the school has no SMS/email/WhatsApp provider.
@@ -24,13 +25,18 @@ async function notifyAbsent(db: any, records: any[], date: Date) {
   const schoolName = profile?.name ?? "School";
   const dateStr = date.toISOString().slice(0, 10);
 
+  const [smsOn, emailOn] = await Promise.all([
+    isChannelEnabled(db, "attendance_student", "sms"),
+    isChannelEnabled(db, "attendance_student", "email"),
+  ]);
+
   for (const s of students) {
     const phones = [s.mobileNo, s.guardianPhone, s.fatherPhone].filter(Boolean) as string[];
     const emails = [s.email, s.guardianEmail].filter(Boolean) as string[];
     const studentName = `${s.firstName} ${s.lastName}`;
     const p = { studentName, status: "Absent", date: dateStr, schoolName };
 
-    if (phones.length) {
+    if (phones.length && smsOn) {
       sendSms(phones, attendanceSms(p), db)
         .then((r) => { if (!r.success) console.error("[attendance] SMS failed for", studentName, r.error); })
         .catch((err) => console.error("[attendance] SMS threw for", studentName, err));
@@ -38,7 +44,7 @@ async function notifyAbsent(db: any, records: any[], date: Date) {
         .then((r) => { if (!r.success) console.error("[attendance] WhatsApp failed for", studentName, r.error); })
         .catch((err) => console.error("[attendance] WhatsApp threw for", studentName, err));
     }
-    if (emails.length) {
+    if (emails.length && emailOn) {
       sendEmail(db, {
         to: emails,
         subject: `Attendance Notice — ${studentName}`,

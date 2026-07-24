@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { sendSms, feeReceiptSms } from "@/lib/services/sms";
 import { sendWhatsApp, whatsAppFeeReceipt } from "@/lib/services/whatsapp";
 import { sendEmail, feeReceiptEmail } from "@/lib/email";
+import { isChannelEnabled } from "@/lib/services/notification-settings";
 
 // Mirrors Smart School's fee_deposit() / fee_deposit_bulk():
 // ONE deposit row per (studentFeesMasterId, feeGroupItemId).
@@ -139,9 +140,14 @@ export async function POST(req: NextRequest) {
       const currency    = profile?.currency ?? "";
       const schoolName  = profile?.name ?? "School";
 
+      const [smsOn, emailOn] = await Promise.all([
+        isChannelEnabled(db, "fee_payment", "sms"),
+        isChannelEnabled(db, "fee_payment", "email"),
+      ]);
+
       // SMS
       const phones = [student.mobileNo, student.guardianPhone, student.fatherPhone].filter(Boolean) as string[];
-      if (phones.length) {
+      if (phones.length && smsOn) {
         sendSms(phones, feeReceiptSms({ studentName, amount: amountStr, currency, receiptNo, schoolName }))
           .then((r) => { if (!r.success) console.error("[fees/collect] SMS failed for", studentName, r.error); })
           .catch((err) => console.error("[fees/collect] SMS threw for", studentName, err));
@@ -153,7 +159,7 @@ export async function POST(req: NextRequest) {
 
       // Email
       const emails = [student.email, student.guardianEmail].filter(Boolean) as string[];
-      if (emails.length) {
+      if (emails.length && emailOn) {
         sendEmail(db, {
           to: emails,
           subject: `Fee Receipt ${receiptNo} — ${schoolName}`,

@@ -3,6 +3,7 @@ import { registry } from "@/lib/registry";
 import { getDbForSchema } from "@/lib/db";
 import { sendSms, feeReminderSms } from "@/lib/services/sms";
 import { sendWhatsApp, whatsAppFeeReminder } from "@/lib/services/whatsapp";
+import { isChannelEnabled } from "@/lib/services/notification-settings";
 
 export const maxDuration = 60;
 
@@ -27,6 +28,9 @@ async function processSchema(schema: string): Promise<number> {
   const db = getDbForSchema(schema) as any;
   const reminders = await db.feeReminder.findMany({ where: { isActive: true } }).catch(() => []);
   if (!reminders.length) return 0;
+
+  // fee_due only has an SMS/WhatsApp path today; both piggyback on the "sms" toggle.
+  if (!(await isChannelEnabled(db, "fee_due", "sms"))) return 0;
 
   const profile = await db.schoolProfile.findFirst({ select: { name: true, currency: true } }).catch(() => null);
   const schoolName = profile?.name ?? "School";
