@@ -222,14 +222,26 @@ caught up. Updated below.
   blocked the intended readers). Opened GET to all roles (method-guarded
   to admin-only POST/DELETE, role-filtered server-side), added a compose
   dialog + Announcements section on `/notifications`.
-- 🟡 **Notification Settings is still genuinely decorative.** Confirmed:
-  `NotificationSetting` rows are written by `/settings/notifications` and
-  read by nothing else anywhere in the codebase — toggling "SMS off" for
-  an event does not stop that SMS from sending. Fixing this properly
-  means adding a settings check to every notification call site
-  (attendance, exams, fees, homework, …), a cross-cutting change touching
-  many files — deliberately not attempted in this pass to avoid a
-  half-wired result that's worse than the current honest "does nothing."
+- ✅ **Notification Settings — fixed 2026-07-24, for the 4 event types that
+  actually send.** Investigated all 11 configurable types: only
+  `fee_payment`, `fee_due`, `attendance_student`, `exam_result` have any
+  send logic on any channel; the other 7 (`attendance_low`,
+  `leave_approved`, `new_admission`, `homework`, `notice_board`,
+  `library_due`, `payslip`) have zero implementation, and the in-app
+  "push" channel is dead for all 11 — `createNotification()` exists but
+  has zero callers anywhere. Added `lib/services/notification-settings.ts`
+  (`isChannelEnabled`) and gated the 4 real send sites' email/SMS
+  (WhatsApp piggybacks on the "sms" toggle — no separate schema column).
+  Per user decision, building real send logic for the other 7 types or
+  wiring up push is out of scope for this pass — the settings UI now
+  disables (rather than fakes) those toggles instead of pretending they
+  do something.
+  Also fixed a real landmine surfaced while wiring this: the settings
+  page defaulted every unconfigured toggle to **off**, while the 4 real
+  event types send unconditionally today — the first admin visit + Save
+  would have silently killed fee receipts, attendance alerts, and exam
+  result notifications school-wide. Defaults now match actual current
+  behavior.
 - ✅ **Reports** — mostly wrong, fixed 2026-07-22. "No PDF export" was
   false: `/api/reports/pdf` (generic flat-rows → PDF via
   `@react-pdf/renderer`) already existed and was wired into all 8
