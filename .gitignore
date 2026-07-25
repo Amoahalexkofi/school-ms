@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# MCP server configs commonly hold API keys (e.g. the 21st.dev Magic key)
+.mcp.json
+
 # vercel
 .vercel
 
