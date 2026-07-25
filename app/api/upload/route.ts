@@ -17,6 +17,31 @@ const ALLOWED_DOC_TYPES = [
   "text/plain",
 ];
 
+// Vercel Blob derives the served Content-Type from the *pathname's*
+// extension unless one is passed explicitly — and that extension came from
+// the client-supplied file.name, entirely independent of the file.type we
+// just validated below. A file named "evil.svg" with a spoofed
+// file.type: "image/jpeg" would pass the allowlist check yet still be
+// served back as image/svg+xml (browser-renderable, script-capable) purely
+// because of its filename. Mapping the extension from the validated MIME
+// type — and passing that same type explicitly to put() — ties what we
+// checked to what actually gets served, so the filename can't smuggle a
+// different type through.
+const EXT_BY_TYPE: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "application/pdf": "pdf",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "application/vnd.ms-powerpoint": "ppt",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+  "application/vnd.ms-excel": "xls",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "text/plain": "txt",
+};
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -35,11 +60,11 @@ export async function POST(req: NextRequest) {
   if (file.size > maxBytes)
     return NextResponse.json({ error: `File must be under ${Math.round(maxBytes / 1048576)} MB` }, { status: 400 });
 
-  const ext = file.name.split(".").pop() ?? (isDoc ? "bin" : "jpg");
+  const ext = EXT_BY_TYPE[file.type] ?? (isDoc ? "bin" : "jpg");
   const prefix = isDoc ? "documents" : "photos";
   const filename = `${prefix}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-  const blob = await put(filename, file, { access: "public" });
+  const blob = await put(filename, file, { access: "public", contentType: file.type });
 
   return NextResponse.json({ url: blob.url });
 }
