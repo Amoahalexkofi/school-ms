@@ -7,7 +7,8 @@ import Link from "next/link";
 import {
   ShieldCheck, Shield, BookOpen, Wallet,
   Library, UserCircle, Users, Eye, EyeOff, ArrowRight,
-  CheckCircle2, Database, Zap, RefreshCw, ConciergeBell, ChevronRight,
+  Database, Zap, RefreshCw, ConciergeBell, ChevronRight,
+  Copy, Check,
 } from "lucide-react";
 
 const DEMO_PASSWORD = "Demo@Skula2026";
@@ -23,15 +24,18 @@ const ROLES = [
   { key: "receptionist", label: "Receptionist", email: "receptionist.demo@getskula.com", icon: ConciergeBell, color: "teal", tags: ["Visitors", "Phone calls", "Front desk"] },
 ] as const;
 
-const CM: Record<string, { activeBg: string; activeRing: string; tag: string; chip: string; chipText: string; dot: string }> = {
-  indigo:  { activeBg: "bg-[#533afd]",  activeRing: "ring-indigo-400/40",  tag: "bg-indigo-50 text-[#4434d4]",   chip: "border-indigo-300/70 text-[#4434d4]",  chipText: "text-[#4434d4]",  dot: "bg-[#533afd]"  },
-  blue:    { activeBg: "bg-blue-600",    activeRing: "ring-blue-400/40",    tag: "bg-blue-50 text-blue-700",       chip: "border-blue-300/70 text-blue-700",      chipText: "text-blue-700",    dot: "bg-blue-600"    },
-  emerald: { activeBg: "bg-emerald-600", activeRing: "ring-emerald-400/40", tag: "bg-emerald-50 text-emerald-700", chip: "border-emerald-300/70 text-emerald-700",chipText: "text-emerald-700", dot: "bg-emerald-600" },
-  violet:  { activeBg: "bg-violet-600",  activeRing: "ring-violet-400/40",  tag: "bg-violet-50 text-violet-700",   chip: "border-violet-300/70 text-violet-700",  chipText: "text-violet-700",  dot: "bg-violet-600"  },
-  amber:   { activeBg: "bg-amber-500",   activeRing: "ring-amber-400/40",   tag: "bg-amber-50 text-amber-700",     chip: "border-amber-300/70 text-amber-700",    chipText: "text-amber-700",   dot: "bg-amber-500"   },
-  sky:     { activeBg: "bg-sky-600",     activeRing: "ring-sky-400/40",     tag: "bg-sky-50 text-sky-700",         chip: "border-sky-300/70 text-sky-700",        chipText: "text-sky-700",     dot: "bg-sky-600"     },
-  rose:    { activeBg: "bg-rose-600",    activeRing: "ring-rose-400/40",    tag: "bg-rose-50 text-rose-700",       chip: "border-rose-300/70 text-rose-700",      chipText: "text-rose-700",    dot: "bg-rose-600"    },
-  teal:    { activeBg: "bg-teal-600",    activeRing: "ring-teal-400/40",    tag: "bg-teal-50 text-teal-700",       chip: "border-teal-300/70 text-teal-700",      chipText: "text-teal-700",    dot: "bg-teal-600"    },
+const CM: Record<string, {
+  activeBg: string; activeRing: string; activeShadow: string; activeFrom: string;
+  tag: string; chip: string; chipText: string; dot: string; restIconBg: string; restIconText: string;
+}> = {
+  indigo:  { activeBg: "bg-[#533afd]",  activeRing: "ring-indigo-400/40",  activeShadow: "rgba(83,58,253,0.18)",  activeFrom: "from-indigo-50/70",  tag: "bg-indigo-50 text-[#4434d4]",   chip: "border-indigo-300/70 text-[#4434d4]",  chipText: "text-[#4434d4]",  dot: "bg-[#533afd]",  restIconBg: "bg-indigo-50",  restIconText: "text-[#533afd]"  },
+  blue:    { activeBg: "bg-blue-600",    activeRing: "ring-blue-400/40",    activeShadow: "rgba(37,99,235,0.16)",  activeFrom: "from-blue-50/70",    tag: "bg-blue-50 text-blue-700",       chip: "border-blue-300/70 text-blue-700",      chipText: "text-blue-700",    dot: "bg-blue-600",    restIconBg: "bg-blue-50",    restIconText: "text-blue-600"    },
+  emerald: { activeBg: "bg-emerald-600", activeRing: "ring-emerald-400/40", activeShadow: "rgba(5,150,105,0.16)",  activeFrom: "from-emerald-50/70", tag: "bg-emerald-50 text-emerald-700", chip: "border-emerald-300/70 text-emerald-700",chipText: "text-emerald-700", dot: "bg-emerald-600", restIconBg: "bg-emerald-50", restIconText: "text-emerald-600" },
+  violet:  { activeBg: "bg-violet-600",  activeRing: "ring-violet-400/40",  activeShadow: "rgba(124,58,237,0.16)", activeFrom: "from-violet-50/70",  tag: "bg-violet-50 text-violet-700",   chip: "border-violet-300/70 text-violet-700",  chipText: "text-violet-700",  dot: "bg-violet-600",  restIconBg: "bg-violet-50",  restIconText: "text-violet-600"  },
+  amber:   { activeBg: "bg-amber-500",   activeRing: "ring-amber-400/40",   activeShadow: "rgba(217,119,6,0.16)",  activeFrom: "from-amber-50/70",   tag: "bg-amber-50 text-amber-700",     chip: "border-amber-300/70 text-amber-700",    chipText: "text-amber-700",   dot: "bg-amber-500",   restIconBg: "bg-amber-50",   restIconText: "text-amber-600"   },
+  sky:     { activeBg: "bg-sky-600",     activeRing: "ring-sky-400/40",     activeShadow: "rgba(2,132,199,0.16)",  activeFrom: "from-sky-50/70",     tag: "bg-sky-50 text-sky-700",         chip: "border-sky-300/70 text-sky-700",        chipText: "text-sky-700",     dot: "bg-sky-600",     restIconBg: "bg-sky-50",     restIconText: "text-sky-600"     },
+  rose:    { activeBg: "bg-rose-600",    activeRing: "ring-rose-400/40",    activeShadow: "rgba(225,29,72,0.16)",  activeFrom: "from-rose-50/70",    tag: "bg-rose-50 text-rose-700",       chip: "border-rose-300/70 text-rose-700",      chipText: "text-rose-700",    dot: "bg-rose-600",    restIconBg: "bg-rose-50",    restIconText: "text-rose-600"    },
+  teal:    { activeBg: "bg-teal-600",    activeRing: "ring-teal-400/40",    activeShadow: "rgba(13,148,136,0.16)", activeFrom: "from-teal-50/70",    tag: "bg-teal-50 text-teal-700",       chip: "border-teal-300/70 text-teal-700",      chipText: "text-teal-700",    dot: "bg-teal-600",    restIconBg: "bg-teal-50",    restIconText: "text-teal-600"    },
 };
 
 type RoleKey = typeof ROLES[number]["key"];
@@ -42,8 +46,15 @@ export default function DemoPage() {
   const [showPw, setShowPw]     = useState(false);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState("");
+  const [copied, setCopied]     = useState<"email" | "password" | null>(null);
 
   const role = ROLES.find(r => r.key === selected);
+
+  function copyValue(field: "email" | "password", value: string) {
+    navigator.clipboard.writeText(value);
+    setCopied(field);
+    setTimeout(() => setCopied((c) => (c === field ? null : c)), 1500);
+  }
 
   async function handleLogin() {
     if (!role) return;
@@ -181,12 +192,17 @@ export default function DemoPage() {
             <div className="px-7 pt-7 pb-8 md:px-9 md:pt-8 md:pb-9">
 
               {/* Heading */}
-              <div className="mb-7">
-                <h2 className="text-[28px] font-light text-[#0d253d] tracking-[-0.01em] leading-tight">Pick a role</h2>
-                <p className="text-[13.5px] text-[#64748d] mt-1.5 leading-snug">
-                  Credentials fill automatically — just click{" "}
-                  <strong className="text-[#273951] font-semibold">Login</strong> to enter.
-                </p>
+              <div className="flex items-start justify-between mb-7">
+                <div>
+                  <h2 className="text-[28px] font-light text-[#0d253d] tracking-[-0.01em] leading-tight">Pick a role</h2>
+                  <p className="text-[13.5px] text-[#64748d] mt-1.5 leading-snug">
+                    Credentials fill automatically — just click{" "}
+                    <strong className="text-[#273951] font-semibold">Login</strong> to enter.
+                  </p>
+                </div>
+                <span className="hidden sm:inline-flex items-center text-[11px] font-semibold text-[#64748d] bg-slate-50 border border-[#e3e8ee] rounded-full px-2.5 py-1 mt-1 shrink-0">
+                  {ROLES.length} roles
+                </span>
               </div>
 
               {/* Role grid */}
@@ -200,40 +216,35 @@ export default function DemoPage() {
                       key={r.key}
                       type="button"
                       onClick={() => { setSelected(r.key); setError(""); setShowPw(false); }}
-                      className={`group relative flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-all duration-150 outline-none ${
+                      className={`group relative flex items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-150 outline-none ${
                         isActive
-                          ? `bg-white border-slate-300 ring-2 ${c.activeRing}`
-                          : "bg-slate-50 border-[#e3e8ee] hover:bg-white hover:border-slate-300 hover:shadow-sm"
+                          ? `bg-gradient-to-br to-white ${c.activeFrom} border-transparent ring-2 ${c.activeRing}`
+                          : "bg-white border-[#e3e8ee] hover:border-slate-300 hover:shadow-sm"
                       }`}
-                      style={isActive ? { boxShadow: "0 2px 14px rgba(0,0,0,0.07)" } : undefined}
+                      style={isActive ? { boxShadow: `0 2px 8px rgba(0,0,0,0.04), 0 10px 24px ${c.activeShadow}` } : undefined}
                     >
                       {/* Icon */}
                       <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                        isActive ? c.activeBg : "bg-white border border-[#e3e8ee] group-hover:border-slate-300"
+                        isActive ? `${c.activeBg} shadow-sm` : `${c.restIconBg} group-hover:brightness-95`
                       }`}>
-                        <Icon className={`h-4 w-4 transition-colors ${isActive ? "text-white" : "text-[#64748d]"}`} />
+                        <Icon className={`h-4 w-4 transition-colors ${isActive ? "text-white" : c.restIconText}`} />
                       </div>
 
-                      {/* Label + tags */}
+                      {/* Label + caption */}
                       <div className="min-w-0 flex-1 mt-0.5">
-                        <p className={`text-[13px] font-bold leading-tight mb-1.5 ${isActive ? "text-[#0d253d]" : "text-[#273951]"}`}>
+                        <p className={`text-[13px] font-bold leading-tight mb-1 ${isActive ? "text-[#0d253d]" : "text-[#273951]"}`}>
                           {r.label}
                         </p>
-                        <div className="flex flex-wrap gap-1">
-                          {r.tags.map(tag => (
-                            <span
-                              key={tag}
-                              className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md transition-colors ${
-                                isActive ? c.tag : "bg-slate-100 text-[#64748d]"
-                              }`}
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
+                        <p className="text-[11.5px] text-[#8792a2] leading-snug truncate">
+                          {r.tags.join(" · ")}
+                        </p>
                       </div>
 
-                      {isActive && <CheckCircle2 className="h-3.5 w-3.5 text-[#533afd] shrink-0 mt-0.5 absolute top-3.5 right-3.5" />}
+                      {isActive && (
+                        <div className={`absolute top-3.5 right-3.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${c.activeBg}`}>
+                          <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
+                        </div>
+                      )}
                     </button>
                   );
                 })}
@@ -245,35 +256,53 @@ export default function DemoPage() {
                   const c = CM[role.color];
                   const Icon = role.icon;
                   return (
-                    <div className="rounded-2xl border border-[#e3e8ee] overflow-hidden bg-slate-50">
+                    <div className="rounded-2xl border border-[#e3e8ee] overflow-hidden bg-slate-50 shadow-sm">
+                      {/* Role-colored accent bar */}
+                      <div className={`h-[3px] ${c.activeBg}`} />
+
                       {/* Role indicator bar */}
                       <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#e3e8ee] bg-white">
                         <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${c.activeBg}`}>
                           <Icon className="h-3.5 w-3.5 text-white" />
                         </div>
                         <p className="text-[13px] font-bold text-[#0d253d]">Signing in as {role.label}</p>
+                        <span className="ml-auto inline-flex items-center gap-1 text-[10.5px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/70 rounded-full px-2 py-0.5">
+                          <Check className="h-2.5 w-2.5" strokeWidth={3} /> Auto-filled
+                        </span>
                       </div>
 
                       <div className="p-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                           <div>
                             <label className="block text-[10.5px] font-bold text-[#64748d] uppercase tracking-wider mb-1.5">Email</label>
-                            <input
-                              type="email" readOnly value={role.email}
-                              className="w-full h-9 rounded-lg border border-[#e3e8ee] bg-white px-3 text-[11.5px] font-mono text-[#273951] focus:outline-none cursor-default select-all"
-                            />
+                            <div className="relative">
+                              <input
+                                type="email" readOnly value={role.email}
+                                className="w-full h-9 rounded-lg border border-[#e3e8ee] bg-white pl-3 pr-9 text-[11.5px] font-mono text-[#273951] focus:outline-none cursor-default select-all"
+                              />
+                              <button type="button" onClick={() => copyValue("email", role.email)} tabIndex={-1}
+                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#64748d] hover:text-[#273951] transition-colors">
+                                {copied === "email" ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                              </button>
+                            </div>
                           </div>
                           <div>
                             <label className="block text-[10.5px] font-bold text-[#64748d] uppercase tracking-wider mb-1.5">Password</label>
                             <div className="relative">
                               <input
                                 type={showPw ? "text" : "password"} readOnly value={DEMO_PASSWORD}
-                                className="w-full h-9 rounded-lg border border-[#e3e8ee] bg-white px-3 pr-9 text-[11.5px] font-mono text-[#273951] focus:outline-none cursor-default"
+                                className="w-full h-9 rounded-lg border border-[#e3e8ee] bg-white pl-3 pr-16 text-[11.5px] font-mono text-[#273951] focus:outline-none cursor-default"
                               />
-                              <button type="button" onClick={() => setShowPw(s => !s)} tabIndex={-1}
-                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#64748d] hover:text-[#273951] transition-colors">
-                                {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                              </button>
+                              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                                <button type="button" onClick={() => setShowPw(s => !s)} tabIndex={-1}
+                                  className="text-[#64748d] hover:text-[#273951] transition-colors">
+                                  {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                                </button>
+                                <button type="button" onClick={() => copyValue("password", DEMO_PASSWORD)} tabIndex={-1}
+                                  className="text-[#64748d] hover:text-[#273951] transition-colors">
+                                  {copied === "password" ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
