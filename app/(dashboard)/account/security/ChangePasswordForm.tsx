@@ -8,6 +8,7 @@ import { ShieldCheck, AlertCircle } from "lucide-react";
 
 export function ChangePasswordForm({ forced }: { forced: boolean }) {
   const router = useRouter();
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,7 @@ export function ChangePasswordForm({ forced }: { forced: boolean }) {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!forced && !currentPassword) { setError("Enter your current password."); return; }
     if (newPassword.length < 8) { setError("Password must be at least 8 characters."); return; }
     if (newPassword !== confirmPassword) { setError("Passwords do not match."); return; }
     setLoading(true); setError("");
@@ -22,7 +24,7 @@ export function ChangePasswordForm({ forced }: { forced: boolean }) {
       const res = await fetch("/api/account/change-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newPassword, confirmPassword }),
+        body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to update password");
@@ -48,9 +50,15 @@ export function ChangePasswordForm({ forced }: { forced: boolean }) {
             : "Choose a new password for your account."}
         </p>
         <form onSubmit={submit} className="mt-5 space-y-4">
+          {!forced && (
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Current password</label>
+              <Input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} autoFocus />
+            </div>
+          )}
           <div>
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">New password</label>
-            <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoFocus />
+            <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoFocus={forced} />
           </div>
           <div>
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Confirm password</label>

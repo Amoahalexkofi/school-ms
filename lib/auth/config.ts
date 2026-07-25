@@ -78,6 +78,7 @@ export const authConfig: NextAuthConfig = {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const result = await (sql as any).query(
             `SELECT u.id, u.email, u.password, u.role, u."isActive" AS "userActive",
+                    u."failedLoginAttempts", u."lockedUntil",
                     s."isActive" AS "studentActive"
              FROM "${schema}"."User" u
              LEFT JOIN "${schema}"."Student" s ON s."userId" = u.id
@@ -89,16 +90,41 @@ export const authConfig: NextAuthConfig = {
           if (!rows.length) return null;
           const user = rows[0];
 
+          // Brute-force lockout: 5 failed attempts locks the account for 15
+          // minutes. Checked before the (deliberately slow) bcrypt compare so
+          // a locked-out attacker isn't still paying — or benefiting from —
+          // that cost, and rejected with the same generic failure as a wrong
+          // password so a lockout can't be used to enumerate valid emails.
+          const MAX_ATTEMPTS = 5;
+          const LOCKOUT_MS = 15 * 60 * 1000;
+          const lockedUntil = user.lockedUntil ? new Date(user.lockedUntil as string) : null;
+          if (lockedUntil && lockedUntil.getTime() > Date.now()) return null;
+
           const valid = await verifyPassword(
             credentials.password as string,
             user.password as string
           );
-          if (!valid) return null;
+          if (!valid) {
+            const attempts = Number(user.failedLoginAttempts ?? 0) + 1;
+            const lockNow = attempts >= MAX_ATTEMPTS;
+            await (sql as any).query(
+              `UPDATE "${schema}"."User" SET "failedLoginAttempts" = $1, "lockedUntil" = $2 WHERE id = $3`,
+              [lockNow ? 0 : attempts, lockNow ? new Date(Date.now() + LOCKOUT_MS) : null, user.id]
+            );
+            return null;
+          }
 
           // Disabled accounts cannot sign in — mirrors Smart School, which
           // gates login on both users.is_active and students.is_active.
           if (user.userActive === false) return null;
           if (user.role === "STUDENT" && user.studentActive === false) return null;
+
+          if (Number(user.failedLoginAttempts ?? 0) > 0 || lockedUntil) {
+            await (sql as any).query(
+              `UPDATE "${schema}"."User" SET "failedLoginAttempts" = 0, "lockedUntil" = NULL WHERE id = $1`,
+              [user.id]
+            );
+          }
 
           return { id: user.id as string, email: user.email as string, role: user.role as string };
         } catch (e) {
