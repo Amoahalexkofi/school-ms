@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
 import { auth } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#111">
         <div style="background:#4f46e5;padding:24px 32px;border-radius:12px 12px 0 0">
-          <h1 style="color:#fff;margin:0;font-size:20px">${schoolName}</h1>
+          <h1 style="color:#fff;margin:0;font-size:20px">${escapeHtml(schoolName)}</h1>
           <p style="color:#c7d2fe;margin:4px 0 0;font-size:13px">Email Configuration Test</p>
         </div>
         <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:28px 32px;border-radius:0 0 12px 12px">
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
             <li>Bulk messages to staff, students &amp; parents</li>
           </ul>
           <p style="color:#9ca3af;font-size:12px;margin:0">
-            Sent from ${schoolName} · Skula School Management
+            Sent from ${escapeHtml(schoolName)} · Skula School Management
           </p>
         </div>
       </div>

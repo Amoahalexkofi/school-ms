@@ -52,6 +52,20 @@ export async function sendEmail(
 
 // ─── Template helpers ────────────────────────────────────────────────────────
 
+// Every value below can originate from admin/staff-entered data (a student's
+// name, a school's name, a bulk-message body) and gets interpolated straight
+// into an HTML email — escape it first or a name/message containing HTML
+// gets rendered (or, in permissive email clients, executed) for whoever
+// receives the email.
+export function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export function feeReceiptEmail({
   studentName,
   amount,
@@ -72,28 +86,28 @@ export function feeReceiptEmail({
   return `
     <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#111">
       <div style="background:#4f46e5;padding:24px 32px;border-radius:12px 12px 0 0">
-        <h1 style="color:#fff;margin:0;font-size:20px">${schoolName}</h1>
+        <h1 style="color:#fff;margin:0;font-size:20px">${escapeHtml(schoolName)}</h1>
         <p style="color:#c7d2fe;margin:4px 0 0;font-size:13px">Fee Payment Receipt</p>
       </div>
       <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:28px 32px;border-radius:0 0 12px 12px">
-        <p style="margin:0 0 20px">Dear <strong>${studentName}</strong>,</p>
+        <p style="margin:0 0 20px">Dear <strong>${escapeHtml(studentName)}</strong>,</p>
         <p style="margin:0 0 20px">We have received your payment. Here are the details:</p>
         <table style="width:100%;border-collapse:collapse;font-size:14px">
           <tr style="background:#f9fafb">
             <td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:600">Receipt No.</td>
-            <td style="padding:10px 12px;border:1px solid #e5e7eb">${receiptNo}</td>
+            <td style="padding:10px 12px;border:1px solid #e5e7eb">${escapeHtml(receiptNo)}</td>
           </tr>
           <tr>
             <td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:600">Amount Paid</td>
-            <td style="padding:10px 12px;border:1px solid #e5e7eb;color:#16a34a;font-weight:700">${currency} ${amount}</td>
+            <td style="padding:10px 12px;border:1px solid #e5e7eb;color:#16a34a;font-weight:700">${escapeHtml(currency)} ${escapeHtml(amount)}</td>
           </tr>
           <tr style="background:#f9fafb">
             <td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:600">Payment Mode</td>
-            <td style="padding:10px 12px;border:1px solid #e5e7eb">${paymentMode}</td>
+            <td style="padding:10px 12px;border:1px solid #e5e7eb">${escapeHtml(paymentMode)}</td>
           </tr>
           <tr>
             <td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:600">Date</td>
-            <td style="padding:10px 12px;border:1px solid #e5e7eb">${date}</td>
+            <td style="padding:10px 12px;border:1px solid #e5e7eb">${escapeHtml(date)}</td>
           </tr>
         </table>
         <p style="margin:24px 0 0;color:#6b7280;font-size:12px">
@@ -118,14 +132,14 @@ export function bulkMessageEmail({
   return `
     <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#111">
       <div style="background:#4f46e5;padding:24px 32px;border-radius:12px 12px 0 0">
-        <h1 style="color:#fff;margin:0;font-size:20px">${schoolName}</h1>
-        <p style="color:#c7d2fe;margin:4px 0 0;font-size:13px">${subject}</p>
+        <h1 style="color:#fff;margin:0;font-size:20px">${escapeHtml(schoolName)}</h1>
+        <p style="color:#c7d2fe;margin:4px 0 0;font-size:13px">${escapeHtml(subject)}</p>
       </div>
       <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:28px 32px;border-radius:0 0 12px 12px">
-        <p style="margin:0 0 16px">Dear <strong>${recipientName}</strong>,</p>
-        <div style="white-space:pre-wrap;line-height:1.6">${message}</div>
+        <p style="margin:0 0 16px">Dear <strong>${escapeHtml(recipientName)}</strong>,</p>
+        <div style="white-space:pre-wrap;line-height:1.6">${escapeHtml(message)}</div>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0"/>
-        <p style="color:#9ca3af;font-size:12px;margin:0">${schoolName}</p>
+        <p style="color:#9ca3af;font-size:12px;margin:0">${escapeHtml(schoolName)}</p>
       </div>
     </div>
   `;
@@ -145,12 +159,12 @@ export function attendanceEmail({
   return `
     <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#111">
       <div style="background:#4f46e5;padding:24px 32px;border-radius:12px 12px 0 0">
-        <h1 style="color:#fff;margin:0;font-size:20px">${schoolName}</h1>
+        <h1 style="color:#fff;margin:0;font-size:20px">${escapeHtml(schoolName)}</h1>
         <p style="color:#c7d2fe;margin:4px 0 0;font-size:13px">Attendance Notice</p>
       </div>
       <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:28px 32px;border-radius:0 0 12px 12px">
         <p style="margin:0 0 16px">Dear Parent,</p>
-        <p style="margin:0 0 16px"><strong>${studentName}</strong> was marked <strong>${status}</strong> on ${date}.</p>
+        <p style="margin:0 0 16px"><strong>${escapeHtml(studentName)}</strong> was marked <strong>${escapeHtml(status)}</strong> on ${escapeHtml(date)}.</p>
         <p style="color:#6b7280;font-size:13px;margin:0">Contact the school office if you believe this is a mistake.</p>
       </div>
     </div>
@@ -169,11 +183,11 @@ export function passwordResetEmail({
   return `
     <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#111">
       <div style="background:#4f46e5;padding:24px 32px;border-radius:12px 12px 0 0">
-        <h1 style="color:#fff;margin:0;font-size:20px">${schoolName}</h1>
+        <h1 style="color:#fff;margin:0;font-size:20px">${escapeHtml(schoolName)}</h1>
       </div>
       <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:28px 32px;border-radius:0 0 12px 12px">
         <h2 style="margin:0 0 16px;font-size:18px">Password Reset</h2>
-        <p style="margin:0 0 16px">Hi <strong>${username}</strong>,</p>
+        <p style="margin:0 0 16px">Hi <strong>${escapeHtml(username)}</strong>,</p>
         <p style="margin:0 0 24px">We received a request to reset your password. Click the button below to set a new one:</p>
         <p style="margin:0 0 24px">
           <a href="${resetUrl}" style="background:#4f46e5;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">
