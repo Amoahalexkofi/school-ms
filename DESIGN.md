@@ -127,7 +127,7 @@ The feel is refined and restrained: generous rounding, hairline borders, flat su
 **Key Characteristics:**
 - Calm, low-contrast chrome around high-contrast data
 - One indigo accent, used sparingly, for the primary action and active state
-- Flat, hairline-bordered surfaces for dense record screens; a soft, restrained lift on dashboard/overview summary cards (see Elevation)
+- Flat surfaces separated by hairline borders, not shadows
 - Generous corner rounding (12–16px) for a soft, modern, non-corporate feel
 - Status is always color **plus** a label/icon, never color alone
 - Dense-but-orderly: tables, filters, tabs, and chips behave identically everywhere
@@ -183,19 +183,16 @@ A near-monochrome slate/gray foundation under white surfaces, with one indigo ac
 
 ## 4. Elevation
 
-Skula is **flat-first, not flat-only**. Dense record surfaces — tables, lists, forms, settings panels, the working screens staff live in all day — stay flat: hairline borders and the gray-50 canvas do the separating, never shadows. This is deliberate: shadows on every row and panel read as busy, and busy erodes the calm a records system needs.
+Skula is **flat by default**. Depth comes from hairline borders and the gray-50 canvas behind white surfaces, not from shadows. Cards sit on the page as bordered planes (`border-slate-200/80`), not lifted objects. This is deliberate: shadows everywhere read as busy, and busy erodes the calm a records system needs.
 
-**Summary and overview surfaces are the licensed exception**: the dashboard's KPI tiles, hero stat blocks, and chart panels may carry a soft, low-opacity **Soft Lift** shadow. The distinction is intentional — a dashboard is for orientation at a glance, and a whisper of depth on that one summary layer helps the eye land on what matters; a table is for the record itself, and stays honest and flat so the data — not the chrome — is the loudest thing on screen. This is still restrained: Soft Lift is barely-there, a hint of paper lifted off the canvas, not a floating tile with a hard shadow.
-
-The other functional exception is unchanged: the **primary button** carries a faint indigo-tinted shadow so the one action that matters has a whisper of lift. Modals/popovers use a stronger shadow to separate from the page, since they're genuinely above it.
+The single exception is functional, not decorative: the **primary button** carries a faint indigo-tinted shadow so the one action that matters has a whisper of lift. Modals/popovers may use a soft shadow to separate from the page, since they're genuinely above it.
 
 ### Shadow Vocabulary
-- **Soft Lift** (`box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.05)`): Dashboard/overview summary cards only — KPI tiles, hero stat blocks, chart panels. Never tables, lists, or forms.
 - **Accent Lift** (`box-shadow: 0 1px 6px rgba(99,102,241,0.35)`): Primary button only. A subtle indigo glow tying the lift to the brand.
 - **Overlay** (`box-shadow: 0 10px 40px rgba(0,0,0,0.12)`): Modals, dropdowns, popovers — surfaces truly floating above the page.
 
 ### Named Rules
-**The Flat-By-Default Rule, Revised.** Dense record surfaces (tables, lists, forms, settings panels) stay flat — 1px slate-200 border, no shadow, no exceptions. Dashboard/overview summary cards may carry Soft Lift. Everything else earns a shadow only via (a) the primary button or (b) a true overlay. If a table row or a records-page card has a drop shadow, remove it — the summary-surface exception does not extend to record-keeping screens.
+**The Flat-By-Default Rule.** Surfaces are flat at rest, defined by a 1px slate-200 border. A shadow is earned only by (a) the single primary action or (b) a true overlay. If a resting card has a drop shadow, remove it.
 
 ## 5. Components
 
@@ -215,7 +212,7 @@ The other functional exception is unchanged: the **primary button** carries a fa
 - **Corner Style:** `rounded-2xl` (16px) — the soft, modern signature.
 - **Background:** White surface on the gray-50 canvas.
 - **Border:** 1px slate-200/80 hairline. Header and footer separated by slate-100 internal rules.
-- **Shadow Strategy:** None at rest on record/list/settings cards (see Elevation). Dashboard/overview summary cards (KPI tiles, hero stat blocks, chart panels) may carry **Soft Lift**. Footer optionally tinted `slate-50/60`.
+- **Shadow Strategy:** None at rest (see Elevation). Footer optionally tinted `slate-50/60`.
 - **Internal Padding:** 24px horizontal, 20px vertical (`px-6 py-5`).
 
 ### Inputs / Fields
@@ -240,7 +237,7 @@ Motion is functional, quick, and calm — it confirms an action or guides the ey
 
 ### Do:
 - **Do** reserve Indigo Signal (#4f46e5) for the primary action, active state, and links — the One Accent Rule (≤10% of any screen).
-- **Do** define surfaces with a 1px slate-200 border on the gray-50 canvas; keep record/list/settings surfaces flat (the Flat-By-Default Rule, Revised) — dashboard/overview summary cards may carry Soft Lift.
+- **Do** define surfaces with a 1px slate-200 border on the gray-50 canvas; keep them flat (the Flat-By-Default Rule).
 - **Do** pair every status color with a word or icon (PAID, Present, ✓) — the Status-Never-Alone Rule.
 - **Do** use generous rounding (cards 16px, buttons/inputs 12px) for the soft, modern, non-corporate feel.
 - **Do** keep Montserrat for display/titles and Plus Jakarta Sans for everything functional (the Two-Voice Rule).
@@ -252,18 +249,18 @@ Motion is functional, quick, and calm — it confirms an action or guides the ey
 ### Don't:
 - **Don't** recreate the **dense, gray, dated PHP admin** look — cramped tables, tiny controls, everything on screen at once. Feature parity, never UI parity.
 - **Don't** ship a **generic Bootstrap admin template** appearance with no point of view.
-- **Don't** over-design: no decorative gradients, no attention-seeking or scroll-jacking motion, no heavy drop shadows anywhere — even the licensed Soft Lift on dashboard summary cards stays barely-there.
+- **Don't** over-design: no decorative gradients, no attention-seeking or scroll-jacking motion, no heavy drop shadows on resting cards.
 - **Don't** use **childish, cartoonish, primary-color school clip-art** — Skula is an institution, not a classroom poster.
 - **Don't** let indigo appear on more than ~10% of a screen, and never use two competing accents.
 - **Don't** convey status with color alone (no bare colored dots or text-color-only states).
 - **Don't** put semantic status colors (success green, danger red) on solid button fills — keep them as text + soft-tinted chips; a solid green/red block reads as a trading terminal, not a ledger.
 - **Don't** render money or numeric columns with proportional figures (missing `tnum`) — ragged digits break the financial-data signature.
 - **Don't** let Montserrat leak into buttons, inputs, or table cells.
-- **Don't** add a drop shadow to a resting table, list, or form card; outside the dashboard's summary cards, shadows are earned by the primary button or a true overlay only.
+- **Don't** add a drop shadow to a resting card; shadows are earned by the primary button or a true overlay only.
 
 ### Quick audit tests
 One-sentence checks — if any is true, the screen is off-brand:
-- **The 2016-admin test:** if a resting table, list, or form card has a drop shadow, it looks like a dated admin theme — flatten it to a 1px slate-200 border. (Dashboard summary cards are the one exception, and even they stay at Soft Lift, never a hard shadow.)
+- **The 2016-admin test:** if a resting card has a drop shadow, it looks like a dated admin theme — flatten it to a 1px slate-200 border.
 - **The squint test:** squint at the screen; if more than one indigo element competes for your eye, the One Accent Rule is broken.
 - **The grayscale test:** view the screen in grayscale; if any status (paid/absent/overdue) becomes unreadable, it relies on color alone — add the label/icon.
 - **The thumb test:** on a 375px viewport, if the primary action sits at the top out of thumb reach or any tap target is under 44px, it fails the mobile-first staff/parent audience.

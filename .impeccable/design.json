@@ -1,6 +1,6 @@
 {
  "schemaVersion": 2,
- "generatedAt": "2026-07-25T05:30:00.000000Z",
+ "generatedAt": "2026-07-12T01:00:10.402507Z",
  "title": "Design System: Skula",
  "extensions": {
   "colorMeta": {
@@ -138,11 +138,6 @@
   },
   "shadows": [
    {
-    "name": "soft-lift",
-    "value": "0 1px 2px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.05)",
-    "purpose": "Dashboard/overview summary cards only \u2014 KPI tiles, hero stat blocks, chart panels. Barely-there; never tables, lists, or forms."
-   },
-   {
     "name": "accent-lift",
     "value": "0 1px 6px rgba(99,102,241,0.35)",
     "purpose": "Primary button only \u2014 a faint indigo lift on the one action that matters."
@@ -266,7 +261,7 @@
   "keyCharacteristics": [
    "Calm, low-contrast chrome around high-contrast data",
    "One indigo accent, used sparingly, for the primary action and active state",
-   "Flat, hairline-bordered surfaces for dense record screens; a soft, restrained lift on dashboard/overview summary cards",
+   "Flat surfaces separated by hairline borders, not shadows",
    "Generous corner rounding (12-16px) for a soft, modern, non-corporate feel",
    "Status is always color plus a label/icon, never color alone",
    "Dense-but-orderly: tables, filters, tabs, and chips behave identically everywhere"
@@ -288,8 +283,8 @@
     "section": "typography"
    },
    {
-    "name": "The Flat-By-Default Rule, Revised",
-    "body": "Dense record surfaces (tables, lists, forms, settings panels) stay flat — 1px slate-200 border, no shadow, no exceptions. Dashboard/overview summary cards (KPI tiles, hero stat blocks, chart panels) may carry Soft Lift. Everything else earns a shadow only via the primary button or a true overlay.",
+    "name": "The Flat-By-Default Rule",
+    "body": "Surfaces are flat at rest, defined by a 1px slate-200 border. A shadow is earned only by the single primary action or a true overlay.",
     "section": "elevation"
    },
    {
@@ -309,7 +304,7 @@
   ],
   "dos": [
    "Do reserve Indigo Signal (#4f46e5) for the primary action, active state, and links (\u226410% of any screen).",
-   "Do define surfaces with a 1px slate-200 border on the gray-50 canvas; keep record/list/settings surfaces flat — dashboard/overview summary cards may carry Soft Lift.",
+   "Do define surfaces with a 1px slate-200 border on the gray-50 canvas; keep them flat.",
    "Do pair every status color with a word or icon.",
    "Do use generous rounding (cards 16px, buttons/inputs 12px).",
    "Do keep Montserrat for display/titles and Plus Jakarta Sans for everything functional.",
@@ -321,7 +316,7 @@
   "donts": [
    "Don't recreate the dense, gray, dated PHP admin look \u2014 feature parity, never UI parity.",
    "Don't ship a generic Bootstrap admin template appearance with no point of view.",
-   "Don't over-design: no decorative gradients, no attention-seeking motion, no heavy drop shadows anywhere — even the licensed Soft Lift on dashboard summary cards stays barely-there.",
+   "Don't over-design: no decorative gradients, no attention-seeking motion, no heavy resting shadows.",
    "Don't use childish, cartoonish, primary-color school clip-art.",
    "Don't let indigo exceed ~10% of a screen or introduce a second competing accent.",
    "Don't convey status with color alone.",
