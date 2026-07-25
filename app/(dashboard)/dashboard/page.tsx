@@ -116,18 +116,33 @@ function BarChart({ data, height = 200 }: { data: { name: string; avg: number }[
   );
 }
 
+// Category color for a KPI's icon chip — identifies what a metric is about
+// (money in vs. out, people vs. time), not a judgment on the number itself.
+// The neutral, non-editorializing delta text below each value is untouched.
+const TONE: Record<string, { chip: string; icon: string }> = {
+  indigo:  { chip: "bg-indigo-50",  icon: "text-indigo-600" },
+  violet:  { chip: "bg-violet-50",  icon: "text-violet-600" },
+  emerald: { chip: "bg-emerald-50", icon: "text-emerald-600" },
+  amber:   { chip: "bg-amber-50",   icon: "text-amber-600" },
+  sky:     { chip: "bg-sky-50",     icon: "text-sky-600" },
+  slate:   { chip: "bg-slate-100",  icon: "text-slate-500" },
+};
+
 // ─── KPI Card — calm, neutral ─────────────────────────────────────────────────
 function KpiCard({
-  label, value, sub, href, icon: Icon, spark,
+  label, value, sub, href, icon: Icon, spark, tone = "slate",
 }: {
-  label: string; value: string | number; sub?: string; href?: string; icon: React.ElementType; spark?: number[];
+  label: string; value: string | number; sub?: string; href?: string; icon: React.ElementType; spark?: number[]; tone?: keyof typeof TONE;
 }) {
+  const t = TONE[tone];
   const inner = (
     <div className="group bg-white rounded-xl border border-slate-200 p-5 h-full flex flex-col
       hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-200">
       <div className="flex items-center justify-between">
         <span className="text-[12.5px] font-medium text-slate-500">{label}</span>
-        <Icon className="h-4 w-4 text-slate-300 group-hover:text-slate-400 transition-colors" />
+        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${t.chip}`}>
+          <Icon className={`h-3.5 w-3.5 ${t.icon}`} />
+        </div>
       </div>
       <div className="flex items-end gap-3 mt-4">
         <p className="text-[30px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight whitespace-nowrap">{value}</p>
@@ -351,28 +366,28 @@ export default async function DashboardPage() {
                   case "collected": return (
                     <KpiCard key={k} label="Collected this month" value={money(stats.monthCollection ?? 0)}
                       sub={monthDelta(stats.monthCollection ?? 0, stats.lastMonthCollection ?? 0) ?? monthLabel}
-                      href="/fees" icon={Banknote} spark={stats.sparklines?.fees} />
+                      href="/fees" icon={Banknote} spark={stats.sparklines?.fees} tone="emerald" />
                   );
                   case "expenses": return (
                     <KpiCard key={k} label="Expenses this month" value={money(stats.monthExpense ?? 0)}
                       sub={monthDelta(stats.monthExpense ?? 0, stats.lastMonthExpense ?? 0) ?? monthLabel}
-                      href="/finance" icon={TrendingDown} spark={stats.sparklines?.expenses} />
+                      href="/finance" icon={TrendingDown} spark={stats.sparklines?.expenses} tone="amber" />
                   );
                   case "teachers": return (
                     <KpiCard key={k} label="Teachers" value={teacherCount}
-                      sub={`of ${totalStaff} total staff`} href={isAdmin ? "/staff" : undefined} icon={UserCog} />
+                      sub={`of ${totalStaff} total staff`} href={isAdmin ? "/staff" : undefined} icon={UserCog} tone="violet" />
                   );
                   case "present": return (
                     <KpiCard key={k} label="Present today" value={attTotal > 0 ? `${presentPct}%` : "—"}
-                      sub={attTotal > 0 ? `${attTotal} students marked` : "not marked yet"} icon={ClipboardList} />
+                      sub={attTotal > 0 ? `${attTotal} students marked` : "not marked yet"} icon={ClipboardList} tone="sky" />
                   );
                   case "vacation": return (
                     <KpiCard key={k} label="School days left" value={stats.sessionProgress?.schoolDaysLeft ?? "—"}
-                      sub="to vacation" icon={BarChart2} />
+                      sub="to vacation" icon={BarChart2} tone="slate" />
                   );
                   default: return (
                     <KpiCard key={k} label="Students enrolled" value={stats.totalStudents}
-                      sub="Current session" href="/students" icon={Users} />
+                      sub="Current session" href="/students" icon={Users} tone="indigo" />
                   );
                 }
               })}
@@ -431,8 +446,8 @@ export default async function DashboardPage() {
 
                 {attTotal === 0 ? (
                   <div className="py-8 flex flex-col items-center text-center">
-                    <div className="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center mb-3">
-                      <ClipboardList className="h-5 w-5 text-slate-300" />
+                    <div className="w-11 h-11 rounded-xl bg-indigo-50 flex items-center justify-center mb-3">
+                      <ClipboardList className="h-5 w-5 text-indigo-400" />
                     </div>
                     <p className="text-[14px] font-medium text-slate-600">Not marked today</p>
                     <p className="text-[13px] text-slate-500 mt-1 mb-4">Take attendance to see today's breakdown.</p>
@@ -594,8 +609,8 @@ export default async function DashboardPage() {
 
                 {stats.todayPayments.length === 0 ? (
                   <div className="py-12 flex flex-col items-center text-center">
-                    <div className="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center mb-3">
-                      <DollarSign className="h-5 w-5 text-slate-300" />
+                    <div className="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
+                      <DollarSign className="h-5 w-5 text-emerald-400" />
                     </div>
                     <p className="text-[14px] font-medium text-slate-500">No payments yet today</p>
                     <Link href="/fees" className="mt-2 text-[13px] text-indigo-600 font-medium hover:underline">
