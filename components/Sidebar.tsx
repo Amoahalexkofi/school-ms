@@ -8,7 +8,7 @@ import {
   FileText, BarChart2, Banknote, Library, Bus, Building, Package,
   ConciergeBell, Monitor, UserPlus, ShieldCheck, Settings, ScrollText,
   Megaphone, Send, MessageCircle, Layers, Home, CreditCard, CheckSquare,
-  Bell, ChevronDown, Globe, HelpCircle, Share2,
+  Bell, ChevronDown, Globe, HelpCircle, Share2, CalendarDays,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
@@ -76,6 +76,7 @@ const adminGroups: NavGroup[] = [
       { href: "/notice-board", label: "Notices",   icon: Megaphone,    roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN","RECEPTIONIST"], perm: "communicate" },
       { href: "/messaging",    label: "Messaging", icon: Send,          roles: ["SUPER_ADMIN","ADMIN"],                                    perm: "communicate" },
       { href: "/chat",         label: "Chat",      icon: MessageCircle, roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN","RECEPTIONIST"], perm: "chat" },
+      { href: "/calendar",     label: "Calendar",  icon: CalendarDays,  roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN","RECEPTIONIST"], perm: "calendar" },
     ],
   },
   {
@@ -108,6 +109,7 @@ const studentGroups: NavGroup[] = [
       { href: "/timetable",     label: "Timetable",    icon: Calendar },
       { href: "/online-exams",  label: "Online Exams", icon: Monitor },
       { href: "/notice-board",  label: "Notices",      icon: Bell },
+      { href: "/calendar",      label: "Calendar",     icon: CalendarDays },
       { href: "/chat",          label: "Chat",         icon: MessageCircle },
     ],
   },
@@ -124,6 +126,7 @@ const parentGroups: NavGroup[] = [
       { href: "/parent/homework",   label: "Homework",     icon: CheckSquare },
       { href: "/timetable",         label: "Timetable",    icon: Calendar },
       { href: "/notice-board",      label: "Notices",      icon: Bell },
+      { href: "/calendar",          label: "Calendar",     icon: CalendarDays },
       { href: "/chat",              label: "Chat",         icon: MessageCircle },
     ],
   },

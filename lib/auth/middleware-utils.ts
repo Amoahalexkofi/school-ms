@@ -259,6 +259,15 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/notice-board",
     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"],
   },
+  // Calendar & Events
+  {
+    prefix: "/calendar",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"],
+  },
+  {
+    prefix: "/api/calendar",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"],
+  },
   // Messaging
   {
     prefix: "/messaging",

@@ -44,6 +44,7 @@ export const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
     chat:                 ALLOW,
     library:              VIEW,   // search only
     reports:              VIEW,
+    calendar:             ALLOW,  // school-wide events + own tasks
   },
 
   ACCOUNTANT: {
@@ -54,6 +55,7 @@ export const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
     reports:              VIEW,
     communicate:          VIEW,
     chat:                 ALLOW,
+    calendar:             ALLOW,  // own tasks; school-wide events are view-only (enforced in-route)
   },
 
   LIBRARIAN: {
@@ -61,11 +63,13 @@ export const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
     library:              ALLOW,
     communicate:          VIEW,
     chat:                 ALLOW,
+    calendar:             ALLOW,  // own tasks; school-wide events are view-only (enforced in-route)
   },
 
   RECEPTIONIST: {
     front_office:         ALLOW,  // visitors, enquiries, calls, dispatch
     chat:                 WRITE,
+    calendar:             ALLOW,  // own tasks; school-wide events are view-only (enforced in-route)
   },
 
   // Portal roles. These mirror what the coarse gate (canAccessApiRoute)
@@ -81,12 +85,14 @@ export const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
                                   // guard still blocks create/edit/publish
     fees_collection:      SUBMIT, // initiate own payment (/api/fees/pay)
     academics:            VIEW,   // timetable
+    calendar:             WRITE,  // view school events + own private tasks; can't post school-wide events (enforced in-route)
   },
 
   PARENT: {
     chat:                 WRITE,
     fees_collection:      SUBMIT, // pay a child's fees
     academics:            VIEW,
+    calendar:             WRITE,  // view school events + own private tasks; can't post school-wide events (enforced in-route)
   },
 };
 
@@ -139,6 +145,7 @@ const API_MODULE_MAP: { prefix: string; module: string }[] = [
   { prefix: "/api/inventory",           module: "inventory" },
   { prefix: "/api/front-office",        module: "front_office" },
   { prefix: "/api/alumni",              module: "alumni" },
+  { prefix: "/api/calendar",            module: "calendar" },
 ];
 
 export function moduleForApiPath(pathname: string): string | null {

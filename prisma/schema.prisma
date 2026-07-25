@@ -45,6 +45,7 @@ model User {
   notifications    Notification[]
   chatParticipants ChatParticipant[]
   chatMessages     ChatMessage[]
+  calendarEvents   CalendarEvent[]
 }
 
 // ─── Academic Session ─────────────────────────────────────────────────────────
@@ -2392,6 +2393,32 @@ model Holiday {
   isActive      Boolean          @default(true)
   frontSite     Boolean          @default(false)
   createdAt     DateTime         @default(now())
+}
+
+// ─── Calendar & Events ─────────────────────────────────────────────────────────
+// visibility: "PUBLIC" (everyone), "ROLE" (same role as creator), "PRIVATE"
+// (creator only), "TASK" (personal to-do, creator only, supports isDone).
+// Stored as a plain string rather than a Prisma enum — this is a schema-per-
+// tenant app and new tables are provisioned into live tenants via a raw-SQL
+// migration script, where a Postgres enum type would need its own per-schema
+// CREATE TYPE; a validated string avoids that entirely.
+model CalendarEvent {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  color       String   @default("#4f46e5")
+  visibility  String   @default("PUBLIC")
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  creatorRole String   // UserRole snapshot at creation, used to scope ROLE/TASK visibility
+  isDone      Boolean  @default(false) // TASK completion state
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdById])
+  @@index([startDate])
 }
 
 // ─── Sources & References (for enquiries / admissions) ────────────────────────
