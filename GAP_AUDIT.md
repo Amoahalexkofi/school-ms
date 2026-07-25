@@ -273,7 +273,11 @@ caught up. Updated below.
 - **Online Course / Video Tutorial** — absent
 - **Behaviour Records** — ✅ built (dd77235)
 - **CBSE Examination** (GPA engine) — absent
-- **Calendar / Events** — absent
+- **Calendar / Events** — ✅ built (ebf2b4a): CalendarEvent model (PUBLIC/ROLE
+  school-wide events restricted to admin/teacher, PRIVATE + TASK personal
+  entries for any role), month-grid UI at `/calendar` with existing Holidays
+  overlaid, personal task sidebar with done/undone toggle. All 4 live tenants
+  migrated.
 - **QR Code Attendance** — not a base SS v7.1.0 feature (greenfield if wanted)
 
 ---
