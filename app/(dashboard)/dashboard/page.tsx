@@ -14,22 +14,26 @@ import {
 import Link from "next/link";
 
 // ─── Sparkline — a quiet 7-day line, no axes, no junk ─────────────────────────
-function Sparkline({ data, stroke = "#4f46e5" }: { data: number[]; stroke?: string }) {
+function Sparkline({ data, stroke = "#4f46e5", height = 28 }: { data: number[]; stroke?: string; height?: number }) {
   if (!data?.length || data.every(v => v === 0)) return null;
-  const w = 96, h = 28, pad = 2;
+  const w = 96, h = height, pad = 2;
   const max = Math.max(...data), min = Math.min(...data);
   const span = max - min || 1;
+  const last = data.length - 1;
   const pts = data.map((v, i) => {
-    const x = pad + (i * (w - pad * 2)) / (data.length - 1);
+    const x = pad + (i * (w - pad * 2)) / last;
     const y = h - pad - ((v - min) / span) * (h - pad * 2);
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(" ");
+    return [x, y] as const;
+  });
+  const line = pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  const [lx, ly] = pts[last];
   return (
     <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden
-      className="w-full max-w-[96px] h-7">
-      <polyline points={pts} fill="none" stroke={stroke} strokeWidth="1.5"
+      className="w-full max-w-[96px]" style={{ height }}>
+      <polyline points={line} fill="none" stroke={stroke} strokeWidth="1.5"
         strokeLinecap="round" strokeLinejoin="round" opacity="0.85"
         vectorEffect="non-scaling-stroke" />
+      <circle cx={lx} cy={ly} r="2.5" fill={stroke} />
     </svg>
   );
 }
@@ -50,21 +54,40 @@ function niceMax(v: number) {
   return Math.ceil(v / mag) * mag;
 }
 
+// Catmull-Rom → cubic Bezier: a gentle, honest curve through the actual data
+// points (no smoothing that invents a value the data doesn't have at each x).
+function smoothPath(pts: [number, number][]) {
+  if (pts.length < 3) return `M ${pts.map(p => p.join(",")).join(" L ")}`;
+  let d = `M ${pts[0][0]},${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] ?? p2;
+    const c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += ` C ${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+  }
+  return d;
+}
+
 function AreaChart({ data, height = 200 }: { data: { label: string; amount: number }[]; height?: number }) {
   const w = 560, h = height, padL = 46, padR = 12, padT = 10, padB = 26;
   const iw = w - padL - padR, ih = h - padT - padB;
   const max = niceMax(Math.max(...data.map(d => d.amount), 1));
   const x = (i: number) => padL + (i * iw) / (data.length - 1);
   const y = (v: number) => padT + ih - (v / max) * ih;
-  const pts = data.map((d, i) => `${x(i).toFixed(1)},${y(d.amount).toFixed(1)}`).join(" ");
-  const area = `${padL},${padT + ih} ${pts} ${x(data.length - 1)},${padT + ih}`;
+  const pts: [number, number][] = data.map((d, i) => [x(i), y(d.amount)]);
+  const linePath = smoothPath(pts);
+  const areaPath = `${linePath} L ${x(data.length - 1).toFixed(1)},${padT + ih} L ${padL},${padT + ih} Z`;
+  const [lastX, lastY] = pts[pts.length - 1];
   const ticks = [0, 0.25, 0.5, 0.75, 1].map(f => Math.round(max * f));
   const fmt = (v: number) => v >= 1000 ? `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k` : String(v);
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" role="img" aria-label="Fee collection by month">
       <defs>
         <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.16" />
+          <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.18" />
           <stop offset="100%" stopColor="#4f46e5" stopOpacity="0.02" />
         </linearGradient>
       </defs>
@@ -74,8 +97,10 @@ function AreaChart({ data, height = 200 }: { data: { label: string; amount: numb
           <text x={padL - 8} y={y(t) + 3.5} textAnchor="end" fontSize="10.5" fill="#64748b" style={{ fontVariantNumeric: "tabular-nums" }}>{fmt(t)}</text>
         </g>
       ))}
-      <polygon points={area} fill="url(#areaFill)" />
-      <polyline points={pts} fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={areaPath} fill="url(#areaFill)" />
+      <path d={linePath} fill="none" stroke="#4f46e5" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={lastX} cy={lastY} r="7" fill="#4f46e5" opacity="0.12" />
+      <circle cx={lastX} cy={lastY} r="3.5" fill="#fff" stroke="#4f46e5" strokeWidth="2" />
       {data.map((d, i) => (
         <text key={d.label + i} x={x(i)} y={h - 8} textAnchor={i === 0 ? "start" : i === data.length - 1 ? "end" : "middle"}
           fontSize="10.5" fill="#64748b">{d.label}</text>
@@ -94,6 +119,12 @@ function BarChart({ data, height = 200 }: { data: { name: string; avg: number }[
   const ticks = [0, 25, 50, 75, 100];
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" role="img" aria-label="Average score by class">
+      <defs>
+        <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#4338ca" />
+          <stop offset="100%" stopColor="#1e293b" />
+        </linearGradient>
+      </defs>
       {ticks.map(t => (
         <g key={t}>
           <line x1={padL} x2={w - padR} y1={y(t)} y2={y(t)} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="3 4" />
@@ -105,7 +136,7 @@ function BarChart({ data, height = 200 }: { data: { name: string; avg: number }[
         return (
           <g key={d.name}>
             <rect x={cx - barW / 2} y={y(d.avg)} width={barW} height={Math.max(2, (d.avg / max) * ih)}
-              rx="4" fill="#1e293b" />
+              rx="6" fill="url(#barFill)" />
             <text x={cx} y={y(d.avg) - 5} textAnchor="middle" fontSize="10" fill="#334155"
               style={{ fontVariantNumeric: "tabular-nums" }} fontWeight="600">{d.avg}</text>
             <text x={cx} y={h - 8} textAnchor="middle" fontSize="10.5" fill="#64748b">{d.name}</text>
@@ -128,27 +159,35 @@ const TONE: Record<string, { chip: string; icon: string }> = {
   slate:   { chip: "bg-slate-100",  icon: "text-slate-500" },
 };
 
-// ─── KPI Card — calm, neutral ─────────────────────────────────────────────────
+// ─── KPI Card — calm, neutral; "hero" size leads the summary row ──────────────
 function KpiCard({
-  label, value, sub, href, icon: Icon, spark, tone = "slate",
+  label, value, sub, href, icon: Icon, spark, tone = "slate", size = "compact",
 }: {
-  label: string; value: string | number; sub?: string; href?: string; icon: React.ElementType; spark?: number[]; tone?: keyof typeof TONE;
+  label: string; value: string | number; sub?: string; href?: string; icon: React.ElementType; spark?: number[]; tone?: keyof typeof TONE; size?: "compact" | "hero";
 }) {
   const t = TONE[tone];
+  const isHero = size === "hero";
   const inner = (
-    <div className="group bg-white rounded-xl border border-slate-200 p-5 h-full flex flex-col
-      hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-200">
+    <div className={`group bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] h-full flex flex-col
+      hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-200 ${isHero ? "p-6" : "p-5"}`}>
       <div className="flex items-center justify-between">
-        <span className="text-[12.5px] font-medium text-slate-500">{label}</span>
-        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${t.chip}`}>
-          <Icon className={`h-3.5 w-3.5 ${t.icon}`} />
+        <span className={`font-medium text-slate-500 ${isHero ? "text-[13px]" : "text-[12.5px]"}`}>{label}</span>
+        <div className={`rounded-xl flex items-center justify-center shrink-0 ${t.chip} ${isHero ? "w-10 h-10" : "w-7 h-7 rounded-lg"}`}>
+          <Icon className={`${t.icon} ${isHero ? "h-5 w-5" : "h-3.5 w-3.5"}`} />
         </div>
       </div>
-      <div className="flex items-end gap-3 mt-4">
-        <p className="text-[30px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight whitespace-nowrap">{value}</p>
-        {spark && <div className="flex-1 min-w-0 flex justify-end"><Sparkline data={spark} /></div>}
-      </div>
-      {sub && <p className="text-[12px] text-slate-500 mt-2">{sub}</p>}
+      {isHero ? (
+        <>
+          <p className="text-[44px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight whitespace-nowrap mt-5">{value}</p>
+          {spark && <div className="mt-4"><Sparkline data={spark} height={40} /></div>}
+        </>
+      ) : (
+        <div className="flex items-end gap-3 mt-4">
+          <p className="text-[30px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight whitespace-nowrap">{value}</p>
+          {spark && <div className="flex-1 min-w-0 flex justify-end"><Sparkline data={spark} /></div>}
+        </div>
+      )}
+      {sub && <p className={`text-slate-500 mt-2 ${isHero ? "text-[13px]" : "text-[12px]"}`}>{sub}</p>}
     </div>
   );
   return href ? <Link href={href} className="block h-full">{inner}</Link> : <div className="h-full">{inner}</div>;
@@ -252,10 +291,10 @@ export default async function DashboardPage() {
         {/* ── Welcome ── */}
         <div className="dash-rise flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-[21px] font-semibold text-slate-900 tracking-tight">
+            <h1 className="text-[26px] font-semibold text-slate-900 tracking-tight">
               {greeting}{userName ? `, ${userName.split(" ")[0]}` : ""}
             </h1>
-            <div className="flex items-center gap-2 mt-1.5 text-[13px] text-slate-500 flex-wrap">
+            <div className="flex items-center gap-2 mt-2 text-[13px] text-slate-500 flex-wrap">
               <span>{schoolName}</span>
               {stats?.currentSession && (
                 <>
@@ -287,7 +326,7 @@ export default async function DashboardPage() {
 
         {/* ── All-branches breakdown (head office view) ── */}
         {showBreakdown && (
-          <div className="dash-rise bg-white rounded-xl border border-slate-200 overflow-hidden" style={{ animationDelay: "40ms" }}>
+          <div className="dash-rise bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] overflow-hidden" style={{ animationDelay: "40ms" }}>
             <div className="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
               <Building className="h-4 w-4 text-slate-400" />
               <h2 className="text-[14px] font-semibold text-slate-900">All branches</h2>
@@ -336,7 +375,7 @@ export default async function DashboardPage() {
         {statsError ? (
           /* A failed fetch is not an empty school — never send someone to
              "fix" a healthy config over a network blip. */
-          <div className="bg-white rounded-xl border border-slate-200 border-dashed py-20 text-center">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] border-dashed py-20 text-center">
             <AlertCircle className="h-8 w-8 mx-auto mb-3 text-slate-300" />
             <p className="font-semibold text-slate-600">Couldn&apos;t load the dashboard</p>
             <p className="text-sm text-slate-500 mt-1">Check your connection — your data is safe.</p>
@@ -345,7 +384,7 @@ export default async function DashboardPage() {
             </Link>
           </div>
         ) : !stats ? (
-          <div className="bg-white rounded-xl border border-slate-200 border-dashed py-20 text-center">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] border-dashed py-20 text-center">
             <AlertCircle className="h-8 w-8 mx-auto mb-3 text-slate-300" />
             <p className="font-semibold text-slate-600">No data yet</p>
             <p className="text-sm text-slate-500 mt-1">Create an active academic session to populate the dashboard.</p>
@@ -355,47 +394,59 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <>
-            {/* ── KPI Cards — money only for money roles; accountants lead with it ── */}
-            <div className="dash-rise grid grid-cols-2 xl:grid-cols-4 gap-4" style={{ animationDelay: "70ms" }}>
-              {(canSeeMoney ? (moneyFirst
+            {/* ── KPI Cards — money only for money roles; accountants lead with it.
+                 First metric in the order becomes the hero card, the rest support it. ── */}
+            {(() => {
+              const order = canSeeMoney ? (moneyFirst
                 ? ["collected", "expenses", "students", "teachers"]
                 : ["students", "teachers", "collected", "expenses"])
-                : ["students", "teachers", "present", "vacation"]
-              ).map((k) => {
+                : ["students", "teachers", "present", "vacation"];
+              const [heroKey, ...restKeys] = order;
+
+              const renderKpi = (k: string, size: "compact" | "hero" = "compact") => {
                 switch (k) {
                   case "collected": return (
-                    <KpiCard key={k} label="Collected this month" value={money(stats.monthCollection ?? 0)}
+                    <KpiCard key={k} size={size} label="Collected this month" value={money(stats.monthCollection ?? 0)}
                       sub={monthDelta(stats.monthCollection ?? 0, stats.lastMonthCollection ?? 0) ?? monthLabel}
                       href="/fees" icon={Banknote} spark={stats.sparklines?.fees} tone="emerald" />
                   );
                   case "expenses": return (
-                    <KpiCard key={k} label="Expenses this month" value={money(stats.monthExpense ?? 0)}
+                    <KpiCard key={k} size={size} label="Expenses this month" value={money(stats.monthExpense ?? 0)}
                       sub={monthDelta(stats.monthExpense ?? 0, stats.lastMonthExpense ?? 0) ?? monthLabel}
                       href="/finance" icon={TrendingDown} spark={stats.sparklines?.expenses} tone="amber" />
                   );
                   case "teachers": return (
-                    <KpiCard key={k} label="Teachers" value={teacherCount}
+                    <KpiCard key={k} size={size} label="Teachers" value={teacherCount}
                       sub={`of ${totalStaff} total staff`} href={isAdmin ? "/staff" : undefined} icon={UserCog} tone="violet" />
                   );
                   case "present": return (
-                    <KpiCard key={k} label="Present today" value={attTotal > 0 ? `${presentPct}%` : "—"}
+                    <KpiCard key={k} size={size} label="Present today" value={attTotal > 0 ? `${presentPct}%` : "—"}
                       sub={attTotal > 0 ? `${attTotal} students marked` : "not marked yet"} icon={ClipboardList} tone="sky" />
                   );
                   case "vacation": return (
-                    <KpiCard key={k} label="School days left" value={stats.sessionProgress?.schoolDaysLeft ?? "—"}
+                    <KpiCard key={k} size={size} label="School days left" value={stats.sessionProgress?.schoolDaysLeft ?? "—"}
                       sub="to vacation" icon={BarChart2} tone="slate" />
                   );
                   default: return (
-                    <KpiCard key={k} label="Students enrolled" value={stats.totalStudents}
+                    <KpiCard key={k} size={size} label="Students enrolled" value={stats.totalStudents}
                       sub="Current session" href="/students" icon={Users} tone="indigo" />
                   );
                 }
-              })}
-            </div>
+              };
+
+              return (
+                <div className="dash-rise grid grid-cols-1 lg:grid-cols-12 gap-4" style={{ animationDelay: "70ms" }}>
+                  <div className="lg:col-span-5">{renderKpi(heroKey, "hero")}</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:col-span-7">
+                    {restKeys.map((k) => renderKpi(k, "compact"))}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* ── Teacher: my classes today ── */}
             {role === "TEACHER" && (
-              <div className="dash-rise bg-white rounded-xl border border-slate-200 p-5" style={{ animationDelay: "100ms" }}>
+              <div className="dash-rise bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] p-5" style={{ animationDelay: "100ms" }}>
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">My classes</h2>
@@ -432,7 +483,7 @@ export default async function DashboardPage() {
             <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "140ms" }}>
 
               {/* Attendance */}
-              <div className={`col-span-12 ${canSeeMoney ? "lg:col-span-7" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+              <div className={`col-span-12 ${canSeeMoney ? "lg:col-span-7" : ""} bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] p-5`}>
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">Student attendance</h2>
@@ -517,7 +568,7 @@ export default async function DashboardPage() {
 
               {/* Fee Collection — money roles only */}
               {canSeeMoney && (
-              <div className="col-span-12 lg:col-span-5 bg-white rounded-xl border border-slate-200 p-5 flex flex-col">
+              <div className="col-span-12 lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] p-5 flex flex-col">
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">Fee collection</h2>
@@ -568,7 +619,7 @@ export default async function DashboardPage() {
             {((canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0)) || stats.classAverages?.length > 0) && (
               <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "175ms" }}>
                 {canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0) && (
-                  <div className={`col-span-12 ${stats.classAverages?.length > 0 ? "lg:col-span-6" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+                  <div className={`col-span-12 ${stats.classAverages?.length > 0 ? "lg:col-span-6" : ""} bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] p-5`}>
                     <div className="mb-4">
                       <h2 className="text-[15px] font-semibold text-slate-900">Monthly revenue</h2>
                       <p className="text-[12px] text-slate-500 mt-0.5">Fee collection trend{currency ? ` (${currency})` : ""} · last 6 months</p>
@@ -577,7 +628,7 @@ export default async function DashboardPage() {
                   </div>
                 )}
                 {stats.classAverages?.length > 0 && (
-                  <div className={`col-span-12 ${canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0) ? "lg:col-span-6" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+                  <div className={`col-span-12 ${canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0) ? "lg:col-span-6" : ""} bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] p-5`}>
                     <div className="mb-4">
                       <h2 className="text-[15px] font-semibold text-slate-900">Student performance</h2>
                       <p className="text-[12px] text-slate-500 mt-0.5">Average score by class · current session</p>
@@ -593,7 +644,7 @@ export default async function DashboardPage() {
 
               {/* Recent payments — money roles only */}
               {canSeeMoney && (
-              <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border border-slate-200 p-5">
+              <div className="col-span-12 lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">Today's payments</h2>
@@ -659,7 +710,7 @@ export default async function DashboardPage() {
               <div className={`col-span-12 ${canSeeMoney ? "lg:col-span-4" : ""} flex flex-col gap-4`}>
 
                 {/* Quick actions */}
-                <div className="bg-white rounded-xl border border-slate-200 p-5">
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] p-5">
                   <h2 className="text-[13px] font-semibold text-slate-900 mb-3">Quick actions</h2>
                   <div className="space-y-0.5">
                     {[
@@ -682,7 +733,7 @@ export default async function DashboardPage() {
 
                 {/* Outstanding by class — where the unpaid invoices live */}
                 {canSeeMoney && stats.outstandingByClass?.length > 0 && (
-                  <div className="bg-white rounded-xl border border-slate-200 p-5">
+                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] p-5">
                     <div className="flex items-center justify-between mb-3">
                       <h2 className="text-[13px] font-semibold text-slate-900">Outstanding by class</h2>
                       <Link href="/fees" className="text-[11px] text-indigo-600 font-medium hover:text-indigo-700 transition-colors">
@@ -711,7 +762,7 @@ export default async function DashboardPage() {
                 )}
 
                 {/* Staff + Library */}
-                <div className="bg-white rounded-xl border border-slate-200 p-5 flex-1">
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)] p-5 flex-1">
                   <div className="mb-5">
                     <h2 className="text-[13px] font-semibold text-slate-900 mb-2">Staff today</h2>
                     {[
