@@ -22,6 +22,9 @@ const PUBLIC_PREFIXES = [
   "/terms",            // public terms & conditions
   "/privacy",          // public privacy policy
   "/demo",             // demo auto-login
+  "/school-management-software-ghana",       // SEO landing page
+  "/school-fees-management-software-ghana",  // SEO landing page
+  "/student-attendance-software-ghana",      // SEO landing page
   "/robots.txt",       // SEO crawl directives
   "/sitemap.xml",      // SEO sitemap
   "/manifest.json",    // PWA manifest

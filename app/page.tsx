@@ -75,5 +75,58 @@ export default async function LandingPage({
   // ── Main Skula marketing site ────────────────────────────────────────────────
   const session = await auth();
   if (session?.user) redirect("/dashboard");
-  return <HomepageClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SOFTWARE_APPLICATION_JSON_LD) }}
+      />
+      <HomepageClient />
+    </>
+  );
 }
+
+const SOFTWARE_APPLICATION_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Skula",
+  applicationCategory: "BusinessApplication",
+  applicationSubCategory: "School Management Software",
+  operatingSystem: "Web",
+  url: "https://getskula.com",
+  description:
+    "The all-in-one school management platform built for African schools — admissions, fees, attendance, exams, payroll and parent communication in one place.",
+  image: "https://getskula.com/images/skula-logomark.png",
+  provider: {
+    "@type": "Organization",
+    name: "Skula",
+    url: "https://getskula.com",
+  },
+  offers: [
+    {
+      "@type": "Offer",
+      name: "Monthly",
+      price: "199",
+      priceCurrency: "GHS",
+      billingIncrement: "Month",
+      url: "https://getskula.com/#pricing",
+    },
+    {
+      "@type": "Offer",
+      name: "Annual",
+      price: "1990",
+      priceCurrency: "GHS",
+      billingIncrement: "Year",
+      url: "https://getskula.com/#pricing",
+    },
+    {
+      "@type": "Offer",
+      name: "Enterprise",
+      priceSpecification: {
+        "@type": "PriceSpecification",
+        description: "Custom pricing for school groups & large institutions",
+      },
+      url: "https://getskula.com/#pricing",
+    },
+  ],
+};

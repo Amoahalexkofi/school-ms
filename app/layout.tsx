@@ -27,6 +27,9 @@ export const metadata: Metadata = {
   title: "Skula — School Management System",
   description: "The all-in-one school management platform built for African schools — admissions, fees, attendance, exams, payroll and parent communication in one place.",
   manifest: "/manifest.json",
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
