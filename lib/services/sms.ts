@@ -8,6 +8,33 @@ export interface SmsResult {
   error?: string;
 }
 
+export interface SmsConfigShape {
+  provider: string;
+  apiKey: string;
+  username: string;
+  password: string;
+  senderId: string;
+}
+
+/**
+ * Central "Novalss" SMS account, configured once via env vars. Used as the
+ * default sender for any school that hasn't configured its own gateway (the
+ * same hybrid model as WhatsApp — central by default, per-school override
+ * optional). Returns null when no central gateway is set up.
+ */
+export function getPlatformSmsConfig(): SmsConfigShape | null {
+  const provider = process.env.PLATFORM_SMS_PROVIDER;
+  const apiKey   = process.env.PLATFORM_SMS_API_KEY;
+  if (!provider || !apiKey) return null;
+  return {
+    provider,
+    apiKey,
+    username: process.env.PLATFORM_SMS_USERNAME ?? "",
+    password: process.env.PLATFORM_SMS_PASSWORD ?? "",
+    senderId: process.env.PLATFORM_SMS_SENDER_ID ?? "",
+  };
+}
+
 // ── Africa's Talking ──────────────────────────────────────────────────────────
 
 async function sendViaAfricasTalking(
@@ -95,10 +122,13 @@ export async function sendSms(
   dbClient?: any
 ): Promise<SmsResult> {
   const db = dbClient ?? (await getDb());
-  const config = decryptSecrets(
+  // Hybrid model: prefer the school's own active gateway; otherwise fall back
+  // to the central Novalss account (env-configured). "none" only if neither set.
+  let config: SmsConfigShape | null = decryptSecrets(
     await (db as any).smsConfig.findFirst({ where: { isActive: true } }),
     ["apiKey", "password"]
   );
+  if (!config) config = getPlatformSmsConfig();
 
   if (!config) {
     return { success: false, provider: "none", error: "No active SMS gateway configured" };

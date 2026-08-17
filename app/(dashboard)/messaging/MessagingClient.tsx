@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Send, MessageSquare, Mail, Phone, Plus } from "lucide-react";
 
-const channelColor: Record<string, string> = { SMS: "bg-green-100 text-green-700", EMAIL: "bg-blue-100 text-blue-700", IN_APP: "bg-purple-100 text-purple-700" };
+const channelColor: Record<string, string> = { SMS: "bg-green-100 text-green-700", WHATSAPP: "bg-emerald-100 text-emerald-700", EMAIL: "bg-blue-100 text-blue-700", IN_APP: "bg-purple-100 text-purple-700" };
 const recipientLabel: Record<string, string> = { ALL_PARENTS: "All Parents", ALL_STAFF: "All Staff", ALL_STUDENTS: "All Students", ALL: "Everyone" };
 
 export function MessagingClient({ logs, parentCount, staffCount, studentCount }: any) {
@@ -26,7 +26,7 @@ export function MessagingClient({ logs, parentCount, staffCount, studentCount }:
   // shape the UI expects (subject / channel / recipientType / count).
   const SEND_TO: Record<string, string> = { ALL: "all", ALL_PARENTS: "all_parents", ALL_STAFF: "all_staff", ALL_STUDENTS: "all_students" };
   function view(log: any) {
-    const channel = log.sendMail ? "EMAIL" : log.sendSms ? "SMS" : "IN_APP";
+    const channel = log.sendWhatsApp ? "WHATSAPP" : log.sendMail ? "EMAIL" : log.sendSms ? "SMS" : "IN_APP";
     const recipientType = (log.sendTo || "all").toUpperCase();
     return { subject: log.title || "(no subject)", channel, recipientType, count: recipientCount[recipientType] ?? 0 };
   }
@@ -39,9 +39,10 @@ export function MessagingClient({ logs, parentCount, staffCount, studentCount }:
       const payload = {
         title:       form.subject,
         message:     form.message,
-        sendThrough: form.channel === "EMAIL" ? "email" : form.channel === "SMS" ? "sms" : null,
+        sendThrough: form.channel === "EMAIL" ? "email" : form.channel === "SMS" ? "sms" : form.channel === "WHATSAPP" ? "whatsapp" : null,
         sendMail:    form.channel === "EMAIL",
         sendSms:     form.channel === "SMS",
+        sendWhatsApp: form.channel === "WHATSAPP",
         sendTo:      SEND_TO[form.recipientType] ?? "all",
       };
       const res = await fetch("/api/messaging", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -108,6 +109,7 @@ export function MessagingClient({ logs, parentCount, staffCount, studentCount }:
               <select className="mt-1 w-full border rounded-md px-3 py-2 text-sm" value={form.channel} onChange={e => setForm(f => ({ ...f, channel: e.target.value }))}>
                 <option value="IN_APP">In-App Notification</option>
                 <option value="SMS">SMS</option>
+                <option value="WHATSAPP">WhatsApp</option>
                 <option value="EMAIL">Email</option>
               </select>
             </div>

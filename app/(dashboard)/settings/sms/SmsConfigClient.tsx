@@ -12,8 +12,6 @@ import { ArrowLeft, MessageSquare, Save, Eye, EyeOff, Check, Send } from "lucide
 const PROVIDERS = [
   { value: "twilio",         label: "Twilio",         fields: ["apiKey", "senderId"] },
   { value: "africas_talking", label: "Africa's Talking", fields: ["apiKey", "username", "senderId"] },
-  { value: "msg91",          label: "MSG91",           fields: ["apiKey", "senderId"] },
-  { value: "nexmo",          label: "Vonage (Nexmo)",  fields: ["apiKey", "password", "senderId"] },
 ];
 
 export function SmsConfigClient({ configs: initial }: { configs: any[] }) {

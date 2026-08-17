@@ -1682,6 +1682,7 @@ model MessageLog {
   sendThrough      String?   // "email" | "sms" | "both"
   sendMail         Boolean   @default(false)
   sendSms          Boolean   @default(false)
+  sendWhatsApp     Boolean   @default(false)
   isGroup          Boolean   @default(false)
   isIndividual     Boolean   @default(false)
   isClass          Boolean   @default(false)
@@ -2468,7 +2469,7 @@ model NotificationSetting {
 
 model SmsConfig {
   id       String  @id @default(cuid())
-  provider String  @unique // "twilio" | "africas_talking" | "msg91" | "nexmo"
+  provider String  @unique // "twilio" | "africas_talking"
   apiKey   String  @default("")
   senderId String  @default("")
   username String  @default("")
