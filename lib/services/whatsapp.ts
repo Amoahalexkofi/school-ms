@@ -123,9 +123,9 @@ async function sendViaMetaCloudApi(
   const recipients    = (Array.isArray(to) ? to : [to]).map(n => n.replace(/\D/g, ""));
 
   try {
-    const responses = await Promise.all(
-      recipients.map(phone =>
-        fetch(`https://graph.facebook.com/v19.0/${phoneNumberId}/messages`, {
+    const results = await Promise.all(
+      recipients.map(async phone => {
+        const res = await fetch(`https://graph.facebook.com/v19.0/${phoneNumberId}/messages`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${config.apiKey}`,
@@ -137,15 +137,20 @@ async function sendViaMetaCloudApi(
             type: "text",
             text: { body: message },
           }),
-        })
-      )
+        });
+        const data = await res.json().catch(() => ({}));
+        // A 200 status alone isn't proof of delivery — Meta only confirms the
+        // send by echoing a real wamid in messages[0].id. Missing it means the
+        // call was accepted but nothing was actually queued for delivery.
+        const messageId = data?.messages?.[0]?.id;
+        return { ok: res.ok && !!messageId, status: res.status, data, messageId };
+      })
     );
-    const failed = responses.find(r => !r.ok);
+    const failed = results.find(r => !r.ok);
     if (failed) {
-      const data = await failed.json().catch(() => ({}));
-      return { success: false, provider: "meta", error: data?.error?.message ?? `HTTP ${failed.status}` };
+      return { success: false, provider: "meta", error: failed.data?.error?.message ?? `HTTP ${failed.status} — no message id returned` };
     }
-    return { success: true, provider: "meta" };
+    return { success: true, provider: "meta", messageId: results[0]?.messageId };
   } catch (err: any) {
     return { success: false, provider: "meta", error: err.message };
   }
