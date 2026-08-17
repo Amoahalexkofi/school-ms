@@ -19,18 +19,34 @@ export async function POST(req: NextRequest) {
 
   if (!provider) return NextResponse.json({ error: "provider required" }, { status: 422 });
 
-  // If activating this provider, deactivate all others first
+  const existing = await db.whatsAppConfig.findUnique({ where: { provider } });
+  const resolvedApiKey = keepSecret(apiKey, existing?.apiKey);
+  const resolvedSenderId = senderId ?? existing?.senderId ?? "";
+  const resolvedEndpoint = endpoint ?? existing?.endpoint ?? "";
+
+  // Activating a provider with no real credentials leaves it silently
+  // shadowing the platform-wide default (sendWhatsApp checks the DB first) —
+  // every send would fail instead of falling through. Require the minimum
+  // fields each provider actually needs before allowing isActive: true, and
+  // check this before deactivating whatever provider currently works.
   if (isActive) {
+    const missingSenderOrEndpoint = provider === "wati" ? !resolvedEndpoint : !resolvedSenderId;
+    if (!resolvedApiKey || missingSenderOrEndpoint) {
+      return NextResponse.json(
+        { error: "Fill in the required fields before activating this provider." },
+        { status: 422 }
+      );
+    }
+    // Only now deactivate all others — validation passed.
     await db.whatsAppConfig.updateMany({ data: { isActive: false } });
   }
 
-  const existing = await db.whatsAppConfig.findUnique({ where: { provider } });
   const data = {
     // Secrets: keep stored value when client submits a blank.
-    apiKey:   encryptSecret(keepSecret(apiKey, existing?.apiKey)),
+    apiKey:   encryptSecret(resolvedApiKey),
     password: encryptSecret(keepSecret(password, existing?.password)),
-    senderId: senderId ?? "",
-    endpoint: endpoint ?? "",
+    senderId: resolvedSenderId,
+    endpoint: resolvedEndpoint,
     isActive: Boolean(isActive),
   };
 

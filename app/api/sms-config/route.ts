@@ -17,13 +17,29 @@ export async function POST(req: NextRequest) {
     const db = (await getDb()) as any;
     const existing = provider ? await db.smsConfig.findUnique({ where: { provider } }) : null;
 
+    const resolvedApiKey = keepSecret(apiKey, existing?.apiKey);
+    const resolvedUsername = username ?? existing?.username ?? "";
+
+    // Same failure mode as WhatsApp config: an active provider with no real
+    // credentials silently shadows the platform-wide SMS fallback. Africa's
+    // Talking additionally needs a username; Twilio does not.
+    if (isActive) {
+      const missingUsername = provider === "africas_talking" && !resolvedUsername;
+      if (!resolvedApiKey || missingUsername) {
+        return NextResponse.json(
+          { error: "Fill in the required fields before activating this provider." },
+          { status: 422 }
+        );
+      }
+    }
+
     const data: any = {};
     if (provider !== undefined) data.provider = provider || null;
     if (senderId !== undefined) data.senderId = senderId || "";
     if (username !== undefined) data.username = username || "";
     if (isActive !== undefined) data.isActive = Boolean(isActive);
     // Secrets: keep the stored value when the client submits a blank; encrypt at rest.
-    if (apiKey   !== undefined) data.apiKey   = encryptSecret(keepSecret(apiKey, existing?.apiKey));
+    if (apiKey   !== undefined) data.apiKey   = encryptSecret(resolvedApiKey);
     if (password !== undefined) data.password = encryptSecret(keepSecret(password, existing?.password));
 
     const config = existing
