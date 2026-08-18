@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, AlertCircle, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, ArrowRight, Mail, Lock } from "lucide-react";
 
 interface SignInPayload { email: string; password: string; }
 interface Props { onSubmit: (payload: SignInPayload) => Promise<void>; accentColor?: string; }
@@ -47,17 +47,20 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
         <label htmlFor="signin-email" className="block text-[12px] font-bold text-slate-400 tracking-[0.1em] uppercase">
           Email address
         </label>
-        <input
-          id="signin-email"
-          type="email"
-          value={email}
-          onChange={(e) => { setEmail(e.target.value); setError(null); }}
-          autoComplete="email"
-          autoFocus
-          placeholder="you@school.edu"
-          className="w-full px-5 py-4.5 border border-slate-200 rounded-xl text-[16px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
-          style={{ "--tw-ring-color": `${accentColor}35` } as any}
-        />
+        <div className="relative">
+          <Mail className="absolute left-4.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-300 pointer-events-none" />
+          <input
+            id="signin-email"
+            type="email"
+            value={email}
+            onChange={(e) => { setEmail(e.target.value); setError(null); }}
+            autoComplete="email"
+            autoFocus
+            placeholder="you@school.edu"
+            className="w-full pl-12 pr-5 py-4.5 border border-slate-200 rounded-xl text-[16px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
+            style={{ "--tw-ring-color": `${accentColor}35` } as any}
+          />
+        </div>
       </div>
 
       <div className="space-y-2.5">
@@ -65,6 +68,7 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
           Password
         </label>
         <div className="relative">
+          <Lock className="absolute left-4.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-300 pointer-events-none" />
           <input
             id="signin-password"
             type={showPw ? "text" : "password"}
@@ -72,7 +76,7 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
             onChange={(e) => { setPassword(e.target.value); setError(null); }}
             autoComplete="current-password"
             placeholder="••••••••"
-            className="w-full px-5 pr-13 py-4.5 border border-slate-200 rounded-xl text-[16px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
+            className="w-full pl-12 pr-13 py-4.5 border border-slate-200 rounded-xl text-[16px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
             style={{ "--tw-ring-color": `${accentColor}35` } as any}
           />
           <button

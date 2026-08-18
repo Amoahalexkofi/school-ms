@@ -44,6 +44,7 @@ export default async function SignInRoute() {
     const websiteUrl = subdomain ? `https://${subdomain}.${appDomain}` : "/";
     const location  = [profile?.city, profile?.state, profile?.country].filter(Boolean).join(", ");
     const year      = profile?.established ?? profile?.foundedYear ?? null;
+    const hasPhoto  = !!profile?.coverImage;
 
     return (
       <div className="min-h-screen flex flex-col lg:flex-row">
@@ -51,55 +52,74 @@ export default async function SignInRoute() {
         {/* ── Left panel ─────────────────────────────────────────────────── */}
         <div
           className="lg:w-[44%] xl:w-[40%] flex flex-col relative overflow-hidden"
-          style={{ background: `linear-gradient(160deg, color-mix(in srgb, ${color} 65%, #0d1424) 0%, color-mix(in srgb, ${color} 25%, #0d1424) 100%)` }}
+          style={
+            hasPhoto
+              ? { backgroundImage: `url(${profile.coverImage})`, backgroundSize: "cover", backgroundPosition: "center" }
+              : { background: `linear-gradient(160deg, color-mix(in srgb, ${color} 65%, #0d1424) 0%, color-mix(in srgb, ${color} 25%, #0d1424) 100%)` }
+          }
         >
-          {/* Subtle inner glow at bottom — most of the panel's text sits down
-              here, so this keeps contrast solid even for a school that picked
-              a light/bright accent color. */}
-          <div className="absolute bottom-0 left-0 right-0 h-80 pointer-events-none"
-            style={{ background: "linear-gradient(to top, rgba(0,0,0,0.45), transparent)" }} />
+          {/* Legibility wash — a real photo needs a much stronger bottom
+              gradient than the flat color treatment to keep overlaid text
+              readable regardless of what's in the shot. */}
+          <div className="absolute inset-0 pointer-events-none"
+            style={{
+              background: hasPhoto
+                ? "linear-gradient(180deg, rgba(13,20,36,0.1) 0%, rgba(13,20,36,0.25) 45%, rgba(13,20,36,0.92) 100%)"
+                : "linear-gradient(to top, rgba(0,0,0,0.45), transparent)",
+            }} />
 
-          {/* Large decorative initial — bottom right, very faint */}
-          <div className="absolute -bottom-6 -right-4 pointer-events-none select-none font-light text-white leading-none"
-            style={{ fontSize: 180, opacity: 0.06 }}>
-            {initials[0] ?? "S"}
-          </div>
+          {/* Large decorative initial — bottom right, very faint. Only for
+              the flat-color fallback; a real photo doesn't need it. */}
+          {!hasPhoto && (
+            <div className="absolute -bottom-6 -right-4 pointer-events-none select-none font-light text-white leading-none"
+              style={{ fontSize: 180, opacity: 0.06 }}>
+              {initials[0] ?? "S"}
+            </div>
+          )}
 
-          <div className="relative flex flex-col h-full px-10 xl:px-12 py-10 min-h-[520px] lg:min-h-0">
+          <div className={`relative flex flex-col h-full px-10 xl:px-12 py-10 min-h-[520px] lg:min-h-0 ${hasPhoto ? "justify-end" : ""}`}>
 
             {/* Back to website */}
-            <div className="shrink-0">
+            <div className={`shrink-0 ${hasPhoto ? "absolute top-10 xl:top-12 left-10 xl:left-12" : ""}`}>
               <a href={websiteUrl} className="inline-flex items-center gap-2 text-white/75 hover:text-white text-[13px] font-semibold transition-colors">
                 <ArrowLeft className="h-3.5 w-3.5" /> Back to website
               </a>
             </div>
 
             {/* Main identity block */}
-            <div className="flex-1 flex flex-col justify-center py-8">
+            <div className={hasPhoto ? "shrink-0 pt-8" : "flex-1 flex flex-col justify-center py-8"}>
 
-              {/* Logo */}
-              <div className="mb-7">
-                {profile?.logo ? (
-                  <img src={profile.logo} alt={name}
-                    className="w-24 h-24 rounded-full object-cover"
-                    style={{ boxShadow: "0 0 0 3px rgba(255,255,255,0.25)" }} />
-                ) : (
-                  <div
-                    className="w-24 h-24 rounded-full flex items-center justify-center"
-                    style={{
-                      background: "rgba(255,255,255,0.14)",
-                      border: "1px solid rgba(255,255,255,0.28)",
-                    }}
-                  >
-                    <span className="text-white font-light text-[34px] tracking-tight">{initials}</span>
-                  </div>
-                )}
-              </div>
+              {/* Logo — skipped over a real photo; the school's own image
+                  already carries the identity, a floating circle competes
+                  with it instead of reinforcing it. */}
+              {!hasPhoto && (
+                <div className="mb-7">
+                  {profile?.logo ? (
+                    <img src={profile.logo} alt={name}
+                      className="w-24 h-24 rounded-full object-cover"
+                      style={{ boxShadow: "0 0 0 3px rgba(255,255,255,0.25)" }} />
+                  ) : (
+                    <div
+                      className="w-24 h-24 rounded-full flex items-center justify-center"
+                      style={{
+                        background: "rgba(255,255,255,0.14)",
+                        border: "1px solid rgba(255,255,255,0.28)",
+                      }}
+                    >
+                      <span className="text-white font-light text-[34px] tracking-tight">{initials}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {hasPhoto && (
+                <p className="text-white/70 text-[11px] font-bold uppercase tracking-[0.18em] mb-3">{name}</p>
+              )}
 
               {/* Name */}
               <h1 className="text-white font-light tracking-[-0.02em] leading-[1.1] mb-1"
-                style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}>
-                {name}
+                style={{ fontSize: hasPhoto ? "clamp(26px, 2.8vw, 38px)" : "clamp(28px, 3.2vw, 44px)" }}>
+                {hasPhoto ? (profile?.motto || "Excellence in education.") : name}
               </h1>
 
               {/* Year + location */}
@@ -114,8 +134,13 @@ export default async function SignInRoute() {
               {/* Divider */}
               <div className="w-12 h-[2px] rounded-full mb-5" style={{ background: "rgba(255,255,255,0.3)" }} />
 
-              {/* Motto */}
-              {profile?.motto ? (
+              {/* Motto — in photo mode it's already the headline above, so
+                  this becomes a simple tagline instead of repeating it. */}
+              {hasPhoto ? (
+                <p className="text-white/68 text-[13px] leading-relaxed mb-7">
+                  Student &amp; Staff Portal
+                </p>
+              ) : profile?.motto ? (
                 <p className="text-white/80 text-[14px] italic leading-relaxed mb-7 max-w-[260px]">
                   &ldquo;{profile.motto}&rdquo;
                 </p>
@@ -197,13 +222,18 @@ export default async function SignInRoute() {
             <div className="w-full max-w-[580px] bg-white rounded-3xl border border-[#e3e8ee] px-12 py-14"
               style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
 
+              {/* Eyebrow */}
+              <p className="text-center text-[11px] font-bold uppercase tracking-[0.18em] mb-6" style={{ color }}>
+                Sign in
+              </p>
+
               {/* School identity echo on the right */}
-              <div className="flex items-center gap-3.5 mb-10">
+              <div className="flex flex-col items-center text-center gap-3 mb-8">
                 {profile?.logo ? (
-                  <img src={profile.logo} alt={name} className="w-12 h-12 rounded-full object-cover shrink-0"
+                  <img src={profile.logo} alt={name} className="w-14 h-14 rounded-full object-cover shrink-0"
                     style={{ boxShadow: `0 0 0 2px ${color}30` }} />
                 ) : (
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-white font-medium text-[15px]"
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 text-white font-medium text-[17px]"
                     style={{ background: color }}>
                     {initials}
                   </div>
@@ -215,12 +245,12 @@ export default async function SignInRoute() {
               </div>
 
               {/* Heading */}
-              <div className="mb-9">
-                <h2 className="text-[42px] font-light text-[#0d253d] tracking-[-0.02em] leading-none">
-                  Sign in
+              <div className="text-center mb-9">
+                <h2 className="text-[36px] font-light text-[#0d253d] tracking-[-0.02em] leading-none">
+                  Welcome back
                 </h2>
-                <p className="text-[#64748d] text-[15.5px] mt-3">
-                  Enter your credentials to access the portal
+                <p className="text-[#64748d] text-[15px] mt-3">
+                  Sign in to your {name} portal
                 </p>
               </div>
 
