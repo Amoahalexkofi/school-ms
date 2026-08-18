@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, School, Save, MessageCircle } from "lucide-react";
+import { ImageUploader } from "@/components/ImageUploader";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
 
@@ -16,6 +17,7 @@ const DATE_FORMATS = ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "DD-MM-YYYY"];
 export function SchoolProfileForm({ profile }: { profile: any }) {
   const [form, setForm] = useState({
     name: profile?.name ?? "",
+    logo: profile?.logo ?? "",
     code: profile?.code ?? "",
     address: profile?.address ?? "",
     phone: profile?.phone ?? "",
@@ -92,6 +94,13 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-2">
+            <Label>School Logo</Label>
+            <p className="text-xs text-gray-400 mb-2">Shown on your public website, staff ID cards, and the sign-in page.</p>
+            <div className="max-w-xs">
+              <ImageUploader value={form.logo} onChange={(url) => set("logo", url)} aspect="h-32" label="School logo" />
+            </div>
+          </div>
           <div>
             <Label>School Name *</Label>
             <Input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Novalss Academy" />
