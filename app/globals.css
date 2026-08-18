@@ -149,9 +149,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
   }
   html {
     @apply font-sans;
+    overflow-x: hidden;
   }
 
   /* ── Form element base — consistent with Input component ── */

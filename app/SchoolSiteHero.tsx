@@ -11,16 +11,7 @@ interface Slide {
   imageUrl?: string | null;
   ctaText: string;
   ctaLink: string;
-  gradient?: string;
 }
-
-const GRADIENTS = [
-  "linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)",
-  "linear-gradient(135deg, #0f172a 0%, #164e63 50%, #0e7490 100%)",
-  "linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1d4ed8 100%)",
-  "linear-gradient(135deg, #1a0533 0%, #3b0764 50%, #6d28d9 100%)",
-  "linear-gradient(135deg, #0c1a0a 0%, #14532d 50%, #15803d 100%)",
-];
 
 export function SchoolSiteHero({
   slides,
@@ -37,9 +28,9 @@ export function SchoolSiteHero({
     slides.length > 0
       ? slides
       : [
-          { id: "d1", title: `Welcome to\n${schoolName}`, subtitle: motto ?? "Nurturing minds. Building futures.", ctaText: "Explore Portal", ctaLink: "/sign-in", gradient: GRADIENTS[0] },
-          { id: "d2", title: "Excellence in\nEducation", subtitle: "Where every student is empowered to reach their fullest potential.", ctaText: "About Us", ctaLink: "#about", gradient: GRADIENTS[1] },
-          { id: "d3", title: "Admissions\nNow Open", subtitle: "Join a thriving school community. Applications welcome.", ctaText: "Contact Us", ctaLink: "#contact", gradient: GRADIENTS[2] },
+          { id: "d1", title: `Welcome to\n${schoolName}`, subtitle: motto ?? "Nurturing minds. Building futures.", ctaText: "Explore Portal", ctaLink: "/sign-in" },
+          { id: "d2", title: "Excellence in\nEducation", subtitle: "Where every student is empowered to reach their fullest potential.", ctaText: "About Us", ctaLink: "#about" },
+          { id: "d3", title: "Admissions\nNow Open", subtitle: "Join a thriving school community. Applications welcome.", ctaText: "Contact Us", ctaLink: "#contact" },
         ];
 
   const [idx, setIdx]     = useState(0);
@@ -64,11 +55,17 @@ export function SchoolSiteHero({
   const isImg = !!slide.imageUrl;
   const titleLines = slide.title.split("\n");
 
+  // Deep, brand-coherent fallback (no photo set) — derived from the school's
+  // own color rather than an unrelated stock gradient, so every school's
+  // hero reads as "their" color, just as the marketing site's hero reads
+  // indigo. color-mix keeps this a one-line derivation per school.
+  const deepTone = `color-mix(in srgb, ${primaryColor} 78%, #0d1424)`;
+
   return (
     <section
       id="home"
       className="relative w-full overflow-hidden"
-      style={{ height: "100dvh", minHeight: 600 }}
+      style={{ height: "88vh", minHeight: 560 }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -79,7 +76,7 @@ export function SchoolSiteHero({
           className="absolute inset-0 transition-opacity duration-700 ease-in-out"
           style={{
             opacity: i === idx ? 1 : 0,
-            background: s.imageUrl ? undefined : ((s as any).gradient ?? GRADIENTS[i % GRADIENTS.length]),
+            background: s.imageUrl ? undefined : `linear-gradient(160deg, ${deepTone} 0%, #0d1424 115%)`,
             backgroundImage: s.imageUrl ? `url(${s.imageUrl})` : undefined,
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -87,69 +84,59 @@ export function SchoolSiteHero({
         />
       ))}
 
-      {/* Image overlay */}
-      {isImg && <div className="absolute inset-0 bg-slate-900/60" />}
+      {/* Image overlay — legibility for real photos */}
+      {isImg && <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(13,20,36,0.55) 0%, rgba(13,20,36,0.75) 100%)" }} />}
 
-      {/* Dot grid texture */}
+      {/* Radial glow, tinted to the school's own color */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)",
-          backgroundSize: "44px 44px",
-        }}
+        style={{ background: `radial-gradient(ellipse 70% 55% at 50% 15%, ${primaryColor}35 0%, transparent 65%)` }}
       />
 
-      {/* Radial glow */}
+      {/* Content — centred, padded for fixed nav (60px) */}
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: `radial-gradient(ellipse 80% 60% at 50% 80%, ${primaryColor}25 0%, transparent 70%)` }}
-      />
-
-      {/* Content — centred, padded for fixed nav (64px) */}
-      <div
-        className="relative z-10 flex flex-col items-center justify-center text-center h-full px-5 pt-16 transition-opacity duration-350"
-        style={{ opacity: fading ? 0 : 1 }}
+        className="relative z-10 flex flex-col items-center justify-center text-center h-full px-5 pt-14 transition-opacity duration-350"
+        style={{ opacity: fading ? 0 : 1, maxWidth: "100vw" }}
       >
-        <div className="max-w-4xl w-full">
+        <div className="max-w-3xl w-full min-w-0">
           {/* School chip */}
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 backdrop-blur-sm text-white/90 text-[11px] font-bold px-4 py-1.5 rounded-full mb-7 uppercase tracking-[0.15em]">
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: primaryColor }} />
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 backdrop-blur-sm text-white/90 text-[11px] font-semibold px-3.5 py-1.5 rounded-full mb-7 uppercase tracking-[0.14em]">
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: primaryColor }} />
             {schoolName}
           </div>
 
           {/* Headline */}
           <h1
-            className="text-white font-black leading-[1.05] tracking-tight mb-5"
-            style={{ fontSize: "clamp(38px, 6vw, 80px)" }}
+            className="text-white font-light leading-[1.08] tracking-[-0.025em] mb-5 break-words"
+            style={{ fontSize: "clamp(34px, 5.5vw, 64px)", maxWidth: "100%" }}
           >
             {titleLines.map((line, i) => (
               <span key={i} className={i > 0 ? "block" : undefined}>
-                {i > 0 && line}
-                {i === 0 && line}
+                {line}
               </span>
             ))}
           </h1>
 
           {slide.subtitle && (
             <p
-              className="text-white/72 leading-relaxed max-w-xl mx-auto mb-10"
-              style={{ fontSize: "clamp(15px, 1.8vw, 20px)" }}
+              className="text-white/70 leading-relaxed max-w-lg mx-auto mb-9"
+              style={{ fontSize: "clamp(14.5px, 1.6vw, 17px)" }}
             >
               {slide.subtitle}
             </p>
           )}
 
-          <div className="flex items-center justify-center gap-3 flex-wrap">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-xs sm:max-w-none mx-auto">
             <Link
               href={slide.ctaLink}
-              className="inline-flex items-center gap-2 text-white font-bold px-8 py-4 rounded-2xl text-[15px] transition-all hover:scale-105 active:scale-95"
-              style={{ background: primaryColor, boxShadow: `0 4px 28px ${primaryColor}70` }}
+              className="inline-flex items-center justify-center gap-2 text-white font-medium px-7 py-3.5 rounded-full text-[14.5px] transition-all hover:brightness-110 active:scale-[0.98] whitespace-nowrap"
+              style={{ background: primaryColor, boxShadow: `0 4px 24px ${primaryColor}55` }}
             >
               {slide.ctaText}
             </Link>
             <Link
               href="/sign-in"
-              className="inline-flex items-center gap-2 bg-white/12 border border-white/25 backdrop-blur-sm text-white font-semibold px-8 py-4 rounded-2xl text-[15px] transition-all hover:bg-white/20"
+              className="inline-flex items-center justify-center gap-2 bg-white/10 border border-white/22 backdrop-blur-sm text-white font-medium px-7 py-3.5 rounded-full text-[14.5px] transition-all hover:bg-white/18 whitespace-nowrap"
             >
               Staff / Parent Login
             </Link>
@@ -162,24 +149,24 @@ export function SchoolSiteHero({
         <>
           <button
             onClick={prev}
-            className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-sm hover:bg-white/20 transition-all flex items-center justify-center"
+            className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 border border-white/18 text-white backdrop-blur-sm hover:bg-white/18 transition-all flex items-center justify-center"
             aria-label="Previous slide"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-4.5 w-4.5" />
           </button>
           <button
             onClick={next}
-            className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-sm hover:bg-white/20 transition-all flex items-center justify-center"
+            className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 border border-white/18 text-white backdrop-blur-sm hover:bg-white/18 transition-all flex items-center justify-center"
             aria-label="Next slide"
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-4.5 w-4.5" />
           </button>
         </>
       )}
 
       {/* Dot indicators */}
       {display.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
+        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
           {display.map((_, i) => (
             <button
               key={i}
@@ -187,20 +174,14 @@ export function SchoolSiteHero({
               aria-label={`Slide ${i + 1}`}
               className="rounded-full transition-all duration-400"
               style={{
-                width: i === idx ? 28 : 8,
-                height: 8,
-                background: i === idx ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.3)",
+                width: i === idx ? 22 : 6,
+                height: 6,
+                background: i === idx ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.32)",
               }}
             />
           ))}
         </div>
       )}
-
-      {/* Scroll cue */}
-      <div className="absolute bottom-8 right-6 z-20 hidden md:flex flex-col items-center gap-2 text-white/40">
-        <div className="w-px h-12 bg-gradient-to-b from-transparent to-white/30" />
-        <span className="text-[9px] font-bold tracking-[0.25em] uppercase" style={{ writingMode: "vertical-rl" }}>scroll</span>
-      </div>
     </section>
   );
 }
