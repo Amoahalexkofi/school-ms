@@ -235,7 +235,7 @@ export default function DemoPage() {
                         <p className={`text-[13px] font-bold leading-tight mb-1 ${isActive ? "text-[#0d253d]" : "text-[#273951]"}`}>
                           {r.label}
                         </p>
-                        <p className="text-[11.5px] text-[#8792a2] leading-snug truncate">
+                        <p className="text-[11.5px] text-[#8792a2] leading-snug line-clamp-2">
                           {r.tags.join(" · ")}
                         </p>
                       </div>
