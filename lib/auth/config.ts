@@ -146,5 +146,21 @@ export const authConfig: NextAuthConfig = {
       }
       return session;
     },
+    // Auth.js's default redirect() only trusts URLs matching the single
+    // configured NEXTAUTH_URL origin — everything else (including a school's
+    // own subdomain, e.g. jonnyrichards.getskula.com) silently collapses to
+    // baseUrl. That sent every sign-out back to the root marketing domain
+    // instead of the tenant the user was actually on. Trust any absolute URL
+    // whose host is the apex app domain or a subdomain of it.
+    redirect({ url, baseUrl }) {
+      try {
+        const target = new URL(url, baseUrl);
+        const isKnownDomain = APP_DOMAINS.some(
+          (d) => target.hostname === d || target.hostname.endsWith(`.${d}`)
+        );
+        if (isKnownDomain) return target.toString();
+      } catch {}
+      return baseUrl;
+    },
   },
 };

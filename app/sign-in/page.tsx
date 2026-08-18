@@ -27,14 +27,6 @@ function formatName(raw: string): string {
   return raw;
 }
 
-function darken(hex: string, amount: number): string {
-  const n = parseInt(hex.replace("#", ""), 16);
-  const r = Math.max(0, (n >> 16) - Math.round(255 * amount));
-  const g = Math.max(0, ((n >> 8) & 0xff) - Math.round(255 * amount));
-  const b = Math.max(0, (n & 0xff) - Math.round(255 * amount));
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
-}
-
 export default async function SignInRoute() {
   const h = await headers();
   const tenantSchema = h.get("x-tenant-schema");
@@ -46,7 +38,6 @@ export default async function SignInRoute() {
     const rawName   = profile?.name ?? tenantRow?.name ?? tenantSchema;
     const name      = formatName(rawName);
     const color     = primaryColor;
-    const dark      = darken(color, 0.38);
     const initials  = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w: string) => w[0].toUpperCase()).join("");
     const subdomain = tenantRow?.subdomain;
     const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN?.split(",")[0]?.trim() ?? "getskula.com";
@@ -60,11 +51,13 @@ export default async function SignInRoute() {
         {/* ── Left panel ─────────────────────────────────────────────────── */}
         <div
           className="lg:w-[44%] xl:w-[40%] flex flex-col relative overflow-hidden"
-          style={{ background: `linear-gradient(160deg, ${dark} 0%, ${color} 100%)` }}
+          style={{ background: `linear-gradient(160deg, color-mix(in srgb, ${color} 85%, #0d1424) 0%, color-mix(in srgb, ${color} 45%, #0d1424) 100%)` }}
         >
-          {/* Subtle inner glow at bottom */}
-          <div className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none"
-            style={{ background: "linear-gradient(to top, rgba(0,0,0,0.25), transparent)" }} />
+          {/* Subtle inner glow at bottom — most of the panel's text sits down
+              here, so this keeps contrast solid even for a school that picked
+              a light/bright accent color. */}
+          <div className="absolute bottom-0 left-0 right-0 h-80 pointer-events-none"
+            style={{ background: "linear-gradient(to top, rgba(0,0,0,0.45), transparent)" }} />
 
           {/* Large decorative initial — bottom right, very faint */}
           <div className="absolute -bottom-6 -right-4 pointer-events-none select-none font-light text-white leading-none"
@@ -76,7 +69,7 @@ export default async function SignInRoute() {
 
             {/* Back to website */}
             <div className="shrink-0">
-              <a href={websiteUrl} className="inline-flex items-center gap-2 text-white/60 hover:text-white text-[13px] font-semibold transition-colors">
+              <a href={websiteUrl} className="inline-flex items-center gap-2 text-white/75 hover:text-white text-[13px] font-semibold transition-colors">
                 <ArrowLeft className="h-3.5 w-3.5" /> Back to website
               </a>
             </div>
@@ -111,7 +104,7 @@ export default async function SignInRoute() {
 
               {/* Year + location */}
               {(year || location) && (
-                <p className="text-white/55 text-[13px] font-medium mb-5">
+                <p className="text-white/72 text-[13px] font-medium mb-5">
                   {year ? `Est. ${year}` : ""}
                   {year && location ? "  ·  " : ""}
                   {location}
@@ -123,11 +116,11 @@ export default async function SignInRoute() {
 
               {/* Motto */}
               {profile?.motto ? (
-                <p className="text-white/65 text-[14px] italic leading-relaxed mb-7 max-w-[260px]">
+                <p className="text-white/80 text-[14px] italic leading-relaxed mb-7 max-w-[260px]">
                   &ldquo;{profile.motto}&rdquo;
                 </p>
               ) : (
-                <p className="text-white/50 text-[13px] leading-relaxed mb-7">
+                <p className="text-white/68 text-[13px] leading-relaxed mb-7">
                   Student &amp; Staff Portal
                 </p>
               )}
@@ -136,19 +129,19 @@ export default async function SignInRoute() {
               {(profile?.phone || profile?.email) && (
                 <div className="space-y-2.5">
                   {profile?.phone && (
-                    <div className="flex items-center gap-2.5 text-white/55 text-[13px]">
+                    <div className="flex items-center gap-2.5 text-white/72 text-[13px]">
                       <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0"
                         style={{ background: "rgba(255,255,255,0.12)" }}>
-                        <Phone className="h-3 w-3 text-white/70" />
+                        <Phone className="h-3 w-3 text-white/85" />
                       </div>
                       {profile.phone}
                     </div>
                   )}
                   {profile?.email && (
-                    <div className="flex items-center gap-2.5 text-white/55 text-[13px]">
+                    <div className="flex items-center gap-2.5 text-white/72 text-[13px]">
                       <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0"
                         style={{ background: "rgba(255,255,255,0.12)" }}>
-                        <Mail className="h-3 w-3 text-white/70" />
+                        <Mail className="h-3 w-3 text-white/85" />
                       </div>
                       {profile.email}
                     </div>
@@ -159,7 +152,7 @@ export default async function SignInRoute() {
 
             {/* Portal access row */}
             <div className="shrink-0 mb-6">
-              <p className="text-white/35 text-[10px] font-bold uppercase tracking-[0.18em] mb-3">Portal access for</p>
+              <p className="text-white/55 text-[10px] font-bold uppercase tracking-[0.18em] mb-3">Portal access for</p>
               <div className="flex gap-2 flex-wrap">
                 {["Students", "Parents", "Staff", "Admin"].map(role => (
                   <span key={role}
@@ -174,7 +167,7 @@ export default async function SignInRoute() {
             {/* Powered by */}
             <div className="shrink-0">
               <a href="https://getskula.com" target="_blank" rel="noopener noreferrer"
-                className="text-white/28 hover:text-white/60 text-[10.5px] font-bold tracking-[0.15em] uppercase transition-colors">
+                className="text-white/45 hover:text-white/75 text-[10.5px] font-bold tracking-[0.15em] uppercase transition-colors">
                 Powered by Skula
               </a>
             </div>
@@ -201,32 +194,32 @@ export default async function SignInRoute() {
 
           {/* Form center */}
           <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12">
-            <div className="w-full max-w-[420px] bg-white rounded-2xl border border-[#e3e8ee] px-8 py-9"
+            <div className="w-full max-w-[480px] bg-white rounded-2xl border border-[#e3e8ee] px-10 py-11"
               style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
 
               {/* School identity echo on the right */}
-              <div className="flex items-center gap-3 mb-8">
+              <div className="flex items-center gap-3 mb-9">
                 {profile?.logo ? (
-                  <img src={profile.logo} alt={name} className="w-9 h-9 rounded-full object-cover shrink-0"
+                  <img src={profile.logo} alt={name} className="w-10 h-10 rounded-full object-cover shrink-0"
                     style={{ boxShadow: `0 0 0 2px ${color}30` }} />
                 ) : (
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-white font-medium text-[13px]"
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white font-medium text-[14px]"
                     style={{ background: color }}>
                     {initials}
                   </div>
                 )}
                 <div>
-                  <p className="text-[#0d253d] font-semibold text-[14px] leading-tight">{name}</p>
-                  {location && <p className="text-[#94a3b8] text-[11px] mt-0.5">{location}</p>}
+                  <p className="text-[#0d253d] font-semibold text-[15px] leading-tight">{name}</p>
+                  {location && <p className="text-[#94a3b8] text-[12px] mt-0.5">{location}</p>}
                 </div>
               </div>
 
               {/* Heading */}
-              <div className="mb-8">
-                <h2 className="text-[32px] font-light text-[#0d253d] tracking-[-0.02em] leading-none">
+              <div className="mb-9">
+                <h2 className="text-[36px] font-light text-[#0d253d] tracking-[-0.02em] leading-none">
                   Sign in
                 </h2>
-                <p className="text-[#64748d] text-[14px] mt-2">
+                <p className="text-[#64748d] text-[14.5px] mt-2.5">
                   Enter your credentials to access the portal
                 </p>
               </div>

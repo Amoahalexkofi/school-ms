@@ -198,7 +198,7 @@ export function Topbar({ title }: { title: string }) {
                   <Settings className="h-3.5 w-3.5 text-slate-400" /> Settings
                 </Link>
                 <button
-                  onClick={() => signOut({ callbackUrl: "/sign-in" })}
+                  onClick={() => signOut({ callbackUrl: `${window.location.origin}/sign-in` })}
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] text-rose-500 hover:bg-rose-50 w-full transition-colors"
                 >
                   <LogOut className="h-3.5 w-3.5" /> Sign Out

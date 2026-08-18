@@ -263,7 +263,7 @@ function NavContent({ role, onNavigate, addons = [] }: { role: Role; onNavigate?
               <Settings className="h-3.5 w-3.5 text-slate-500" /> Settings
             </Link>
             <button
-              onClick={() => signOut({ callbackUrl: "/sign-in" })}
+              onClick={() => signOut({ callbackUrl: `${window.location.origin}/sign-in` })}
               className="w-full flex items-center gap-2 px-3 py-2.5 text-[12px] text-rose-400 hover:bg-rose-500/10 transition-colors"
             >
               <LogOut className="h-3.5 w-3.5" /> Sign out
