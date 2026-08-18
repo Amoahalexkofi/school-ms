@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, AlertCircle, ArrowRight, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, ArrowRight } from "lucide-react";
 
 interface SignInPayload { email: string; password: string; }
 interface Props { onSubmit: (payload: SignInPayload) => Promise<void>; accentColor?: string; }
@@ -34,41 +34,37 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-7">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
 
       {error && (
-        <div role="alert" className="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700 text-[14px] rounded-xl px-4.5 py-4">
+        <div role="alert" className="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700 text-[13px] rounded-lg px-4 py-3">
           <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
           {error}
         </div>
       )}
 
-      <div className="space-y-2.5">
-        <label htmlFor="signin-email" className="block text-[12px] font-bold text-slate-400 tracking-[0.1em] uppercase">
+      <div className="space-y-1.5">
+        <label htmlFor="signin-email" className="block text-[11px] font-bold text-slate-400 tracking-[0.1em] uppercase">
           Email address
         </label>
-        <div className="relative">
-          <Mail className="absolute left-4.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-300 pointer-events-none" />
-          <input
-            id="signin-email"
-            type="email"
-            value={email}
-            onChange={(e) => { setEmail(e.target.value); setError(null); }}
-            autoComplete="email"
-            autoFocus
-            placeholder="you@school.edu"
-            className="w-full pl-12 pr-5 py-4.5 border border-slate-200 rounded-xl text-[16px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
-            style={{ "--tw-ring-color": `${accentColor}35` } as any}
-          />
-        </div>
+        <input
+          id="signin-email"
+          type="email"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); setError(null); }}
+          autoComplete="email"
+          autoFocus
+          placeholder="you@school.edu"
+          className="w-full px-4 py-3.5 border border-slate-200 rounded-xl text-[14px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
+          style={{ "--tw-ring-color": `${accentColor}35` } as any}
+        />
       </div>
 
-      <div className="space-y-2.5">
-        <label htmlFor="signin-password" className="block text-[12px] font-bold text-slate-400 tracking-[0.1em] uppercase">
+      <div className="space-y-1.5">
+        <label htmlFor="signin-password" className="block text-[11px] font-bold text-slate-400 tracking-[0.1em] uppercase">
           Password
         </label>
         <div className="relative">
-          <Lock className="absolute left-4.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-300 pointer-events-none" />
           <input
             id="signin-password"
             type={showPw ? "text" : "password"}
@@ -76,7 +72,7 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
             onChange={(e) => { setPassword(e.target.value); setError(null); }}
             autoComplete="current-password"
             placeholder="••••••••"
-            className="w-full pl-12 pr-13 py-4.5 border border-slate-200 rounded-xl text-[16px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
+            className="w-full px-4 pr-11 py-3.5 border border-slate-200 rounded-xl text-[14px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
             style={{ "--tw-ring-color": `${accentColor}35` } as any}
           />
           <button
@@ -84,9 +80,9 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
             onClick={() => setShowPw(s => !s)}
             tabIndex={-1}
             aria-label={showPw ? "Hide password" : "Show password"}
-            className="absolute right-4.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
           >
-            {showPw ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
       </div>
@@ -94,7 +90,7 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full flex items-center justify-center gap-2 text-white font-medium py-4.5 rounded-full text-[16px] transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99]"
+        className="w-full flex items-center justify-center gap-2 text-white font-bold py-3.5 rounded-xl text-[14px] transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-90 active:scale-[0.99]"
         style={{ background: accentColor }}
       >
         {submitting ? (
