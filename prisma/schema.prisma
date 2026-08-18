@@ -28,6 +28,7 @@ model User {
   password          String
   role              UserRole
   isActive          Boolean   @default(true)
+  image             String?
   childs            String?
   // Parent contact (WhatsApp/SMS) and a first-login password-change gate.
   phone             String?

@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
-import { Bell, Search, ChevronDown, Settings, LogOut, Globe } from "lucide-react";
+import { Bell, Search, ChevronDown, Settings, LogOut, Globe, User as UserIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
@@ -31,6 +31,7 @@ export function Topbar({ title }: { title: string }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifs,  setNotifs]  = useState<Notif[]>([]);
   const [unread,  setUnread]  = useState(0);
+  const [avatar,  setAvatar]  = useState("");
   const notifRef   = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -39,6 +40,14 @@ export function Topbar({ title }: { title: string }) {
     fetch(`/api/notifications?userId=${userId}&pageSize=8`)
       .then(r => r.json())
       .then(d => { setNotifs(d.notifications ?? []); setUnread(d.unreadCount ?? 0); })
+      .catch(() => {});
+  }, [userId]);
+
+  useEffect(() => {
+    if (!userId) return;
+    fetch("/api/account/profile")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.image) setAvatar(d.image); })
       .catch(() => {});
   }, [userId]);
 
@@ -154,8 +163,8 @@ export function Topbar({ title }: { title: string }) {
             onClick={() => { setProfileOpen(o => !o); setNotifOpen(false); }}
             className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-slate-50 transition-colors"
           >
-            <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[11px] font-bold">
-              {initials}
+            <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[11px] font-bold overflow-hidden shrink-0">
+              {avatar ? <img src={avatar} alt={name} className="w-full h-full object-cover" /> : initials}
             </div>
             <div className="hidden sm:block text-left">
               <p className="text-[12px] font-semibold text-slate-800 leading-tight">{name}</p>
@@ -174,6 +183,13 @@ export function Topbar({ title }: { title: string }) {
                 <p className="text-[12px] text-slate-400 truncate mt-0.5">{email}</p>
               </div>
               <div className="p-1.5">
+                <Link
+                  href="/account"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] text-slate-700 hover:bg-slate-50 transition-colors"
+                >
+                  <UserIcon className="h-3.5 w-3.5 text-slate-400" /> My Account
+                </Link>
                 <Link
                   href="/settings"
                   onClick={() => setProfileOpen(false)}
