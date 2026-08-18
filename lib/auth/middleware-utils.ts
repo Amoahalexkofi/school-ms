@@ -13,6 +13,7 @@ const PUBLIC_PREFIXES = [
   "/api/auth", "/sign-in", "/apply", "/_next", "/favicon",
   "/api/cron",          // scheduled jobs — secured by CRON_SECRET internally
   "/api/admissions/apply", // public admission application submission (POST only)
+  "/api/whatsapp/webhook", // Meta calls this directly — no session, verified via WHATSAPP_WEBHOOK_VERIFY_TOKEN
   "/novalss-admin", "/api/admin",
   "/images",           // static public assets
   "/features",         // public marketing page
