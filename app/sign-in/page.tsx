@@ -67,7 +67,7 @@ export default async function SignInRoute() {
             style={{ background: "linear-gradient(to top, rgba(0,0,0,0.25), transparent)" }} />
 
           {/* Large decorative initial — bottom right, very faint */}
-          <div className="absolute -bottom-6 -right-4 pointer-events-none select-none font-black text-white leading-none"
+          <div className="absolute -bottom-6 -right-4 pointer-events-none select-none font-light text-white leading-none"
             style={{ fontSize: 180, opacity: 0.06 }}>
             {initials[0] ?? "S"}
           </div>
@@ -89,23 +89,22 @@ export default async function SignInRoute() {
                 {profile?.logo ? (
                   <img src={profile.logo} alt={name}
                     className="w-24 h-24 rounded-full object-cover"
-                    style={{ boxShadow: "0 0 0 3px rgba(255,255,255,0.3), 0 8px 32px rgba(0,0,0,0.3)" }} />
+                    style={{ boxShadow: "0 0 0 3px rgba(255,255,255,0.25)" }} />
                 ) : (
                   <div
                     className="w-24 h-24 rounded-full flex items-center justify-center"
                     style={{
-                      background: "rgba(255,255,255,0.18)",
-                      border: "2px solid rgba(255,255,255,0.35)",
-                      boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+                      background: "rgba(255,255,255,0.14)",
+                      border: "1px solid rgba(255,255,255,0.28)",
                     }}
                   >
-                    <span className="text-white font-black text-[34px] tracking-tight">{initials}</span>
+                    <span className="text-white font-light text-[34px] tracking-tight">{initials}</span>
                   </div>
                 )}
               </div>
 
               {/* Name */}
-              <h1 className="text-white font-black tracking-tight leading-[1.05] mb-1"
+              <h1 className="text-white font-light tracking-[-0.02em] leading-[1.1] mb-1"
                 style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}>
                 {name}
               </h1>
@@ -183,7 +182,7 @@ export default async function SignInRoute() {
         </div>
 
         {/* ── Right panel ────────────────────────────────────────────────── */}
-        <div className="flex-1 flex flex-col relative" style={{ background: "#f1f5f9" }}>
+        <div className="flex-1 flex flex-col relative" style={{ background: "#f6f9fc" }}>
 
           {/* Left accent stripe */}
           <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[3px]"
@@ -194,40 +193,40 @@ export default async function SignInRoute() {
 
           {/* Mobile back link */}
           <div className="lg:hidden flex items-center justify-between px-6 pt-5 pb-0 shrink-0">
-            <a href={websiteUrl} className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 hover:text-slate-700 transition-colors">
+            <a href={websiteUrl} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#94a3b8] hover:text-[#0d253d] transition-colors">
               <ArrowLeft className="h-3 w-3" /> Back
             </a>
-            <span className="text-[13px] font-bold text-slate-700">{name}</span>
+            <span className="text-[13px] font-semibold text-[#0d253d]">{name}</span>
           </div>
 
           {/* Form center */}
           <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12">
-            <div className="w-full max-w-[420px] bg-white rounded-2xl px-8 py-9"
-              style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04), 0 20px 48px rgba(0,0,0,0.08)" }}>
+            <div className="w-full max-w-[420px] bg-white rounded-2xl border border-[#e3e8ee] px-8 py-9"
+              style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
 
               {/* School identity echo on the right */}
               <div className="flex items-center gap-3 mb-8">
                 {profile?.logo ? (
                   <img src={profile.logo} alt={name} className="w-9 h-9 rounded-full object-cover shrink-0"
-                    style={{ boxShadow: `0 0 0 2px ${color}40` }} />
+                    style={{ boxShadow: `0 0 0 2px ${color}30` }} />
                 ) : (
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-white font-black text-[13px]"
-                    style={{ background: color, boxShadow: `0 4px 12px ${color}50` }}>
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-white font-medium text-[13px]"
+                    style={{ background: color }}>
                     {initials}
                   </div>
                 )}
                 <div>
-                  <p className="text-slate-800 font-bold text-[14px] leading-tight">{name}</p>
-                  {location && <p className="text-slate-400 text-[11px] mt-0.5">{location}</p>}
+                  <p className="text-[#0d253d] font-semibold text-[14px] leading-tight">{name}</p>
+                  {location && <p className="text-[#94a3b8] text-[11px] mt-0.5">{location}</p>}
                 </div>
               </div>
 
               {/* Heading */}
               <div className="mb-8">
-                <h2 className="text-[32px] font-black text-slate-900 tracking-tight leading-none">
+                <h2 className="text-[32px] font-light text-[#0d253d] tracking-[-0.02em] leading-none">
                   Sign in
                 </h2>
-                <p className="text-slate-400 text-[14px] mt-2">
+                <p className="text-[#64748d] text-[14px] mt-2">
                   Enter your credentials to access the portal
                 </p>
               </div>

@@ -90,7 +90,7 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full flex items-center justify-center gap-2 text-white font-bold py-3.5 rounded-xl text-[14px] transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-90 active:scale-[0.99]"
+        className="w-full flex items-center justify-center gap-2 text-white font-medium py-3.5 rounded-full text-[14.5px] transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99]"
         style={{ background: accentColor }}
       >
         {submitting ? (
