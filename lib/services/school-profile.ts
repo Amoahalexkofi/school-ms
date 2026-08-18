@@ -6,7 +6,7 @@ export async function getSchoolProfile() {
 }
 
 export async function upsertSchoolProfile(input: Record<string, unknown>) {
-  const { name, code, address, phone, email, website, motto, logo, currency, dateFormat, country, state, city, feeDueDays, onboardingCompleted } = input as any;
+  const { name, code, address, phone, email, website, motto, logo, coverImage, currency, dateFormat, country, state, city, feeDueDays, onboardingCompleted } = input as any;
   const prisma = await getDb();
   const existing = await (prisma as any).schoolProfile.findFirst();
 
@@ -25,7 +25,7 @@ export async function upsertSchoolProfile(input: Record<string, unknown>) {
   // elsewhere — and nulling the NOT NULL currency/dateFormat columns made the
   // whole save 500 (which stalled the onboarding wizard with no error).
   const data: any = { name: (name as string).trim() };
-  const optional: Record<string, unknown> = { code, address, phone, email, website, motto, logo, country, state, city };
+  const optional: Record<string, unknown> = { code, address, phone, email, website, motto, logo, coverImage, country, state, city };
   for (const [key, value] of Object.entries(optional)) {
     if (value !== undefined) data[key] = value || null;
   }

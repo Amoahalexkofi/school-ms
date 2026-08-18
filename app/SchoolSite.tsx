@@ -8,7 +8,7 @@ import { SchoolSiteNav }  from "./SchoolSiteNav";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Profile {
-  name: string; logo?: string | null; motto?: string | null;
+  name: string; logo?: string | null; coverImage?: string | null; motto?: string | null;
   address?: string | null; phone?: string | null; email?: string | null;
   website?: string | null; city?: string | null; state?: string | null;
   country?: string | null; whatsappNumber?: string | null; code?: string | null;
@@ -196,8 +196,8 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
                 className="rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center relative border border-[#e3e8ee]"
                 style={{ background: `linear-gradient(135deg, ${color}e6 0%, ${color}b3 100%)` }}
               >
-                {profile?.logo ? (
-                  <img src={profile.logo} alt={name} className="w-full h-full object-cover" />
+                {profile?.coverImage ? (
+                  <img src={profile.coverImage} alt={name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="text-center p-10 select-none">
                     <div className="text-[72px] font-light leading-none tracking-tighter mb-4" style={{ color: "rgba(255,255,255,0.22)" }}>

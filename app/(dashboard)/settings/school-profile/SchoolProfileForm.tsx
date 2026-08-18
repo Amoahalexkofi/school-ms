@@ -18,6 +18,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
   const [form, setForm] = useState({
     name: profile?.name ?? "",
     logo: profile?.logo ?? "",
+    coverImage: profile?.coverImage ?? "",
     code: profile?.code ?? "",
     address: profile?.address ?? "",
     phone: profile?.phone ?? "",
@@ -94,11 +95,16 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-2">
-            <Label>School Logo</Label>
-            <p className="text-xs text-gray-400 mb-2">Shown on your public website, staff ID cards, and the sign-in page.</p>
-            <div className="max-w-xs">
+          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label>School Logo</Label>
+              <p className="text-xs text-gray-400 mb-2">Shown in the header, staff ID cards, and the sign-in page.</p>
               <ImageUploader value={form.logo} onChange={(url) => set("logo", url)} aspect="h-32" label="School logo" />
+            </div>
+            <div>
+              <Label>School Photo</Label>
+              <p className="text-xs text-gray-400 mb-2">A photo of your school — shown in the About section of your public website.</p>
+              <ImageUploader value={form.coverImage} onChange={(url) => set("coverImage", url)} aspect="h-32" label="School photo" />
             </div>
           </div>
           <div>
