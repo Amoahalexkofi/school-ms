@@ -50,7 +50,7 @@ export default async function SignInRoute() {
 
         {/* ── Left panel ─────────────────────────────────────────────────── */}
         <div
-          className="lg:w-[44%] xl:w-[40%] flex flex-col relative overflow-hidden"
+          className="lg:w-1/2 flex flex-col relative overflow-hidden"
           style={{ background: `linear-gradient(160deg, color-mix(in srgb, ${color} 65%, #0d1424) 0%, color-mix(in srgb, ${color} 25%, #0d1424) 100%)` }}
         >
           {/* Subtle inner glow at bottom — most of the panel's text sits down
@@ -175,7 +175,7 @@ export default async function SignInRoute() {
         </div>
 
         {/* ── Right panel ────────────────────────────────────────────────── */}
-        <div className="flex-1 flex flex-col relative" style={{ background: "#f6f9fc" }}>
+        <div className="lg:w-1/2 flex-1 flex flex-col relative" style={{ background: "#f6f9fc" }}>
 
           {/* Left accent stripe */}
           <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[3px]"
@@ -193,8 +193,8 @@ export default async function SignInRoute() {
           </div>
 
           {/* Form center */}
-          <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12">
-            <div className="w-full max-w-[580px] bg-white rounded-3xl border border-[#e3e8ee] px-12 py-14"
+          <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-8 xl:px-10 py-12">
+            <div className="w-full max-w-[420px] lg:max-w-[440px] xl:max-w-[520px] bg-white rounded-3xl border border-[#e3e8ee] px-7 sm:px-10 xl:px-12 py-9 xl:py-12"
               style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
 
               {/* School identity echo on the right */}
