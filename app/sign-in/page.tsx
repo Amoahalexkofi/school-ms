@@ -51,7 +51,7 @@ export default async function SignInRoute() {
         {/* ── Left panel ─────────────────────────────────────────────────── */}
         <div
           className="lg:w-[44%] xl:w-[40%] flex flex-col relative overflow-hidden"
-          style={{ background: `linear-gradient(160deg, color-mix(in srgb, ${color} 85%, #0d1424) 0%, color-mix(in srgb, ${color} 45%, #0d1424) 100%)` }}
+          style={{ background: `linear-gradient(160deg, color-mix(in srgb, ${color} 65%, #0d1424) 0%, color-mix(in srgb, ${color} 25%, #0d1424) 100%)` }}
         >
           {/* Subtle inner glow at bottom — most of the panel's text sits down
               here, so this keeps contrast solid even for a school that picked
@@ -194,32 +194,32 @@ export default async function SignInRoute() {
 
           {/* Form center */}
           <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12">
-            <div className="w-full max-w-[480px] bg-white rounded-2xl border border-[#e3e8ee] px-10 py-11"
+            <div className="w-full max-w-[580px] bg-white rounded-3xl border border-[#e3e8ee] px-12 py-14"
               style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
 
               {/* School identity echo on the right */}
-              <div className="flex items-center gap-3 mb-9">
+              <div className="flex items-center gap-3.5 mb-10">
                 {profile?.logo ? (
-                  <img src={profile.logo} alt={name} className="w-10 h-10 rounded-full object-cover shrink-0"
+                  <img src={profile.logo} alt={name} className="w-12 h-12 rounded-full object-cover shrink-0"
                     style={{ boxShadow: `0 0 0 2px ${color}30` }} />
                 ) : (
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white font-medium text-[14px]"
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-white font-medium text-[15px]"
                     style={{ background: color }}>
                     {initials}
                   </div>
                 )}
                 <div>
-                  <p className="text-[#0d253d] font-semibold text-[15px] leading-tight">{name}</p>
-                  {location && <p className="text-[#94a3b8] text-[12px] mt-0.5">{location}</p>}
+                  <p className="text-[#0d253d] font-semibold text-[16px] leading-tight">{name}</p>
+                  {location && <p className="text-[#94a3b8] text-[12.5px] mt-0.5">{location}</p>}
                 </div>
               </div>
 
               {/* Heading */}
               <div className="mb-9">
-                <h2 className="text-[36px] font-light text-[#0d253d] tracking-[-0.02em] leading-none">
+                <h2 className="text-[42px] font-light text-[#0d253d] tracking-[-0.02em] leading-none">
                   Sign in
                 </h2>
-                <p className="text-[#64748d] text-[14.5px] mt-2.5">
+                <p className="text-[#64748d] text-[15.5px] mt-3">
                   Enter your credentials to access the portal
                 </p>
               </div>

@@ -34,17 +34,17 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
+    <form onSubmit={handleSubmit} noValidate className="space-y-7">
 
       {error && (
-        <div role="alert" className="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700 text-[13.5px] rounded-lg px-4 py-3.5">
+        <div role="alert" className="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700 text-[14px] rounded-xl px-4.5 py-4">
           <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
           {error}
         </div>
       )}
 
-      <div className="space-y-2">
-        <label htmlFor="signin-email" className="block text-[11.5px] font-bold text-slate-400 tracking-[0.1em] uppercase">
+      <div className="space-y-2.5">
+        <label htmlFor="signin-email" className="block text-[12px] font-bold text-slate-400 tracking-[0.1em] uppercase">
           Email address
         </label>
         <input
@@ -55,13 +55,13 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
           autoComplete="email"
           autoFocus
           placeholder="you@school.edu"
-          className="w-full px-4.5 py-4 border border-slate-200 rounded-xl text-[15px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
+          className="w-full px-5 py-4.5 border border-slate-200 rounded-xl text-[16px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
           style={{ "--tw-ring-color": `${accentColor}35` } as any}
         />
       </div>
 
-      <div className="space-y-2">
-        <label htmlFor="signin-password" className="block text-[11.5px] font-bold text-slate-400 tracking-[0.1em] uppercase">
+      <div className="space-y-2.5">
+        <label htmlFor="signin-password" className="block text-[12px] font-bold text-slate-400 tracking-[0.1em] uppercase">
           Password
         </label>
         <div className="relative">
@@ -72,7 +72,7 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
             onChange={(e) => { setPassword(e.target.value); setError(null); }}
             autoComplete="current-password"
             placeholder="••••••••"
-            className="w-full px-4.5 pr-12 py-4 border border-slate-200 rounded-xl text-[15px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
+            className="w-full px-5 pr-13 py-4.5 border border-slate-200 rounded-xl text-[16px] text-slate-900 placeholder-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-transparent transition-all"
             style={{ "--tw-ring-color": `${accentColor}35` } as any}
           />
           <button
@@ -80,9 +80,9 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
             onClick={() => setShowPw(s => !s)}
             tabIndex={-1}
             aria-label={showPw ? "Hide password" : "Show password"}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
+            className="absolute right-4.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
           >
-            {showPw ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+            {showPw ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
           </button>
         </div>
       </div>
@@ -90,7 +90,7 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full flex items-center justify-center gap-2 text-white font-medium py-4 rounded-full text-[15px] transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99]"
+        className="w-full flex items-center justify-center gap-2 text-white font-medium py-4.5 rounded-full text-[16px] transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99]"
         style={{ background: accentColor }}
       >
         {submitting ? (
