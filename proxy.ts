@@ -39,6 +39,33 @@ async function getTenantForSubdomain(subdomain: string): Promise<Tenant | null> 
   }
 }
 
+// Cache host → tenant lookups for custom domains the same way as subdomains.
+// Keyed separately (by full host, lowercased) so a school with both a
+// subdomain and a custom domain caches independently under each key.
+const customDomainCache = new Map<string, { tenant: Tenant; expiresAt: number }>();
+
+async function getTenantForCustomDomain(host: string): Promise<Tenant | null> {
+  const key = host.toLowerCase();
+  const now = Date.now();
+  const cached = customDomainCache.get(key);
+  if (cached && cached.expiresAt > now) return cached.tenant;
+
+  try {
+    const sql = neon(process.env.DATABASE_URL!);
+    const rows = await sql`
+      SELECT "schemaName", "addons" FROM "SchoolTenant"
+      WHERE lower("customDomain") = ${key} AND status != 'suspended'
+      LIMIT 1
+    `;
+    if (!rows.length) return null;
+    const tenant: Tenant = { schema: rows[0].schemaName as string, addons: (rows[0].addons as string) ?? "" };
+    customDomainCache.set(key, { tenant, expiresAt: now + 60_000 });
+    return tenant;
+  } catch {
+    return null;
+  }
+}
+
 // ── Permission-matrix enforcement (granular RBAC) ─────────────────────────────
 // The Settings → Roles matrix (AppRole/RolePermission) drives the UI via
 // PermissionsProvider; this enforces the SAME merged map server-side so hiding
@@ -143,6 +170,17 @@ export async function proxy(request: NextRequest) {
     ?? request.headers.get("host")
     ?? "";
   const subdomain = extractSubdomain(host);
+  const hostWithoutPort = host.split(":")[0];
+  const isBareAppDomain = APP_DOMAINS.some(d => d === hostWithoutPort);
+  // Vercel's own preview/deployment URLs (*.vercel.app) must never be
+  // treated as an unrecognized custom domain — every preview deploy and
+  // the project's default domain would otherwise 404.
+  const isVercelHost = hostWithoutPort.endsWith(".vercel.app");
+  // Not a subdomain of a known app domain, and not the bare app domain
+  // itself (e.g. visiting getskula.com directly) → this must be a school's
+  // own custom domain (e.g. portal.theirschool.edu.gh), or an unrecognized
+  // host that shouldn't serve anything.
+  const isCustomDomain = !subdomain && !isBareAppDomain && !isVercelHost && hostWithoutPort !== "";
 
   // Build forwarded request headers
   const requestHeaders = new Headers(request.headers);
@@ -156,9 +194,11 @@ export async function proxy(request: NextRequest) {
   // Apex/non-tenant context (e.g. getskula.com demo) → all add-ons available
   requestHeaders.set("x-tenant-addons", "*");
 
-  // Resolve tenant schema + enabled add-ons from subdomain
-  if (subdomain) {
-    const tenant = await getTenantForSubdomain(subdomain);
+  // Resolve tenant schema + enabled add-ons from subdomain or custom domain
+  if (subdomain || isCustomDomain) {
+    const tenant = subdomain
+      ? await getTenantForSubdomain(subdomain)
+      : await getTenantForCustomDomain(hostWithoutPort);
     if (!tenant) {
       return new NextResponse(
         `<html><body style="font-family:sans-serif;text-align:center;padding:80px;color:#374151">
