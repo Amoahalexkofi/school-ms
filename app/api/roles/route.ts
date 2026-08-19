@@ -3,6 +3,10 @@ import { getDb } from "@/lib/db";
 
 export async function GET() {
   const roles = await ((await getDb()) as any).appRole.findMany({
+    // Exclude auto-generated per-staff roles (created by the direct
+    // Permissions screen on a staff profile) — this list is for reusable,
+    // admin-named roles only.
+    where: { isSystem: false },
     include: {
       _count: { select: { permissions: true, staffRoles: true } },
     },

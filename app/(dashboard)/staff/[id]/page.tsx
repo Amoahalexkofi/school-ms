@@ -3,13 +3,13 @@ import Link from "next/link";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, User, Briefcase, DollarSign, BookOpen, Share2, CreditCard } from "lucide-react";
+import { ArrowLeft, User, Briefcase, DollarSign, BookOpen, Share2, CreditCard, ShieldCheck } from "lucide-react";
 import { StaffProfileActions, StaffAvatar } from "./StaffProfileActions";
 import { StaffSubjectsManager } from "./StaffSubjectsManager";
 
 async function getData(id: string) {
   const db = await getDb();
-  const [staff, departments, designations, allSubjects, appRoles] = await Promise.all([
+  const [staff, departments, designations, allSubjects] = await Promise.all([
     (db as any).staff.findUnique({
       where: { id },
       include: {
@@ -20,15 +20,14 @@ async function getData(id: string) {
         classSectionsTeaching: { include: { class: true, section: true } },
         payslips:      { orderBy: { createdAt: "desc" }, take: 6 },
         leaveRequests: { orderBy: { createdAt: "desc" }, take: 5 },
-        appRole:       { include: { role: true } },
+        appRole:       { include: { role: { select: { permissions: { select: { permCatId: true } } } } } },
       },
     }),
     (db as any).department.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
     (db as any).designation.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
     (db as any).subject.findMany({ where: { isActive: true }, orderBy: { name: "asc" }, select: { id: true, name: true, code: true } }),
-    (db as any).appRole.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
   ]);
-  return { staff, departments, designations, allSubjects, appRoles };
+  return { staff, departments, designations, allSubjects };
 }
 
 export default async function StaffProfilePage({
@@ -37,8 +36,10 @@ export default async function StaffProfilePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { staff, departments, designations, allSubjects, appRoles } = await getData(id);
+  const { staff, departments, designations, allSubjects } = await getData(id);
   if (!staff) notFound();
+
+  const customPermCount: number = staff.appRole?.role?.permissions?.length ?? 0;
 
   const dob    = staff.dob          ? new Date(staff.dob).toLocaleDateString()          : "—";
   const joined = staff.dateOfJoining ? new Date(staff.dateOfJoining).toLocaleDateString() : "—";
@@ -75,13 +76,18 @@ export default async function StaffProfilePage({
                         <CreditCard className="h-3.5 w-3.5" /> ID Card
                       </button>
                     </Link>
-                    <StaffProfileActions staff={staff} departments={departments} designations={designations} appRoles={appRoles} />
+                    <Link href={`/staff/${staff.id}/permissions`}>
+                      <button className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 font-medium">
+                        <ShieldCheck className="h-3.5 w-3.5" /> Permissions
+                      </button>
+                    </Link>
+                    <StaffProfileActions staff={staff} departments={departments} designations={designations} />
                   </div>
                 </div>
                 <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-2 text-sm">
                   {[
                     ["Role",         staff.user?.role?.replace(/_/g, " ")],
-                    ["Custom Role",  staff.appRole?.role?.name],
+                    ["Extra Permissions", customPermCount > 0 ? `${customPermCount} module${customPermCount !== 1 ? "s" : ""} customized` : "None — role defaults only"],
                     ["Department",   staff.department?.name],
                     ["Designation",  staff.designation?.name],
                     ["Gender",       staff.gender],

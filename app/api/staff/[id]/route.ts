@@ -71,28 +71,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         return NextResponse.json({ error: "Invalid basic salary" }, { status: 422 });
     }
 
-    const { role, appRoleId } = body;
+    const { role } = body;
 
     const staff = await ((await getDb()) as any).$transaction(async (tx: any) => {
       if (role) {
         const s = await tx.staff.findUnique({ where: { id }, select: { userId: true } });
         if (s) await tx.user.update({ where: { id: s.userId }, data: { role } });
-      }
-      // Custom AppRole assignment (Settings > Roles & Permissions) — additive
-      // to the base role above, not a replacement for it. "appRoleId" only
-      // acts when present in the body: a real id upserts the link, an
-      // explicit empty value removes it, and its absence leaves the
-      // existing assignment untouched (same convention as the whitelist).
-      if ("appRoleId" in body) {
-        if (appRoleId) {
-          await tx.staffAppRole.upsert({
-            where: { staffId: id },
-            create: { staffId: id, roleId: appRoleId },
-            update: { roleId: appRoleId },
-          });
-        } else {
-          await tx.staffAppRole.deleteMany({ where: { staffId: id } });
-        }
       }
       return tx.staff.update({ where: { id }, data: staffData });
     });
