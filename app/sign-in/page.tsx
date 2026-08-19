@@ -28,6 +28,13 @@ function formatName(raw: string): string {
   return raw;
 }
 
+function withCountryCode(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("+")) return trimmed;
+  if (trimmed.startsWith("0")) return `+233 ${trimmed.slice(1)}`;
+  return `+233 ${trimmed}`;
+}
+
 function darken(hex: string, amount: number): string {
   const n = parseInt(hex.replace("#", ""), 16);
   const r = Math.max(0, (n >> 16) - Math.round(255 * amount));
@@ -146,13 +153,13 @@ export default async function SignInRoute() {
                   {profile?.phone && (
                     <div className="flex items-center gap-3.5 text-white/70 text-[14px]">
                       <Phone className="h-[18px] w-[18px] text-white/50 shrink-0" strokeWidth={1.75} />
-                      {profile.phone}
+                      {withCountryCode(profile.phone)}
                     </div>
                   )}
                   {profile?.whatsappNumber && (
                     <div className="flex items-center gap-3.5 text-white/70 text-[14px]">
                       <WhatsAppIcon className="h-[18px] w-[18px] shrink-0" style={{ color: "#25D366" }} />
-                      {profile.whatsappNumber}
+                      {withCountryCode(profile.whatsappNumber)}
                     </div>
                   )}
                 </div>
