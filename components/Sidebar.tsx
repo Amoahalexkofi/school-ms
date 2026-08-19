@@ -32,9 +32,9 @@ const adminGroups: NavGroup[] = [
     label: "People",
     items: [
       { href: "/students",   label: "Students",   icon: Users,         roles: ["SUPER_ADMIN","ADMIN","TEACHER"], perm: "student_information" },
-      { href: "/staff",      label: "Staff",       icon: UserCog,       roles: ["SUPER_ADMIN","ADMIN"],           perm: "human_resource" },
-      { href: "/admissions", label: "Admissions",  icon: UserPlus,      roles: ["SUPER_ADMIN","ADMIN","RECEPTIONIST"], perm: "front_office" },
-      { href: "/alumni",     label: "Alumni",      icon: GraduationCap, roles: ["SUPER_ADMIN","ADMIN"],           perm: "alumni" },
+      { href: "/staff",      label: "Staff",       icon: UserCog,       perm: "human_resource" },
+      { href: "/admissions", label: "Admissions",  icon: UserPlus,      perm: "front_office" },
+      { href: "/alumni",     label: "Alumni",      icon: GraduationCap, perm: "alumni" },
     ],
   },
   {
@@ -55,26 +55,26 @@ const adminGroups: NavGroup[] = [
   {
     label: "Finance",
     items: [
-      { href: "/fees",     label: "Fees",     icon: DollarSign, roles: ["SUPER_ADMIN","ADMIN","ACCOUNTANT"], perm: "fees_collection" },
-      { href: "/finance",  label: "Finance",  icon: Banknote,   roles: ["SUPER_ADMIN","ADMIN","ACCOUNTANT"], perm: "expense" },
-      { href: "/payroll",  label: "Payroll",  icon: CreditCard, roles: ["SUPER_ADMIN","ADMIN","ACCOUNTANT"], perm: "human_resource" },
+      { href: "/fees",     label: "Fees",     icon: DollarSign, perm: "fees_collection" },
+      { href: "/finance",  label: "Finance",  icon: Banknote,   perm: "expense" },
+      { href: "/payroll",  label: "Payroll",  icon: CreditCard, perm: "human_resource" },
     ],
   },
   {
     label: "Operations",
     items: [
       { href: "/library",      label: "Library",      icon: Library,      roles: ["SUPER_ADMIN","ADMIN","LIBRARIAN","TEACHER"], perm: "library" },
-      { href: "/transport",    label: "Transport",    icon: Bus,           roles: ["SUPER_ADMIN","ADMIN"],                        perm: "transport" },
-      { href: "/hostel",       label: "Hostel",       icon: Building,      roles: ["SUPER_ADMIN","ADMIN"],                        perm: "hostel" },
-      { href: "/inventory",    label: "Inventory",    icon: Package,       roles: ["SUPER_ADMIN","ADMIN"],                        perm: "inventory" },
-      { href: "/front-office", label: "Front Office", icon: ConciergeBell, roles: ["SUPER_ADMIN","ADMIN","RECEPTIONIST"],         perm: "front_office" },
+      { href: "/transport",    label: "Transport",    icon: Bus,           perm: "transport" },
+      { href: "/hostel",       label: "Hostel",       icon: Building,      perm: "hostel" },
+      { href: "/inventory",    label: "Inventory",    icon: Package,       perm: "inventory" },
+      { href: "/front-office", label: "Front Office", icon: ConciergeBell, perm: "front_office" },
     ],
   },
   {
     label: "Communication",
     items: [
       { href: "/notice-board", label: "Notices",   icon: Megaphone,    roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN","RECEPTIONIST"], perm: "communicate" },
-      { href: "/messaging",    label: "Messaging", icon: Send,          roles: ["SUPER_ADMIN","ADMIN"],                                    perm: "communicate" },
+      { href: "/messaging",    label: "Messaging", icon: Send,          perm: "communicate" },
       { href: "/chat",         label: "Chat",      icon: MessageCircle, roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN","RECEPTIONIST"], perm: "chat" },
       { href: "/calendar",     label: "Calendar",  icon: CalendarDays,  roles: ["SUPER_ADMIN","ADMIN","TEACHER","ACCOUNTANT","LIBRARIAN","RECEPTIONIST"], perm: "calendar" },
     ],

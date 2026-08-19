@@ -101,12 +101,18 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "STUDENT", "PARENT"],
   },
   {
+    // Base role only opens the door; the granular matrix (module
+    // "fees_collection") is the real grant.
     prefix: "/fees",
-    roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],
+    roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "TEACHER", "LIBRARIAN", "RECEPTIONIST"],
   },
   {
+    // Base role only opens the door; the actual grant is the granular
+    // permission matrix (isApiCallPermitted in proxy.ts), same pattern as
+    // /staff below — a Super Admin can extend Payroll to any staff member
+    // via a custom AppRole without needing to touch this list.
     prefix: "/payroll",
-    roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],
+    roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "TEACHER", "LIBRARIAN", "RECEPTIONIST"],
   },
   {
     prefix: "/parent",
@@ -137,8 +143,12 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT", "PARENT"],
   },
   {
+    // Base role only opens the door; the actual grant is the granular
+    // permission matrix (isApiCallPermitted in proxy.ts, module
+    // "human_resource"). A Super Admin can extend Staff to any staff
+    // member via a custom AppRole without needing to touch this list.
     prefix: "/staff",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"],
   },
   {
     prefix: "/departments",
@@ -167,8 +177,10 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   },
   // Finance
   {
+    // Base role only opens the door; the granular matrix (module "expense")
+    // is the real grant.
     prefix: "/finance",
-    roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],
+    roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "TEACHER", "LIBRARIAN", "RECEPTIONIST"],
   },
   {
     prefix: "/leave",
@@ -181,28 +193,38 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   },
   // Transport
   {
+    // Base role only opens the door; the granular matrix (module
+    // "transport") is the real grant.
     prefix: "/transport",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"],
   },
   // Hostel
   {
+    // Base role only opens the door; the granular matrix (module "hostel")
+    // is the real grant.
     prefix: "/hostel",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"],
   },
   // Inventory
   {
+    // Base role only opens the door; the granular matrix (module
+    // "inventory") is the real grant.
     prefix: "/inventory",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"],
   },
   // Front office
   {
+    // Base role only opens the door; the granular matrix (module
+    // "front_office") is the real grant.
     prefix: "/front-office",
-    roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST"],
+    roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST", "TEACHER", "ACCOUNTANT", "LIBRARIAN"],
   },
   // Admissions
   {
+    // Base role only opens the door; the granular matrix (module
+    // "front_office") is the real grant.
     prefix: "/admissions",
-    roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST"],
+    roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST", "TEACHER", "ACCOUNTANT", "LIBRARIAN"],
   },
   // Reports
   {
@@ -232,7 +254,7 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // API routes for new modules
   {
     prefix: "/api/admissions",
-    roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST"],
+    roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST", "TEACHER", "ACCOUNTANT", "LIBRARIAN"],
   },
   // Settings
   {
@@ -272,10 +294,12 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     prefix: "/api/calendar",
     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "STUDENT", "PARENT", "RECEPTIONIST"],
   },
-  // Messaging
+  // Messaging — base role only opens the door; the granular matrix (module
+  // "communicate") is the real grant, so a Super Admin can extend this to
+  // any staff member via a custom AppRole.
   {
     prefix: "/messaging",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"],
   },
   // Chat
   {
@@ -298,23 +322,23 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/api/sections",  roles: ["SUPER_ADMIN", "ADMIN"] },
   { prefix: "/api/subjects",  roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Finance APIs
-  { prefix: "/api/finance",   roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  { prefix: "/api/finance",   roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "TEACHER", "LIBRARIAN", "RECEPTIONIST"] },
   // Library APIs
   { prefix: "/api/library",   roles: ["SUPER_ADMIN", "ADMIN", "LIBRARIAN", "TEACHER"] },
   // Inventory APIs
-  { prefix: "/api/inventory", roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/inventory", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"] },
   // Mark divisions API
   { prefix: "/api/mark-divisions", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Grade ranges (canonical grading scale)
   { prefix: "/api/grade-ranges",   roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Front office APIs
-  { prefix: "/api/front-office", roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST"] },
+  { prefix: "/api/front-office", roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST", "TEACHER", "ACCOUNTANT", "LIBRARIAN"] },
   // Attendance types (read-only, used by attendance forms)
   { prefix: "/api/attendance-types", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Notices API
   { prefix: "/api/notices",   roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
-  // Messaging API
-  { prefix: "/api/messaging", roles: ["SUPER_ADMIN", "ADMIN"] },
+  // Messaging API — see /messaging above
+  { prefix: "/api/messaging", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"] },
   // Online exams APIs
   { prefix: "/api/questions", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   { prefix: "/api/online-exams", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT"] },
@@ -337,8 +361,8 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/settings/whatsapp",         roles: ["SUPER_ADMIN", "ADMIN"] },
   { prefix: "/api/attendance-settings",   roles: ["SUPER_ADMIN", "ADMIN"] },
   // Alumni
-  { prefix: "/alumni",          roles: ["SUPER_ADMIN", "ADMIN"] },
-  { prefix: "/api/alumni",      roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/alumni",          roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"] },
+  { prefix: "/api/alumni",      roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"] },
   // Fees sub-routes
   { prefix: "/api/fees/types",             roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { prefix: "/api/fees/groups",            roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
@@ -355,8 +379,8 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   // Class sections API (teacher assignment)
   { prefix: "/api/class-sections", roles: ["SUPER_ADMIN", "ADMIN"] },
   // Inventory suppliers and stores
-  { prefix: "/api/inventory/suppliers", roles: ["SUPER_ADMIN", "ADMIN"] },
-  { prefix: "/api/inventory/stores",    roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/api/inventory/suppliers", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"] },
+  { prefix: "/api/inventory/stores",    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"] },
   // Disable reasons
   { prefix: "/api/disable-reasons",    roles: ["SUPER_ADMIN", "ADMIN"] },
   // Fee reminders
