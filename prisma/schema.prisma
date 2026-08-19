@@ -2728,6 +2728,11 @@ model WebsiteNotice {
   expiresAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  // Set when this row is a mirror of an internal (portal) Notice with
+  // audience ALL — lets us find/update/remove the public copy when the
+  // source notice changes. Null for notices created directly in Website
+  // Manager.
+  sourceNoticeId String? @unique
 }
 
 model WebsiteSettings {
