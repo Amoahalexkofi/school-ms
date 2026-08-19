@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ArrowLeft, Phone, Mail } from "lucide-react";
 import { SignInPage } from "@/components/SignInPage";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { neon } from "@neondatabase/serverless";
 
 async function fetchSchoolData(schema: string) {
@@ -134,24 +135,24 @@ export default async function SignInRoute() {
               )}
 
               {/* Contact details */}
-              {(profile?.phone || profile?.email) && (
-                <div className="space-y-2.5">
+              {(profile?.phone || profile?.email || profile?.whatsappNumber) && (
+                <div className="space-y-4">
+                  {profile?.email && (
+                    <div className="flex items-center gap-3.5 text-white/70 text-[14px]">
+                      <Mail className="h-[18px] w-[18px] text-white/50 shrink-0" strokeWidth={1.75} />
+                      {profile.email}
+                    </div>
+                  )}
                   {profile?.phone && (
-                    <div className="flex items-center gap-2.5 text-white/55 text-[13px]">
-                      <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ background: "rgba(255,255,255,0.12)" }}>
-                        <Phone className="h-3 w-3 text-white/70" />
-                      </div>
+                    <div className="flex items-center gap-3.5 text-white/70 text-[14px]">
+                      <Phone className="h-[18px] w-[18px] text-white/50 shrink-0" strokeWidth={1.75} />
                       {profile.phone}
                     </div>
                   )}
-                  {profile?.email && (
-                    <div className="flex items-center gap-2.5 text-white/55 text-[13px]">
-                      <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ background: "rgba(255,255,255,0.12)" }}>
-                        <Mail className="h-3 w-3 text-white/70" />
-                      </div>
-                      {profile.email}
+                  {profile?.whatsappNumber && (
+                    <div className="flex items-center gap-3.5 text-white/70 text-[14px]">
+                      <WhatsAppIcon className="h-[18px] w-[18px] shrink-0" style={{ color: "#25D366" }} />
+                      {profile.whatsappNumber}
                     </div>
                   )}
                 </div>
