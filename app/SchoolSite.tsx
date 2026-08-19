@@ -166,7 +166,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
       {/* ── Stats strip ── */}
       {showStats && (
         <div className="border-b border-[#e3e8ee]">
-          <div className="max-w-6xl mx-auto px-6 py-7 grid grid-cols-2 sm:grid-cols-3 gap-6">
+          <div className="max-w-6xl mx-auto px-6 py-7 grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
             {([
               stats.students > 0 && { icon: Users,   value: stats.students >= 100 ? `${stats.students}+` : String(stats.students), label: "Students Enrolled" },
               stats.staff    > 0 && { icon: UserCog, value: stats.staff    >= 10  ? `${stats.staff}+`    : String(stats.staff),    label: "Teaching Staff"    },
@@ -352,8 +352,8 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
           )}
 
           {/* Sign-in CTA banner */}
-          <div className="rounded-2xl px-8 py-12 sm:px-14 flex flex-col sm:flex-row items-center justify-between gap-6" style={{ background: deepTone }}>
-            <div>
+          <div className="rounded-2xl px-6 py-10 sm:px-14 sm:py-12 flex flex-col sm:flex-row items-center justify-between gap-6" style={{ background: deepTone }}>
+            <div className="text-center sm:text-left">
               <h3 className="font-montserrat font-normal text-white tracking-[-0.02em] leading-tight mb-2" style={{ fontSize: "clamp(20px, 2.4vw, 28px)" }}>
                 Ready to access your portal?
               </h3>
@@ -392,7 +392,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
             </div>
 
             {/* Quick links */}
-            <div className="flex items-center gap-4 text-[13px] text-[#64748d]">
+            <div className="flex items-center flex-wrap justify-center gap-x-4 gap-y-2 text-[13px] text-[#64748d]">
               {[["#about", "About"], ["#notices", "Notices"], ["#contact", "Contact"]].map(([href, label]) => (
                 <a key={href} href={href} className="hover:text-[#0d253d] transition-colors font-medium">{label}</a>
               ))}
