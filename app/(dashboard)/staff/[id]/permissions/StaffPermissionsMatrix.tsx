@@ -46,18 +46,22 @@ const ACTIONS = [
   { key: "canDelete", label: "Delete", color: "text-red-600"    },
 ] as const;
 
+type NamedRole = { id: string; name: string; permissions: ExistingPerm[] };
+
 export function StaffPermissionsMatrix({
   staffId,
   staffName,
   baseRole,
   groups,
   existingPermissions,
+  namedRoles,
 }: {
   staffId: string;
   staffName: string;
   baseRole: string;
   groups: Group[];
   existingPermissions: ExistingPerm[];
+  namedRoles: NamedRole[];
 }) {
   const [perms, setPerms] = useState<Record<number, PermState>>(() => {
     const map: Record<number, PermState> = {};
@@ -71,6 +75,22 @@ export function StaffPermissionsMatrix({
 
   function get(catId: number): PermState {
     return perms[catId] ?? { canView: false, canAdd: false, canEdit: false, canDelete: false };
+  }
+
+  // "Start from an existing role" — pre-fills the grid from a reusable named
+  // role (e.g. "PA") someone already built in Settings > Roles. Loads the
+  // values into this person's own grid; nothing is linked to that role after
+  // this — it's a one-time copy the admin can still hand-tweak before saving.
+  function applyNamedRole(roleId: string) {
+    if (!roleId) return;
+    const role = namedRoles.find((r) => r.id === roleId);
+    if (!role) return;
+    const map: Record<number, PermState> = {};
+    for (const p of role.permissions) {
+      map[p.permCatId] = { canView: p.canView, canAdd: p.canAdd, canEdit: p.canEdit, canDelete: p.canDelete };
+    }
+    setPerms(map);
+    setSaved(false);
   }
 
   function toggle(catId: number, action: keyof PermState) {
@@ -129,6 +149,21 @@ export function StaffPermissionsMatrix({
           {saved && <span className="text-sm text-green-600 font-medium">Saved ✓</span>}
         </div>
       </div>
+
+      {namedRoles.length > 0 && (
+        <div className="flex items-center gap-2 text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+          <span className="text-gray-500 shrink-0">Start from an existing role:</span>
+          <select
+            className="border rounded-md px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            defaultValue=""
+            onChange={(e) => { applyNamedRole(e.target.value); e.target.value = ""; }}
+          >
+            <option value="">— Select a role to pre-fill from —</option>
+            {namedRoles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+          </select>
+          <span className="text-gray-400 text-xs">Copies that role's permissions in — you can still adjust before saving.</span>
+        </div>
+      )}
 
       {/* Legend */}
       <div className="flex flex-wrap gap-4 text-xs">

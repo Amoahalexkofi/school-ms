@@ -123,6 +123,22 @@ export async function provisionSchool(input: {
     // 2b. Create tenant-local enum types and migrate columns off public enums
     await migrateEnumsForSchema(client, input.schemaName);
 
+    // 2c. Copy fixed reference/lookup data that every school needs and none
+    // of them edit the taxonomy of — the Roles & Permissions matrix
+    // (PermissionGroup/PermissionCategory) ships as rows in "public", not as
+    // seed logic, so every tenant needs the same rows or that whole screen
+    // renders empty. Explicit id preserves the FK that RolePermission uses.
+    await client.query(`
+      INSERT INTO "${input.schemaName}"."PermissionGroup" (id, name, "shortCode", "isActive", "isSystem", "createdAt")
+      SELECT id, name, "shortCode", "isActive", "isSystem", "createdAt" FROM "public"."PermissionGroup"
+      ON CONFLICT (id) DO NOTHING
+    `);
+    await client.query(`
+      INSERT INTO "${input.schemaName}"."PermissionCategory" (id, "permGroupId", name, "shortCode", "enableView", "enableAdd", "enableEdit", "enableDelete", "createdAt")
+      SELECT id, "permGroupId", name, "shortCode", "enableView", "enableAdd", "enableEdit", "enableDelete", "createdAt" FROM "public"."PermissionCategory"
+      ON CONFLICT (id) DO NOTHING
+    `);
+
     // Copy sequences (for auto-increment, though we use cuid so mostly not needed)
     const sequences = await client.query<{ sequence_name: string }>(`
       SELECT sequence_name FROM information_schema.sequences

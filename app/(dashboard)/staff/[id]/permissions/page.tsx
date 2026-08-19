@@ -5,7 +5,7 @@ import { StaffPermissionsMatrix } from "./StaffPermissionsMatrix";
 
 async function getData(staffId: string) {
   const db = (await getDb()) as any;
-  const [staff, groups, link] = await Promise.all([
+  const [staff, groups, link, namedRoles] = await Promise.all([
     db.staff.findUnique({
       where: { id: staffId },
       select: { id: true, firstName: true, lastName: true, user: { select: { role: true } } },
@@ -19,13 +19,21 @@ async function getData(staffId: string) {
       where: { staffId },
       include: { role: { include: { permissions: true } } },
     }),
+    // Reusable named roles (Settings > Roles & Permissions) — offered here
+    // as an optional starting point, e.g. "PA", so the admin doesn't have
+    // to re-check every box by hand for a role type they already built.
+    db.appRole.findMany({
+      where: { isSystem: false, isActive: true },
+      include: { permissions: true },
+      orderBy: { name: "asc" },
+    }),
   ]);
-  return { staff, groups, existingPermissions: link?.role?.permissions ?? [] };
+  return { staff, groups, existingPermissions: link?.role?.permissions ?? [], namedRoles };
 }
 
 export default async function StaffPermissionsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { staff, groups, existingPermissions } = await getData(id);
+  const { staff, groups, existingPermissions, namedRoles } = await getData(id);
   if (!staff) notFound();
 
   return (
@@ -37,6 +45,7 @@ export default async function StaffPermissionsPage({ params }: { params: Promise
         baseRole={staff.user?.role ?? "TEACHER"}
         groups={groups}
         existingPermissions={existingPermissions}
+        namedRoles={namedRoles}
       />
     </div>
   );
