@@ -392,8 +392,15 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
         </RevealOnScroll>
       </section>
 
+      {/* ── Footer top divider — a soft wave instead of a hairline ── */}
+      <div className="w-full overflow-hidden leading-[0] bg-white">
+        <svg viewBox="0 0 1440 54" preserveAspectRatio="none" className="w-full h-[36px] sm:h-[48px] block">
+          <path d="M0,30 C240,58 480,2 720,18 C960,34 1200,58 1440,28 L1440,54 L0,54 Z" fill="#f6f9fc" />
+        </svg>
+      </div>
+
       {/* ── Footer ── */}
-      <footer className="border-t border-[#e3e8ee] bg-white py-8">
+      <footer className="bg-[#f6f9fc] py-8">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
             {/* School identity */}
@@ -422,7 +429,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
             </div>
           </div>
 
-          <div className="mt-7 pt-6 border-t border-[#f1f5f9] flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-[#94a3b8]">
+          <div className="mt-7 pt-6 border-t border-[#e3e8ee] flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-[#94a3b8]">
             <p>© {new Date().getFullYear()} {name}. All rights reserved.</p>
             <p>
               Powered by{" "}
