@@ -110,21 +110,24 @@ export function SchoolSiteHero({
         />
       ))}
 
-      {/* Photo overlays — three light, purpose-built scrims instead of one flat
-          wash, so the photo itself stays visible instead of reading as tinted
-          navy. Top: just enough for the transparent nav's white text/logo.
-          Center: anchors legibility behind the vertically-centered headline —
-          the hero's actual text position, not the edges. Bottom: a light lift
-          for the dot indicators against a busy photo edge. */}
+      {/* Photo overlay — one coherent layered gradient, single dark hue at
+          modulated alpha (no competing tints). A 6-stop vertical vignette
+          breathes the photo back in twice (~22% and ~80%, above and below
+          the text band) so most of the frame reads at true color, darkening
+          only where it must: the nav strip at top, the headline band at
+          center, and the dot-indicator strip at bottom. A soft radial
+          spotlight reinforces legibility right behind the text without
+          adding a second visible layer. */}
       {isImg && (
-        <>
-          <div className="absolute inset-x-0 top-0 h-28 sm:h-32 pointer-events-none"
-            style={{ background: "linear-gradient(180deg, rgba(13,20,36,0.5) 0%, rgba(13,20,36,0) 100%)" }} />
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse 65% 60% at 50% 54%, rgba(13,20,36,0.56) 0%, rgba(13,20,36,0.2) 55%, transparent 78%)" }} />
-          <div className="absolute inset-x-0 bottom-0 h-20 sm:h-24 pointer-events-none"
-            style={{ background: "linear-gradient(0deg, rgba(13,20,36,0.4) 0%, rgba(13,20,36,0) 100%)" }} />
-        </>
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: [
+              "linear-gradient(180deg, rgba(13,20,36,0.46) 0%, rgba(13,20,36,0.06) 22%, rgba(13,20,36,0.30) 48%, rgba(13,20,36,0.32) 58%, rgba(13,20,36,0.06) 80%, rgba(13,20,36,0.38) 100%)",
+              "radial-gradient(ellipse 62% 46% at 50% 53%, rgba(13,20,36,0.28) 0%, transparent 75%)",
+            ].join(", "),
+          }}
+        />
       )}
 
       {/* Radial glow, tinted to the school's own color — only for the
