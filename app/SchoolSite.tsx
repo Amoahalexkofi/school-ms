@@ -5,6 +5,8 @@ import {
 } from "lucide-react";
 import { SchoolSiteHero } from "./SchoolSiteHero";
 import { SchoolSiteNav }  from "./SchoolSiteNav";
+import { RevealOnScroll } from "@/components/RevealOnScroll";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Profile {
@@ -166,23 +168,25 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
       {/* ── Stats strip ── */}
       {showStats && (
         <div className="border-b border-[#e3e8ee]">
-          <div className="max-w-6xl mx-auto px-6 py-7 grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
+          <RevealOnScroll className="max-w-6xl mx-auto px-6 py-7 grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
             {([
-              stats.students > 0 && { icon: Users,   value: stats.students >= 100 ? `${stats.students}+` : String(stats.students), label: "Students Enrolled" },
-              stats.staff    > 0 && { icon: UserCog, value: stats.staff    >= 10  ? `${stats.staff}+`    : String(stats.staff),    label: "Teaching Staff"    },
-              stats.classes  > 0 && { icon: BookOpen,value: String(stats.classes),                                                   label: "Classes / Sections" },
-            ] as any[]).filter(Boolean).map(({ icon: Icon, value, label }: any) => (
+              stats.students > 0 && { icon: Users,   rawValue: stats.students, suffix: stats.students >= 100 ? "+" : "", label: "Students Enrolled" },
+              stats.staff    > 0 && { icon: UserCog, rawValue: stats.staff,    suffix: stats.staff    >= 10  ? "+" : "", label: "Teaching Staff"    },
+              stats.classes  > 0 && { icon: BookOpen,rawValue: stats.classes,  suffix: "",                               label: "Classes / Sections" },
+            ] as any[]).filter(Boolean).map(({ icon: Icon, rawValue, suffix, label }: any) => (
               <div key={label} className="flex items-center gap-3.5">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white" style={{ background: safeOnAccent(color) }}>
                   <Icon className="h-4.5 w-4.5" />
                 </div>
                 <div>
-                  <p className="text-[20px] font-semibold text-[#0d253d] leading-none tracking-tight" style={{ fontFeatureSettings: '"tnum"' }}>{value}</p>
+                  <p className="text-[20px] font-semibold text-[#0d253d] leading-none tracking-tight" style={{ fontFeatureSettings: '"tnum"' }}>
+                    <AnimatedCounter value={rawValue} suffix={suffix} />
+                  </p>
                   <p className="text-[12px] text-[#64748d] mt-1">{label}</p>
                 </div>
               </div>
             ))}
-          </div>
+          </RevealOnScroll>
         </div>
       )}
 
@@ -192,7 +196,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
             {/* Text */}
-            <div>
+            <RevealOnScroll>
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] mb-4" style={{ color }}>
                 About Us
               </p>
@@ -234,10 +238,10 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
                   Contact Us <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
-            </div>
+            </RevealOnScroll>
 
             {/* Visual */}
-            <div className="relative">
+            <RevealOnScroll delayMs={120} className="relative">
               {/* Solid brand-color card, stacked behind and peeking out top-right */}
               <div
                 className="absolute -top-4 -right-4 sm:-top-5 sm:-right-5 w-full h-full rounded-2xl"
@@ -280,7 +284,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
                   </div>
                 </div>
               )}
-            </div>
+            </RevealOnScroll>
           </div>
         </div>
       </section>
@@ -288,7 +292,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
       {/* ── Notice board ── */}
       {activeNotices.length > 0 && (
         <section id="notices" className="py-16 sm:py-20 bg-[#f6f9fc] border-t border-[#e3e8ee]">
-          <div className="max-w-6xl mx-auto px-6">
+          <RevealOnScroll className="max-w-6xl mx-auto px-6">
             <div className="mb-10">
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color }}>
                 Announcements
@@ -316,13 +320,13 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
                 </div>
               ))}
             </div>
-          </div>
+          </RevealOnScroll>
         </section>
       )}
 
       {/* ── Contact ── */}
       <section id="contact" className="py-16 sm:py-24 bg-white border-t border-[#e3e8ee]">
-        <div className="max-w-6xl mx-auto px-6">
+        <RevealOnScroll className="max-w-6xl mx-auto px-6">
           {contactItems.length > 0 && (
             <>
               <div className="text-center mb-12">
@@ -385,7 +389,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               Sign In Now <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-        </div>
+        </RevealOnScroll>
       </section>
 
       {/* ── Footer ── */}

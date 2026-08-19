@@ -150,6 +150,16 @@
   .dash-rise {
     animation: fade-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
+
+  /* Scroll-triggered reveal (RevealOnScroll) — same easing as dash-rise,
+     but starts hidden and waits for the .is-visible class from an
+     IntersectionObserver instead of firing on mount. Reduced-motion users
+     never see the opacity:0 start (this whole block is skipped), so
+     content is simply visible immediately either way. */
+  .reveal-init { opacity: 0; transform: translateY(16px); }
+  .reveal-init.is-visible {
+    animation: fade-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }
 
 @layer base {
