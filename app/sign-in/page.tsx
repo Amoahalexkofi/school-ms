@@ -202,7 +202,7 @@ export default async function SignInRoute() {
 
           {/* Form center */}
           <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12">
-            <div className="w-full max-w-[420px] bg-white rounded-2xl px-8 py-9"
+            <div className="w-full max-w-[460px] bg-white rounded-2xl px-9 py-10"
               style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04), 0 20px 48px rgba(0,0,0,0.08)" }}>
 
               {/* School identity echo on the right */}
