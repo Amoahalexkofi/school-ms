@@ -61,18 +61,9 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1", supportContact }
       </div>
 
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <label htmlFor="signin-password" className="block text-[11px] font-bold text-slate-400 tracking-[0.1em] uppercase">
-            Password
-          </label>
-          <a
-            href="/forgot-password"
-            className="text-[12px] font-semibold transition-colors"
-            style={{ color: accentColor }}
-          >
-            Forgot password?
-          </a>
-        </div>
+        <label htmlFor="signin-password" className="block text-[11px] font-bold text-slate-400 tracking-[0.1em] uppercase">
+          Password
+        </label>
         <div className="relative">
           <input
             id="signin-password"
