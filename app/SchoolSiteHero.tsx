@@ -105,19 +105,37 @@ export function SchoolSiteHero({
             background: s.imageUrl ? undefined : `linear-gradient(160deg, ${deepTone} 0%, #0d1424 115%)`,
             backgroundImage: s.imageUrl ? `url(${s.imageUrl})` : undefined,
             backgroundSize: "cover",
-            backgroundPosition: "center",
+            backgroundPosition: s.imageUrl ? "center 30%" : "center",
           }}
         />
       ))}
 
-      {/* Image overlay — legibility for real photos */}
-      {isImg && <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(13,20,36,0.55) 0%, rgba(13,20,36,0.75) 100%)" }} />}
+      {/* Photo overlays — three light, purpose-built scrims instead of one flat
+          wash, so the photo itself stays visible instead of reading as tinted
+          navy. Top: just enough for the transparent nav's white text/logo.
+          Center: anchors legibility behind the vertically-centered headline —
+          the hero's actual text position, not the edges. Bottom: a light lift
+          for the dot indicators against a busy photo edge. */}
+      {isImg && (
+        <>
+          <div className="absolute inset-x-0 top-0 h-28 sm:h-32 pointer-events-none"
+            style={{ background: "linear-gradient(180deg, rgba(13,20,36,0.5) 0%, rgba(13,20,36,0) 100%)" }} />
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse 65% 60% at 50% 54%, rgba(13,20,36,0.56) 0%, rgba(13,20,36,0.2) 55%, transparent 78%)" }} />
+          <div className="absolute inset-x-0 bottom-0 h-20 sm:h-24 pointer-events-none"
+            style={{ background: "linear-gradient(0deg, rgba(13,20,36,0.4) 0%, rgba(13,20,36,0) 100%)" }} />
+        </>
+      )}
 
-      {/* Radial glow, tinted to the school's own color */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: `radial-gradient(ellipse 70% 55% at 50% 15%, ${primaryColor}35 0%, transparent 65%)` }}
-      />
+      {/* Radial glow, tinted to the school's own color — only for the
+          no-photo gradient fallback; a real photo shouldn't get a colored
+          haze layered on top of it. */}
+      {!isImg && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: `radial-gradient(ellipse 70% 55% at 50% 15%, ${primaryColor}35 0%, transparent 65%)` }}
+        />
+      )}
 
       {/* Content — centred, padded for fixed nav (60px) */}
       <div
@@ -175,14 +193,14 @@ export function SchoolSiteHero({
         <>
           <button
             onClick={prev}
-            className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 border border-white/18 text-white backdrop-blur-sm hover:bg-white/18 transition-all flex items-center justify-center"
+            className="hidden sm:flex absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 border border-white/18 text-white backdrop-blur-sm hover:bg-white/18 transition-all items-center justify-center"
             aria-label="Previous slide"
           >
             <ChevronLeft className="h-4.5 w-4.5" />
           </button>
           <button
             onClick={next}
-            className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 border border-white/18 text-white backdrop-blur-sm hover:bg-white/18 transition-all flex items-center justify-center"
+            className="hidden sm:flex absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 border border-white/18 text-white backdrop-blur-sm hover:bg-white/18 transition-all items-center justify-center"
             aria-label="Next slide"
           >
             <ChevronRight className="h-4.5 w-4.5" />
@@ -198,13 +216,17 @@ export function SchoolSiteHero({
               key={i}
               onClick={() => go(i)}
               aria-label={`Slide ${i + 1}`}
-              className="rounded-full transition-all duration-400"
-              style={{
-                width: i === idx ? 22 : 6,
-                height: 6,
-                background: i === idx ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.32)",
-              }}
-            />
+              className="flex items-center justify-center w-6 h-6 -m-1"
+            >
+              <span
+                className="rounded-full transition-all duration-400"
+                style={{
+                  width: i === idx ? 22 : 6,
+                  height: 6,
+                  background: i === idx ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.32)",
+                }}
+              />
+            </button>
           ))}
         </div>
       )}
