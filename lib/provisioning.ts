@@ -160,6 +160,23 @@ export async function provisionSchool(input: {
       VALUES ($1, $2, $3, $4, $5, 'GHS', 'DD/MM/YYYY', true, true, 1, 4, 1, 4)
     `, [generateId(), input.schoolName, input.phone ?? null, input.address ?? null, input.country ?? null]);
 
+    // 4a. Seed 3 starter hero slides for the public website — real, editable
+    // rows from day one (rather than a code-only fallback the admin can't see
+    // or change in Website Manager).
+    const starterSlides = [
+      { title: `Welcome to ${input.schoolName}`, subtitle: "Nurturing minds. Building futures.", ctaText: "Explore Portal", ctaLink: "/sign-in" },
+      { title: "Excellence in Education", subtitle: "Where every student is empowered to reach their fullest potential.", ctaText: "About Us", ctaLink: "#about" },
+      { title: "Admissions Now Open", subtitle: "Join a thriving school community. Applications welcome.", ctaText: "Contact Us", ctaLink: "#contact" },
+    ];
+    for (let i = 0; i < starterSlides.length; i++) {
+      const s = starterSlides[i];
+      await client.query(`
+        INSERT INTO "${input.schemaName}"."WebsiteHeroSlide"
+          (id, title, subtitle, "ctaText", "ctaLink", "order", "isActive", "createdAt", "updatedAt")
+        VALUES ($1, $2, $3, $4, $5, $6, true, NOW(), NOW())
+      `, [generateId(), s.title, s.subtitle, s.ctaText, s.ctaLink, i]);
+    }
+
     // 4b. Seed the first academic session (active) — without one, most pages
     // have nothing to hang data on and the app used to trap the new school in
     // the onboarding wizard. Sep–Jul matches the Ghanaian school year.
