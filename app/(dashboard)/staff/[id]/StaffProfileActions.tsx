@@ -41,9 +41,10 @@ type Props = {
   staff: any;
   departments: any[];
   designations: any[];
+  appRoles: any[];
 };
 
-export function StaffProfileActions({ staff, departments, designations }: Props) {
+export function StaffProfileActions({ staff, departments, designations, appRoles }: Props) {
   const router = useRouter();
   const [editOpen, setEditOpen]       = useState(false);
   const [disableOpen, setDisableOpen] = useState(false);
@@ -62,6 +63,7 @@ export function StaffProfileActions({ staff, departments, designations }: Props)
     qualification:    staff.qualification ?? "",
     workExperience:   staff.workExperience ?? "",
     role:             staff.user?.role ?? "TEACHER",
+    appRoleId:        staff.appRole?.roleId ?? "",
     departmentId:     staff.departmentId ?? "",
     designationId:    staff.designationId ?? "",
     dateOfJoining:    staff.dateOfJoining ? new Date(staff.dateOfJoining).toISOString().slice(0, 10) : "",
@@ -178,8 +180,9 @@ export function StaffProfileActions({ staff, departments, designations }: Props)
     );
   }
 
-  const deptOptions  = departments.map((d: any)  => ({ value: d.id, label: d.name }));
-  const desigOptions = designations.map((d: any) => ({ value: d.id, label: d.name }));
+  const deptOptions    = departments.map((d: any)  => ({ value: d.id, label: d.name }));
+  const desigOptions   = designations.map((d: any) => ({ value: d.id, label: d.name }));
+  const appRoleOptions = appRoles.map((r: any)     => ({ value: r.id, label: r.name }));
 
   return (
     <>
@@ -216,6 +219,10 @@ export function StaffProfileActions({ staff, departments, designations }: Props)
             <Field label="Qualification" name="qualification" />
             <Field label="Work Experience" name="workExperience" />
             <Field label="Role" name="role" options={ROLES} />
+            <div>
+              <Field label="Custom Role" name="appRoleId" options={appRoleOptions} />
+              <p className="text-[11px] text-gray-400 mt-1">Optional — extends the base Role above with a custom permission set from Settings → Roles.</p>
+            </div>
             <Field label="Department" name="departmentId" options={deptOptions} />
             <Field label="Designation" name="designationId" options={desigOptions} />
             <Field label="Date of Joining" name="dateOfJoining" type="date" />
