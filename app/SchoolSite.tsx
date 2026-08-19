@@ -238,9 +238,15 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
 
             {/* Visual */}
             <div className="relative">
+              {/* Soft brand-colored glow behind the photo — depth without a shadow */}
               <div
-                className="rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center relative border border-[#e3e8ee]"
-                style={{ background: `linear-gradient(135deg, ${color}e6 0%, ${color}b3 100%)` }}
+                className="absolute -inset-5 rounded-[32px] opacity-50 blur-2xl pointer-events-none"
+                style={{ background: `radial-gradient(circle at 28% 25%, ${color}, transparent 68%)` }}
+              />
+
+              <div
+                className="rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center relative border"
+                style={{ background: `linear-gradient(135deg, ${color}e6 0%, ${color}b3 100%)`, borderColor: `${color}30` }}
               >
                 {profile?.coverImage ? (
                   <img src={profile.coverImage} alt={name} className="w-full h-full object-cover" />
@@ -255,13 +261,23 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
                 )}
               </div>
 
-              {/* Floating card — only if location or phone exists */}
+              {/* Floating card — only if location or phone exists. Genuinely
+                  floats above the photo (not a resting page card), so the
+                  Overlay shadow token applies. */}
               {(location || profile?.phone) && (
-                <div className="absolute -bottom-5 -right-4 sm:-right-6 bg-white rounded-2xl px-5 py-4 border border-[#e3e8ee]">
-                  {location && <p className="text-[10.5px] font-bold text-[#64748d] uppercase tracking-widest mb-1">Location</p>}
-                  <p className="text-[13.5px] font-semibold text-[#0d253d] leading-snug max-w-[160px]">
-                    {profile?.address ?? location}
-                  </p>
+                <div
+                  className="absolute -bottom-5 -right-4 sm:-right-6 bg-white rounded-2xl pl-3.5 pr-5 py-3.5 border border-[#e3e8ee] flex items-center gap-3"
+                  style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.12)" }}
+                >
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-white" style={{ background: safeOnAccent(color) }}>
+                    <MapPin className="h-4 w-4" />
+                  </div>
+                  <div>
+                    {location && <p className="text-[10.5px] font-bold text-[#64748d] uppercase tracking-widest mb-1">Location</p>}
+                    <p className="text-[13.5px] font-semibold text-[#0d253d] leading-snug max-w-[160px]">
+                      {profile?.address ?? location}
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
