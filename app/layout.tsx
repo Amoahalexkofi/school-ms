@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Montserrat } from "next/font/google";
+import { Plus_Jakarta_Sans, Montserrat, Bitter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/components/SessionProvider";
 
@@ -13,6 +13,15 @@ const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
   weight: ["400", "500", "600", "700", "800", "900"],
+});
+
+// Display serif for public school-website headlines (SchoolSite/Hero/Nav)
+// only — the internal app dashboard keeps the Two-Voice Montserrat/Plus
+// Jakarta Sans system untouched.
+const bitter = Bitter({
+  subsets: ["latin"],
+  variable: "--font-bitter",
+  weight: ["600", "700", "800"],
 });
 
 export const viewport: Viewport = {
@@ -55,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${plusJakartaSans.variable} ${montserrat.variable} h-full scroll-smooth`}>
+    <html lang="en" className={`${plusJakartaSans.variable} ${montserrat.variable} ${bitter.variable} h-full scroll-smooth`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="mobile-web-app-capable" content="yes" />

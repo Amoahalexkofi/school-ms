@@ -11,6 +11,7 @@
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --font-montserrat: var(--font-montserrat);
+  --font-bitter: var(--font-bitter);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -116,6 +117,16 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* School-website hero height — plain vh jumps/resizes on mobile Safari as
+   the address bar shows and hides. dvh (dynamic viewport height) fixes
+   that; browsers that don't support it simply skip the second
+   declaration and keep the vh value, so this needs no @supports guard. */
+.hero-viewport {
+  height: 88vh;
+  height: 88dvh;
+  min-height: 560px;
 }
 
 @keyframes marquee {

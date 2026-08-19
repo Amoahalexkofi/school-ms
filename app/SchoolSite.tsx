@@ -200,7 +200,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] mb-4" style={{ color }}>
                 About Us
               </p>
-              <h2 className="font-montserrat font-normal text-[#0d253d] tracking-[-0.02em] leading-[1.12] mb-5" style={{ fontSize: "clamp(26px, 3.2vw, 38px)" }}>
+              <h2 className="font-bitter font-bold text-[#0d253d] tracking-[-0.02em] leading-[1.12] mb-5" style={{ fontSize: "clamp(26px, 3.2vw, 38px)" }}>
                 {settings.aboutTitle ?? `Welcome to ${name}`}
               </h2>
               <p className="text-[#64748d] text-[15px] leading-[1.75] mb-6">
@@ -297,7 +297,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color }}>
                 Announcements
               </p>
-              <h2 className="font-montserrat font-normal text-[#0d253d] tracking-[-0.02em]" style={{ fontSize: "clamp(22px, 2.8vw, 32px)" }}>
+              <h2 className="font-bitter font-bold text-[#0d253d] tracking-[-0.02em]" style={{ fontSize: "clamp(22px, 2.8vw, 32px)" }}>
                 Notice Board
               </h2>
             </div>
@@ -333,7 +333,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
                 <p className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color }}>
                   Contact Us
                 </p>
-                <h2 className="font-montserrat font-normal text-[#0d253d] tracking-[-0.02em]" style={{ fontSize: "clamp(22px, 2.8vw, 32px)" }}>
+                <h2 className="font-bitter font-bold text-[#0d253d] tracking-[-0.02em]" style={{ fontSize: "clamp(22px, 2.8vw, 32px)" }}>
                   Get in Touch
                 </h2>
                 <p className="text-[#64748d] text-[15px] mt-3 max-w-md mx-auto">
@@ -374,7 +374,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
           {/* Sign-in CTA banner */}
           <div className="rounded-2xl px-6 py-10 sm:px-14 sm:py-12 flex flex-col sm:flex-row items-center justify-between gap-6" style={{ background: deepTone }}>
             <div className="text-center sm:text-left">
-              <h3 className="font-montserrat font-normal text-white tracking-[-0.02em] leading-tight mb-2" style={{ fontSize: "clamp(20px, 2.4vw, 28px)" }}>
+              <h3 className="font-bitter font-bold text-white tracking-[-0.02em] leading-tight mb-2" style={{ fontSize: "clamp(20px, 2.4vw, 28px)" }}>
                 Ready to access your portal?
               </h3>
               <p className="text-white/65 text-[14.5px]">

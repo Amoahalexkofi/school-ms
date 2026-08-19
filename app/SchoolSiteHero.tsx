@@ -90,8 +90,7 @@ export function SchoolSiteHero({
   return (
     <section
       id="home"
-      className="relative w-full overflow-hidden"
-      style={{ height: "88vh", minHeight: 560 }}
+      className="hero-viewport relative w-full overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -152,7 +151,7 @@ export function SchoolSiteHero({
 
           {/* Headline */}
           <h1
-            className="font-montserrat text-white font-normal leading-[1.08] tracking-[-0.025em] mb-5 break-words"
+            className="font-bitter text-white font-bold leading-[1.08] tracking-[-0.025em] mb-5 break-words"
             style={{
               fontSize: "clamp(34px, 5.5vw, 64px)",
               maxWidth: "100%",
