@@ -73,7 +73,7 @@ export function SchoolSiteNav({ name, logo, initials, color, hasNotices }: NavPr
               <a
                 key={href}
                 href={href}
-                className="text-[13.5px] font-medium px-3.5 py-2 rounded-full transition-all text-white/85 hover:text-white hover:bg-white/10"
+                className="text-[13.5px] font-medium px-3.5 py-2 rounded-lg transition-all text-white/85 hover:text-white hover:bg-white/10"
               >
                 {label}
               </a>
@@ -84,10 +84,9 @@ export function SchoolSiteNav({ name, logo, initials, color, hasNotices }: NavPr
           <div className="flex items-center gap-2">
             <Link
               href="/sign-in"
-              className="hidden sm:inline-flex items-center gap-1.5 h-9 px-4 rounded-full font-medium text-[13.5px] transition-all active:scale-95 shrink-0 text-white"
-              style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.28)" }}
+              className="group hidden sm:inline-flex items-center gap-1.5 h-9 px-4 rounded-xl font-medium text-[13.5px] transition-all shrink-0 text-white bg-transparent border border-white/35 hover:bg-white/10 hover:border-white/50"
             >
-              Sign In <ArrowRight className="h-3.5 w-3.5" />
+              Sign In <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
 
             <button
@@ -136,10 +135,10 @@ export function SchoolSiteNav({ name, logo, initials, color, hasNotices }: NavPr
             <Link
               href="/sign-in"
               onClick={() => setMobileOpen(false)}
-              className="inline-flex items-center gap-2 text-white font-medium px-6 py-3.5 rounded-full text-[14.5px] transition-all"
+              className="group inline-flex items-center gap-2 text-white font-medium px-6 py-3.5 rounded-xl text-[14.5px] transition-all hover:brightness-110"
               style={{ background: color }}
             >
-              Sign In to Portal <ArrowRight className="h-4 w-4" />
+              Sign In to Portal <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
         </div>

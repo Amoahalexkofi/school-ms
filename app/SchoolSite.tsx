@@ -216,7 +216,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               <div className="flex flex-wrap gap-2.5 mt-6">
                 {profile?.phone && (
                   <a href={`tel:${profile.phone}`}
-                    className="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-[#e3e8ee] bg-white text-[#273951] text-[13px] font-medium hover:border-[#d5dde6] transition-colors">
+                    className="inline-flex items-center gap-2 h-10 px-4 rounded-lg border border-[#e3e8ee] bg-white text-[#273951] text-[13px] font-medium hover:border-[#d5dde6] transition-colors">
                     <Phone className="h-3.5 w-3.5 text-[#64748d]" /> {profile.phone}
                   </a>
                 )}
@@ -224,7 +224,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
                   <a
                     href={`https://wa.me/${profile.whatsappNumber.replace(/\D/g, "")}`}
                     target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 h-10 px-4 rounded-full text-white text-[13px] font-medium transition-all hover:brightness-105"
+                    className="inline-flex items-center gap-2 h-10 px-4 rounded-lg text-white text-[13px] font-medium transition-all hover:brightness-105"
                     style={{ background: "#25D366" }}
                   >
                     <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
@@ -232,10 +232,10 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
                 )}
                 <Link
                   href="#contact"
-                  className="inline-flex items-center gap-2 h-10 px-4 rounded-full text-white text-[13px] font-medium transition-all hover:brightness-105"
+                  className="group inline-flex items-center gap-2 h-10 px-4 rounded-lg text-white text-[13px] font-medium transition-all hover:brightness-105"
                   style={{ background: safeOnAccent(color) }}
                 >
-                  Contact Us <ArrowRight className="h-3.5 w-3.5" />
+                  Contact Us <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </div>
             </RevealOnScroll>
@@ -383,10 +383,10 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
             </div>
             <Link
               href="/sign-in"
-              className="shrink-0 inline-flex items-center gap-2 bg-white font-medium px-7 py-3.5 rounded-full text-[14.5px] transition-all hover:brightness-95 active:scale-[0.98] whitespace-nowrap"
+              className="group shrink-0 inline-flex items-center gap-2 bg-white font-medium px-7 py-3.5 rounded-xl text-[14.5px] transition-all hover:brightness-95 whitespace-nowrap"
               style={{ color: "#0d253d" }}
             >
-              Sign In Now <ArrowRight className="h-4 w-4" />
+              Sign In Now <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
         </RevealOnScroll>
@@ -416,7 +416,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               {[["#about", "About"], ["#notices", "Notices"], ["#contact", "Contact"]].map(([href, label]) => (
                 <a key={href} href={href} className="hover:text-[#0d253d] transition-colors font-medium">{label}</a>
               ))}
-              <Link href="/sign-in" className="text-white font-medium px-4 py-2 rounded-full transition-all hover:brightness-105 text-[12.5px]" style={{ background: safeOnAccent(color) }}>
+              <Link href="/sign-in" className="text-white font-medium px-4 py-2 rounded-lg transition-all hover:brightness-105 text-[12.5px]" style={{ background: safeOnAccent(color) }}>
                 Sign In
               </Link>
             </div>
