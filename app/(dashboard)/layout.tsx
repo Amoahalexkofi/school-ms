@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { Sidebar } from "@/components/Sidebar";
 import { DemoBanner } from "@/components/DemoBanner";
+import { CommandPalette } from "@/components/CommandPalette";
 import { PermissionsProvider } from "@/components/PermissionsProvider";
 import { getUserPermissions } from "@/lib/services/permissions";
 import { getEnabledAddons } from "@/lib/addons";
@@ -65,6 +66,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {isDemo && <DemoBanner />}
           {children}
         </div>
+        <CommandPalette />
       </div>
     </PermissionsProvider>
   );

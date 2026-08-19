@@ -85,7 +85,10 @@ export function Topbar({ title }: { title: string }) {
       <div className="flex items-center gap-1">
 
         {/* Search */}
-        <button className="hidden md:flex items-center gap-2.5 px-3 h-8 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-400 hover:text-slate-600 transition-all text-[12px] mr-1">
+        <button
+          onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
+          className="hidden md:flex items-center gap-2.5 px-3 h-8 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-400 hover:text-slate-600 transition-all text-[12px] mr-1"
+        >
           <Search className="h-3.5 w-3.5" />
           <span className="text-slate-400">Search</span>
           <kbd className="ml-1 text-[10px] border border-slate-200 rounded px-1 py-0.5 font-mono text-slate-300 bg-white">⌘K</kbd>
