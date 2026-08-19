@@ -110,22 +110,20 @@ export function SchoolSiteHero({
         />
       ))}
 
-      {/* Photo overlay — one coherent layered gradient, single dark hue at
-          modulated alpha (no competing tints). A 6-stop vertical vignette
-          breathes the photo back in twice (~22% and ~80%, above and below
-          the text band) so most of the frame reads at true color, darkening
-          only where it must: the nav strip at top, the headline band at
-          center, and the dot-indicator strip at bottom. A soft radial
-          spotlight reinforces legibility right behind the text without
-          adding a second visible layer. */}
+      {/* Photo overlay — a confident, never-too-light vignette. A school's
+          uploaded photo can be anything from a dark graduation shot to a
+          bright, busy classroom wall — the overlay can't gamble on "breathing
+          zones" lining up with whatever is behind the text, so contrast never
+          drops below a safe floor anywhere in the frame. Gently stronger at
+          the very top (nav) and bottom (dots), a touch lighter through the
+          middle third for photo presence, never transparent. Text itself
+          also carries its own shadow below as a second, independent
+          guarantee. */}
       {isImg && (
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: [
-              "linear-gradient(180deg, rgba(13,20,36,0.46) 0%, rgba(13,20,36,0.06) 22%, rgba(13,20,36,0.30) 48%, rgba(13,20,36,0.32) 58%, rgba(13,20,36,0.06) 80%, rgba(13,20,36,0.38) 100%)",
-              "radial-gradient(ellipse 62% 46% at 50% 53%, rgba(13,20,36,0.28) 0%, transparent 75%)",
-            ].join(", "),
+            background: "linear-gradient(180deg, rgba(13,20,36,0.6) 0%, rgba(13,20,36,0.42) 30%, rgba(13,20,36,0.46) 65%, rgba(13,20,36,0.62) 100%)",
           }}
         />
       )}
@@ -155,7 +153,11 @@ export function SchoolSiteHero({
           {/* Headline */}
           <h1
             className="font-montserrat text-white font-normal leading-[1.08] tracking-[-0.025em] mb-5 break-words"
-            style={{ fontSize: "clamp(34px, 5.5vw, 64px)", maxWidth: "100%" }}
+            style={{
+              fontSize: "clamp(34px, 5.5vw, 64px)",
+              maxWidth: "100%",
+              textShadow: isImg ? "0 2px 20px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.35)" : undefined,
+            }}
           >
             {titleLines.map((line, i) => (
               <span key={i} className={i > 0 ? "block" : undefined}>
@@ -166,8 +168,11 @@ export function SchoolSiteHero({
 
           {slide.subtitle && (
             <p
-              className="text-white/70 leading-relaxed max-w-lg mx-auto mb-9"
-              style={{ fontSize: "clamp(14.5px, 1.6vw, 17px)" }}
+              className={isImg ? "text-white/90 leading-relaxed max-w-lg mx-auto mb-9" : "text-white/70 leading-relaxed max-w-lg mx-auto mb-9"}
+              style={{
+                fontSize: "clamp(14.5px, 1.6vw, 17px)",
+                textShadow: isImg ? "0 1px 12px rgba(0,0,0,0.4)" : undefined,
+              }}
             >
               {slide.subtitle}
             </p>
