@@ -4,6 +4,23 @@ import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
+// Stable per-school pick (not random — same school always gets the same
+// line) so schools without a custom motto don't all render byte-identical
+// hero copy.
+const FALLBACK_SUBTITLES = [
+  "Nurturing minds. Building futures.",
+  "Where curiosity thrives and character grows.",
+  "Guiding every student toward their fullest potential.",
+  "A community built on learning, growth, and care.",
+  "Excellence in education, rooted in community.",
+];
+
+function pickBySeed<T>(pool: T[], seed: string): T {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  return pool[hash % pool.length];
+}
+
 interface Slide {
   id: string;
   title: string;
@@ -28,7 +45,7 @@ export function SchoolSiteHero({
     slides.length > 0
       ? slides
       : [
-          { id: "d1", title: `Welcome to\n${schoolName}`, subtitle: motto ?? "Nurturing minds. Building futures.", ctaText: "Explore Portal", ctaLink: "/sign-in" },
+          { id: "d1", title: `Welcome to\n${schoolName}`, subtitle: motto ?? pickBySeed(FALLBACK_SUBTITLES, schoolName), ctaText: "Explore Portal", ctaLink: "/sign-in" },
           { id: "d2", title: "Excellence in\nEducation", subtitle: "Where every student is empowered to reach their fullest potential.", ctaText: "About Us", ctaLink: "#about" },
           { id: "d3", title: "Admissions\nNow Open", subtitle: "Join a thriving school community. Applications welcome.", ctaText: "Contact Us", ctaLink: "#contact" },
         ];
@@ -36,6 +53,15 @@ export function SchoolSiteHero({
   const [idx, setIdx]     = useState(0);
   const [paused, setPaused] = useState(false);
   const [fading, setFading] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mq.matches);
+    const onChange = () => setReducedMotion(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   const go = useCallback((next: number) => {
     setFading(true);
@@ -46,10 +72,10 @@ export function SchoolSiteHero({
   const next = useCallback(() => go((idx + 1) % display.length), [go, idx, display.length]);
 
   useEffect(() => {
-    if (paused || display.length <= 1) return;
+    if (paused || reducedMotion || display.length <= 1) return;
     const t = setInterval(next, 7000);
     return () => clearInterval(t);
-  }, [paused, next, display.length]);
+  }, [paused, reducedMotion, next, display.length]);
 
   const slide = display[idx];
   const isImg = !!slide.imageUrl;
@@ -107,7 +133,7 @@ export function SchoolSiteHero({
 
           {/* Headline */}
           <h1
-            className="text-white font-light leading-[1.08] tracking-[-0.025em] mb-5 break-words"
+            className="font-montserrat text-white font-normal leading-[1.08] tracking-[-0.025em] mb-5 break-words"
             style={{ fontSize: "clamp(34px, 5.5vw, 64px)", maxWidth: "100%" }}
           >
             {titleLines.map((line, i) => (

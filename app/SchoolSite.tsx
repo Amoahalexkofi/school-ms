@@ -19,6 +19,48 @@ interface Settings { aboutTitle?: string | null; aboutText?: string | null; prim
 interface Stats   { students: number; staff: number; classes: number; }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+function hexToRgb(hex: string): [number, number, number] | null {
+  const m = hex.trim().replace(/^#/, "").match(/^[0-9a-f]{6}$/i);
+  if (!m) return null;
+  const n = parseInt(m[0], 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function relativeLuminance([r, g, b]: [number, number, number]): number {
+  const [rs, gs, bs] = [r, g, b].map((c) => {
+    const cs = c / 255;
+    return cs <= 0.03928 ? cs / 12.92 : Math.pow((cs + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+}
+
+// Ensures white text/icons on a school-picked accent color stay WCAG AA
+// readable (>=4.5:1) — schools can pick any hex, including pale ones.
+function safeOnAccent(color: string): string {
+  const rgb = hexToRgb(color);
+  if (!rgb) return color;
+  const contrastWithWhite = (1.05) / (relativeLuminance(rgb) + 0.05);
+  return contrastWithWhite >= 4.5 ? color : `color-mix(in srgb, ${color} 65%, #0d1424)`;
+}
+
+// Stable per-school pick (not random) so schools without custom About copy
+// don't all render byte-identical fallback text.
+function pickBySeed<T>(pool: T[], seed: string): T {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  return pool[hash % pool.length];
+}
+
+function fallbackAboutText(name: string): string {
+  const variants = [
+    `${name} is dedicated to providing quality education in a nurturing, inclusive environment. We combine academic excellence with character development to equip every student for the future.`,
+    `At ${name}, every student is known, challenged, and supported. Our teachers and staff work together to build a learning environment where curiosity and confidence grow side by side.`,
+    `${name} exists to help every learner discover their potential — through strong academics, caring mentorship, and a community that believes in who they're becoming.`,
+    `Education at ${name} goes beyond the classroom. We're building a place where students grow in knowledge, character, and confidence, prepared for whatever comes next.`,
+  ];
+  return pickBySeed(variants, name);
+}
+
 function formatName(raw: string): string {
   // If it looks like a raw subdomain (all lowercase alphanumeric/hyphen), title-case it
   if (/^[a-z0-9-_]+$/.test(raw)) return raw.replace(/[-_]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
@@ -96,15 +138,21 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
 
       {/* ── Notice ticker (below hero, above sections) ── */}
       {activeNotices.length > 0 && (
-        <div className="relative overflow-hidden border-b border-[#e3e8ee]" style={{ background: color }}>
+        <div className="relative overflow-hidden border-b border-[#e3e8ee]" style={{ background: safeOnAccent(color) }}>
           <div className="flex items-center">
             <div className="shrink-0 flex items-center gap-1.5 text-white text-[10.5px] font-bold uppercase tracking-widest px-4 py-2.5 border-r border-white/20 bg-white/10">
               <Bell className="h-3.5 w-3.5" /> Latest
             </div>
             <div className="overflow-hidden flex-1 py-2.5 px-2">
               <div className="flex whitespace-nowrap gap-16" style={{ animation: "marquee 28s linear infinite" }}>
-                {[...activeNotices, ...activeNotices].map((n, i) => (
-                  <span key={`${n.id}-${i}`} className="inline-flex items-center gap-2.5 text-white/90 text-[13px] font-medium">
+                {activeNotices.map((n) => (
+                  <span key={n.id} className="inline-flex items-center gap-2.5 text-white/90 text-[13px] font-medium">
+                    <span className="w-1 h-1 rounded-full bg-white/50 shrink-0" />
+                    {n.title}
+                  </span>
+                ))}
+                {activeNotices.map((n) => (
+                  <span key={`${n.id}-repeat`} aria-hidden="true" className="marquee-repeat inline-flex items-center gap-2.5 text-white/90 text-[13px] font-medium">
                     <span className="w-1 h-1 rounded-full bg-white/50 shrink-0" />
                     {n.title}
                   </span>
@@ -125,7 +173,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               stats.classes  > 0 && { icon: BookOpen,value: String(stats.classes),                                                   label: "Classes / Sections" },
             ] as any[]).filter(Boolean).map(({ icon: Icon, value, label }: any) => (
               <div key={label} className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white" style={{ background: color }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white" style={{ background: safeOnAccent(color) }}>
                   <Icon className="h-4.5 w-4.5" />
                 </div>
                 <div>
@@ -148,13 +196,11 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] mb-4" style={{ color }}>
                 About Us
               </p>
-              <h2 className="font-light text-[#0d253d] tracking-[-0.02em] leading-[1.12] mb-5" style={{ fontSize: "clamp(26px, 3.2vw, 38px)" }}>
+              <h2 className="font-montserrat font-normal text-[#0d253d] tracking-[-0.02em] leading-[1.12] mb-5" style={{ fontSize: "clamp(26px, 3.2vw, 38px)" }}>
                 {settings.aboutTitle ?? `Welcome to ${name}`}
               </h2>
               <p className="text-[#64748d] text-[15px] leading-[1.75] mb-6">
-                {settings.aboutText ??
-                  `${name} is dedicated to providing quality education in a nurturing, inclusive environment. ` +
-                  `We combine academic excellence with character development to equip every student for the future.`}
+                {settings.aboutText ?? fallbackAboutText(name)}
               </p>
 
               {profile?.motto && (
@@ -183,7 +229,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
                 <Link
                   href="#contact"
                   className="inline-flex items-center gap-2 h-10 px-4 rounded-full text-white text-[13px] font-medium transition-all hover:brightness-105"
-                  style={{ background: color }}
+                  style={{ background: safeOnAccent(color) }}
                 >
                   Contact Us <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
@@ -211,8 +257,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
 
               {/* Floating card — only if location or phone exists */}
               {(location || profile?.phone) && (
-                <div className="absolute -bottom-5 -right-4 sm:-right-6 bg-white rounded-2xl px-5 py-4 border border-[#e3e8ee]"
-                  style={{ boxShadow: `0 8px 28px ${color}26` }}>
+                <div className="absolute -bottom-5 -right-4 sm:-right-6 bg-white rounded-2xl px-5 py-4 border border-[#e3e8ee]">
                   {location && <p className="text-[10.5px] font-bold text-[#64748d] uppercase tracking-widest mb-1">Location</p>}
                   <p className="text-[13.5px] font-semibold text-[#0d253d] leading-snug max-w-[160px]">
                     {profile?.address ?? location}
@@ -232,7 +277,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color }}>
                 Announcements
               </p>
-              <h2 className="font-light text-[#0d253d] tracking-[-0.02em]" style={{ fontSize: "clamp(22px, 2.8vw, 32px)" }}>
+              <h2 className="font-montserrat font-normal text-[#0d253d] tracking-[-0.02em]" style={{ fontSize: "clamp(22px, 2.8vw, 32px)" }}>
                 Notice Board
               </h2>
             </div>
@@ -262,61 +307,54 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
       {/* ── Contact ── */}
       <section id="contact" className="py-16 sm:py-24 bg-white border-t border-[#e3e8ee]">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color }}>
-              Contact Us
-            </p>
-            <h2 className="font-light text-[#0d253d] tracking-[-0.02em]" style={{ fontSize: "clamp(22px, 2.8vw, 32px)" }}>
-              Get in Touch
-            </h2>
-            <p className="text-[#64748d] text-[15px] mt-3 max-w-md mx-auto">
-              We&apos;d love to hear from you. Reach out through any of the channels below.
-            </p>
-          </div>
+          {contactItems.length > 0 && (
+            <>
+              <div className="text-center mb-12">
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color }}>
+                  Contact Us
+                </p>
+                <h2 className="font-montserrat font-normal text-[#0d253d] tracking-[-0.02em]" style={{ fontSize: "clamp(22px, 2.8vw, 32px)" }}>
+                  Get in Touch
+                </h2>
+                <p className="text-[#64748d] text-[15px] mt-3 max-w-md mx-auto">
+                  We&apos;d love to hear from you. Reach out through any of the channels below.
+                </p>
+              </div>
 
-          {contactItems.length > 0 ? (
-            <div className={`grid gap-4 max-w-4xl mx-auto mb-14 ${
-              contactItems.length === 1 ? "grid-cols-1 max-w-xs" :
-              contactItems.length === 2 ? "sm:grid-cols-2 max-w-2xl" :
-              contactItems.length === 3 ? "sm:grid-cols-3 max-w-3xl" :
-              "sm:grid-cols-2 lg:grid-cols-4"
-            }`}>
-              {contactItems.map(item => (
-                <div key={item.label} className="text-center p-6 rounded-2xl border border-[#e3e8ee] hover:border-[#d5dde6] transition-colors" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-4 text-white" style={{ background: color }}>
-                    <item.icon className="h-4.5 w-4.5" />
+              <div className={`grid gap-4 max-w-4xl mx-auto mb-14 ${
+                contactItems.length === 1 ? "grid-cols-1 max-w-xs" :
+                contactItems.length === 2 ? "sm:grid-cols-2 max-w-2xl" :
+                contactItems.length === 3 ? "sm:grid-cols-3 max-w-3xl" :
+                "sm:grid-cols-2 lg:grid-cols-4"
+              }`}>
+                {contactItems.map(item => (
+                  <div key={item.label} className="text-center p-6 rounded-2xl border border-[#e3e8ee] hover:border-[#d5dde6] transition-colors">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-4 text-white" style={{ background: safeOnAccent(color) }}>
+                      <item.icon className="h-4.5 w-4.5" />
+                    </div>
+                    <p className="text-[10.5px] font-bold text-[#64748d] uppercase tracking-widest mb-2">{item.label}</p>
+                    {item.href ? (
+                      <a
+                        href={item.href}
+                        className="text-[13.5px] font-medium text-[#273951] hover:underline break-words"
+                        target={item.href.startsWith("http") ? "_blank" : undefined}
+                        rel="noopener noreferrer"
+                      >
+                        {item.value}
+                      </a>
+                    ) : (
+                      <p className="text-[13.5px] font-medium text-[#273951] break-words leading-snug">{item.value}</p>
+                    )}
                   </div>
-                  <p className="text-[10.5px] font-bold text-[#64748d] uppercase tracking-widest mb-2">{item.label}</p>
-                  {item.href ? (
-                    <a
-                      href={item.href}
-                      className="text-[13.5px] font-medium text-[#273951] hover:underline break-words"
-                      target={item.href.startsWith("http") ? "_blank" : undefined}
-                      rel="noopener noreferrer"
-                    >
-                      {item.value}
-                    </a>
-                  ) : (
-                    <p className="text-[13.5px] font-medium text-[#273951] break-words leading-snug">{item.value}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center mb-14">
-              <p className="text-[#94a3b8] text-[14px]">
-                Contact details not yet configured.{" "}
-                <a href="/sign-in" className="font-semibold hover:underline" style={{ color }}>
-                  Sign in to update settings →
-                </a>
-              </p>
-            </div>
+                ))}
+              </div>
+            </>
           )}
 
           {/* Sign-in CTA banner */}
           <div className="rounded-2xl px-8 py-12 sm:px-14 flex flex-col sm:flex-row items-center justify-between gap-6" style={{ background: deepTone }}>
             <div>
-              <h3 className="font-light text-white tracking-[-0.02em] leading-tight mb-2" style={{ fontSize: "clamp(20px, 2.4vw, 28px)" }}>
+              <h3 className="font-montserrat font-normal text-white tracking-[-0.02em] leading-tight mb-2" style={{ fontSize: "clamp(20px, 2.4vw, 28px)" }}>
                 Ready to access your portal?
               </h3>
               <p className="text-white/65 text-[14.5px]">
@@ -343,7 +381,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               {profile?.logo ? (
                 <img src={profile.logo} alt={name} className="w-8 h-8 rounded-lg object-cover" />
               ) : (
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold" style={{ background: color }}>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold" style={{ background: safeOnAccent(color) }}>
                   {initials}
                 </div>
               )}
@@ -358,7 +396,7 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               {[["#about", "About"], ["#notices", "Notices"], ["#contact", "Contact"]].map(([href, label]) => (
                 <a key={href} href={href} className="hover:text-[#0d253d] transition-colors font-medium">{label}</a>
               ))}
-              <Link href="/sign-in" className="text-white font-medium px-4 py-2 rounded-full transition-all hover:brightness-105 text-[12.5px]" style={{ background: color }}>
+              <Link href="/sign-in" className="text-white font-medium px-4 py-2 rounded-full transition-all hover:brightness-105 text-[12.5px]" style={{ background: safeOnAccent(color) }}>
                 Sign In
               </Link>
             </div>

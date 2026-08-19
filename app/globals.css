@@ -129,6 +129,15 @@
   will-change: transform;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [style*="animation: marquee"] {
+    animation: none !important;
+  }
+  .marquee-repeat {
+    display: none;
+  }
+}
+
 /* Calm entrance — load-based, reduced-motion safe.
    The opacity:0 start lives INSIDE the no-preference query, so when motion
    is reduced (or the animation never runs) content stays fully visible and

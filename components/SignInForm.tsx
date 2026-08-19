@@ -4,13 +4,13 @@ import { useState } from "react";
 import { Eye, EyeOff, AlertCircle, ArrowRight } from "lucide-react";
 
 interface SignInPayload { email: string; password: string; }
-interface Props { onSubmit: (payload: SignInPayload) => Promise<void>; accentColor?: string; }
+interface Props { onSubmit: (payload: SignInPayload) => Promise<void>; accentColor?: string; supportContact?: string; }
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
+export function SignInForm({ onSubmit, accentColor = "#6366f1", supportContact }: Props) {
   const [email, setEmail]           = useState("");
   const [password, setPassword]     = useState("");
   const [showPw, setShowPw]         = useState(false);
@@ -61,9 +61,18 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="signin-password" className="block text-[11px] font-bold text-slate-400 tracking-[0.1em] uppercase">
-          Password
-        </label>
+        <div className="flex items-center justify-between">
+          <label htmlFor="signin-password" className="block text-[11px] font-bold text-slate-400 tracking-[0.1em] uppercase">
+            Password
+          </label>
+          <a
+            href="/forgot-password"
+            className="text-[12px] font-semibold transition-colors"
+            style={{ color: accentColor }}
+          >
+            Forgot password?
+          </a>
+        </div>
         <div className="relative">
           <input
             id="signin-password"
@@ -78,7 +87,6 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
           <button
             type="button"
             onClick={() => setShowPw(s => !s)}
-            tabIndex={-1}
             aria-label={showPw ? "Hide password" : "Show password"}
             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
           >
@@ -105,6 +113,12 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1" }: Props) {
           <>Sign in <ArrowRight className="h-4 w-4" /></>
         )}
       </button>
+
+      {supportContact && (
+        <p className="text-center text-[12.5px] text-slate-400">
+          Having trouble signing in? Contact {supportContact}
+        </p>
+      )}
     </form>
   );
 }

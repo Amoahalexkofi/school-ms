@@ -28,6 +28,10 @@ function formatName(raw: string): string {
   return raw;
 }
 
+function firstNonEmpty(...values: (string | null | undefined)[]): string | undefined {
+  return values.find((v) => v && v.trim().length > 0) ?? undefined;
+}
+
 function withCountryCode(raw: string): string {
   const trimmed = raw.trim();
   if (trimmed.startsWith("+")) return trimmed;
@@ -75,12 +79,12 @@ export default async function SignInRoute() {
             style={{ background: "linear-gradient(to top, rgba(0,0,0,0.25), transparent)" }} />
 
           {/* Large decorative initial — bottom right, very faint */}
-          <div className="absolute -bottom-6 -right-4 pointer-events-none select-none font-black text-white leading-none"
+          <div className="hidden lg:block absolute -bottom-6 -right-4 pointer-events-none select-none font-black text-white leading-none"
             style={{ fontSize: 180, opacity: 0.06 }}>
             {initials[0] ?? "S"}
           </div>
 
-          <div className="relative flex flex-col h-full px-10 xl:px-12 py-10 min-h-[520px] lg:min-h-0">
+          <div className="relative flex flex-col h-full px-6 sm:px-10 xl:px-12 py-6 lg:py-10 min-h-[280px] lg:min-h-0">
 
             {/* Back to website */}
             <div className="shrink-0">
@@ -90,30 +94,30 @@ export default async function SignInRoute() {
             </div>
 
             {/* Main identity block */}
-            <div className="flex-1 flex flex-col justify-center py-8">
+            <div className="flex-1 flex flex-col justify-center py-4 lg:py-8">
 
               {/* Logo */}
-              <div className="mb-7">
+              <div className="mb-4 lg:mb-7">
                 {profile?.logo ? (
                   <img src={profile.logo} alt={name}
-                    className="w-24 h-24 rounded-full object-cover"
+                    className="w-14 h-14 lg:w-24 lg:h-24 rounded-full object-cover"
                     style={{ boxShadow: "0 0 0 3px rgba(255,255,255,0.3), 0 8px 32px rgba(0,0,0,0.3)" }} />
                 ) : (
                   <div
-                    className="w-24 h-24 rounded-full flex items-center justify-center"
+                    className="w-14 h-14 lg:w-24 lg:h-24 rounded-full flex items-center justify-center"
                     style={{
                       background: "rgba(255,255,255,0.18)",
                       border: "2px solid rgba(255,255,255,0.35)",
                       boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
                     }}
                   >
-                    <span className="text-white font-black text-[34px] tracking-tight">{initials}</span>
+                    <span className="text-white font-black text-[20px] lg:text-[34px] tracking-tight">{initials}</span>
                   </div>
                 )}
               </div>
 
               {/* Name */}
-              <h1 className="text-white font-black tracking-tight leading-[1.05] mb-1"
+              <h1 className="font-montserrat text-white font-bold tracking-tight leading-[1.05] mb-1"
                 style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}>
                 {name}
               </h1>
@@ -167,7 +171,7 @@ export default async function SignInRoute() {
             </div>
 
             {/* Portal access row */}
-            <div className="shrink-0 mb-6">
+            <div className="hidden lg:block shrink-0 mb-6">
               <p className="text-white/35 text-[10px] font-bold uppercase tracking-[0.18em] mb-3">Portal access for</p>
               <div className="flex gap-2 flex-wrap">
                 {["Students", "Parents", "Staff", "Admin"].map(role => (
@@ -210,8 +214,7 @@ export default async function SignInRoute() {
 
           {/* Form center */}
           <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12">
-            <div className="w-full max-w-[460px] bg-white rounded-2xl px-9 py-10"
-              style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04), 0 20px 48px rgba(0,0,0,0.08)" }}>
+            <div className="w-full max-w-[460px] bg-white rounded-2xl px-9 py-10 border border-slate-200/80">
 
               {/* School identity echo on the right */}
               <div className="flex items-center gap-3 mb-8">
@@ -232,7 +235,7 @@ export default async function SignInRoute() {
 
               {/* Heading */}
               <div className="mb-8">
-                <h2 className="text-[32px] font-black text-slate-900 tracking-tight leading-none">
+                <h2 className="font-montserrat text-[32px] font-bold text-slate-900 tracking-tight leading-none">
                   Sign in
                 </h2>
                 <p className="text-slate-400 text-[14px] mt-2">
@@ -240,7 +243,14 @@ export default async function SignInRoute() {
                 </p>
               </div>
 
-              <SignInPage tenant={tenant} accentColor={color} />
+              <SignInPage
+                tenant={tenant}
+                accentColor={color}
+                supportContact={firstNonEmpty(
+                  profile?.phone ? withCountryCode(profile.phone) : undefined,
+                  profile?.email
+                )}
+              />
 
               {/* Back link */}
               <div className="mt-8 pt-6 border-t border-slate-100">
