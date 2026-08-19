@@ -42,12 +42,12 @@ export function SchoolSiteNav({ name, logo, initials, color, hasNotices }: NavPr
   return (
     <>
       <nav
-        className="fixed top-0 inset-x-0 z-50 transition-all duration-200"
-        style={
-          scrolled
-            ? { background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", borderBottom: "1px solid #e3e8ee" }
-            : { background: "transparent" }
-        }
+        className="fixed top-0 inset-x-0 z-50 transition-shadow duration-200"
+        style={{
+          background: `color-mix(in srgb, ${color} 22%, #0d1424)`,
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: scrolled ? "0 4px 20px rgba(0,0,0,0.18)" : "none",
+        }}
       >
         <div className="max-w-6xl mx-auto px-6 h-[60px] flex items-center justify-between">
           {/* Logo */}
@@ -62,9 +62,7 @@ export function SchoolSiteNav({ name, logo, initials, color, hasNotices }: NavPr
                 {initials}
               </div>
             )}
-            <span
-              className={`font-semibold text-[14.5px] leading-tight tracking-tight transition-colors hidden sm:block ${scrolled ? "text-[#0d253d]" : "text-white"}`}
-            >
+            <span className="font-semibold text-[14.5px] leading-tight tracking-tight text-white hidden sm:block">
               {name}
             </span>
           </Link>
@@ -75,11 +73,7 @@ export function SchoolSiteNav({ name, logo, initials, color, hasNotices }: NavPr
               <a
                 key={href}
                 href={href}
-                className={`text-[13.5px] font-medium px-3.5 py-2 rounded-full transition-all ${
-                  scrolled
-                    ? "text-[#273951] hover:text-[#0d253d] hover:bg-[#f6f9fc]"
-                    : "text-white/85 hover:text-white hover:bg-white/10"
-                }`}
+                className="text-[13.5px] font-medium px-3.5 py-2 rounded-full transition-all text-white/85 hover:text-white hover:bg-white/10"
               >
                 {label}
               </a>
@@ -90,21 +84,15 @@ export function SchoolSiteNav({ name, logo, initials, color, hasNotices }: NavPr
           <div className="flex items-center gap-2">
             <Link
               href="/sign-in"
-              className="hidden sm:inline-flex items-center gap-1.5 h-9 px-4 rounded-full font-medium text-[13.5px] transition-all active:scale-95 shrink-0"
-              style={
-                scrolled
-                  ? { background: color, color: "#fff" }
-                  : { background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.28)", color: "#fff", backdropFilter: "blur(8px)" }
-              }
+              className="hidden sm:inline-flex items-center gap-1.5 h-9 px-4 rounded-full font-medium text-[13.5px] transition-all active:scale-95 shrink-0 text-white"
+              style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.28)" }}
             >
               Sign In <ArrowRight className="h-3.5 w-3.5" />
             </Link>
 
             <button
               onClick={() => setMobileOpen(v => !v)}
-              className={`md:hidden w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                scrolled ? "text-[#273951] hover:bg-[#f6f9fc]" : "text-white hover:bg-white/10"
-              }`}
+              className="md:hidden w-10 h-10 rounded-xl flex items-center justify-center transition-colors text-white hover:bg-white/10"
               aria-label="Toggle menu"
               aria-expanded={mobileOpen}
             >
@@ -119,7 +107,7 @@ export function SchoolSiteNav({ name, logo, initials, color, hasNotices }: NavPr
         className={`fixed inset-0 z-40 flex flex-col transition-opacity duration-200 md:hidden ${
           mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
-        style={{ background: "rgba(13,37,61,0.97)", backdropFilter: "blur(16px)" }}
+        style={{ background: `color-mix(in srgb, ${color} 22%, #0d1424)`, backdropFilter: "blur(16px)" }}
       >
         <div className="flex items-center justify-between px-6 h-[60px]">
           <div className="flex items-center gap-2.5">
