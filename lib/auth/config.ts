@@ -77,11 +77,14 @@ export const authConfig: NextAuthConfig = {
           const sql = neon(process.env.DATABASE_URL!);
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const result = await (sql as any).query(
-            `SELECT u.id, u.email, u.password, u.role, u."isActive" AS "userActive",
+            `SELECT u.id, u.email, u.password, u.role, u.username, u."isActive" AS "userActive",
                     u."failedLoginAttempts", u."lockedUntil",
-                    s."isActive" AS "studentActive"
+                    s."isActive" AS "studentActive",
+                    s."firstName" AS "studentFirstName", s."lastName" AS "studentLastName",
+                    st."firstName" AS "staffFirstName", st."lastName" AS "staffLastName"
              FROM "${schema}"."User" u
              LEFT JOIN "${schema}"."Student" s ON s."userId" = u.id
+             LEFT JOIN "${schema}"."Staff" st ON st."userId" = u.id
              WHERE u.email = $1 LIMIT 1`,
             [credentials.email as string]
           );
@@ -126,7 +129,11 @@ export const authConfig: NextAuthConfig = {
             );
           }
 
-          return { id: user.id as string, email: user.email as string, role: user.role as string };
+          const staffName   = user.staffFirstName   ? `${user.staffFirstName} ${user.staffLastName ?? ""}`.trim()   : null;
+          const studentName = user.studentFirstName ? `${user.studentFirstName} ${user.studentLastName ?? ""}`.trim() : null;
+          const name = staffName || studentName || (user.username as string) || undefined;
+
+          return { id: user.id as string, email: user.email as string, role: user.role as string, name };
         } catch (e) {
           console.error("[authorize] error:", e);
           return null;
