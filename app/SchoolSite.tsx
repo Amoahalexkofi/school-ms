@@ -238,15 +238,15 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
 
             {/* Visual */}
             <div className="relative">
-              {/* Soft brand-colored glow behind the photo — depth without a shadow */}
+              {/* Solid brand-color card, stacked behind and peeking out top-right */}
               <div
-                className="absolute -inset-5 rounded-[32px] opacity-50 blur-2xl pointer-events-none"
-                style={{ background: `radial-gradient(circle at 28% 25%, ${color}, transparent 68%)` }}
+                className="absolute -top-4 -right-4 sm:-top-5 sm:-right-5 w-full h-full rounded-2xl"
+                style={{ background: color }}
               />
 
               <div
-                className="rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center relative border"
-                style={{ background: `linear-gradient(135deg, ${color}e6 0%, ${color}b3 100%)`, borderColor: `${color}30` }}
+                className="rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center relative border border-white/25"
+                style={{ background: `linear-gradient(135deg, ${color}e6 0%, ${color}b3 100%)` }}
               >
                 {profile?.coverImage ? (
                   <img src={profile.coverImage} alt={name} className="w-full h-full object-cover" />
