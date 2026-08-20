@@ -25,7 +25,18 @@ function createTransporter(cfg: EmailConfig) {
     port: cfg.smtpPort || 587,
     secure: cfg.smtpSecure === "ssl",
     auth: { user: cfg.smtpUsername, pass: cfg.smtpPassword },
+    // Vercel's serverless network layer intermittently throws
+    // "getaddrinfo EBUSY" on raw SMTP connections — DNS-resolver resource
+    // contention in the sandbox, not a bad host. Forcing IPv4 (most mail
+    // hosts have no AAAA record anyway) and bounding the connect phase
+    // avoids hanging on it; the retry in sendEmail() below covers the rest.
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
   });
+}
+
+function isTransientDnsError(err: any): boolean {
+  return err?.code === "EBUSY" || err?.code === "EAI_AGAIN" || err?.code === "ETIMEDOUT";
 }
 
 export async function sendEmail(
@@ -42,7 +53,15 @@ export async function sendEmail(
     const transporter = createTransporter(cfg);
     const from = `"${cfg.fromName || "Skula"}" <${cfg.fromEmail || cfg.smtpUsername}>`;
 
-    await transporter.sendMail({ from, ...payload });
+    try {
+      await transporter.sendMail({ from, ...payload });
+    } catch (err: any) {
+      // One retry for the transient DNS/connection failures Vercel's
+      // sandbox occasionally throws on raw SMTP — a real bad host or bad
+      // credentials fails the same way twice, so this costs nothing there.
+      if (!isTransientDnsError(err)) throw err;
+      await transporter.sendMail({ from, ...payload });
+    }
     return { ok: true };
   } catch (err: any) {
     console.error("[email] Send failed:", err.message);
