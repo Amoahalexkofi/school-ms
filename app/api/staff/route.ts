@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
     const leaveTypes = await (db as any).leaveType.findMany({ where: { isActive: true } });
 
     const staff = await (db as any).$transaction(async (tx: any) => {
-      const user = await tx.user.create({ data: { email, username, password, role } });
+      const user = await tx.user.create({ data: { email, username, password, role, mustChangePassword: true } });
 
       const s = await tx.staff.create({
         data: {
@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
     });
 
     await audit("create", "staff", staff.id, { role: body.role ?? "TEACHER" });
-    return NextResponse.json({ ...staff, tempPassword }, { status: 201 });
+    return NextResponse.json({ ...staff, tempPassword, email }, { status: 201 });
   } catch (err: any) {
     console.error(err);
     return NextResponse.json({ error: err.message || "Failed to create staff" }, { status: 500 });

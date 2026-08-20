@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Pencil, Ban, CheckCircle } from "lucide-react";
+import { Pencil, Ban, CheckCircle, KeyRound } from "lucide-react";
 import { AvatarUpload } from "@/components/AvatarUpload";
 
 export function StaffAvatar({ staffId, image, initials }: { staffId: string; image?: string | null; initials: string }) {
@@ -90,6 +90,21 @@ export function StaffProfileActions({ staff, departments, designations }: Props)
   });
 
   const [disableNote, setDisableNote] = useState("");
+
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetResult, setResetResult] = useState<{ tempPassword: string; email: string } | null>(null);
+  const [resetting, setResetting] = useState(false);
+
+  async function handleResetPassword() {
+    setResetting(true); setError("");
+    try {
+      const res = await fetch(`/api/staff/${staff.id}/reset-password`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to reset password");
+      setResetResult({ tempPassword: data.tempPassword, email: data.email });
+    } catch (e: any) { setError(e.message); }
+    finally { setResetting(false); }
+  }
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
@@ -186,6 +201,9 @@ export function StaffProfileActions({ staff, departments, designations }: Props)
       <Button size="sm" variant="outline" onClick={() => { setError(""); setEditOpen(true); }}>
         <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
       </Button>
+      <Button size="sm" variant="outline" onClick={() => { setError(""); setResetResult(null); setResetOpen(true); }}>
+        <KeyRound className="h-3.5 w-3.5 mr-1" /> Reset Password
+      </Button>
       {staff.isActive ? (
         <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
           onClick={() => { setError(""); setDisableOpen(true); }}>
@@ -242,6 +260,50 @@ export function StaffProfileActions({ staff, departments, designations }: Props)
             <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
             <Button disabled={loading} onClick={handleEdit}>{loading ? "Saving…" : "Save Changes"}</Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={resetOpen} onOpenChange={(o) => !o && setResetOpen(false)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reset Password — {staff.firstName} {staff.lastName}</DialogTitle>
+          </DialogHeader>
+          {resetResult ? (
+            <div>
+              <p className="text-sm text-gray-500">
+                Share these with {staff.firstName} so they can log in. This password won't be shown again.
+              </p>
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 my-3 space-y-3">
+                <div>
+                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Login email</p>
+                  <p className="text-sm font-mono text-slate-900 mt-0.5 select-all">{resetResult.email}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Temporary password</p>
+                  <p className="text-[18px] font-bold text-slate-900 font-mono mt-0.5 select-all">{resetResult.tempPassword}</p>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button onClick={() => setResetOpen(false)}>Done</Button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm text-gray-500">
+                This invalidates {staff.firstName}'s current password and generates a new temporary one.
+                Use this if they've lost their login and their email can't receive a "Forgot password" reset link
+                (e.g. a placeholder @school.local address).
+              </p>
+              {error && <p className="text-sm text-red-600 mt-2 bg-red-50 px-3 py-2 rounded">{error}</p>}
+              <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline" onClick={() => setResetOpen(false)}>Cancel</Button>
+                <Button disabled={resetting} onClick={handleResetPassword}>
+                  {resetting ? "Resetting…" : "Generate New Password"}
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 

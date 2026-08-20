@@ -94,7 +94,7 @@ export default async function StaffProfilePage({
                     ["Date of Birth",    dob],
                     ["Date of Joining",  joined],
                     ["Contact",      staff.contactNo],
-                    ["Email",        staff.user?.email],
+                    ["Login Email",  staff.user?.email],
                   ].map(([label, value]) => (
                     <div key={label as string}>
                       <p className="text-xs text-gray-400 uppercase tracking-wide">{label}</p>

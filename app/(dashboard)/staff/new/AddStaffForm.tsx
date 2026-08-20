@@ -78,7 +78,7 @@ export function AddStaffForm({ departments, designations }: Props) {
   const [section, setSection] = useState<Section>("Personal Info");
   const [saving, setSaving]   = useState(false);
   const [error, setError]     = useState("");
-  const [created, setCreated] = useState<{ name: string; tempPassword: string } | null>(null);
+  const [created, setCreated] = useState<{ name: string; tempPassword: string; email: string } | null>(null);
 
   const set = (k: keyof typeof empty) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -103,7 +103,7 @@ export function AddStaffForm({ departments, designations }: Props) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed");
-      setCreated({ name: `${form.firstName} ${form.lastName}`.trim(), tempPassword: data.tempPassword ?? "" });
+      setCreated({ name: `${form.firstName} ${form.lastName}`.trim(), tempPassword: data.tempPassword ?? "", email: data.email ?? "" });
       router.refresh();
     } catch (e: any) {
       setError(e.message);
@@ -120,10 +120,19 @@ export function AddStaffForm({ departments, designations }: Props) {
           </div>
           <h1 className="text-[18px] font-semibold text-slate-900">Staff member created</h1>
           <p className="text-[13px] text-slate-500 mt-1">{created.name} has been added.</p>
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 my-5 text-left">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Temporary password</p>
-            <p className="text-[18px] font-bold text-slate-900 font-mono mt-1 select-all">{created.tempPassword || "—"}</p>
-            <p className="text-[12px] text-slate-500 mt-2">Share this with the staff member to log in. They can change it anytime via “Forgot password”.</p>
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 my-5 text-left space-y-3">
+            <div>
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Login email</p>
+              <p className="text-sm font-mono text-slate-900 mt-1 select-all">{created.email || "—"}</p>
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Temporary password</p>
+              <p className="text-[18px] font-bold text-slate-900 font-mono mt-1 select-all">{created.tempPassword || "—"}</p>
+            </div>
+            <p className="text-[12px] text-slate-500">
+              Share both with the staff member — this password won't be shown again. If they didn't get a real email
+              address, "Forgot password" won't work for them; use Reset Password on their profile instead.
+            </p>
           </div>
           <div className="flex gap-2">
             <button onClick={() => { setCreated(null); window.location.reload(); }}
