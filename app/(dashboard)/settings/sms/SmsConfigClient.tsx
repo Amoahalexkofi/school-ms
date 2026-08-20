@@ -31,12 +31,10 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
 
   const activeProvider = PROVIDERS.find((p) => getConfig(p.value).isActive);
 
-  // Only one provider needs its fields visible at a time — the active one by
-  // default. Everything else stays collapsed to a single summary row until
-  // opened, so the page reads as "here's the live gateway" instead of three
-  // competing forms.
+  // All three stay open side by side — each keeps its own column, so there's
+  // no click-to-reveal step before you can compare or edit any of them.
   const [expanded, setExpanded] = useState<Set<string>>(
-    () => new Set(activeProvider ? [activeProvider.value] : [])
+    () => new Set(PROVIDERS.map((p) => p.value))
   );
 
   function toggleExpanded(provider: string) {
@@ -167,7 +165,7 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
           const isOpen = expanded.has(prov.value);
 
           return (
-            <Card key={prov.value} className={`${isOpen ? "md:col-span-3" : ""} ${isActive ? "border-green-400 shadow-sm" : ""}`}>
+            <Card key={prov.value} className={isActive ? "border-green-400 shadow-sm" : ""}>
               <button
                 type="button"
                 onClick={() => toggleExpanded(prov.value)}
@@ -184,7 +182,7 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
 
               {isOpen && (
                 <CardContent className="pt-0 pb-5 border-t border-slate-100">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                  <div className="grid grid-cols-1 gap-4 pt-4">
                     {prov.fields.includes("apiKey") && (
                       <div>
                         <Label>API Key</Label>
