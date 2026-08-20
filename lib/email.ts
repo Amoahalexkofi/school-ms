@@ -39,20 +39,55 @@ function isTransientDnsError(err: any): boolean {
   return err?.code === "EBUSY" || err?.code === "EAI_AGAIN" || err?.code === "ETIMEDOUT";
 }
 
+// A raw connection from a small SMTP host that firewalls cloud/datacenter IP
+// ranges (confirmed: some hosting providers silently drop these — ETIMEDOUT,
+// no RST, no response at all). Resend delivers over HTTPS instead of a raw
+// socket, so it isn't subject to that block. It still can't send AS a domain
+// it hasn't verified (that's how anti-spoofing works everywhere, not a
+// Skula limitation) — until a school's domain is verified in the one
+// platform Resend account, this fallback will fail too, harmlessly, and
+// start working the moment that domain is verified with no code changes.
+async function sendViaResend(
+  payload: EmailPayload,
+  from: string
+): Promise<{ ok: boolean; error?: string }> {
+  const apiKey = process.env.PLATFORM_RESEND_API_KEY;
+  if (!apiKey) return { ok: false, error: "Resend not configured" };
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from,
+        to: Array.isArray(payload.to) ? payload.to : [payload.to],
+        subject: payload.subject,
+        html: payload.html,
+        text: payload.text,
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok: false, error: data?.message ?? `Resend HTTP ${res.status}` };
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, error: err.message };
+  }
+}
+
 export async function sendEmail(
   db: PrismaClient,
   payload: EmailPayload
 ): Promise<{ ok: boolean; error?: string }> {
+  const cfg = decryptSecrets(await (db as any).emailConfig.findFirst(), ["smtpPassword"]);
+  if (!cfg?.isActive || !cfg.smtpHost) {
+    console.log("[email] SMTP not configured — skipping send to", payload.to);
+    return { ok: false, error: "SMTP not configured" };
+  }
+
+  const from = `"${cfg.fromName || "Skula"}" <${cfg.fromEmail || cfg.smtpUsername}>`;
+  let smtpError: string | undefined;
+
   try {
-    const cfg = decryptSecrets(await (db as any).emailConfig.findFirst(), ["smtpPassword"]);
-    if (!cfg?.isActive || !cfg.smtpHost) {
-      console.log("[email] SMTP not configured — skipping send to", payload.to);
-      return { ok: false, error: "SMTP not configured" };
-    }
-
     const transporter = createTransporter(cfg);
-    const from = `"${cfg.fromName || "Skula"}" <${cfg.fromEmail || cfg.smtpUsername}>`;
-
     try {
       await transporter.sendMail({ from, ...payload });
     } catch (err: any) {
@@ -68,10 +103,16 @@ export async function sendEmail(
     // ETIMEDOUT = packets went nowhere/silently dropped, EAUTH = bad
     // credentials, ...) — surface it, since "Connection timeout" alone
     // isn't enough to tell a firewall block from a genuinely dead host.
-    console.error("[email] Send failed:", err.code, err.command, err.message);
+    console.error("[email] SMTP send failed:", err.code, err.command, err.message);
     const detail = err.code ? ` (${err.code})` : "";
-    return { ok: false, error: `${err.message}${detail}` };
+    smtpError = `${err.message}${detail}`;
   }
+
+  const viaResend = await sendViaResend(payload, from);
+  if (viaResend.ok) return { ok: true };
+
+  console.error("[email] Resend fallback also failed:", viaResend.error);
+  return { ok: false, error: smtpError };
 }
 
 // ─── Template helpers ────────────────────────────────────────────────────────
