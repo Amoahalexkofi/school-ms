@@ -21,6 +21,7 @@ export type PermCat = {
 
 export type PermGroup = {
   id: number;
+  name: string;
   shortCode: string;
   categories: PermCat[];
 };
