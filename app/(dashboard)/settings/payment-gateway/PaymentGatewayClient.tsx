@@ -108,6 +108,7 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
         </div>
       )}
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {GATEWAYS.map(def => {
         const g    = gateways.find(x => x.paymentType === def.key);
         const isOn = g?.isActive ?? false;
@@ -192,6 +193,7 @@ export function PaymentGatewayClient({ gateways: initial }: { gateways: Gateway[
           </Card>
         );
       })}
+      </div>
     </main>
   );
 }

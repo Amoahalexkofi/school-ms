@@ -72,7 +72,6 @@ export function WhatsAppConfigClient({ configs: initial }: { configs: any[] }) {
   const [saving, setSaving]       = useState<string | null>(null);
   const [saved, setSaved]         = useState<string | null>(null);
   const [showPass, setShowPass]   = useState<Record<string, boolean>>({});
-  const [expanded, setExpanded]   = useState<string | null>(null);
   const [testPhone, setTestPhone] = useState("");
   const [testing, setTesting]     = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; msg: string } | null>(null);
@@ -202,15 +201,14 @@ export function WhatsAppConfigClient({ configs: initial }: { configs: any[] }) {
       </Card>
 
       {/* Provider cards */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {PROVIDERS.map(prov => {
           const cfg      = getConfig(prov.value);
           const isActive = cfg.isActive;
-          const open     = expanded === prov.value || isActive;
 
           return (
             <Card key={prov.value} className={`transition-all ${isActive ? "border-green-400 shadow-md" : "border-slate-200"}`}>
-              <CardHeader className="pb-3 cursor-pointer" onClick={() => setExpanded(open && !isActive ? null : prov.value)}>
+              <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm flex items-center gap-2.5">
                     <div className={`w-8 h-8 ${prov.bg} rounded-lg flex items-center justify-center`}>
@@ -243,8 +241,7 @@ export function WhatsAppConfigClient({ configs: initial }: { configs: any[] }) {
                 </div>
               </CardHeader>
 
-              {open && (
-                <CardContent className="space-y-5 pt-0">
+              <CardContent className="space-y-5 pt-0">
                   {/* Setup steps */}
                   <div className={`rounded-xl p-4 ${prov.bg} border ${prov.border}`}>
                     <p className="text-[12px] font-bold text-slate-600 uppercase tracking-wide mb-2">Setup steps</p>
@@ -259,7 +256,7 @@ export function WhatsAppConfigClient({ configs: initial }: { configs: any[] }) {
                   </div>
 
                   {/* Fields */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     {prov.fields.map(field => (
                       <div key={field}>
                         <Label className="text-[13px] font-semibold">
@@ -307,7 +304,6 @@ export function WhatsAppConfigClient({ configs: initial }: { configs: any[] }) {
                     )}
                   </div>
                 </CardContent>
-              )}
             </Card>
           );
         })}
