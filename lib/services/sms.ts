@@ -150,6 +150,41 @@ async function sendViaBms(
   };
 }
 
+// ── MSG91 ─────────────────────────────────────────────────────────────────────
+// Auth is an "authkey" header (not query param); numbers go in without a
+// leading "+", comma-joined. route=4 = transactional (no promotional-window
+// restrictions); country=0 = don't assume India, send international as-is.
+
+async function sendViaMsg91(
+  to: string | string[],
+  message: string,
+  config: { apiKey: string; senderId?: string }
+): Promise<SmsResult> {
+  const recipients = (Array.isArray(to) ? to : [to]).map((n) => n.replace(/^\+/, "")).join(",");
+
+  const res = await fetch("https://api.msg91.com/api/v2/sendsms", {
+    method: "POST",
+    headers: { authkey: config.apiKey, "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      sender: config.senderId || "SKULA",
+      route: "4",
+      country: "0",
+      sms: [{ message, to: recipients.split(",") }],
+    }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  // MSG91 can return HTTP 200 with a body-level failure — "type" carries the
+  // real outcome, "message" doubles as either the request id or the error text.
+  const ok = res.ok && data?.type === "success";
+  return {
+    success: ok,
+    provider: "msg91",
+    messageId: ok ? data?.message : undefined,
+    error: ok ? undefined : data?.message ?? `HTTP ${res.status}`,
+  };
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export async function sendSms(
@@ -193,6 +228,11 @@ export async function sendSms(
       });
     case "bms":
       return sendViaBms(numbers, message, {
+        apiKey: config.apiKey,
+        senderId: config.senderId,
+      });
+    case "msg91":
+      return sendViaMsg91(numbers, message, {
         apiKey: config.apiKey,
         senderId: config.senderId,
       });
