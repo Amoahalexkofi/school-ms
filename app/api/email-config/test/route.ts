@@ -3,6 +3,11 @@ import { getDb } from "@/lib/db";
 import { sendEmail, escapeHtml } from "@/lib/email";
 import { auth } from "@/lib/auth";
 
+// A slow-to-handshake SMTP host (plus our own retry) can run past the
+// platform's default function timeout before nodemailer's own
+// connectionTimeout ever gets a chance to fire — give it real headroom.
+export const maxDuration = 45;
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

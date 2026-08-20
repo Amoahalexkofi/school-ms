@@ -64,8 +64,13 @@ export async function sendEmail(
     }
     return { ok: true };
   } catch (err: any) {
-    console.error("[email] Send failed:", err.message);
-    return { ok: false, error: err.message };
+    // err.code is the real signal (ECONNREFUSED = host actively refused,
+    // ETIMEDOUT = packets went nowhere/silently dropped, EAUTH = bad
+    // credentials, ...) — surface it, since "Connection timeout" alone
+    // isn't enough to tell a firewall block from a genuinely dead host.
+    console.error("[email] Send failed:", err.code, err.command, err.message);
+    const detail = err.code ? ` (${err.code})` : "";
+    return { ok: false, error: `${err.message}${detail}` };
   }
 }
 
