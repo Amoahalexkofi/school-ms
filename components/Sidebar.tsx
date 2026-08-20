@@ -8,7 +8,7 @@ import {
   FileText, BarChart2, Banknote, Library, Bus, Building, Package,
   ConciergeBell, Monitor, UserPlus, ShieldCheck, Settings, ScrollText,
   Megaphone, Send, MessageCircle, Layers, Home, CreditCard, CheckSquare,
-  Bell, ChevronDown, Globe, HelpCircle, Share2, CalendarDays, Network, Tag,
+  Bell, ChevronDown, Globe, HelpCircle, Share2, CalendarDays,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
@@ -33,8 +33,6 @@ const adminGroups: NavGroup[] = [
     items: [
       { href: "/students",   label: "Students",   icon: Users,         roles: ["SUPER_ADMIN","ADMIN","TEACHER"], perm: "student_information" },
       { href: "/staff",      label: "Staff",       icon: UserCog,       perm: "human_resource" },
-      { href: "/departments",  label: "Departments",  icon: Network, roles: ["SUPER_ADMIN","ADMIN"], perm: "human_resource" },
-      { href: "/designations", label: "Designations", icon: Tag,     roles: ["SUPER_ADMIN","ADMIN"], perm: "human_resource" },
       { href: "/admissions", label: "Admissions",  icon: UserPlus,      perm: "front_office" },
       { href: "/alumni",     label: "Alumni",      icon: GraduationCap, perm: "alumni" },
     ],

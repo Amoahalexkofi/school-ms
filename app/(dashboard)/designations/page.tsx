@@ -1,5 +1,6 @@
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
+import { StaffSectionTabs } from "@/components/StaffSectionTabs";
 import { DesignationsClient } from "./DesignationsClient";
 
 export default async function DesignationsPage() {
@@ -10,6 +11,7 @@ export default async function DesignationsPage() {
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Designations" />
+      <StaffSectionTabs />
       <DesignationsClient designations={designations} />
     </div>
   );

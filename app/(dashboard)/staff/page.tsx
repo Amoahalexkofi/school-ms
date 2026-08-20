@@ -1,6 +1,7 @@
 import { getDb } from "@/lib/db";
 import { getActiveBranchId } from "@/lib/branch";
 import { Topbar } from "@/components/Topbar";
+import { StaffSectionTabs } from "@/components/StaffSectionTabs";
 import { StaffClient } from "./StaffClient";
 
 const LIMIT = 25;
@@ -50,6 +51,7 @@ export default async function StaffPage({
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Staff" />
+      <StaffSectionTabs />
       <StaffClient
         staff={staff}
         departments={departments}
