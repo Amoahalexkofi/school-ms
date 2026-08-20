@@ -139,6 +139,27 @@ export async function provisionSchool(input: {
       ON CONFLICT (id) DO NOTHING
     `);
 
+    // 2d. Same reasoning, for the starter named roles (Admin, Teacher,
+    // Accountant, Librarian, Super Admin) and their pre-configured
+    // permissions — these are the "System roles ... come pre-configured but
+    // can be edited" starting points every school's Roles & Permissions
+    // screen advertises. isHidden excludes any auto-generated per-staff
+    // roles, which must never leak across tenants.
+    await client.query(`
+      INSERT INTO "${input.schemaName}"."AppRole" (id, name, slug, "isActive", "isSystem", "isSuperAdmin", "isHidden", "createdAt")
+      SELECT id, name, slug, "isActive", "isSystem", "isSuperAdmin", "isHidden", "createdAt"
+      FROM "public"."AppRole" WHERE "isSystem" = true AND "isHidden" = false
+      ON CONFLICT (id) DO NOTHING
+    `);
+    await client.query(`
+      INSERT INTO "${input.schemaName}"."RolePermission" (id, "roleId", "permCatId", "canView", "canAdd", "canEdit", "canDelete")
+      SELECT rp.id, rp."roleId", rp."permCatId", rp."canView", rp."canAdd", rp."canEdit", rp."canDelete"
+      FROM "public"."RolePermission" rp
+      JOIN "public"."AppRole" ar ON ar.id = rp."roleId"
+      WHERE ar."isSystem" = true AND ar."isHidden" = false
+      ON CONFLICT (id) DO NOTHING
+    `);
+
     // Copy sequences (for auto-increment, though we use cuid so mostly not needed)
     const sequences = await client.query<{ sequence_name: string }>(`
       SELECT sequence_name FROM information_schema.sequences
