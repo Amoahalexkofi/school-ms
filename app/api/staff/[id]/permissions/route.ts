@@ -7,6 +7,11 @@ import { getDb } from "@/lib/db";
 // check as Settings > Roles & Permissions — isApiCallPermitted in proxy.ts),
 // but the hidden role is auto-created/reused per staff member and never
 // shown in the general Roles list (isHidden: true).
+//
+// Overrides are saved at the PermissionGroup (module) level — the same
+// granularity the server enforces at (getCustomPermMap OR-aggregates by
+// PermissionGroup, not by individual PermissionCategory). See
+// lib/permission-grouping.ts for why.
 
 // GET: this staff member's current custom permission overrides, if any.
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -29,21 +34,25 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   });
 }
 
-// POST: save the full set of custom overrides for this staff member.
-// Body: Array<{ permCatId: number, canView, canAdd, canEdit, canDelete }>
-// An empty array clears all overrides and removes the hidden role entirely,
+// POST: save this staff member's module-level overrides.
+// Body: Array<
+//   | { groupId: number, mode: "override", canView, canAdd, canEdit, canDelete }
+//   | { groupId: number, mode: "default" }   // explicitly clear any override, fall back to base role default
+// >
+// An empty array clears every override and removes the hidden role entirely,
 // reverting the person to plain role defaults.
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: staffId } = await params;
   const db = (await getDb()) as any;
 
   try {
-    const permissions: Array<{
-      permCatId: number;
-      canView: boolean;
-      canAdd: boolean;
-      canEdit: boolean;
-      canDelete: boolean;
+    const entries: Array<{
+      groupId: number;
+      mode: "override" | "default";
+      canView?: boolean;
+      canAdd?: boolean;
+      canEdit?: boolean;
+      canDelete?: boolean;
     }> = await req.json();
 
     const staff = await db.staff.findUnique({ where: { id: staffId }, select: { firstName: true, lastName: true } });
@@ -51,8 +60,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const existingLink = await db.staffAppRole.findUnique({ where: { staffId } });
 
-    if (permissions.length === 0) {
-      // Nothing customized — drop the link and the hidden role, so this
+    const overrides = entries.filter(
+      (e) => e.mode === "override" && (e.canView || e.canAdd || e.canEdit || e.canDelete)
+    );
+
+    if (overrides.length === 0) {
+      // Nothing left to keep — drop the link and the hidden role, so this
       // person cleanly reverts to their base role's defaults.
       if (existingLink) {
         await db.staffAppRole.delete({ where: { staffId } });
@@ -73,19 +86,27 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       await db.staffAppRole.create({ data: { staffId, roleId } });
     }
 
-    await db.rolePermission.deleteMany({ where: { roleId } });
-    await db.rolePermission.createMany({
-      data: permissions.map((p) => ({
-        roleId,
-        permCatId: p.permCatId,
-        canView:   Boolean(p.canView),
-        canAdd:    Boolean(p.canAdd),
-        canEdit:   Boolean(p.canEdit),
-        canDelete: Boolean(p.canDelete),
-      })),
-    });
+    const groupIds = overrides.map((e) => e.groupId);
+    const categories = await db.permissionCategory.findMany({ where: { permGroupId: { in: groupIds } } });
 
-    return NextResponse.json({ saved: permissions.length });
+    // Full re-save every time: clear everything, then recreate only the
+    // modules that ended up with an actual override.
+    await db.rolePermission.deleteMany({ where: { roleId } });
+    const rows = overrides.flatMap((entry) =>
+      categories
+        .filter((c: any) => c.permGroupId === entry.groupId)
+        .map((cat: any) => ({
+          roleId,
+          permCatId: cat.id,
+          canView:   Boolean(entry.canView)   && cat.enableView,
+          canAdd:    Boolean(entry.canAdd)    && cat.enableAdd,
+          canEdit:   Boolean(entry.canEdit)   && cat.enableEdit,
+          canDelete: Boolean(entry.canDelete) && cat.enableDelete,
+        }))
+    );
+    if (rows.length) await db.rolePermission.createMany({ data: rows });
+
+    return NextResponse.json({ saved: overrides.length });
   } catch (err: any) {
     console.error("[staff permissions POST]", err);
     return NextResponse.json({ error: "Failed to save permissions" }, { status: 500 });
