@@ -6,7 +6,7 @@ import { getDb } from "@/lib/db";
 // RolePermission tables (so it's enforced by the exact same server-side
 // check as Settings > Roles & Permissions — isApiCallPermitted in proxy.ts),
 // but the hidden role is auto-created/reused per staff member and never
-// shown in the general Roles list (isSystem: true).
+// shown in the general Roles list (isHidden: true).
 
 // GET: this staff member's current custom permission overrides, if any.
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -61,13 +61,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       return NextResponse.json({ saved: 0 });
     }
 
-    // Find or create the hidden per-staff role. isSystem marks it as
+    // Find or create the hidden per-staff role. isHidden marks it as
     // auto-generated so it's excluded from the general Roles & Permissions
     // list (that screen is for reusable, admin-named roles).
     let roleId = existingLink?.roleId;
     if (!roleId) {
       const role = await db.appRole.create({
-        data: { name: `Custom — ${staff.firstName} ${staff.lastName}`, isSystem: true },
+        data: { name: `Custom — ${staff.firstName} ${staff.lastName}`, isHidden: true },
       });
       roleId = role.id;
       await db.staffAppRole.create({ data: { staffId, roleId } });

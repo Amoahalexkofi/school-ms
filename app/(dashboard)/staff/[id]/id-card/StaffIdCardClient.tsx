@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, Printer, Settings } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 
 type Props = { staff: any; template: any };

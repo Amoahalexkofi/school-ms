@@ -2327,6 +2327,10 @@ model AppRole {
   isActive     Boolean  @default(true)
   isSystem     Boolean  @default(false)
   isSuperAdmin Boolean  @default(false)
+  // Auto-generated per-staff override role (see /api/staff/[id]/permissions) —
+  // excluded from the general Roles & Permissions list, distinct from isSystem
+  // which marks the genuine pre-configured defaults (Admin, Teacher, ...).
+  isHidden     Boolean  @default(false)
   createdAt    DateTime @default(now())
 
   permissions RolePermission[]

@@ -155,7 +155,7 @@ export function RolesClient({ roles: initial }: { roles: Role[] }) {
           <ul className="list-disc list-inside space-y-1 mt-1">
             <li><strong>Super Admin</strong> bypasses all permission checks — full access always.</li>
             <li>Click <strong>Permissions</strong> to set can_view / can_add / can_edit / can_delete per module.</li>
-            <li>Assign a role to a staff member from their <strong>Staff Profile</strong>.</li>
+            <li>To give one person extra access without creating a role, use the <strong>Permissions</strong> button on their Staff profile instead.</li>
             <li>System roles (Admin, Teacher, Accountant, Librarian) come pre-configured but can be edited.</li>
           </ul>
         </CardContent>

@@ -3,7 +3,7 @@
 che
 
 
-# Technical Design Document
+#/t Technical Design Document
 # School Management System (SMS)
 **Version:** 1.0  
 **Date:** 2026-06-03  

@@ -23,7 +23,7 @@ async function getData(staffId: string) {
     // as an optional starting point, e.g. "PA", so the admin doesn't have
     // to re-check every box by hand for a role type they already built.
     db.appRole.findMany({
-      where: { isSystem: false, isActive: true },
+      where: { isHidden: false, isActive: true },
       include: { permissions: true },
       orderBy: { name: "asc" },
     }),

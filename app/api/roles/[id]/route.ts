@@ -32,7 +32,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params;
   try {
     const role = await ((await getDb()) as any).appRole.findUnique({ where: { id } });
-    if (role?.isSystem) return NextResponse.json({ error: "Cannot delete system role" }, { status: 403 });
+    if (role?.isSystem || role?.isHidden) return NextResponse.json({ error: "Cannot delete system role" }, { status: 403 });
     await ((await getDb()) as any).appRole.delete({ where: { id } });
     return NextResponse.json({ ok: true });
   } catch { return NextResponse.json({ error: "Failed" }, { status: 500 }); }

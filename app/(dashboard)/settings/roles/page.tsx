@@ -4,6 +4,10 @@ import { RolesClient } from "./RolesClient";
 
 export default async function RolesPage() {
   const roles = await ((await getDb()) as any).appRole.findMany({
+    // Exclude auto-generated per-staff roles (created by the direct
+    // Permissions screen on a staff profile) — this list is for reusable,
+    // admin-named roles only.
+    where: { isHidden: false },
     include: {
       _count: { select: { permissions: true, staffRoles: true } },
     },

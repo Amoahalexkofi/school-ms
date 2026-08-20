@@ -6,7 +6,7 @@ export async function GET() {
     // Exclude auto-generated per-staff roles (created by the direct
     // Permissions screen on a staff profile) — this list is for reusable,
     // admin-named roles only.
-    where: { isSystem: false },
+    where: { isHidden: false },
     include: {
       _count: { select: { permissions: true, staffRoles: true } },
     },
