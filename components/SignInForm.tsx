@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Eye, EyeOff, AlertCircle, ArrowRight } from "lucide-react";
 
 interface SignInPayload { email: string; password: string; }
@@ -83,6 +84,15 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1", supportContact }
           >
             {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
+        </div>
+        <div className="text-right">
+          <Link
+            href="/forgot-password"
+            className="text-[13px] font-medium hover:underline"
+            style={{ color: accentColor }}
+          >
+            Forgot password?
+          </Link>
         </div>
       </div>
 
