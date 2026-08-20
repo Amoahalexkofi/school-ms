@@ -1,7 +1,6 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { SignInForm } from "@/components/SignInForm";
 
 export function SignInPage({
@@ -13,8 +12,6 @@ export function SignInPage({
   accentColor?: string;
   supportContact?: string;
 }) {
-  const router = useRouter();
-
   async function handleSignIn({
     email,
     password,
@@ -33,8 +30,12 @@ export function SignInPage({
       throw new Error("Invalid email or password");
     }
 
-    router.push("/dashboard");
-    router.refresh();
+    // A hard navigation, not router.push()+refresh(). The destination can
+    // itself server-redirect (e.g. mustChangePassword → /account/security);
+    // racing a client-side push against that redirect left the App Router
+    // stuck reconciling two navigations, producing a rapid-fire request loop
+    // and a blank screen instead of ever landing.
+    window.location.href = "/dashboard";
   }
 
   return <SignInForm onSubmit={handleSignIn} accentColor={accentColor} supportContact={supportContact} />;

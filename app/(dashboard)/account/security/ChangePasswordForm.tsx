@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, AlertCircle } from "lucide-react";
 
 export function ChangePasswordForm({ forced }: { forced: boolean }) {
-  const router = useRouter();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirm] = useState("");
@@ -28,8 +26,8 @@ export function ChangePasswordForm({ forced }: { forced: boolean }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to update password");
-      router.push("/dashboard");
-      router.refresh();
+      // Hard navigation — see SignInPage.tsx for why not router.push()+refresh().
+      window.location.href = "/dashboard";
     } catch (e: any) {
       setError(e.message);
     } finally {
