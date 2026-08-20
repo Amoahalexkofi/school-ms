@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { audit } from "@/lib/services/audit";
+import { auth } from "@/lib/auth";
+
+// Mirrors app/api/staff/route.ts's create-time whitelist — SUPER_ADMIN can
+// never be minted through a staff edit, by design.
+const ALLOWED_STAFF_ROLES = ["ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN"];
 
 const ALLOWED_FIELDS = [
   "departmentId","designationId","firstName","lastName","fatherName","motherName",
@@ -40,6 +45,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const body = await req.json();
 
     // Whitelist only allowed staff fields
@@ -72,12 +80,25 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const { role } = body;
+    if (role && !ALLOWED_STAFF_ROLES.includes(role)) {
+      return NextResponse.json({ error: "Invalid role" }, { status: 422 });
+    }
 
-    const staff = await ((await getDb()) as any).$transaction(async (tx: any) => {
-      if (role) {
-        const s = await tx.staff.findUnique({ where: { id }, select: { userId: true } });
-        if (s) await tx.user.update({ where: { id: s.userId }, data: { role } });
+    const db = await getDb();
+    let targetUserId: string | null = null;
+    if (role) {
+      const s = await (db as any).staff.findUnique({ where: { id }, select: { userId: true } });
+      targetUserId = s?.userId ?? null;
+      // Never let anyone change their own role — self-elevation risk (an
+      // Admin editing their own record could otherwise grant themselves
+      // any role this route allows).
+      if (targetUserId && targetUserId === session.user!.id) {
+        return NextResponse.json({ error: "You cannot change your own role" }, { status: 403 });
       }
+    }
+
+    const staff = await (db as any).$transaction(async (tx: any) => {
+      if (role && targetUserId) await tx.user.update({ where: { id: targetUserId }, data: { role } });
       return tx.staff.update({ where: { id }, data: staffData });
     });
 

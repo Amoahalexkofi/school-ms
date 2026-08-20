@@ -135,7 +135,12 @@ export const authConfig: NextAuthConfig = {
 
           // schema travels into the JWT below (jwt callback) so every later
           // request can confirm this session actually belongs to whichever
-          // tenant its subdomain resolves to — see proxy.ts.
+          // tenant its subdomain resolves to — see proxy.ts. mustChangePassword
+          // deliberately does NOT travel into the token — it's mutable within
+          // a session's lifetime (cleared the moment the user changes their
+          // password), so baking a snapshot into the JWT would leave someone
+          // locked out of their own account after doing exactly what was
+          // asked. proxy.ts checks it fresh (short-TTL cached) instead.
           return { id: user.id as string, email: user.email as string, role: user.role as string, name, schema };
         } catch (e) {
           console.error("[authorize] error:", e);

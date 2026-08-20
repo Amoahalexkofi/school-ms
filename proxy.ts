@@ -75,6 +75,34 @@ async function getTenantForCustomDomain(host: string): Promise<Tenant | null> {
 type CustomPerm = { superAdmin: boolean; map: PermissionMap | null };
 const permCache = new Map<string, { value: CustomPerm; expiresAt: number }>();
 
+// mustChangePassword is checked fresh (short TTL) rather than baked into the
+// JWT, because it's mutable within a session's lifetime — cleared the
+// instant the user actually changes their password — and a stale token
+// claim would leave them locked out of their own account after doing
+// exactly what was asked. 20s keeps that window small without a DB round
+// trip on every single request.
+const mustChangeCache = new Map<string, { value: boolean; expiresAt: number }>();
+async function mustChangePasswordFor(schema: string, userId: string): Promise<boolean> {
+  const key = `${schema}:${userId}`;
+  const now = Date.now();
+  const cached = mustChangeCache.get(key);
+  if (cached && cached.expiresAt > now) return cached.value;
+
+  try {
+    const sql = neon(process.env.DATABASE_URL!);
+    const result = await (sql as any).query(
+      `SELECT "mustChangePassword" FROM "${schema}"."User" WHERE id = $1 LIMIT 1`,
+      [userId]
+    );
+    const rows: Record<string, unknown>[] = result.rows ?? result;
+    const value = rows[0]?.mustChangePassword === true;
+    mustChangeCache.set(key, { value, expiresAt: now + 20_000 });
+    return value;
+  } catch {
+    return false; // DB blip — fail open on this check specifically, same as a transient permission-cache error
+  }
+}
+
 // Custom AppRole permissions for a user, aggregated to permission-GROUP codes
 // (same aggregation as lib/services/permissions.ts getUserPermissions).
 // Cached 60 s like tenant lookups; "error" on a DB blip.
@@ -255,6 +283,22 @@ export async function proxy(request: NextRequest) {
   }
 
   const role = token.role as UserRole | undefined;
+
+  // First-login gate, API layer: the dashboard layout already redirects page
+  // loads to /account/security while mustChangePassword is set, but that's
+  // a page-level check only — someone with a temporary/reset password could
+  // otherwise call any API route their role permits indefinitely as long as
+  // they never load a dashboard page. Block every API call except the one
+  // that actually changes the password (and NextAuth's own routes, already
+  // public above).
+  if (
+    pathname.startsWith("/api/") &&
+    pathname !== "/api/account/change-password" &&
+    token.sub &&
+    (await mustChangePasswordFor(expectedSchema, token.sub))
+  ) {
+    return NextResponse.json({ error: "Password change required" }, { status: 403 });
+  }
 
   // API routes: enforce role-based access (resource permission), 403 if denied.
   if (pathname.startsWith("/api/")) {
