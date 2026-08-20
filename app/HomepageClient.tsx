@@ -651,7 +651,7 @@ function HomeContactForm() {
           </div>
         ))}
         <a href={waHref} target="_blank" rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1fba5a] text-white font-medium py-3.5 rounded-full text-[15px] transition-all mt-2"
+          className="flex w-full items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1fba5a] text-white font-medium py-2.5 rounded-full text-[15px] transition-all mt-2"
           style={{ boxShadow: "0 4px 16px rgba(37,211,102,0.25)" }}>
           <WhatsAppIcon className="h-5 w-5" /> Chat on WhatsApp
         </a>
@@ -712,11 +712,11 @@ export function HomepageClient() {
 
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 pt-1">
                 <Link href="/contact"
-                  className="inline-flex items-center justify-center gap-2 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-medium px-7 py-3.5 rounded-full text-[15px] transition-all hover:scale-[1.02] active:scale-[0.98]">
+                  className="inline-flex items-center justify-center gap-2 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-medium px-7 py-2.5 rounded-full text-[15px] transition-all hover:scale-[1.02] active:scale-[0.98]">
                   Get your school online <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link href="/demo"
-                  className="inline-flex items-center justify-center gap-2 bg-white text-[#533afd] hover:text-[#4434d4] font-medium px-7 py-3.5 rounded-full text-[15px] transition-all border border-[#e3e8ee] hover:border-[#b9b9f9]">
+                  className="inline-flex items-center justify-center gap-2 bg-white text-[#533afd] hover:text-[#4434d4] font-medium px-7 py-2.5 rounded-full text-[15px] transition-all border border-[#e3e8ee] hover:border-[#b9b9f9]">
                   Try Live Demo <ChevronRight className="h-4 w-4" />
                 </Link>
               </motion.div>
@@ -1049,7 +1049,7 @@ export function HomepageClient() {
                   ))}
                 </ul>
                 <Link href={href}
-                  className={`block text-center py-3 rounded-full font-medium text-[14px] transition-all ${hl
+                  className={`block text-center py-2.5 rounded-full font-medium text-[14px] transition-all ${hl
                     ? "bg-[#533afd] hover:bg-[#4434d4] text-white"
                     : "bg-white text-[#533afd] hover:text-[#4434d4] border border-[#e3e8ee] hover:border-[#b9b9f9]"
                   }`}
@@ -1120,7 +1120,7 @@ export function HomepageClient() {
                 </p>
               </div>
               <Link href="/contact"
-                className="shrink-0 inline-flex items-center justify-center gap-2 bg-[#533afd] hover:bg-[#4434d4] text-white px-6 py-3 rounded-full text-[14px] font-medium transition-all hover:scale-[1.02] active:scale-[0.98]">
+                className="shrink-0 inline-flex items-center justify-center gap-2 bg-[#533afd] hover:bg-[#4434d4] text-white px-6 py-2.5 rounded-full text-[14px] font-medium transition-all hover:scale-[1.02] active:scale-[0.98]">
                 Ask about add-ons <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -1227,12 +1227,12 @@ export function HomepageClient() {
               </motion.p>
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href="/demo"
-                  className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-[#f6f9fc] text-[#0d253d] px-8 py-4 rounded-full font-medium text-[15px] transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-[#f6f9fc] text-[#0d253d] px-8 py-3 rounded-full font-medium text-[15px] transition-all hover:scale-[1.02] active:scale-[0.98]"
                   style={{ boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
                   Try Demo Free <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1fba5a] text-white px-8 py-4 rounded-full font-medium text-[15px] transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1fba5a] text-white px-8 py-3 rounded-full font-medium text-[15px] transition-all hover:scale-[1.02] active:scale-[0.98]"
                   style={{ boxShadow: "0 4px 16px rgba(37,211,102,0.3)" }}>
                   <WhatsAppIcon className="h-5 w-5" /> WhatsApp Us
                 </a>
