@@ -133,7 +133,10 @@ export const authConfig: NextAuthConfig = {
           const studentName = user.studentFirstName ? `${user.studentFirstName} ${user.studentLastName ?? ""}`.trim() : null;
           const name = staffName || studentName || (user.username as string) || undefined;
 
-          return { id: user.id as string, email: user.email as string, role: user.role as string, name };
+          // schema travels into the JWT below (jwt callback) so every later
+          // request can confirm this session actually belongs to whichever
+          // tenant its subdomain resolves to — see proxy.ts.
+          return { id: user.id as string, email: user.email as string, role: user.role as string, name, schema };
         } catch (e) {
           console.error("[authorize] error:", e);
           return null;
@@ -143,7 +146,13 @@ export const authConfig: NextAuthConfig = {
   ],
   callbacks: {
     jwt({ token, user }) {
-      if (user) token.role = (user as any).role;
+      if (user) {
+        token.role = (user as any).role;
+        // Binds this session to the tenant it was issued for — proxy.ts
+        // rejects the token outright if a later request's resolved schema
+        // (from its own subdomain/custom domain) doesn't match this.
+        token.schema = (user as any).schema;
+      }
       return token;
     },
     session({ session, token }) {

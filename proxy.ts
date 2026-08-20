@@ -236,6 +236,24 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(signIn);
   }
 
+  // Tenant binding: the token records which schema it was issued for
+  // (lib/auth/config.ts, set at login). This request independently resolved
+  // its own schema from ITS OWN subdomain above — if the two don't match,
+  // this is a session from one school being presented against another
+  // school's subdomain (or the reverse), and must be rejected outright
+  // rather than trusted just because the JWT signature is valid. A token
+  // from before this check existed has no "schema" claim at all and is
+  // treated the same way, forcing a one-time re-login.
+  const expectedSchema = requestHeaders.get("x-tenant-schema") ?? (process.env.DATABASE_SCHEMA ?? "public");
+  if (token.schema !== expectedSchema) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    const signIn = new URL("/sign-in", request.url);
+    signIn.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(signIn);
+  }
+
   const role = token.role as UserRole | undefined;
 
   // API routes: enforce role-based access (resource permission), 403 if denied.
