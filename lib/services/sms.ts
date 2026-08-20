@@ -114,6 +114,42 @@ async function sendViaTwilio(
   }
 }
 
+// ── BMS Africa (formerly mNotify — api.mnotify.com is still the live host) ────
+// Common Ghanaian school SMS gateway. Auth is a single API key as a query
+// param (no username/secret pair); numbers go in as a local array, not a
+// comma-joined string like Africa's Talking.
+
+async function sendViaBms(
+  to: string | string[],
+  message: string,
+  config: { apiKey: string; senderId?: string }
+): Promise<SmsResult> {
+  const recipients = Array.isArray(to) ? to : [to];
+  const url = `https://api.mnotify.com/api/sms/quick?key=${encodeURIComponent(config.apiKey)}`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      recipient: recipients,
+      sender: config.senderId || "BMS Africa",
+      message,
+      is_schedule: false,
+      schedule_date: "",
+    }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  // A 2xx HTTP status alone isn't proof of delivery — BMS reports the real
+  // outcome via its own status/code fields (code 2000 = accepted).
+  const ok = res.ok && (data?.status === "success" || data?.code === 2000);
+  return {
+    success: ok,
+    provider: "bms",
+    error: ok ? undefined : data?.message ?? `HTTP ${res.status}`,
+  };
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export async function sendSms(
@@ -153,6 +189,11 @@ export async function sendSms(
       return sendViaTwilio(numbers, message, {
         apiKey: config.apiKey,
         password: config.password,
+        senderId: config.senderId,
+      });
+    case "bms":
+      return sendViaBms(numbers, message, {
+        apiKey: config.apiKey,
         senderId: config.senderId,
       });
     default:

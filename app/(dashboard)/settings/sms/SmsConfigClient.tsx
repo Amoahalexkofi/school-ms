@@ -12,6 +12,7 @@ import { ArrowLeft, MessageSquare, Save, Eye, EyeOff, Check, Send } from "lucide
 const PROVIDERS = [
   { value: "twilio",         label: "Twilio",         fields: ["apiKey", "senderId"] },
   { value: "africas_talking", label: "Africa's Talking", fields: ["apiKey", "username", "senderId"] },
+  { value: "bms",            label: "BMS Africa",      fields: ["apiKey", "senderId"] },
 ];
 
 export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
