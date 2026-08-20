@@ -2,14 +2,44 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { randomBytes } from "crypto";
 import { decryptSecrets } from "@/lib/secrets-crypto";
+import { auth } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const role = (session.user as any).role;
+
     const { studentFeesMasterId, feeGroupItemId, amount, studentEmail } = await req.json();
     if (!studentFeesMasterId || !amount || Number(amount) <= 0)
       return NextResponse.json({ error: "studentFeesMasterId and amount required" }, { status: 422 });
 
     const db = await getDb();
+
+    // A parent/student may only pay toward their own family's invoice;
+    // staff (accountant/admin/super admin) can pay on behalf of anyone,
+    // e.g. collecting a payment in person at the front desk.
+    if (role === "STUDENT" || role === "PARENT") {
+      const feesMaster = await (db as any).studentFeesMaster.findUnique({
+        where: { id: studentFeesMasterId },
+        select: { studentId: true },
+      });
+      if (!feesMaster) return NextResponse.json({ error: "Fee record not found" }, { status: 404 });
+
+      if (role === "STUDENT") {
+        const student = await (db as any).student.findFirst({ where: { userId: session.user.id } });
+        if (!student || student.id !== feesMaster.studentId) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+      } else {
+        const parentUser = await (db as any).user.findUnique({ where: { id: session.user.id } });
+        const childIds = (parentUser?.childs ?? "").split(",").map((s: string) => s.trim()).filter(Boolean);
+        if (!childIds.includes(feesMaster.studentId)) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+      }
+    }
+
     const gateway = decryptSecrets(
       await (db as any).paymentGateway.findFirst({ where: { isActive: true } }),
       ["apiSecretKey", "apiPassword", "apiSignature"]
