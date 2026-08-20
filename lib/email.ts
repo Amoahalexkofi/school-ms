@@ -78,9 +78,22 @@ export async function sendEmail(
   payload: EmailPayload
 ): Promise<{ ok: boolean; error?: string }> {
   const cfg = decryptSecrets(await (db as any).emailConfig.findFirst(), ["smtpPassword"]);
+
+  // Hybrid model, same as SMS (lib/services/sms.ts): prefer the school's own
+  // active email config; otherwise fall back to the central platform sender
+  // (PLATFORM_EMAIL_FROM, one Skula-owned verified domain) so system email —
+  // password resets above all — still works for a school that hasn't set up
+  // Settings > Email yet. Their own config takes over automatically the
+  // moment they configure one; no other code path changes.
   if (!cfg?.isActive || !cfg.smtpHost) {
-    console.log("[email] SMTP not configured — skipping send to", payload.to);
-    return { ok: false, error: "SMTP not configured" };
+    const platformFrom = process.env.PLATFORM_EMAIL_FROM;
+    if (!platformFrom) {
+      console.log("[email] No email configured (school or platform) — skipping send to", payload.to);
+      return { ok: false, error: "Email not configured" };
+    }
+    const viaPlatform = await sendViaResend(payload, platformFrom);
+    if (!viaPlatform.ok) console.error("[email] Platform fallback send failed:", viaPlatform.error);
+    return viaPlatform;
   }
 
   const from = `"${cfg.fromName || "Skula"}" <${cfg.fromEmail || cfg.smtpUsername}>`;
