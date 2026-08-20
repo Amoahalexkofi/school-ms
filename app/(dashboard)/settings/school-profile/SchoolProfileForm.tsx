@@ -82,7 +82,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
   }
 
   return (
-    <main className="flex-1 p-4 md:p-6 max-w-4xl mx-auto space-y-6">
+    <main className="flex-1 px-4 py-7 md:p-8 max-w-[1400px] mx-auto w-full space-y-6">
       <Link href="/settings" className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Settings
       </Link>
