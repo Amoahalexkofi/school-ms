@@ -64,6 +64,19 @@ export const authConfig: NextAuthConfig = {
       async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        // A nonexistent email returns almost instantly while a real one
+        // falls through to the deliberately-slow bcrypt compare below —
+        // that gap is itself a timing side-channel for email enumeration.
+        // Floor every path (including the success path) to the same
+        // minimum duration so response time alone can't distinguish them.
+        const startedAt = Date.now();
+        const MIN_RESPONSE_MS = 350;
+        const finish = async <T>(result: T): Promise<T> => {
+          const elapsed = Date.now() - startedAt;
+          if (elapsed < MIN_RESPONSE_MS) await new Promise((r) => setTimeout(r, MIN_RESPONSE_MS - elapsed));
+          return result;
+        };
+
         try {
           // Prefer x-tenant-schema set by middleware (proxy.ts) — most reliable
           // because it doesn't depend on APP_DOMAIN matching the actual host used.
@@ -90,7 +103,7 @@ export const authConfig: NextAuthConfig = {
           );
           const rows: Record<string, unknown>[] = result.rows ?? result;
 
-          if (!rows.length) return null;
+          if (!rows.length) return finish(null);
           const user = rows[0];
 
           // Brute-force lockout: 5 failed attempts locks the account for 15
@@ -101,7 +114,7 @@ export const authConfig: NextAuthConfig = {
           const MAX_ATTEMPTS = 5;
           const LOCKOUT_MS = 15 * 60 * 1000;
           const lockedUntil = user.lockedUntil ? new Date(user.lockedUntil as string) : null;
-          if (lockedUntil && lockedUntil.getTime() > Date.now()) return null;
+          if (lockedUntil && lockedUntil.getTime() > Date.now()) return finish(null);
 
           const valid = await verifyPassword(
             credentials.password as string,
@@ -114,13 +127,13 @@ export const authConfig: NextAuthConfig = {
               `UPDATE "${schema}"."User" SET "failedLoginAttempts" = $1, "lockedUntil" = $2 WHERE id = $3`,
               [lockNow ? 0 : attempts, lockNow ? new Date(Date.now() + LOCKOUT_MS) : null, user.id]
             );
-            return null;
+            return finish(null);
           }
 
           // Disabled accounts cannot sign in — mirrors Smart School, which
           // gates login on both users.is_active and students.is_active.
-          if (user.userActive === false) return null;
-          if (user.role === "STUDENT" && user.studentActive === false) return null;
+          if (user.userActive === false) return finish(null);
+          if (user.role === "STUDENT" && user.studentActive === false) return finish(null);
 
           if (Number(user.failedLoginAttempts ?? 0) > 0 || lockedUntil) {
             await (sql as any).query(
@@ -141,10 +154,10 @@ export const authConfig: NextAuthConfig = {
           // password), so baking a snapshot into the JWT would leave someone
           // locked out of their own account after doing exactly what was
           // asked. proxy.ts checks it fresh (short-TTL cached) instead.
-          return { id: user.id as string, email: user.email as string, role: user.role as string, name, schema };
+          return finish({ id: user.id as string, email: user.email as string, role: user.role as string, name, schema });
         } catch (e) {
           console.error("[authorize] error:", e);
-          return null;
+          return finish(null);
         }
       },
     }),
