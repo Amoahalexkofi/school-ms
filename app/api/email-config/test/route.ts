@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { sendEmail, escapeHtml } from "@/lib/email";
 import { auth } from "@/lib/auth";
+import { isRateLimited } from "@/lib/rate-limit";
 
 // A slow-to-handshake SMTP host (plus our own retry) can run past the
 // platform's default function timeout before nodemailer's own
@@ -10,7 +11,11 @@ export const maxDuration = 45;
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (isRateLimited(`email-test:${session.user.id}`, 5, 5 * 60 * 1000)) {
+    return NextResponse.json({ error: "Too many test emails — wait a few minutes and try again" }, { status: 429 });
+  }
 
   const { testEmail } = await req.json();
   if (!testEmail) return NextResponse.json({ error: "testEmail is required" }, { status: 400 });

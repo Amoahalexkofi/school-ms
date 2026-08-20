@@ -5,7 +5,10 @@ import { cookies } from "next/headers";
 import { registry } from "@/lib/registry";
 import { NovalssAdminClient } from "./NovalssAdminClient";
 
-const ADMIN_KEY = process.env.NOVALSS_ADMIN_KEY ?? "change-me-in-production";
+// Fails CLOSED, matching lib/auth/novalss.ts's API-layer check — an unset
+// env var must never fall back to a guessable default that would expose
+// every school's data through this page.
+const ADMIN_KEY = process.env.NOVALSS_ADMIN_KEY;
 
 async function getData() {
   try {
@@ -31,7 +34,7 @@ export default async function NovalssAdminPage({
   const urlKey = params.key;
   const cookieKey = cookieStore.get("novalss_admin_key")?.value;
 
-  if (urlKey !== ADMIN_KEY && cookieKey !== ADMIN_KEY) {
+  if (!ADMIN_KEY || (urlKey !== ADMIN_KEY && cookieKey !== ADMIN_KEY)) {
     redirect("/novalss-admin/login");
   }
 

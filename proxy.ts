@@ -323,7 +323,10 @@ export async function proxy(request: NextRequest) {
     const schema = requestHeaders.get("x-tenant-schema")
       ?? process.env.DATABASE_SCHEMA ?? "public";
     const userId = token.sub as string | undefined;
-    if (userId && !(await isApiCallPermitted(pathname, request.method, role, schema, userId))) {
+    // No userId is not "skip this check" — a standard JWT always has one, so
+    // its absence means something is wrong with the token and this must be
+    // denied, not silently waved through the granular gate.
+    if (!userId || !(await isApiCallPermitted(pathname, request.method, role, schema, userId))) {
       return NextResponse.json({ error: "Forbidden — your role lacks this permission" }, { status: 403 });
     }
     // Online exams: students/parents may read exams and start/submit their OWN
