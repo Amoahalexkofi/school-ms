@@ -159,7 +159,7 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
         </CardContent>
       </Card>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {PROVIDERS.map((prov) => {
           const cfg = getConfig(prov.value);
           const isActive = cfg.isActive;
@@ -167,7 +167,7 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
           const isOpen = expanded.has(prov.value);
 
           return (
-            <Card key={prov.value} className={isActive ? "border-green-400 shadow-sm" : ""}>
+            <Card key={prov.value} className={`${isOpen ? "md:col-span-2" : ""} ${isActive ? "border-green-400 shadow-sm" : ""}`}>
               <button
                 type="button"
                 onClick={() => toggleExpanded(prov.value)}
