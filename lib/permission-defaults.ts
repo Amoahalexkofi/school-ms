@@ -16,10 +16,13 @@ export const ALLOW_ALL: PermEntry = ALLOW;
 
 /**
  * Default permissions per auth role.
- * null = unrestricted (SUPER_ADMIN / ADMIN) — a deliberate choice.
- * Non-null = restricted to listed modules; a custom AppRole (Settings →
- * Roles & Permissions) can both extend and restrict these per module — see
- * mergePerms below.
+ * null = unconditionally unrestricted, skips the granular gate entirely —
+ * reserved for SUPER_ADMIN only. Every other role, ADMIN included, gets a
+ * real (if broad) default PermissionMap: a custom AppRole (Settings →
+ * Roles & Permissions, or a staff member's own Permissions page) can both
+ * extend AND restrict it per module — see mergePerms below. Without a real
+ * default here, a custom override could never actually take anything away
+ * from that role, because the code would never consult it in the first place.
  *
  * EVERY role must appear here. A role that is merely *absent* reads as
  * `undefined`, and callers that treat `undefined` like `null` hand it full
@@ -29,7 +32,35 @@ export const ALLOW_ALL: PermEntry = ALLOW;
  */
 export const ROLE_DEFAULTS: Record<string, PermissionMap | null> = {
   SUPER_ADMIN: null,
-  ADMIN:       null,
+
+  // Full trust by default — matches every admin account's access today — but
+  // now a real map, so Super Admin can dial an individual admin back via a
+  // custom AppRole (e.g. remove Settings for one person) instead of the
+  // permission grid being cosmetic for anyone in this role.
+  ADMIN: {
+    student_information: ALLOW,
+    student_attendance:  ALLOW,
+    examination:         ALLOW,
+    academics:            ALLOW,
+    homework:             ALLOW,
+    behaviour:            ALLOW,
+    lesson_plan:          ALLOW,
+    online_examination:   ALLOW,
+    communicate:          ALLOW,
+    chat:                 ALLOW,
+    library:              ALLOW,
+    reports:              ALLOW,
+    calendar:             ALLOW,
+    fees_collection:      ALLOW,
+    expense:              ALLOW,
+    human_resource:       ALLOW,
+    front_office:         ALLOW,
+    transport:            ALLOW,
+    hostel:               ALLOW,
+    inventory:            ALLOW,
+    alumni:               ALLOW,
+    system_settings:      ALLOW,
+  },
 
   TEACHER: {
     student_information:  VIEW,   // see students, not add/edit/delete
@@ -147,6 +178,28 @@ const API_MODULE_MAP: { prefix: string; module: string }[] = [
   { prefix: "/api/front-office",        module: "front_office" },
   { prefix: "/api/alumni",              module: "alumni" },
   { prefix: "/api/calendar",            module: "calendar" },
+  // Settings — everything below was previously coarse-gate-only
+  // (SUPER_ADMIN/ADMIN), which is why removing "Settings" from an admin's
+  // custom permissions had no effect: nothing here ever consulted the
+  // granular map. NOT included: /api/branches — its GET routes are also
+  // used by non-admin roles for the branch switcher, so folding it in here
+  // would silently break that for TEACHER/ACCOUNTANT/LIBRARIAN.
+  { prefix: "/api/audit-log",           module: "system_settings" },
+  { prefix: "/api/website",             module: "system_settings" },
+  { prefix: "/api/school-profile",      module: "system_settings" },
+  { prefix: "/api/custom-fields",       module: "system_settings" },
+  { prefix: "/api/holidays",            module: "system_settings" },
+  { prefix: "/api/holiday-types",       module: "system_settings" },
+  { prefix: "/api/school-houses",       module: "system_settings" },
+  { prefix: "/api/sources",             module: "system_settings" },
+  { prefix: "/api/references",          module: "system_settings" },
+  { prefix: "/api/email-config",        module: "system_settings" },
+  { prefix: "/api/notification-settings", module: "system_settings" },
+  { prefix: "/api/sms-config",          module: "system_settings" },
+  { prefix: "/api/whatsapp-config",     module: "system_settings" },
+  { prefix: "/api/attendance-settings", module: "system_settings" },
+  { prefix: "/api/roles",               module: "system_settings" },
+  { prefix: "/api/payment-gateways",    module: "system_settings" },
 ];
 
 export function moduleForApiPath(pathname: string): string | null {

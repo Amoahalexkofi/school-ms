@@ -60,9 +60,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const existingLink = await db.staffAppRole.findUnique({ where: { staffId } });
 
-    const overrides = entries.filter(
-      (e) => e.mode === "override" && (e.canView || e.canAdd || e.canEdit || e.canDelete)
-    );
+    // An all-false override is a deliberate "take this module away entirely"
+    // (unchecking every box by hand, as opposed to clicking Reset to
+    // default) — it must still be persisted as an explicit deny row, or a
+    // module a person's base role grants by default can never actually be
+    // removed from them.
+    const overrides = entries.filter((e) => e.mode === "override");
 
     if (overrides.length === 0) {
       // Nothing left to keep — drop the link and the hidden role, so this
