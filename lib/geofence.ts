@@ -1,3 +1,29 @@
+// Accepts plain decimal degrees ("5.6037", "-0.1870") or degrees/minutes/
+// seconds ("5°35'14.1\"N", "0°11'31.3\"W" — what Google Maps shows by
+// default, and what people paste in). Returns null for anything that isn't
+// fully one of those two shapes — never silently truncates to a leading
+// digit the way parseFloat("5°35'...") would (that returns 5, a number
+// that looks valid but points miles from the real location).
+export function parseCoordinate(raw: string): number | null {
+  const s = raw.trim();
+  if (!s) return null;
+
+  if (/^-?\d+(\.\d+)?$/.test(s)) {
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  const dms = s.match(/^(\d+)\s*[°d]\s*(\d+)\s*['’m]\s*(\d+(?:\.\d+)?)\s*["”s]?\s*([NSEWnsew])?$/);
+  if (dms) {
+    const [, deg, min, sec, hemi] = dms;
+    let decimal = Number(deg) + Number(min) / 60 + Number(sec) / 3600;
+    if (hemi && /[SWsw]/.test(hemi)) decimal = -decimal;
+    return Number.isFinite(decimal) ? decimal : null;
+  }
+
+  return null;
+}
+
 // Straight-line distance between two lat/lng points, in meters (Haversine
 // formula). Good enough for a campus-radius check — no need for anything
 // more precise than a phone GPS's own accuracy at this scale.

@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { parseCoordinate } from "@/lib/geofence";
 
 export async function getSchoolProfile() {
   const prisma = await getDb();
@@ -32,20 +33,26 @@ export async function upsertSchoolProfile(input: Record<string, unknown>) {
   if (currency   !== undefined && currency)   data.currency   = currency;   // NOT NULL — never null out
   if (dateFormat !== undefined && dateFormat) data.dateFormat = dateFormat; // NOT NULL — never null out
   if (feeDueDays !== undefined) data.feeDueDays = feeDueDays ? parseInt(feeDueDays) : null;
-  // Geofence coords: use ?? not || — a school genuinely at 0° lat/long (rare
-  // but not impossible) must not get silently nulled out.
-  // parseFloat("garbage") is NaN, and Postgres float8 happily stores NaN —
-  // it doesn't throw, it just silently corrupts the value (and the geofence
-  // check's own `== null` guard doesn't catch NaN, so a bad save here can
-  // disable the geofence entirely). Anything that doesn't parse to a real
-  // finite number is treated the same as "not set" — never written as NaN.
+  // Geofence coords accept decimal degrees or DMS ("5°35'14.1\"N") via
+  // parseCoordinate — never plain parseFloat, which silently truncates a DMS
+  // string to its leading digit (a "valid" number pointing miles away) rather
+  // than rejecting it. An unparseable non-empty value throws instead of
+  // silently saving something wrong.
   if (latitude !== undefined) {
-    const n = latitude === "" || latitude === null ? null : parseFloat(latitude);
-    data.latitude = n != null && Number.isFinite(n) ? n : null;
+    if (latitude === "" || latitude === null) data.latitude = null;
+    else {
+      const n = parseCoordinate(String(latitude));
+      if (n == null) throw Object.assign(new Error(`Latitude "${latitude}" isn't a valid coordinate — use decimal degrees (e.g. 5.6037) or DMS (e.g. 5°35'14.1"N).`), { code: "VALIDATION" });
+      data.latitude = n;
+    }
   }
   if (longitude !== undefined) {
-    const n = longitude === "" || longitude === null ? null : parseFloat(longitude);
-    data.longitude = n != null && Number.isFinite(n) ? n : null;
+    if (longitude === "" || longitude === null) data.longitude = null;
+    else {
+      const n = parseCoordinate(String(longitude));
+      if (n == null) throw Object.assign(new Error(`Longitude "${longitude}" isn't a valid coordinate — use decimal degrees (e.g. -0.1870) or DMS (e.g. 0°11'31.3"W).`), { code: "VALIDATION" });
+      data.longitude = n;
+    }
   }
   if (geofenceRadius !== undefined) data.geofenceRadius = geofenceRadius ? parseInt(geofenceRadius) : 150;
   if (onboardingCompleted !== undefined) data.onboardingCompleted = Boolean(onboardingCompleted);

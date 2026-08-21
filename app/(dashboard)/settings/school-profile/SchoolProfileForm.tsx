@@ -208,17 +208,17 @@ export function SchoolProfileForm({ profile, qrAttendanceEnabled = false }: { pr
             <MapPin className="h-4 w-4 text-indigo-600" /> Attendance Geofence
           </CardTitle>
           <p className="text-xs text-gray-400 mt-1">
-            Staff and students scanning their ID card QR code must be within this radius of the school to be marked present.
+            Staff and students scanning their ID card QR code must be within this radius of the school to be marked present. Decimal degrees or DMS (e.g. 5°35'14.1"N) both work.
           </p>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <Label>Latitude</Label>
-            <Input value={form.latitude} onChange={(e) => set("latitude", e.target.value)} placeholder="e.g. 5.6037" />
+            <Input value={form.latitude} onChange={(e) => set("latitude", e.target.value)} placeholder="e.g. 5.6037 or 5°35'14.1&quot;N" />
           </div>
           <div>
             <Label>Longitude</Label>
-            <Input value={form.longitude} onChange={(e) => set("longitude", e.target.value)} placeholder="e.g. -0.1870" />
+            <Input value={form.longitude} onChange={(e) => set("longitude", e.target.value)} placeholder="e.g. -0.1870 or 0°11'31.3&quot;W" />
           </div>
           <div>
             <Label>Radius (meters)</Label>
