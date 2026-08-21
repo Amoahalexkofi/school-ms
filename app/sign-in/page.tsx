@@ -170,19 +170,6 @@ export default async function SignInRoute() {
               )}
             </div>
 
-            {/* Portal access row */}
-            <div className="hidden lg:block shrink-0 mb-6">
-              <p className="text-white/35 text-[10px] font-bold uppercase tracking-[0.18em] mb-3">Portal access for</p>
-              <div className="flex gap-2 flex-wrap">
-                {["Students", "Parents", "Staff", "Admin"].map(role => (
-                  <span key={role}
-                    className="text-[11px] font-semibold px-3 py-1.5 rounded-full"
-                    style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.75)", border: "1px solid rgba(255,255,255,0.18)" }}>
-                    {role}
-                  </span>
-                ))}
-              </div>
-            </div>
 
             {/* Powered by */}
             <div className="shrink-0">
