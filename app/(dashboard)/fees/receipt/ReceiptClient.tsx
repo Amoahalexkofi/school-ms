@@ -35,7 +35,7 @@ export function ReceiptClient({ deposit, entry, subInvoiceId, parentPhone, schoo
   }, []);
 
   return (
-    <main className="min-h-screen bg-gray-100 flex items-start justify-center py-8 print:bg-white print:p-0">
+    <main className="min-h-screen bg-gray-100 flex items-start justify-center px-4 py-8 print:bg-white print:p-0">
       {/* Controls — hidden when printing */}
       <div className="print:hidden fixed top-4 right-4 flex gap-2 z-50">
         {whatsAppHref && (
@@ -53,7 +53,7 @@ export function ReceiptClient({ deposit, entry, subInvoiceId, parentPhone, schoo
         </Button>
       </div>
 
-      <div className="w-[420px] bg-white shadow-lg rounded-xl overflow-hidden print:shadow-none print:rounded-none print:w-full">
+      <div className="w-full max-w-[420px] bg-white shadow-lg rounded-xl overflow-hidden print:shadow-none print:rounded-none print:w-full">
         {/* Header */}
         <div className="bg-blue-700 text-white text-center py-5 px-4">
           <p className="text-xs font-semibold uppercase tracking-widest opacity-80 mb-1">Skula</p>
