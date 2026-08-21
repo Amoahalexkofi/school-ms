@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 // Stable per-school pick (not random — same school always gets the same
@@ -47,7 +47,7 @@ export function SchoolSiteHero({
       : [
           { id: "d1", title: `Welcome to\n${schoolName}`, subtitle: motto ?? pickBySeed(FALLBACK_SUBTITLES, schoolName), ctaText: "Explore Portal", ctaLink: "/sign-in" },
           { id: "d2", title: "Excellence in\nEducation", subtitle: "Where every student is empowered to reach their fullest potential.", ctaText: "About Us", ctaLink: "#about" },
-          { id: "d3", title: "Admissions\nNow Open", subtitle: "Join a thriving school community. Applications welcome.", ctaText: "Apply Now", ctaLink: "/apply" },
+          { id: "d3", title: "Admissions\nNow Open", subtitle: "Join a thriving school community. Applications welcome.", ctaText: "Contact Us", ctaLink: "#contact" },
         ];
 
   const [idx, setIdx]     = useState(0);
@@ -186,10 +186,10 @@ export function SchoolSiteHero({
               {slide.ctaText}
             </Link>
             <Link
-              href="/sign-in"
-              className="inline-flex items-center justify-center gap-2 bg-transparent border border-white/35 text-white font-medium px-9 py-2.5 rounded-xl text-[14.5px] transition-all hover:bg-white/10 hover:border-white/50 whitespace-nowrap"
+              href="/apply"
+              className="group inline-flex items-center justify-center gap-2 bg-transparent border border-white/35 text-white font-medium px-9 py-2.5 rounded-xl text-[14.5px] transition-all hover:bg-white/10 hover:border-white/50 whitespace-nowrap"
             >
-              Staff / Parent Login
+              Apply Now <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
         </div>
