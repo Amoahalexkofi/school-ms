@@ -217,7 +217,7 @@ export default async function SignInRoute() {
             <div className="w-full max-w-[460px] bg-white rounded-2xl px-9 py-10 border border-slate-200/80">
 
               {/* School identity echo on the right */}
-              <div className="flex items-center gap-3 mb-8">
+              <div className="flex flex-col items-center text-center gap-3 mb-8">
                 {profile?.logo ? (
                   <img src={profile.logo} alt={name} className="w-9 h-9 rounded-full object-cover shrink-0"
                     style={{ boxShadow: `0 0 0 2px ${color}40` }} />
@@ -253,7 +253,7 @@ export default async function SignInRoute() {
               />
 
               {/* Back link */}
-              <div className="mt-8 pt-6 border-t border-slate-100">
+              <div className="mt-8 pt-6 border-t border-slate-100 text-center">
                 <a href={websiteUrl}
                   className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-400 hover:text-slate-700 transition-colors">
                   <ArrowLeft className="h-3.5 w-3.5" />
