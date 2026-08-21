@@ -1,11 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, XCircle, MapPin, Camera as CameraIcon } from "lucide-react";
+import { CheckCircle2, XCircle, MapPin, Camera as CameraIcon, Settings } from "lucide-react";
 
 type Result = { ok: true; already: boolean; name: string; status: string } | { ok: false; error: string };
 
-export function ScanClient() {
+export function ScanClient({ geofenceConfigured }: { geofenceConfigured: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const scannerRef = useRef<any>(null);
   const busyRef = useRef(false);
@@ -17,6 +18,7 @@ export function ScanClient() {
   const [result, setResult] = useState<Result | null>(null);
 
   useEffect(() => {
+    if (!geofenceConfigured) return;
     if (!("geolocation" in navigator)) {
       setLocStatus("denied");
       return;
@@ -39,7 +41,7 @@ export function ScanClient() {
       { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
     );
     return () => navigator.geolocation.clearWatch(watchId);
-  }, []);
+  }, [geofenceConfigured]);
 
   useEffect(() => {
     if (locStatus !== "ready" || !videoRef.current) return;
@@ -89,6 +91,23 @@ export function ScanClient() {
     }, 2500);
   }
 
+  if (!geofenceConfigured) {
+    return (
+      <main className="flex-1 p-4 md:p-6 flex flex-col items-center">
+        <div className="w-full max-w-sm mt-2 bg-white rounded-2xl border border-slate-200/80 px-6 py-6 text-center space-y-3">
+          <MapPin className="h-6 w-6 text-amber-500 mx-auto" />
+          <p className="text-[14px] font-semibold text-slate-900">Attendance scanning isn't set up yet</p>
+          <p className="text-[13px] text-slate-500">
+            The school's location hasn't been configured, so scans can't be verified yet. An admin needs to set it in School Profile first.
+          </p>
+          <Link href="/settings/school-profile" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-indigo-600 hover:text-indigo-700">
+            <Settings className="h-3.5 w-3.5" /> Go to School Profile
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="flex-1 p-4 md:p-6 flex flex-col items-center">
       <div className="w-full max-w-sm space-y-4 mt-2">
@@ -96,7 +115,7 @@ export function ScanClient() {
           <div className="flex items-center gap-2 text-[13px] text-slate-500">
             <MapPin className="h-4 w-4 shrink-0" />
             {locStatus === "asking" && "Getting your location…"}
-            {locStatus === "ready" && "Location confirmed — point the camera at a card's QR code"}
+            {locStatus === "ready" && "Got your location — point the camera at a card's QR code"}
             {locStatus === "denied" && locError}
           </div>
         </div>
