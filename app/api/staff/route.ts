@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     const tempPassword = generateTempPassword();
     const password = await bcrypt.hash(tempPassword, 12);
     // Whitelist assignable staff roles — never allow minting SUPER_ADMIN here.
-    const ALLOWED_STAFF_ROLES = ["ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN"];
+    const ALLOWED_STAFF_ROLES = ["ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"];
     const role = ALLOWED_STAFF_ROLES.includes(body.role) ? body.role : "TEACHER";
 
     // Multi Branch: tag new staff to the chosen branch (body) or active branch.

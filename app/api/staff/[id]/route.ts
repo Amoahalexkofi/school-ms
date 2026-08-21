@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 
 // Mirrors app/api/staff/route.ts's create-time whitelist — SUPER_ADMIN can
 // never be minted through a staff edit, by design.
-const ALLOWED_STAFF_ROLES = ["ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN"];
+const ALLOWED_STAFF_ROLES = ["ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"];
 
 const ALLOWED_FIELDS = [
   "departmentId","designationId","firstName","lastName","fatherName","motherName",

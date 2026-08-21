@@ -35,7 +35,7 @@ export function StaffAvatar({ staffId, image, initials }: { staffId: string; ima
 const GENDERS   = ["Male", "Female", "Other"];
 const MARITAL   = ["SINGLE", "MARRIED", "DIVORCED", "WIDOWED"];
 const CONTRACTS = ["PERMANENT", "CONTRACT", "TEMPORARY"];
-const ROLES     = ["TEACHER", "ADMIN", "ACCOUNTANT", "LIBRARIAN", "SUPER_ADMIN"];
+const ROLES     = ["TEACHER", "ADMIN", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"];
 
 type Props = {
   staff: any;

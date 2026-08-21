@@ -12,7 +12,7 @@ const GENDERS   = ["Male", "Female", "Other"];
 const RELIGIONS = ["Christian", "Muslim", "Traditional", "Other"];
 const MARITAL   = ["SINGLE", "MARRIED", "DIVORCED", "WIDOWED"];
 const CONTRACTS = ["PERMANENT", "CONTRACT", "TEMPORARY"];
-const ROLES     = ["TEACHER", "ADMIN", "ACCOUNTANT", "LIBRARIAN", "SUPER_ADMIN"];
+const ROLES     = ["TEACHER", "ADMIN", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"];
 
 const SECTIONS = ["Personal Info", "Employment", "Contact & Address", "Financial", "Social & Notes"] as const;
 type Section = typeof SECTIONS[number];
