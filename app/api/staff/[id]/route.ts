@@ -79,33 +79,63 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         return NextResponse.json({ error: "Invalid basic salary" }, { status: 422 });
     }
 
-    const { role } = body;
+    const { role, email } = body;
     if (role && !ALLOWED_STAFF_ROLES.includes(role)) {
       return NextResponse.json({ error: "Invalid role" }, { status: 422 });
     }
 
     const db = await getDb();
     let targetUserId: string | null = null;
-    if (role) {
-      const s = await (db as any).staff.findUnique({ where: { id }, select: { userId: true } });
+    let currentEmail: string | null = null;
+    if (role || email) {
+      const s = await (db as any).staff.findUnique({ where: { id }, select: { userId: true, user: { select: { email: true } } } });
       targetUserId = s?.userId ?? null;
+      currentEmail = s?.user?.email ?? null;
       // Never let anyone change their own role — self-elevation risk (an
       // Admin editing their own record could otherwise grant themselves
       // any role this route allows).
-      if (targetUserId && targetUserId === session.user!.id) {
+      if (role && targetUserId && targetUserId === session.user!.id) {
         return NextResponse.json({ error: "You cannot change your own role" }, { status: 403 });
       }
     }
 
+    // Email is also the login identifier, so it's admin-gated rather than
+    // covered by the general /staff permission matrix — only enforced when
+    // the value actually changes, so the field can travel in every save
+    // request without tripping this check for non-admin editors who never
+    // touched it.
+    let emailToSet: string | undefined;
+    if (typeof email === "string" && targetUserId) {
+      const trimmed = email.trim().toLowerCase();
+      if (trimmed && trimmed !== currentEmail?.toLowerCase()) {
+        const callerRole = (session.user as any).role;
+        if (callerRole !== "SUPER_ADMIN" && callerRole !== "ADMIN") {
+          return NextResponse.json({ error: "Only admins can change login email" }, { status: 403 });
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+          return NextResponse.json({ error: "Enter a valid email address" }, { status: 422 });
+        }
+        emailToSet = trimmed;
+      }
+    }
+
     const staff = await (db as any).$transaction(async (tx: any) => {
-      if (role && targetUserId) await tx.user.update({ where: { id: targetUserId }, data: { role } });
+      if (targetUserId && (role || emailToSet)) {
+        await tx.user.update({
+          where: { id: targetUserId },
+          data: { ...(role && { role }), ...(emailToSet && { email: emailToSet }) },
+        });
+      }
       return tx.staff.update({ where: { id }, data: staffData });
     });
 
-    await audit("update", "staff", id, role ? { roleChangedTo: role } : undefined);
+    await audit("update", "staff", id, (role || emailToSet) ? { roleChangedTo: role, emailChangedTo: emailToSet } : undefined);
 
     return NextResponse.json(staff);
   } catch (err: any) {
+    if (err.code === "P2002") {
+      return NextResponse.json({ error: "That email is already in use" }, { status: 422 });
+    }
     // Never leak raw Prisma dumps into the dialog.
     console.error("[staff PATCH]", err);
     return NextResponse.json({ error: "Failed to update staff — please check the field values" }, { status: 500 });

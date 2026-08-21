@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { auth } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +37,7 @@ export default async function StaffProfilePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { staff, departments, designations, allSubjects } = await getData(id);
+  const [session, { staff, departments, designations, allSubjects }] = await Promise.all([auth(), getData(id)]);
   if (!staff) notFound();
 
   const customPermCount: number = staff.appRole?.role?.permissions?.length ?? 0;
@@ -81,7 +82,7 @@ export default async function StaffProfilePage({
                         <ShieldCheck className="h-3.5 w-3.5" /> Permissions
                       </button>
                     </Link>
-                    <StaffProfileActions staff={staff} departments={departments} designations={designations} />
+                    <StaffProfileActions staff={staff} departments={departments} designations={designations} currentUserRole={(session?.user as any)?.role} />
                   </div>
                 </div>
                 <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-2 text-sm">

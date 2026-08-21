@@ -41,18 +41,21 @@ type Props = {
   staff: any;
   departments: any[];
   designations: any[];
+  currentUserRole?: string;
 };
 
-export function StaffProfileActions({ staff, departments, designations }: Props) {
+export function StaffProfileActions({ staff, departments, designations, currentUserRole }: Props) {
   const router = useRouter();
   const [editOpen, setEditOpen]       = useState(false);
   const [disableOpen, setDisableOpen] = useState(false);
   const [loading, setLoading]         = useState(false);
   const [error, setError]             = useState("");
+  const canEditEmail = currentUserRole === "SUPER_ADMIN" || currentUserRole === "ADMIN";
 
   const [form, setForm] = useState({
     firstName:        staff.firstName,
     lastName:         staff.lastName,
+    email:            staff.user?.email ?? "",
     fatherName:       staff.fatherName ?? "",
     motherName:       staff.motherName ?? "",
     dob:              staff.dob ? new Date(staff.dob).toISOString().slice(0, 10) : "",
@@ -234,6 +237,7 @@ export function StaffProfileActions({ staff, departments, designations }: Props)
             <Field label="Qualification" name="qualification" />
             <Field label="Work Experience" name="workExperience" />
             <Field label="Role" name="role" options={ROLES} />
+            {canEditEmail && <Field label="Login Email" name="email" type="email" />}
             <Field label="Department" name="departmentId" options={deptOptions} />
             <Field label="Designation" name="designationId" options={desigOptions} />
             <Field label="Date of Joining" name="dateOfJoining" type="date" />
