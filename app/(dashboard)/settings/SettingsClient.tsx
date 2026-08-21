@@ -219,28 +219,30 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
             {sessions.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-6">No sessions yet.</p>
             ) : (
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50"><tr>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Name</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Start</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">End</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
-                </tr></thead>
-                <tbody className="divide-y">
-                  {sessions.map((s: any) => (
-                    <tr key={s.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-2.5 font-medium">{s.name}</td>
-                      <td className="px-3 py-2.5 text-gray-500">{new Date(s.startDate).toLocaleDateString()}</td>
-                      <td className="px-3 py-2.5 text-gray-500">{new Date(s.endDate).toLocaleDateString()}</td>
-                      <td className="px-3 py-2.5">
-                        {s.isActive
-                          ? <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">Active</span>
-                          : <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Inactive</span>}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50"><tr>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Name</th>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Start</th>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">End</th>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
+                  </tr></thead>
+                  <tbody className="divide-y">
+                    {sessions.map((s: any) => (
+                      <tr key={s.id} className="hover:bg-gray-50">
+                        <td className="px-3 py-2.5 font-medium">{s.name}</td>
+                        <td className="px-3 py-2.5 text-gray-500">{new Date(s.startDate).toLocaleDateString()}</td>
+                        <td className="px-3 py-2.5 text-gray-500">{new Date(s.endDate).toLocaleDateString()}</td>
+                        <td className="px-3 py-2.5">
+                          {s.isActive
+                            ? <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">Active</span>
+                            : <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Inactive</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -347,35 +349,37 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
 
                       {/* Linked sections table */}
                       {linkedSections.length > 0 && (
-                        <table className="w-full text-sm">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th className="text-left px-2 py-1.5 text-xs font-medium text-gray-500">Section</th>
-                              <th className="text-left px-2 py-1.5 text-xs font-medium text-gray-500">Class Teacher</th>
-                              <th className="px-2 py-1.5"></th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y">
-                            {linkedSections.map((cs: any) => (
-                              <tr key={cs.id} className="hover:bg-gray-50">
-                                <td className="px-2 py-1.5 font-medium">
-                                  <span className="inline-flex items-center gap-1">
-                                    <Layers className="h-3 w-3 text-purple-500" />
-                                    {cs.section?.name ?? "—"}
-                                  </span>
-                                </td>
-                                <td className="px-2 py-1.5 text-gray-500 text-xs">
-                                  {cs.teacher ? `${cs.teacher.firstName} ${cs.teacher.lastName}` : "—"}
-                                </td>
-                                <td className="px-2 py-1.5 text-right space-x-2 whitespace-nowrap">
-                                  <button onClick={() => renameEntity("sections", cs.sectionId, cs.section?.name ?? "")} className="text-gray-400 hover:text-gray-600 text-xs" title="Rename section">Rename</button>
-                                  <button onClick={() => deleteEntity("sections", cs.sectionId, cs.section?.name ?? "")} className="text-red-400 hover:text-red-600 text-xs" title="Delete section everywhere">Delete</button>
-                                  <button onClick={() => removeSection(cs.id)} className="text-red-400 hover:text-red-600 text-xs">Remove</button>
-                                </td>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th className="text-left px-2 py-1.5 text-xs font-medium text-gray-500">Section</th>
+                                <th className="text-left px-2 py-1.5 text-xs font-medium text-gray-500">Class Teacher</th>
+                                <th className="px-2 py-1.5"></th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className="divide-y">
+                              {linkedSections.map((cs: any) => (
+                                <tr key={cs.id} className="hover:bg-gray-50">
+                                  <td className="px-2 py-1.5 font-medium">
+                                    <span className="inline-flex items-center gap-1">
+                                      <Layers className="h-3 w-3 text-purple-500" />
+                                      {cs.section?.name ?? "—"}
+                                    </span>
+                                  </td>
+                                  <td className="px-2 py-1.5 text-gray-500 text-xs">
+                                    {cs.teacher ? `${cs.teacher.firstName} ${cs.teacher.lastName}` : "—"}
+                                  </td>
+                                  <td className="px-2 py-1.5 text-right space-x-2 whitespace-nowrap">
+                                    <button onClick={() => renameEntity("sections", cs.sectionId, cs.section?.name ?? "")} className="text-gray-400 hover:text-gray-600 text-xs" title="Rename section">Rename</button>
+                                    <button onClick={() => deleteEntity("sections", cs.sectionId, cs.section?.name ?? "")} className="text-red-400 hover:text-red-600 text-xs" title="Delete section everywhere">Delete</button>
+                                    <button onClick={() => removeSection(cs.id)} className="text-red-400 hover:text-red-600 text-xs">Remove</button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       )}
 
                       {/* Inline link-section panel */}
@@ -554,33 +558,35 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
             {subjects.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-6">No subjects yet.</p>
             ) : (
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50"><tr>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Name</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Code</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Class</th>
-                  <th className="px-3 py-2"></th>
-                </tr></thead>
-                <tbody className="divide-y">
-                  {subjects.map((sub: any) => (
-                    <tr key={sub.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-2.5 font-medium">{sub.name}</td>
-                      <td className="px-3 py-2.5 font-mono text-xs text-gray-500">{sub.code ?? "—"}</td>
-                      <td className="px-3 py-2.5 text-gray-600">{sub.class?.name ?? "—"}</td>
-                      <td className="px-3 py-2.5 text-right">
-                        <div className="inline-flex items-center gap-2">
-                          <button onClick={() => renameEntity("subjects", sub.id, sub.name)} className="text-gray-400 hover:text-gray-600" title="Rename subject">
-                            <Pencil className="h-3.5 w-3.5" />
-                          </button>
-                          <button onClick={() => deleteEntity("subjects", sub.id, sub.name)} className="text-gray-400 hover:text-red-600" title="Delete subject">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50"><tr>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Name</th>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Code</th>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Class</th>
+                    <th className="px-3 py-2"></th>
+                  </tr></thead>
+                  <tbody className="divide-y">
+                    {subjects.map((sub: any) => (
+                      <tr key={sub.id} className="hover:bg-gray-50">
+                        <td className="px-3 py-2.5 font-medium">{sub.name}</td>
+                        <td className="px-3 py-2.5 font-mono text-xs text-gray-500">{sub.code ?? "—"}</td>
+                        <td className="px-3 py-2.5 text-gray-600">{sub.class?.name ?? "—"}</td>
+                        <td className="px-3 py-2.5 text-right">
+                          <div className="inline-flex items-center gap-2">
+                            <button onClick={() => renameEntity("subjects", sub.id, sub.name)} className="text-gray-400 hover:text-gray-600" title="Rename subject">
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                            <button onClick={() => deleteEntity("subjects", sub.id, sub.name)} className="text-gray-400 hover:text-red-600" title="Delete subject">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -670,33 +676,35 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
             {staff.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-6">No staff added yet.</p>
             ) : (
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50"><tr>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Staff</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600">Designation</th>
-                  <th className="text-right px-3 py-2 font-medium text-gray-600">Basic</th>
-                  <th className="text-right px-3 py-2 font-medium text-gray-600">Allowances</th>
-                  <th className="text-right px-3 py-2 font-medium text-gray-600">Deductions</th>
-                  <th className="text-right px-3 py-2 font-medium text-gray-600">Net</th>
-                </tr></thead>
-                <tbody className="divide-y">
-                  {staff.map((s: any) => {
-                    const basic = Number(s.basicSalary ?? 0);
-                    const allow = Number(s.allowances ?? 0);
-                    const deduct = Number(s.deductions ?? 0);
-                    return (
-                      <tr key={s.id} className="hover:bg-gray-50">
-                        <td className="px-3 py-2.5 font-medium">{s.firstName} {s.lastName}</td>
-                        <td className="px-3 py-2.5 text-gray-500">{s.designation?.name ?? "—"}</td>
-                        <td className="px-3 py-2.5 text-right">{basic > 0 ? `₵${basic.toLocaleString()}` : "—"}</td>
-                        <td className="px-3 py-2.5 text-right text-green-600">{allow > 0 ? `+₵${allow.toLocaleString()}` : "—"}</td>
-                        <td className="px-3 py-2.5 text-right text-red-600">{deduct > 0 ? `-₵${deduct.toLocaleString()}` : "—"}</td>
-                        <td className="px-3 py-2.5 text-right font-semibold">₵{(basic + allow - deduct).toLocaleString()}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50"><tr>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Staff</th>
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Designation</th>
+                    <th className="text-right px-3 py-2 font-medium text-gray-600">Basic</th>
+                    <th className="text-right px-3 py-2 font-medium text-gray-600">Allowances</th>
+                    <th className="text-right px-3 py-2 font-medium text-gray-600">Deductions</th>
+                    <th className="text-right px-3 py-2 font-medium text-gray-600">Net</th>
+                  </tr></thead>
+                  <tbody className="divide-y">
+                    {staff.map((s: any) => {
+                      const basic = Number(s.basicSalary ?? 0);
+                      const allow = Number(s.allowances ?? 0);
+                      const deduct = Number(s.deductions ?? 0);
+                      return (
+                        <tr key={s.id} className="hover:bg-gray-50">
+                          <td className="px-3 py-2.5 font-medium">{s.firstName} {s.lastName}</td>
+                          <td className="px-3 py-2.5 text-gray-500">{s.designation?.name ?? "—"}</td>
+                          <td className="px-3 py-2.5 text-right">{basic > 0 ? `₵${basic.toLocaleString()}` : "—"}</td>
+                          <td className="px-3 py-2.5 text-right text-green-600">{allow > 0 ? `+₵${allow.toLocaleString()}` : "—"}</td>
+                          <td className="px-3 py-2.5 text-right text-red-600">{deduct > 0 ? `-₵${deduct.toLocaleString()}` : "—"}</td>
+                          <td className="px-3 py-2.5 text-right font-semibold">₵{(basic + allow - deduct).toLocaleString()}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
           </CardContent>
         </Card>

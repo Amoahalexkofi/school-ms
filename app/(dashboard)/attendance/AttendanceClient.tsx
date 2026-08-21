@@ -210,62 +210,64 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
             </Card>
           ) : (
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600 w-10">#</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Roll No</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Adm No.</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Attendance</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Remark</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {enrollments.map((enr, idx) => {
-                    const s = enr.student;
-                    const selectedTypeId = marks[enr.id];
-                    const selectedType   = attendanceTypes.find(t => t.id === selectedTypeId);
-                    return (
-                      <tr key={enr.id} className={`hover:bg-gray-50 ${selectedType?.keyValue === "A" ? "bg-red-50/30" : ""}`}>
-                        <td className="px-4 py-3 text-gray-400 text-xs">{idx + 1}</td>
-                        <td className="px-4 py-3 text-gray-500 text-xs font-mono">{enr.rollNo ?? "—"}</td>
-                        <td className="px-4 py-3">
-                          <span className="font-medium text-gray-900">
-                            {s.firstName} {s.middleName ? s.middleName + " " : ""}{s.lastName}
-                          </span>
-                          {s.gender && <span className="text-xs text-gray-400 ml-2">{s.gender}</span>}
-                        </td>
-                        <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.admissionNo}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex gap-1.5">
-                            {attendanceTypes.map(t => (
-                              <button key={t.id} onClick={() => setMarks(m => ({ ...m, [enr.id]: t.id }))}
-                                title={t.type}
-                                className={`w-8 h-8 rounded-lg border text-xs font-bold transition-all ${
-                                  marks[enr.id] === t.id
-                                    ? (KV_STYLE[t.keyValue] ?? "bg-gray-200") + " ring-2 ring-offset-1 ring-current shadow-sm"
-                                    : "bg-white text-gray-300 border-gray-200 hover:border-gray-400 hover:text-gray-600"
-                                }`}>
-                                {t.keyValue}
-                              </button>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <input
-                            type="text"
-                            placeholder="optional…"
-                            value={remarks[enr.id] ?? ""}
-                            onChange={e => setRemarks(r => ({ ...r, [enr.id]: e.target.value }))}
-                            className="w-36 h-7 rounded border border-gray-200 px-2 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                          />
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b">
+                    <tr>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600 w-10">#</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Roll No</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Adm No.</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Attendance</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Remark</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {enrollments.map((enr, idx) => {
+                      const s = enr.student;
+                      const selectedTypeId = marks[enr.id];
+                      const selectedType   = attendanceTypes.find(t => t.id === selectedTypeId);
+                      return (
+                        <tr key={enr.id} className={`hover:bg-gray-50 ${selectedType?.keyValue === "A" ? "bg-red-50/30" : ""}`}>
+                          <td className="px-4 py-3 text-gray-400 text-xs">{idx + 1}</td>
+                          <td className="px-4 py-3 text-gray-500 text-xs font-mono">{enr.rollNo ?? "—"}</td>
+                          <td className="px-4 py-3">
+                            <span className="font-medium text-gray-900">
+                              {s.firstName} {s.middleName ? s.middleName + " " : ""}{s.lastName}
+                            </span>
+                            {s.gender && <span className="text-xs text-gray-400 ml-2">{s.gender}</span>}
+                          </td>
+                          <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.admissionNo}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex gap-1.5">
+                              {attendanceTypes.map(t => (
+                                <button key={t.id} onClick={() => setMarks(m => ({ ...m, [enr.id]: t.id }))}
+                                  title={t.type}
+                                  className={`w-8 h-8 rounded-lg border text-xs font-bold transition-all ${
+                                    marks[enr.id] === t.id
+                                      ? (KV_STYLE[t.keyValue] ?? "bg-gray-200") + " ring-2 ring-offset-1 ring-current shadow-sm"
+                                      : "bg-white text-gray-300 border-gray-200 hover:border-gray-400 hover:text-gray-600"
+                                  }`}>
+                                  {t.keyValue}
+                                </button>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <input
+                              type="text"
+                              placeholder="optional…"
+                              value={remarks[enr.id] ?? ""}
+                              onChange={e => setRemarks(r => ({ ...r, [enr.id]: e.target.value }))}
+                              className="w-36 h-7 rounded border border-gray-200 px-2 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
               {/* Sticky footer save */}
               <div className="border-t bg-gray-50 px-4 py-3 flex items-center justify-between gap-3">

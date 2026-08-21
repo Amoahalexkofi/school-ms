@@ -170,57 +170,59 @@ export function StaffPermissionsMatrix({
       {/* One row per module — matches exactly what the server enforces */}
       <Card>
         <CardContent className="p-0">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-y">
-              <tr>
-                <th className="text-left px-4 py-2 font-medium text-gray-600">Module</th>
-                {ACTIONS.map(({ label, color }) => (
-                  <th key={label} className={`text-center px-4 py-2 font-medium w-20 ${color}`}>{label}</th>
-                ))}
-                <th className="w-10" />
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {groups.map((group) => {
-                const p = get(group);
-                const isCustomized = touched.has(group.id);
-                const hasAny = p.canView || p.canAdd || p.canEdit || p.canDelete;
-                return (
-                  <tr key={group.id} className={`hover:bg-gray-50 ${hasAny ? "" : "opacity-60"}`}>
-                    <td className="px-4 py-2.5 font-medium text-gray-800">
-                      <div className="flex items-center gap-2">
-                        {group.name}
-                        {isCustomized && <Badge variant="outline" className="text-[10px] px-1.5 py-0 shrink-0">Customized</Badge>}
-                      </div>
-                    </td>
-                    {ACTIONS.map(({ key, color }) => (
-                      <td key={key} className="px-4 py-2.5 text-center">
-                        <button
-                          onClick={() => toggle(group, key)}
-                          className={`inline-flex items-center justify-center w-6 h-6 rounded transition-colors ${
-                            p[key] ? `${color} opacity-100` : "text-gray-200 hover:text-gray-400"
-                          }`}
-                        >
-                          {p[key] ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5" />}
-                        </button>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-y">
+                <tr>
+                  <th className="text-left px-4 py-2 font-medium text-gray-600">Module</th>
+                  {ACTIONS.map(({ label, color }) => (
+                    <th key={label} className={`text-center px-4 py-2 font-medium w-20 ${color}`}>{label}</th>
+                  ))}
+                  <th className="w-10" />
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {groups.map((group) => {
+                  const p = get(group);
+                  const isCustomized = touched.has(group.id);
+                  const hasAny = p.canView || p.canAdd || p.canEdit || p.canDelete;
+                  return (
+                    <tr key={group.id} className={`hover:bg-gray-50 ${hasAny ? "" : "opacity-60"}`}>
+                      <td className="px-4 py-2.5 font-medium text-gray-800">
+                        <div className="flex items-center gap-2">
+                          {group.name}
+                          {isCustomized && <Badge variant="outline" className="text-[10px] px-1.5 py-0 shrink-0">Customized</Badge>}
+                        </div>
                       </td>
-                    ))}
-                    <td className="px-2 text-center">
-                      {isCustomized && (
-                        <button
-                          onClick={() => resetToDefault(group)}
-                          title={`Reset to ${baseRole.replace(/_/g, " ").toLowerCase()} default`}
-                          className="text-gray-300 hover:text-gray-500"
-                        >
-                          <RotateCcw className="h-3.5 w-3.5" />
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      {ACTIONS.map(({ key, color }) => (
+                        <td key={key} className="px-4 py-2.5 text-center">
+                          <button
+                            onClick={() => toggle(group, key)}
+                            className={`inline-flex items-center justify-center w-6 h-6 rounded transition-colors ${
+                              p[key] ? `${color} opacity-100` : "text-gray-200 hover:text-gray-400"
+                            }`}
+                          >
+                            {p[key] ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5" />}
+                          </button>
+                        </td>
+                      ))}
+                      <td className="px-2 text-center">
+                        {isCustomized && (
+                          <button
+                            onClick={() => resetToDefault(group)}
+                            title={`Reset to ${baseRole.replace(/_/g, " ").toLowerCase()} default`}
+                            className="text-gray-300 hover:text-gray-500"
+                          >
+                            <RotateCcw className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
 

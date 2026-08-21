@@ -79,44 +79,46 @@ export function NotificationsClient({ settings: initial }: { settings: NotifRow[
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Event</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">
-                  <div className="flex flex-col items-center gap-1">
-                    <span>Email</span>
-                    <button onClick={() => setAll("emailEnabled", !allEmail)} className="text-xs text-blue-500 hover:underline">{allEmail ? "None" : "All"}</button>
-                  </div>
-                </th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">
-                  <div className="flex flex-col items-center gap-1">
-                    <span>SMS</span>
-                    <button onClick={() => setAll("smsEnabled", !allSms)} className="text-xs text-blue-500 hover:underline">{allSms ? "None" : "All"}</button>
-                  </div>
-                </th>
-                <th className="text-center px-4 py-3 font-medium text-gray-400">
-                  <div className="flex flex-col items-center gap-1">
-                    <span>Push</span>
-                    <span className="text-xs normal-case font-normal">Coming soon</span>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {settings.map((s) => (
-                <tr key={s.type} className={`hover:bg-gray-50 ${s.implemented ? "" : "opacity-60"}`}>
-                  <td className="px-4 py-3 font-medium">
-                    {s.label}
-                    {!s.implemented && <span className="ml-2 text-xs font-normal text-gray-400 align-middle">Not available yet</span>}
-                  </td>
-                  <td className="px-4 py-3 text-center"><Toggle checked={s.emailEnabled} disabled={!s.implemented} onChange={() => toggle(s.type, "emailEnabled")} /></td>
-                  <td className="px-4 py-3 text-center"><Toggle checked={s.smsEnabled}   disabled={!s.implemented} onChange={() => toggle(s.type, "smsEnabled")} /></td>
-                  <td className="px-4 py-3 text-center"><Toggle checked={false} disabled onChange={() => {}} /></td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Event</th>
+                  <th className="text-center px-4 py-3 font-medium text-gray-600">
+                    <div className="flex flex-col items-center gap-1">
+                      <span>Email</span>
+                      <button onClick={() => setAll("emailEnabled", !allEmail)} className="text-xs text-blue-500 hover:underline">{allEmail ? "None" : "All"}</button>
+                    </div>
+                  </th>
+                  <th className="text-center px-4 py-3 font-medium text-gray-600">
+                    <div className="flex flex-col items-center gap-1">
+                      <span>SMS</span>
+                      <button onClick={() => setAll("smsEnabled", !allSms)} className="text-xs text-blue-500 hover:underline">{allSms ? "None" : "All"}</button>
+                    </div>
+                  </th>
+                  <th className="text-center px-4 py-3 font-medium text-gray-400">
+                    <div className="flex flex-col items-center gap-1">
+                      <span>Push</span>
+                      <span className="text-xs normal-case font-normal">Coming soon</span>
+                    </div>
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y">
+                {settings.map((s) => (
+                  <tr key={s.type} className={`hover:bg-gray-50 ${s.implemented ? "" : "opacity-60"}`}>
+                    <td className="px-4 py-3 font-medium">
+                      {s.label}
+                      {!s.implemented && <span className="ml-2 text-xs font-normal text-gray-400 align-middle">Not available yet</span>}
+                    </td>
+                    <td className="px-4 py-3 text-center"><Toggle checked={s.emailEnabled} disabled={!s.implemented} onChange={() => toggle(s.type, "emailEnabled")} /></td>
+                    <td className="px-4 py-3 text-center"><Toggle checked={s.smsEnabled}   disabled={!s.implemented} onChange={() => toggle(s.type, "smsEnabled")} /></td>
+                    <td className="px-4 py-3 text-center"><Toggle checked={false} disabled onChange={() => {}} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
 

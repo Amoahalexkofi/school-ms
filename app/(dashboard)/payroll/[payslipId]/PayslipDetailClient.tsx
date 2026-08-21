@@ -199,37 +199,39 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
                 </Button>
               )}
             </div>
-            <table className="w-full text-sm">
-              <tbody className="divide-y divide-gray-50">
-                <tr className="text-gray-700">
-                  <td className="py-2 font-medium">Basic Salary</td>
-                  <td className="py-2 text-right font-semibold">₵{Number(payslip.basicSalary ?? 0).toLocaleString()}</td>
-                  <td className="w-8" />
-                </tr>
-                {allowances.map(a => (
-                  <tr key={a.id} className="text-gray-600">
-                    <td className="py-2">{a.type}</td>
-                    <td className="py-2 text-right text-green-700">+ ₵{Number(a.amount).toLocaleString()}</td>
-                    <td className="py-2 pl-2">
-                      {!isPaid && (
-                        <button onClick={() => deleteLine(a.id)} className="text-gray-300 hover:text-red-500 transition-colors">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      )}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <tbody className="divide-y divide-gray-50">
+                  <tr className="text-gray-700">
+                    <td className="py-2 font-medium">Basic Salary</td>
+                    <td className="py-2 text-right font-semibold">₵{Number(payslip.basicSalary ?? 0).toLocaleString()}</td>
+                    <td className="w-8" />
                   </tr>
-                ))}
-              </tbody>
-              <tfoot className="border-t-2 border-gray-200">
-                <tr>
-                  <td className="pt-2 font-semibold text-gray-800">Total Earnings</td>
-                  <td className="pt-2 text-right font-bold text-green-700">
-                    ₵{(Number(payslip.basicSalary) + Number(payslip.totalAllowance)).toLocaleString()}
-                  </td>
-                  <td />
-                </tr>
-              </tfoot>
-            </table>
+                  {allowances.map(a => (
+                    <tr key={a.id} className="text-gray-600">
+                      <td className="py-2">{a.type}</td>
+                      <td className="py-2 text-right text-green-700">+ ₵{Number(a.amount).toLocaleString()}</td>
+                      <td className="py-2 pl-2">
+                        {!isPaid && (
+                          <button onClick={() => deleteLine(a.id)} className="text-gray-300 hover:text-red-500 transition-colors">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot className="border-t-2 border-gray-200">
+                  <tr>
+                    <td className="pt-2 font-semibold text-gray-800">Total Earnings</td>
+                    <td className="pt-2 text-right font-bold text-green-700">
+                      ₵{(Number(payslip.basicSalary) + Number(payslip.totalAllowance)).toLocaleString()}
+                    </td>
+                    <td />
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </div>
 
           {/* Deductions */}
@@ -244,49 +246,51 @@ export function PayslipDetailClient({ payslip: initial }: { payslip: Payslip }) 
                 </Button>
               )}
             </div>
-            <table className="w-full text-sm">
-              <tbody className="divide-y divide-gray-50">
-                {/* Tax row — editable */}
-                <tr className="text-gray-600">
-                  <td className="py-2">Tax</td>
-                  <td className="py-2 text-right">
-                    {!isPaid ? (
-                      <div className="flex items-center justify-end gap-1">
-                        <span className="text-gray-400">₵</span>
-                        <Input type="number" min="0" step="0.01" className="w-24 h-7 text-right text-xs"
-                          value={taxInput} onChange={e => setTaxInput(e.target.value)}
-                          onBlur={updateTax} />
-                      </div>
-                    ) : (
-                      <span className="text-red-600">- ₵{Number(payslip.tax).toLocaleString()}</span>
-                    )}
-                  </td>
-                  <td className="w-8" />
-                </tr>
-                {deductions.map(a => (
-                  <tr key={a.id} className="text-gray-600">
-                    <td className="py-2">{a.type}</td>
-                    <td className="py-2 text-right text-red-600">- ₵{Number(a.amount).toLocaleString()}</td>
-                    <td className="py-2 pl-2">
-                      {!isPaid && (
-                        <button onClick={() => deleteLine(a.id)} className="text-gray-300 hover:text-red-500 transition-colors">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <tbody className="divide-y divide-gray-50">
+                  {/* Tax row — editable */}
+                  <tr className="text-gray-600">
+                    <td className="py-2">Tax</td>
+                    <td className="py-2 text-right">
+                      {!isPaid ? (
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="text-gray-400">₵</span>
+                          <Input type="number" min="0" step="0.01" className="w-24 h-7 text-right text-xs"
+                            value={taxInput} onChange={e => setTaxInput(e.target.value)}
+                            onBlur={updateTax} />
+                        </div>
+                      ) : (
+                        <span className="text-red-600">- ₵{Number(payslip.tax).toLocaleString()}</span>
                       )}
                     </td>
+                    <td className="w-8" />
                   </tr>
-                ))}
-              </tbody>
-              <tfoot className="border-t-2 border-gray-200">
-                <tr>
-                  <td className="pt-2 font-semibold text-gray-800">Total Deductions</td>
-                  <td className="pt-2 text-right font-bold text-red-600">
-                    ₵{(Number(payslip.totalDeduction) + Number(payslip.tax)).toLocaleString()}
-                  </td>
-                  <td />
-                </tr>
-              </tfoot>
-            </table>
+                  {deductions.map(a => (
+                    <tr key={a.id} className="text-gray-600">
+                      <td className="py-2">{a.type}</td>
+                      <td className="py-2 text-right text-red-600">- ₵{Number(a.amount).toLocaleString()}</td>
+                      <td className="py-2 pl-2">
+                        {!isPaid && (
+                          <button onClick={() => deleteLine(a.id)} className="text-gray-300 hover:text-red-500 transition-colors">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot className="border-t-2 border-gray-200">
+                  <tr>
+                    <td className="pt-2 font-semibold text-gray-800">Total Deductions</td>
+                    <td className="pt-2 text-right font-bold text-red-600">
+                      ₵{(Number(payslip.totalDeduction) + Number(payslip.tax)).toLocaleString()}
+                    </td>
+                    <td />
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </div>
         </div>
 

@@ -96,48 +96,50 @@ export function SourcesClient({ items: initial, apiPath, title, description }: {
       ) : (
         <Card>
           <CardContent className="p-0">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Name</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Description</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {items.map((item, i) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-gray-400">{i + 1}</td>
-                    <td className="px-4 py-3">
-                      {editId === item.id ? (
-                        <Input value={editForm.name} onChange={(e) => setEditForm(f => ({ ...f, name: e.target.value }))} className="h-8 w-40" autoFocus />
-                      ) : <span className="font-medium">{item.name}</span>}
-                    </td>
-                    <td className="px-4 py-3 text-gray-500">
-                      {editId === item.id ? (
-                        <Input value={editForm.description ?? ""} onChange={(e) => setEditForm(f => ({ ...f, description: e.target.value }))} className="h-8 w-48" />
-                      ) : item.description || "—"}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex gap-1 justify-end">
-                        {editId === item.id ? (
-                          <>
-                            <button onClick={() => update(item.id)} className="text-green-600 p-1"><Check className="h-4 w-4" /></button>
-                            <button onClick={() => setEditId(null)} className="text-gray-400 p-1"><X className="h-4 w-4" /></button>
-                          </>
-                        ) : (
-                          <>
-                            {perm.canEdit && <Button size="sm" variant="ghost" onClick={() => { setEditId(item.id); setEditForm({ name: item.name, description: item.description ?? "" }); }}><Pencil className="h-3.5 w-3.5" /></Button>}
-                            {perm.canDelete && <Button size="sm" variant="ghost" onClick={() => del(item.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>}
-                          </>
-                        )}
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Name</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Description</th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y">
+                  {items.map((item, i) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-gray-400">{i + 1}</td>
+                      <td className="px-4 py-3">
+                        {editId === item.id ? (
+                          <Input value={editForm.name} onChange={(e) => setEditForm(f => ({ ...f, name: e.target.value }))} className="h-8 w-40" autoFocus />
+                        ) : <span className="font-medium">{item.name}</span>}
+                      </td>
+                      <td className="px-4 py-3 text-gray-500">
+                        {editId === item.id ? (
+                          <Input value={editForm.description ?? ""} onChange={(e) => setEditForm(f => ({ ...f, description: e.target.value }))} className="h-8 w-48" />
+                        ) : item.description || "—"}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex gap-1 justify-end">
+                          {editId === item.id ? (
+                            <>
+                              <button onClick={() => update(item.id)} className="text-green-600 p-1"><Check className="h-4 w-4" /></button>
+                              <button onClick={() => setEditId(null)} className="text-gray-400 p-1"><X className="h-4 w-4" /></button>
+                            </>
+                          ) : (
+                            <>
+                              {perm.canEdit && <Button size="sm" variant="ghost" onClick={() => { setEditId(item.id); setEditForm({ name: item.name, description: item.description ?? "" }); }}><Pencil className="h-3.5 w-3.5" /></Button>}
+                              {perm.canDelete && <Button size="sm" variant="ghost" onClick={() => del(item.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>}
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       )}

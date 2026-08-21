@@ -116,39 +116,41 @@ export function FeeSessionGroupClient({ sg, feeTypes }: Props) {
           {sg.items.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">No items yet. Add fee types with amounts.</p>
           ) : (
-            <table className="w-full text-sm tabular-nums">
-              <thead className="bg-gray-50 border-t border-b">
-                <tr>
-                  {["Fee Type", "Code", "Amount (₵)", "Due Date", "Fine", ""].map(h => (
-                    <th key={h} className="text-left px-4 py-2.5 font-medium text-gray-600">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {sg.items.map((item: Item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900">{item.feeType.name}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{item.feeType.code}</td>
-                    <td className="px-4 py-3 font-semibold text-green-700">₵{Number(item.amount).toLocaleString()}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "—"}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">
-                      {item.fineType === "NONE" ? "—"
-                        : item.fineType === "PERCENTAGE" ? `${item.finePercentage}%`
-                        : `₵${item.fineAmount}`}
-                    </td>
-                    <td className="px-4 py-3 flex gap-2 justify-end">
-                      <Button size="sm" variant="outline" onClick={() => openEdit(item)}><Pencil className="h-3.5 w-3.5" /></Button>
-                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => handleDelete(item.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm tabular-nums">
+                <thead className="bg-gray-50 border-t border-b">
+                  <tr>
+                    {["Fee Type", "Code", "Amount (₵)", "Due Date", "Fine", ""].map(h => (
+                      <th key={h} className="text-left px-4 py-2.5 font-medium text-gray-600">{h}</th>
+                    ))}
                   </tr>
-                ))}
-                <tr className="bg-gray-50 border-t">
-                  <td colSpan={2} className="px-4 py-2.5 font-semibold text-gray-700">Total</td>
-                  <td className="px-4 py-2.5 font-bold text-green-700">₵{totalAmount.toLocaleString()}</td>
-                  <td colSpan={3} />
-                </tr>
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y">
+                  {sg.items.map((item: Item) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium text-gray-900">{item.feeType.name}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{item.feeType.code}</td>
+                      <td className="px-4 py-3 font-semibold text-green-700">₵{Number(item.amount).toLocaleString()}</td>
+                      <td className="px-4 py-3 text-gray-500 text-xs">{item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "—"}</td>
+                      <td className="px-4 py-3 text-gray-500 text-xs">
+                        {item.fineType === "NONE" ? "—"
+                          : item.fineType === "PERCENTAGE" ? `${item.finePercentage}%`
+                          : `₵${item.fineAmount}`}
+                      </td>
+                      <td className="px-4 py-3 flex gap-2 justify-end">
+                        <Button size="sm" variant="outline" onClick={() => openEdit(item)}><Pencil className="h-3.5 w-3.5" /></Button>
+                        <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => handleDelete(item.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="bg-gray-50 border-t">
+                    <td colSpan={2} className="px-4 py-2.5 font-semibold text-gray-700">Total</td>
+                    <td className="px-4 py-2.5 font-bold text-green-700">₵{totalAmount.toLocaleString()}</td>
+                    <td colSpan={3} />
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           )}
         </CardContent>
       </Card>

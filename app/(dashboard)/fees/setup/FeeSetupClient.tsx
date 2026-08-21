@@ -252,34 +252,36 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             </Button>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <table className="w-full text-sm tabular-nums">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  {["Name", "Code", "Category", ""].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {types.length === 0 ? (
-                  <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-gray-400">No fee types yet.</td></tr>
-                ) : types.map((t: any) => (
-                  <tr key={t.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900">{t.name}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{t.code}</td>
-                    <td className="px-4 py-3 text-gray-500">{t.feeCategory?.name ?? "—"}</td>
-                    <td className="px-4 py-3 flex gap-2 justify-end">
-                      <Button size="sm" variant="outline" onClick={() => { setTypeName(t.name); setTypeCode(t.code); setTypeCatId(t.feeCategoryId ?? ""); setTypeDesc(t.description ?? ""); setTypeEdit(t); setTypeErr(""); setTypeOpen(true); }}>
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => deleteType(t.id)}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm tabular-nums">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    {["Name", "Code", "Category", ""].map(h => (
+                      <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y">
+                  {types.length === 0 ? (
+                    <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-gray-400">No fee types yet.</td></tr>
+                  ) : types.map((t: any) => (
+                    <tr key={t.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium text-gray-900">{t.name}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{t.code}</td>
+                      <td className="px-4 py-3 text-gray-500">{t.feeCategory?.name ?? "—"}</td>
+                      <td className="px-4 py-3 flex gap-2 justify-end">
+                        <Button size="sm" variant="outline" onClick={() => { setTypeName(t.name); setTypeCode(t.code); setTypeCatId(t.feeCategoryId ?? ""); setTypeDesc(t.description ?? ""); setTypeEdit(t); setTypeErr(""); setTypeOpen(true); }}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => deleteType(t.id)}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -352,45 +354,47 @@ export function FeeSetupClient({ categories, types, groups, sessions, discounts:
             </Button>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <table className="w-full text-sm tabular-nums">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  {["Name", "Code", "Type", "Value", "Expires", ""].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {discounts.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No discounts yet.</td></tr>
-                ) : discounts.map((d: any) => (
-                  <tr key={d.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900">{d.name}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{d.code}</td>
-                    <td className="px-4 py-3 text-gray-500 capitalize">{d.type}</td>
-                    <td className="px-4 py-3 text-gray-700">
-                      {d.type === "percentage" ? `${d.percentage}%` : `₵${Number(d.amount).toLocaleString()}`}
-                    </td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">
-                      {d.expireDate ? new Date(d.expireDate).toLocaleDateString() : "—"}
-                    </td>
-                    <td className="px-4 py-3 flex gap-2 justify-end">
-                      <Button size="sm" variant="outline" onClick={() => {
-                        setDiscName(d.name); setDiscCode(d.code); setDiscType(d.type);
-                        setDiscPct(String(d.percentage ?? "")); setDiscAmt(String(d.amount ?? ""));
-                        setDiscDesc(d.description ?? ""); setDiscExpiry(d.expireDate ? d.expireDate.slice(0, 10) : "");
-                        setDiscEdit(d); setDiscErr(""); setDiscOpen(true);
-                      }}>
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => deleteDiscount(d.id)}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm tabular-nums">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    {["Name", "Code", "Type", "Value", "Expires", ""].map(h => (
+                      <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y">
+                  {discounts.length === 0 ? (
+                    <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No discounts yet.</td></tr>
+                  ) : discounts.map((d: any) => (
+                    <tr key={d.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium text-gray-900">{d.name}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{d.code}</td>
+                      <td className="px-4 py-3 text-gray-500 capitalize">{d.type}</td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {d.type === "percentage" ? `${d.percentage}%` : `₵${Number(d.amount).toLocaleString()}`}
+                      </td>
+                      <td className="px-4 py-3 text-gray-400 text-xs">
+                        {d.expireDate ? new Date(d.expireDate).toLocaleDateString() : "—"}
+                      </td>
+                      <td className="px-4 py-3 flex gap-2 justify-end">
+                        <Button size="sm" variant="outline" onClick={() => {
+                          setDiscName(d.name); setDiscCode(d.code); setDiscType(d.type);
+                          setDiscPct(String(d.percentage ?? "")); setDiscAmt(String(d.amount ?? ""));
+                          setDiscDesc(d.description ?? ""); setDiscExpiry(d.expireDate ? d.expireDate.slice(0, 10) : "");
+                          setDiscEdit(d); setDiscErr(""); setDiscOpen(true);
+                        }}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => deleteDiscount(d.id)}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

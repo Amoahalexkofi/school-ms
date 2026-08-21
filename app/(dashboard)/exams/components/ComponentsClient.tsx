@@ -91,69 +91,71 @@ export function ComponentsClient({ initial }: { initial: Comp[] }) {
             </div>
           ) : (
             <>
-              <table className="w-full mt-5 text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200 text-left">
-                    <th className="py-2 pr-3 font-medium text-slate-500">Component</th>
-                    <th className="py-2 pr-3 font-medium text-slate-500 w-28">Weight (%)</th>
-                    <th className="py-2 pr-3 font-medium text-slate-500 w-36">End-of-term exam?</th>
-                    <th className="py-2 w-10"><span className="sr-only">Remove</span></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {comps.map((c, i) => (
-                    <tr key={c.id ?? `new-${i}`}>
-                      <td className="py-2 pr-3">
-                        <Input
-                          value={c.name}
-                          placeholder="e.g. Class Work / Home Work"
-                          aria-label="Component name"
-                          onChange={e => update(i, { name: e.target.value })}
-                        />
-                      </td>
-                      <td className="py-2 pr-3">
-                        <Input
-                          type="number" min="1" max="100" step="0.5"
-                          value={c.weight}
-                          aria-label="Weight percent"
-                          onChange={e => update(i, { weight: e.target.value })}
-                        />
-                      </td>
-                      <td className="py-2 pr-3">
-                        <label className="inline-flex items-center gap-2 text-[13px] text-slate-700">
-                          <input
-                            type="radio" name="examComponent"
-                            checked={c.isExam}
-                            onChange={() => update(i, { isExam: true })}
-                            className="h-4 w-4 accent-indigo-600"
+              <div className="overflow-x-auto">
+                <table className="w-full mt-5 text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-left">
+                      <th className="py-2 pr-3 font-medium text-slate-500">Component</th>
+                      <th className="py-2 pr-3 font-medium text-slate-500 w-28">Weight (%)</th>
+                      <th className="py-2 pr-3 font-medium text-slate-500 w-36">End-of-term exam?</th>
+                      <th className="py-2 w-10"><span className="sr-only">Remove</span></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {comps.map((c, i) => (
+                      <tr key={c.id ?? `new-${i}`}>
+                        <td className="py-2 pr-3">
+                          <Input
+                            value={c.name}
+                            placeholder="e.g. Class Work / Home Work"
+                            aria-label="Component name"
+                            onChange={e => update(i, { name: e.target.value })}
                           />
-                          {c.isExam ? "Exam" : "SBA"}
-                        </label>
+                        </td>
+                        <td className="py-2 pr-3">
+                          <Input
+                            type="number" min="1" max="100" step="0.5"
+                            value={c.weight}
+                            aria-label="Weight percent"
+                            onChange={e => update(i, { weight: e.target.value })}
+                          />
+                        </td>
+                        <td className="py-2 pr-3">
+                          <label className="inline-flex items-center gap-2 text-[13px] text-slate-700">
+                            <input
+                              type="radio" name="examComponent"
+                              checked={c.isExam}
+                              onChange={() => update(i, { isExam: true })}
+                              className="h-4 w-4 accent-indigo-600"
+                            />
+                            {c.isExam ? "Exam" : "SBA"}
+                          </label>
+                        </td>
+                        <td className="py-2 text-right">
+                          <button
+                            onClick={() => remove(i)}
+                            aria-label={`Remove ${c.name || "component"}`}
+                            className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t border-slate-200">
+                      <td className="py-3 pr-3 font-semibold text-slate-900">Total</td>
+                      <td className={`py-3 pr-3 font-bold tabular-nums ${totalOk ? "text-emerald-700" : "text-rose-700"}`}>
+                        {total}%
                       </td>
-                      <td className="py-2 text-right">
-                        <button
-                          onClick={() => remove(i)}
-                          aria-label={`Remove ${c.name || "component"}`}
-                          className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                      <td colSpan={2} className="py-3 text-[12px] text-slate-500">
+                        {totalOk ? "Adds up — ready to save." : "Must add up to exactly 100."}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t border-slate-200">
-                    <td className="py-3 pr-3 font-semibold text-slate-900">Total</td>
-                    <td className={`py-3 pr-3 font-bold tabular-nums ${totalOk ? "text-emerald-700" : "text-rose-700"}`}>
-                      {total}%
-                    </td>
-                    <td colSpan={2} className="py-3 text-[12px] text-slate-500">
-                      {totalOk ? "Adds up — ready to save." : "Must add up to exactly 100."}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
+                  </tfoot>
+                </table>
+              </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 <Button variant="outline" size="sm" onClick={add}>

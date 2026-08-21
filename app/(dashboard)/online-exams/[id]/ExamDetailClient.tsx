@@ -348,57 +348,59 @@ export function ExamDetailClient({
           ) : (
             <>
               <div className="bg-white border rounded-lg overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b">
-                    <tr>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Admission No</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Submitted</th>
-                      <th className="text-right px-4 py-3 font-medium text-gray-600">Score</th>
-                      <th className="text-right px-4 py-3 font-medium text-gray-600">%</th>
-                      <th className="text-right px-4 py-3 font-medium text-gray-600">Result</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    {exam.attempts.map((a) => {
-                      const pct = a.total ? Math.round(((a.score ?? 0) / a.total) * 100) : null;
-                      const passing = exam.passingPercentage ? Number(exam.passingPercentage) : 50;
-                      const passed = pct != null && pct >= passing;
-                      return (
-                        <tr key={a.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 font-medium">
-                            {a.student.firstName} {a.student.lastName}
-                          </td>
-                          <td className="px-4 py-3 text-gray-500">{a.student.admissionNo}</td>
-                          <td className="px-4 py-3 text-gray-500 text-xs">
-                            {a.submittedAt ? (
-                              new Date(a.submittedAt).toLocaleString()
-                            ) : (
-                              <span className="text-yellow-600">In progress</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            {a.submittedAt ? `${a.score ?? 0}/${a.total ?? 0}` : "—"}
-                          </td>
-                          <td className="px-4 py-3 text-right font-semibold">
-                            {pct != null ? `${pct}%` : "—"}
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            {a.submittedAt && pct != null ? (
-                              <span
-                                className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                                  passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                                }`}
-                              >
-                                {passed ? "Pass" : "Fail"}
-                              </span>
-                            ) : "—"}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 border-b">
+                      <tr>
+                        <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
+                        <th className="text-left px-4 py-3 font-medium text-gray-600">Admission No</th>
+                        <th className="text-left px-4 py-3 font-medium text-gray-600">Submitted</th>
+                        <th className="text-right px-4 py-3 font-medium text-gray-600">Score</th>
+                        <th className="text-right px-4 py-3 font-medium text-gray-600">%</th>
+                        <th className="text-right px-4 py-3 font-medium text-gray-600">Result</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {exam.attempts.map((a) => {
+                        const pct = a.total ? Math.round(((a.score ?? 0) / a.total) * 100) : null;
+                        const passing = exam.passingPercentage ? Number(exam.passingPercentage) : 50;
+                        const passed = pct != null && pct >= passing;
+                        return (
+                          <tr key={a.id} className="hover:bg-gray-50">
+                            <td className="px-4 py-3 font-medium">
+                              {a.student.firstName} {a.student.lastName}
+                            </td>
+                            <td className="px-4 py-3 text-gray-500">{a.student.admissionNo}</td>
+                            <td className="px-4 py-3 text-gray-500 text-xs">
+                              {a.submittedAt ? (
+                                new Date(a.submittedAt).toLocaleString()
+                              ) : (
+                                <span className="text-yellow-600">In progress</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              {a.submittedAt ? `${a.score ?? 0}/${a.total ?? 0}` : "—"}
+                            </td>
+                            <td className="px-4 py-3 text-right font-semibold">
+                              {pct != null ? `${pct}%` : "—"}
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              {a.submittedAt && pct != null ? (
+                                <span
+                                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                                    passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                  }`}
+                                >
+                                  {passed ? "Pass" : "Fail"}
+                                </span>
+                              ) : "—"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               {exam.questions.some((eq) =>

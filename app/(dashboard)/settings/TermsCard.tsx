@@ -126,34 +126,36 @@ export function TermsCard({ sessions }: { sessions: any[] }) {
         ) : terms.length === 0 ? (
           <p className="text-sm text-gray-500 text-center py-6">No terms yet. Add up to three terms to unlock term-by-term context and reports.</p>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50"><tr>
-              <th className="text-left px-3 py-2 font-medium text-gray-600">Term</th>
-              <th className="text-left px-3 py-2 font-medium text-gray-600">Starts</th>
-              <th className="text-left px-3 py-2 font-medium text-gray-600">Vacation</th>
-              <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
-              <th className="px-3 py-2"></th>
-            </tr></thead>
-            <tbody className="divide-y">
-              {terms.map((t: any) => (
-                <tr key={t.id} className="hover:bg-gray-50">
-                  <td className="px-3 py-2.5 font-medium">{t.name}</td>
-                  <td className="px-3 py-2.5 text-gray-500 tabular-nums">{fmt(t.startDate)}</td>
-                  <td className="px-3 py-2.5 text-gray-500 tabular-nums">{fmt(t.endDate)}</td>
-                  <td className="px-3 py-2.5">
-                    {t.isCurrent
-                      ? <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">Current</span>
-                      : <button onClick={() => setCurrent(t.id)} className="text-xs text-indigo-600 hover:underline">Set current</button>}
-                  </td>
-                  <td className="px-3 py-2.5 text-right">
-                    <button onClick={() => remove(t.id)} aria-label="Delete term" className="text-gray-400 hover:text-rose-600 transition-colors">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50"><tr>
+                <th className="text-left px-3 py-2 font-medium text-gray-600">Term</th>
+                <th className="text-left px-3 py-2 font-medium text-gray-600">Starts</th>
+                <th className="text-left px-3 py-2 font-medium text-gray-600">Vacation</th>
+                <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
+                <th className="px-3 py-2"></th>
+              </tr></thead>
+              <tbody className="divide-y">
+                {terms.map((t: any) => (
+                  <tr key={t.id} className="hover:bg-gray-50">
+                    <td className="px-3 py-2.5 font-medium">{t.name}</td>
+                    <td className="px-3 py-2.5 text-gray-500 tabular-nums">{fmt(t.startDate)}</td>
+                    <td className="px-3 py-2.5 text-gray-500 tabular-nums">{fmt(t.endDate)}</td>
+                    <td className="px-3 py-2.5">
+                      {t.isCurrent
+                        ? <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">Current</span>
+                        : <button onClick={() => setCurrent(t.id)} className="text-xs text-indigo-600 hover:underline">Set current</button>}
+                    </td>
+                    <td className="px-3 py-2.5 text-right">
+                      <button onClick={() => remove(t.id)} aria-label="Delete term" className="text-gray-400 hover:text-rose-600 transition-colors">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </CardContent>
     </Card>

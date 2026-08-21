@@ -139,42 +139,44 @@ export default async function ParentResultsPage() {
                           </div>
                         )}
                       </div>
-                      <table className="w-full text-sm">
-                        <thead className="bg-slate-50 border-b border-slate-200">
-                          <tr>
-                            <th className="text-left px-5 py-2.5 text-xs font-medium text-slate-500">Subject</th>
-                            <th className="text-center px-3 py-2.5 text-xs font-medium text-slate-500">Marks</th>
-                            <th className="text-center px-3 py-2.5 text-xs font-medium text-slate-500">Grade</th>
-                            <th className="text-center px-3 py-2.5 text-xs font-medium text-slate-500">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          {eg.schedules.map((s: any) => {
-                            const m = markMap.get(s.id) as any;
-                            const obt = Number(m?.marksObtained ?? 0);
-                            const p = m && s.fullMarks ? Math.round((obt / s.fullMarks) * 100) : null;
-                            return (
-                              <tr key={s.id} className="hover:bg-slate-50">
-                                <td className="px-5 py-2.5 font-medium text-slate-800">{s.subject?.name}</td>
-                                <td className="text-center px-3 py-2.5 text-slate-700">{m ? `${obt}/${s.fullMarks}` : "—"}</td>
-                                <td className="text-center px-3 py-2.5">
-                                  {m ? (
-                                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${p! >= 60 ? "bg-emerald-50 text-emerald-700" : p! >= 40 ? "bg-amber-50 text-amber-700" : "bg-rose-50 text-rose-700"}`}>
-                                      {getGrade(obt, s.fullMarks)}
-                                    </span>
-                                  ) : <span className="text-slate-300">—</span>}
-                                </td>
-                                <td className="text-center px-3 py-2.5">
-                                  {m ? (m.isPassing
-                                    ? <CheckCircle2 className="h-4 w-4 text-emerald-600 mx-auto" />
-                                    : <XCircle className="h-4 w-4 text-rose-600 mx-auto" />
-                                  ) : null}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                              <th className="text-left px-5 py-2.5 text-xs font-medium text-slate-500">Subject</th>
+                              <th className="text-center px-3 py-2.5 text-xs font-medium text-slate-500">Marks</th>
+                              <th className="text-center px-3 py-2.5 text-xs font-medium text-slate-500">Grade</th>
+                              <th className="text-center px-3 py-2.5 text-xs font-medium text-slate-500">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {eg.schedules.map((s: any) => {
+                              const m = markMap.get(s.id) as any;
+                              const obt = Number(m?.marksObtained ?? 0);
+                              const p = m && s.fullMarks ? Math.round((obt / s.fullMarks) * 100) : null;
+                              return (
+                                <tr key={s.id} className="hover:bg-slate-50">
+                                  <td className="px-5 py-2.5 font-medium text-slate-800">{s.subject?.name}</td>
+                                  <td className="text-center px-3 py-2.5 text-slate-700">{m ? `${obt}/${s.fullMarks}` : "—"}</td>
+                                  <td className="text-center px-3 py-2.5">
+                                    {m ? (
+                                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${p! >= 60 ? "bg-emerald-50 text-emerald-700" : p! >= 40 ? "bg-amber-50 text-amber-700" : "bg-rose-50 text-rose-700"}`}>
+                                        {getGrade(obt, s.fullMarks)}
+                                      </span>
+                                    ) : <span className="text-slate-300">—</span>}
+                                  </td>
+                                  <td className="text-center px-3 py-2.5">
+                                    {m ? (m.isPassing
+                                      ? <CheckCircle2 className="h-4 w-4 text-emerald-600 mx-auto" />
+                                      : <XCircle className="h-4 w-4 text-rose-600 mx-auto" />
+                                    ) : null}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   );
                 })

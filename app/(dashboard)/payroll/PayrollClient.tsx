@@ -166,59 +166,61 @@ export function PayrollClient({ departments }: Props) {
 
           {/* Table */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  {["Employee", "Department", "Designation", "Basic (₵)", "Allowances (₵)", "Deductions (₵)", "Net (₵)", "Status", ""].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {rows.length === 0 ? (
-                  <tr><td colSpan={9} className="px-4 py-10 text-center text-sm text-gray-400">
-                    <UserCog className="h-8 w-8 mx-auto mb-2 opacity-30" />
-                    No staff found.
-                  </td></tr>
-                ) : rows.map((row: any) => {
-                  const s = row.staff;
-                  const p = row.payslip;
-                  return (
-                    <tr key={s.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-gray-900">{s.firstName} {s.lastName}</div>
-                        <div className="text-xs text-gray-400 font-mono">{s.employeeId}</div>
-                      </td>
-                      <td className="px-4 py-3 text-gray-600">{s.department?.name ?? "—"}</td>
-                      <td className="px-4 py-3 text-gray-600">{s.designation?.name ?? "—"}</td>
-                      <td className="px-4 py-3 font-medium">{s.basicSalary ? Number(s.basicSalary).toLocaleString() : "—"}</td>
-                      <td className="px-4 py-3 text-green-700">{p ? Number(p.totalAllowance).toLocaleString() : "—"}</td>
-                      <td className="px-4 py-3 text-red-600">{p ? Number(p.totalDeduction).toLocaleString() : "—"}</td>
-                      <td className="px-4 py-3 font-semibold">{p ? Number(p.netSalary).toLocaleString() : "—"}</td>
-                      <td className="px-4 py-3">
-                        {p ? (
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[p.status]}`}>{p.status}</span>
-                        ) : (
-                          <span className="text-xs text-gray-400">No payslip</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        {p ? (
-                          <Link href={`/payroll/${p.id}`}>
-                            <Button size="sm" variant="outline"><Eye className="h-3.5 w-3.5 mr-1" />View</Button>
-                          </Link>
-                        ) : (
-                          <Button size="sm" disabled={generating === s.id || !s.basicSalary}
-                            onClick={() => generatePayslip(s.id)}>
-                            {generating === s.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Generate"}
-                          </Button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    {["Employee", "Department", "Designation", "Basic (₵)", "Allowances (₵)", "Deductions (₵)", "Net (₵)", "Status", ""].map(h => (
+                      <th key={h} className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {rows.length === 0 ? (
+                    <tr><td colSpan={9} className="px-4 py-10 text-center text-sm text-gray-400">
+                      <UserCog className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                      No staff found.
+                    </td></tr>
+                  ) : rows.map((row: any) => {
+                    const s = row.staff;
+                    const p = row.payslip;
+                    return (
+                      <tr key={s.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <div className="font-medium text-gray-900">{s.firstName} {s.lastName}</div>
+                          <div className="text-xs text-gray-400 font-mono">{s.employeeId}</div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-600">{s.department?.name ?? "—"}</td>
+                        <td className="px-4 py-3 text-gray-600">{s.designation?.name ?? "—"}</td>
+                        <td className="px-4 py-3 font-medium">{s.basicSalary ? Number(s.basicSalary).toLocaleString() : "—"}</td>
+                        <td className="px-4 py-3 text-green-700">{p ? Number(p.totalAllowance).toLocaleString() : "—"}</td>
+                        <td className="px-4 py-3 text-red-600">{p ? Number(p.totalDeduction).toLocaleString() : "—"}</td>
+                        <td className="px-4 py-3 font-semibold">{p ? Number(p.netSalary).toLocaleString() : "—"}</td>
+                        <td className="px-4 py-3">
+                          {p ? (
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[p.status]}`}>{p.status}</span>
+                          ) : (
+                            <span className="text-xs text-gray-400">No payslip</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {p ? (
+                            <Link href={`/payroll/${p.id}`}>
+                              <Button size="sm" variant="outline"><Eye className="h-3.5 w-3.5 mr-1" />View</Button>
+                            </Link>
+                          ) : (
+                            <Button size="sm" disabled={generating === s.id || !s.basicSalary}
+                              onClick={() => generatePayslip(s.id)}>
+                              {generating === s.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Generate"}
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </>
       )}

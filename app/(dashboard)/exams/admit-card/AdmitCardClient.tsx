@@ -143,28 +143,30 @@ export function AdmitCardClient({ examGroups, classes, school }: {
             {/* Exam Schedule Table */}
             <div className="px-3 pb-3">
               <p className="text-xs font-semibold text-gray-600 mb-1 border-b pb-1">Examination Schedule</p>
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="text-left py-1 px-1.5 font-semibold text-gray-600">Subject</th>
-                    <th className="text-left py-1 px-1.5 font-semibold text-gray-600">Date</th>
-                    <th className="text-left py-1 px-1.5 font-semibold text-gray-600">Time</th>
-                    <th className="text-right py-1 px-1.5 font-semibold text-gray-600">Max</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {schedules.length === 0 ? (
-                    <tr><td colSpan={4} className="py-1 px-1.5 text-gray-400 italic">No schedule defined</td></tr>
-                  ) : schedules.map(s => (
-                    <tr key={s.id} className="border-b last:border-0">
-                      <td className="py-0.5 px-1.5">{s.subject.name}</td>
-                      <td className="py-0.5 px-1.5">{s.dateOfExam ? new Date(s.dateOfExam).toLocaleDateString() : "TBD"}</td>
-                      <td className="py-0.5 px-1.5">{s.startTime && s.endTime ? `${s.startTime}–${s.endTime}` : "TBD"}</td>
-                      <td className="py-0.5 px-1.5 text-right">{s.fullMarks}</td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="text-left py-1 px-1.5 font-semibold text-gray-600">Subject</th>
+                      <th className="text-left py-1 px-1.5 font-semibold text-gray-600">Date</th>
+                      <th className="text-left py-1 px-1.5 font-semibold text-gray-600">Time</th>
+                      <th className="text-right py-1 px-1.5 font-semibold text-gray-600">Max</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {schedules.length === 0 ? (
+                      <tr><td colSpan={4} className="py-1 px-1.5 text-gray-400 italic">No schedule defined</td></tr>
+                    ) : schedules.map(s => (
+                      <tr key={s.id} className="border-b last:border-0">
+                        <td className="py-0.5 px-1.5">{s.subject.name}</td>
+                        <td className="py-0.5 px-1.5">{s.dateOfExam ? new Date(s.dateOfExam).toLocaleDateString() : "TBD"}</td>
+                        <td className="py-0.5 px-1.5">{s.startTime && s.endTime ? `${s.startTime}–${s.endTime}` : "TBD"}</td>
+                        <td className="py-0.5 px-1.5 text-right">{s.fullMarks}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {/* Footer */}

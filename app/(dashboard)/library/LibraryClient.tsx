@@ -142,34 +142,36 @@ export function LibraryClient({
             </div>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>{["Title","Author","Book No.","Subject","Rack","Total","Available",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
-              </thead>
-              <tbody className="divide-y">
-                {books.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-400">No books found.</td></tr>
-                : books.map((b: any) => (
-                  <tr key={b.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium max-w-[180px] truncate">{b.title}</td>
-                    <td className="px-4 py-3 text-gray-600">{b.author}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{b.bookNo ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-500">{b.subject ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-500">{b.rackNo ?? "—"}</td>
-                    <td className="px-4 py-3 text-center">{b.quantity}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${b.available > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{b.available}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      {perm.canAdd && b.available > 0 && (
-                        <Link href="/library/issue/new">
-                          <Button size="sm" variant="outline">Issue</Button>
-                        </Link>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>{["Title","Author","Book No.","Subject","Rack","Total","Available",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+                </thead>
+                <tbody className="divide-y">
+                  {books.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-400">No books found.</td></tr>
+                  : books.map((b: any) => (
+                    <tr key={b.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium max-w-[180px] truncate">{b.title}</td>
+                      <td className="px-4 py-3 text-gray-600">{b.author}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{b.bookNo ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-500">{b.subject ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-500">{b.rackNo ?? "—"}</td>
+                      <td className="px-4 py-3 text-center">{b.quantity}</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${b.available > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{b.available}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {perm.canAdd && b.available > 0 && (
+                          <Link href="/library/issue/new">
+                            <Button size="sm" variant="outline">Issue</Button>
+                          </Link>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -227,39 +229,41 @@ export function LibraryClient({
           )}
 
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>{["Card No.","Name","ID / Adm No.","Type","Joined",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
-              </thead>
-              <tbody className="divide-y">
-                {members.length === 0 ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No library members registered.</td></tr>
-                : members.map((m: any) => (
-                  <tr key={m.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{m.libraryCardNo ?? "—"}</td>
-                    <td className="px-4 py-3 font-medium text-gray-900">
-                      {m.person ? `${m.person.firstName} ${m.person.lastName}` : `[${m.memberId.slice(0, 8)}…]`}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">
-                      {m.memberType === "student" ? m.person?.admissionNo : m.person?.employeeId ?? "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.memberType === "student" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}>
-                        {m.memberType === "student" ? "Student" : "Staff"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-gray-400">{new Date(m.createdAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-3">
-                      {perm.canDelete && (
-                        <button onClick={() => removeMember(m.id)} disabled={removingMem === m.id}
-                          className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>{["Card No.","Name","ID / Adm No.","Type","Joined",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+                </thead>
+                <tbody className="divide-y">
+                  {members.length === 0 ? <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">No library members registered.</td></tr>
+                  : members.map((m: any) => (
+                    <tr key={m.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{m.libraryCardNo ?? "—"}</td>
+                      <td className="px-4 py-3 font-medium text-gray-900">
+                        {m.person ? `${m.person.firstName} ${m.person.lastName}` : `[${m.memberId.slice(0, 8)}…]`}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs text-gray-500">
+                        {m.memberType === "student" ? m.person?.admissionNo : m.person?.employeeId ?? "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.memberType === "student" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}>
+                          {m.memberType === "student" ? "Student" : "Staff"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-400">{new Date(m.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3">
+                        {perm.canDelete && (
+                          <button onClick={() => removeMember(m.id)} disabled={removingMem === m.id}
+                            className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             <Pagination page={page} totalPages={totalPages} total={booksTotal} limit={limit} />
           </div>
         </div>
@@ -297,28 +301,30 @@ export function LibraryClient({
           </div>
 
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b">
-              <tr>{["Book","Issued To","Issued","Due","Status","Fine",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
-            </thead>
-            <tbody className="divide-y">
-              {filteredIssues.length === 0 ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-400">No records match the filter.</td></tr>
-              : filteredIssues.map((i: any) => {
-                const overdue = i.status === "ISSUED" && new Date(i.dueDate) < new Date();
-                return (
-                  <tr key={i.id} className={`hover:bg-gray-50 ${overdue ? "bg-red-50/30" : ""}`}>
-                    <td className="px-4 py-3"><div className="font-medium truncate max-w-[160px]">{i.book.title}</div><div className="text-xs text-gray-400">{i.book.bookNo}</div></td>
-                    <td className="px-4 py-3 text-gray-700">{i.student ? `${i.student.firstName} ${i.student.lastName}` : i.staff ? `${i.staff.firstName} ${i.staff.lastName}` : "—"}</td>
-                    <td className="px-4 py-3 text-xs text-gray-500">{new Date(i.issuedAt).toLocaleDateString()}</td>
-                    <td className={`px-4 py-3 text-xs ${overdue ? "text-red-600 font-medium" : "text-gray-500"}`}>{new Date(i.dueDate).toLocaleDateString()}</td>
-                    <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${overdue ? "bg-red-100 text-red-700" : STATUS_STYLE[i.status]}`}>{overdue ? "OVERDUE" : i.status}</span></td>
-                    <td className="px-4 py-3 text-gray-600">{i.fine ? `₵${Number(i.fine).toFixed(2)}` : "—"}</td>
-                    <td className="px-4 py-3">{i.status === "ISSUED" && perm.canEdit && <Button size="sm" variant="outline" disabled={returning === i.id} onClick={() => returnBook(i.id)}><RotateCcw className="h-3.5 w-3.5 mr-1" />{returning === i.id ? "…" : "Return"}</Button>}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>{["Book","Issued To","Issued","Due","Status","Fine",""].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr>
+              </thead>
+              <tbody className="divide-y">
+                {filteredIssues.length === 0 ? <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-400">No records match the filter.</td></tr>
+                : filteredIssues.map((i: any) => {
+                  const overdue = i.status === "ISSUED" && new Date(i.dueDate) < new Date();
+                  return (
+                    <tr key={i.id} className={`hover:bg-gray-50 ${overdue ? "bg-red-50/30" : ""}`}>
+                      <td className="px-4 py-3"><div className="font-medium truncate max-w-[160px]">{i.book.title}</div><div className="text-xs text-gray-400">{i.book.bookNo}</div></td>
+                      <td className="px-4 py-3 text-gray-700">{i.student ? `${i.student.firstName} ${i.student.lastName}` : i.staff ? `${i.staff.firstName} ${i.staff.lastName}` : "—"}</td>
+                      <td className="px-4 py-3 text-xs text-gray-500">{new Date(i.issuedAt).toLocaleDateString()}</td>
+                      <td className={`px-4 py-3 text-xs ${overdue ? "text-red-600 font-medium" : "text-gray-500"}`}>{new Date(i.dueDate).toLocaleDateString()}</td>
+                      <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${overdue ? "bg-red-100 text-red-700" : STATUS_STYLE[i.status]}`}>{overdue ? "OVERDUE" : i.status}</span></td>
+                      <td className="px-4 py-3 text-gray-600">{i.fine ? `₵${Number(i.fine).toFixed(2)}` : "—"}</td>
+                      <td className="px-4 py-3">{i.status === "ISSUED" && perm.canEdit && <Button size="sm" variant="outline" disabled={returning === i.id} onClick={() => returnBook(i.id)}><RotateCcw className="h-3.5 w-3.5 mr-1" />{returning === i.id ? "…" : "Return"}</Button>}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
         </div>
       )}

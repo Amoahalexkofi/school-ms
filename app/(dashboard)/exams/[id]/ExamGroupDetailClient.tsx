@@ -127,57 +127,59 @@ export function ExamGroupDetailClient({ group, sessions, classSections, subjects
                 </div>
               </CardHeader>
               <CardContent className="p-0">
-                <table className="w-full text-sm tabular-nums">
-                  <thead className="bg-gray-50 border-t border-b">
-                    <tr>
-                      {["Subject", "Session", "Date", "Time", "Full Marks", "Pass Marks", "Entries", ""].map(h => (
-                        <th key={h} className="text-left px-4 py-2.5 font-medium text-gray-600">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    {schedules.map((sch: any) => (
-                      <tr key={sch.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 font-medium text-gray-900">
-                          {sch.subject.name}
-                          <span className="text-xs text-gray-400 ml-1.5 font-mono">({sch.subject.code})</span>
-                        </td>
-                        <td className="px-4 py-3 text-gray-500 text-xs">{sch.session.session}</td>
-                        <td className="px-4 py-3 text-gray-600 text-xs">
-                          {sch.dateOfExam ? new Date(sch.dateOfExam).toLocaleDateString() : "—"}
-                        </td>
-                        <td className="px-4 py-3 text-gray-500 text-xs">
-                          {sch.startTime ? `${sch.startTime}–${sch.endTime ?? ""}` : "—"}
-                        </td>
-                        <td className="px-4 py-3 text-center font-medium">{sch.fullMarks}</td>
-                        <td className="px-4 py-3 text-center text-gray-500">{sch.passingMarks}</td>
-                        <td className="px-4 py-3 text-center">
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${sch._count.markEntries > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
-                            {sch._count.markEntries}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 flex gap-2 justify-end">
-                          {mySubjectIds !== null && !mySubjectIds.includes(sch.subjectId) ? (
-                            <Button size="sm" variant="outline" disabled title="You are not assigned to this subject"
-                              className="text-gray-400 border-gray-200">
-                              <ClipboardEdit className="h-3.5 w-3.5 mr-1" /> Marks
-                            </Button>
-                          ) : (
-                            <Link href={`/exams/${group.id}/marks/${sch.id}`}>
-                              <Button size="sm" variant="outline" className="text-indigo-600 border-indigo-200 hover:bg-indigo-50">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm tabular-nums">
+                    <thead className="bg-gray-50 border-t border-b">
+                      <tr>
+                        {["Subject", "Session", "Date", "Time", "Full Marks", "Pass Marks", "Entries", ""].map(h => (
+                          <th key={h} className="text-left px-4 py-2.5 font-medium text-gray-600">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {schedules.map((sch: any) => (
+                        <tr key={sch.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 font-medium text-gray-900">
+                            {sch.subject.name}
+                            <span className="text-xs text-gray-400 ml-1.5 font-mono">({sch.subject.code})</span>
+                          </td>
+                          <td className="px-4 py-3 text-gray-500 text-xs">{sch.session.session}</td>
+                          <td className="px-4 py-3 text-gray-600 text-xs">
+                            {sch.dateOfExam ? new Date(sch.dateOfExam).toLocaleDateString() : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-gray-500 text-xs">
+                            {sch.startTime ? `${sch.startTime}–${sch.endTime ?? ""}` : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-center font-medium">{sch.fullMarks}</td>
+                          <td className="px-4 py-3 text-center text-gray-500">{sch.passingMarks}</td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${sch._count.markEntries > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+                              {sch._count.markEntries}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 flex gap-2 justify-end">
+                            {mySubjectIds !== null && !mySubjectIds.includes(sch.subjectId) ? (
+                              <Button size="sm" variant="outline" disabled title="You are not assigned to this subject"
+                                className="text-gray-400 border-gray-200">
                                 <ClipboardEdit className="h-3.5 w-3.5 mr-1" /> Marks
                               </Button>
-                            </Link>
-                          )}
-                          <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
-                            onClick={() => handleDeleteSchedule(sch.id)}>
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            ) : (
+                              <Link href={`/exams/${group.id}/marks/${sch.id}`}>
+                                <Button size="sm" variant="outline" className="text-indigo-600 border-indigo-200 hover:bg-indigo-50">
+                                  <ClipboardEdit className="h-3.5 w-3.5 mr-1" /> Marks
+                                </Button>
+                              </Link>
+                            )}
+                            <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
+                              onClick={() => handleDeleteSchedule(sch.id)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </CardContent>
             </Card>
           );

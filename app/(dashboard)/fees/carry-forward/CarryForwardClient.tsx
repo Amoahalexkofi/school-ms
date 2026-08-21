@@ -118,26 +118,28 @@ export function CarryForwardClient({ sessions, classSections }: Props) {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <table className="w-full text-sm tabular-nums">
-              <thead className="bg-gray-50 border-b border-t">
-                <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Adm No.</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600">Balance (GHS)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {rows.map(r => (
-                  <tr key={r.student.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium">{r.student.firstName} {r.student.lastName}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{r.student.admissionNo}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-red-600">
-                      {r.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm tabular-nums">
+                <thead className="bg-gray-50 border-b border-t">
+                  <tr>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Adm No.</th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-600">Balance (GHS)</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y">
+                  {rows.map(r => (
+                    <tr key={r.student.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium">{r.student.firstName} {r.student.lastName}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{r.student.admissionNo}</td>
+                      <td className="px-4 py-3 text-right font-semibold text-red-600">
+                        {r.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       )}

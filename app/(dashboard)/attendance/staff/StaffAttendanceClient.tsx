@@ -157,52 +157,54 @@ export function StaffAttendanceClient({ departments, attendanceTypes }: Props) {
             </CardContent></Card>
           ) : (
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Staff Member</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Department</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Designation</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Attendance</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Remark</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {staff.map((s: any, idx) => (
-                    <tr key={s.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-gray-400 text-xs">{idx + 1}</td>
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-gray-900">{s.firstName} {s.lastName}</div>
-                        <div className="text-xs text-gray-400 font-mono">{s.employeeId}</div>
-                      </td>
-                      <td className="px-4 py-3 text-gray-600">{s.department?.name ?? "—"}</td>
-                      <td className="px-4 py-3 text-gray-600">{s.designation?.name ?? "—"}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-1.5">
-                          {attendanceTypes.map(t => (
-                            <button key={t.id} onClick={() => setMarks(m => ({ ...m, [s.id]: t.id }))}
-                              title={t.type}
-                              className={`w-8 h-8 rounded-lg border text-xs font-bold transition-all ${
-                                marks[s.id] === t.id
-                                  ? (KV_STYLE[t.keyValue] ?? "bg-gray-200") + " ring-2 ring-offset-1 ring-current shadow-sm"
-                                  : "bg-white text-gray-300 border-gray-200 hover:border-gray-400 hover:text-gray-600"
-                              }`}>
-                              {t.keyValue}
-                            </button>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <input type="text" placeholder="optional…"
-                          value={remarks[s.id] ?? ""}
-                          onChange={e => setRemarks(r => ({ ...r, [s.id]: e.target.value }))}
-                          className="w-36 h-7 rounded border border-gray-200 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400" />
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b">
+                    <tr>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Staff Member</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Department</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Designation</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Attendance</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">Remark</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y">
+                    {staff.map((s: any, idx) => (
+                      <tr key={s.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-gray-400 text-xs">{idx + 1}</td>
+                        <td className="px-4 py-3">
+                          <div className="font-medium text-gray-900">{s.firstName} {s.lastName}</div>
+                          <div className="text-xs text-gray-400 font-mono">{s.employeeId}</div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-600">{s.department?.name ?? "—"}</td>
+                        <td className="px-4 py-3 text-gray-600">{s.designation?.name ?? "—"}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-1.5">
+                            {attendanceTypes.map(t => (
+                              <button key={t.id} onClick={() => setMarks(m => ({ ...m, [s.id]: t.id }))}
+                                title={t.type}
+                                className={`w-8 h-8 rounded-lg border text-xs font-bold transition-all ${
+                                  marks[s.id] === t.id
+                                    ? (KV_STYLE[t.keyValue] ?? "bg-gray-200") + " ring-2 ring-offset-1 ring-current shadow-sm"
+                                    : "bg-white text-gray-300 border-gray-200 hover:border-gray-400 hover:text-gray-600"
+                                }`}>
+                                {t.keyValue}
+                              </button>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <input type="text" placeholder="optional…"
+                            value={remarks[s.id] ?? ""}
+                            onChange={e => setRemarks(r => ({ ...r, [s.id]: e.target.value }))}
+                            className="w-36 h-7 rounded border border-gray-200 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400" />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
               <div className="border-t bg-gray-50 px-4 py-3 flex items-center justify-between">
                 <span className="text-xs text-gray-400">{staff.length} staff members · {date}</span>
                 <Button onClick={handleSave} disabled={saveState === "saving"}>

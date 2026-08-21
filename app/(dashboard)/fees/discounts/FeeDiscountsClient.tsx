@@ -185,49 +185,51 @@ export function FeeDiscountsClient({ sessions, classSections, discounts }: Props
           {rows.length === 0 ? (
             <p className="px-4 py-10 text-center text-sm text-gray-400">No active students found in this class/session.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-4 py-3 w-10">
-                    <input type="checkbox" checked={checked.size === rows.length} onChange={toggleAll}
-                      className="rounded border-slate-200 text-blue-600 focus:ring-indigo-500/20 focus:border-indigo-400" />
-                  </th>
-                  {["Admission No", "Name", "Roll No", "Status"].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {rows.map((row) => {
-                  const isChecked = checked.has(row.studentSessionId);
-                  return (
-                    <tr key={row.studentSessionId} className="hover:bg-gray-50 cursor-pointer"
-                      onClick={() => toggleRow(row.studentSessionId)}>
-                      <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
-                        <input type="checkbox" checked={isChecked} onChange={() => toggleRow(row.studentSessionId)}
-                          className="rounded border-slate-200 text-blue-600 focus:ring-indigo-500/20 focus:border-indigo-400" />
-                      </td>
-                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{row.student.admissionNo}</td>
-                      <td className="px-4 py-3 font-medium text-gray-900">
-                        {row.student.firstName} {row.student.lastName}
-                      </td>
-                      <td className="px-4 py-3 text-gray-500">{row.rollNo ?? "—"}</td>
-                      <td className="px-4 py-3">
-                        {row.assigned ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                            Assigned
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                            Not assigned
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="px-4 py-3 w-10">
+                      <input type="checkbox" checked={checked.size === rows.length} onChange={toggleAll}
+                        className="rounded border-slate-200 text-blue-600 focus:ring-indigo-500/20 focus:border-indigo-400" />
+                    </th>
+                    {["Admission No", "Name", "Roll No", "Status"].map(h => (
+                      <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {rows.map((row) => {
+                    const isChecked = checked.has(row.studentSessionId);
+                    return (
+                      <tr key={row.studentSessionId} className="hover:bg-gray-50 cursor-pointer"
+                        onClick={() => toggleRow(row.studentSessionId)}>
+                        <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                          <input type="checkbox" checked={isChecked} onChange={() => toggleRow(row.studentSessionId)}
+                            className="rounded border-slate-200 text-blue-600 focus:ring-indigo-500/20 focus:border-indigo-400" />
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs text-gray-500">{row.student.admissionNo}</td>
+                        <td className="px-4 py-3 font-medium text-gray-900">
+                          {row.student.firstName} {row.student.lastName}
+                        </td>
+                        <td className="px-4 py-3 text-gray-500">{row.rollNo ?? "—"}</td>
+                        <td className="px-4 py-3">
+                          {row.assigned ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                              Assigned
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                              Not assigned
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
 
           {rows.length > 0 && (

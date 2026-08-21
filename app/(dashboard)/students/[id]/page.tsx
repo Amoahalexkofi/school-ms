@@ -360,39 +360,41 @@ export default async function StudentProfilePage({
             {publishedMarks.length === 0 ? (
               <p className="text-sm text-gray-400">No published results yet.</p>
             ) : (
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Exam</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Subject</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Marks</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Grade</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {publishedMarks.map((m: any) => (
-                    <tr key={m.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-2 text-gray-500 text-xs">{m.examSchedule?.examGroup?.name}</td>
-                      <td className="px-3 py-2 font-medium">{m.subject?.name}</td>
-                      <td className="px-3 py-2">
-                        {Number(m.marksObtained)} / {m.examSchedule?.fullMarks}
-                        {m.examSchedule?.fullMarks > 0 && (
-                          <span className="text-gray-400 text-xs ml-1">
-                            ({Math.round((Number(m.marksObtained) / m.examSchedule.fullMarks) * 100)}%)
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2 font-bold text-blue-700">{m.grade ?? "—"}</td>
-                      <td className="px-3 py-2">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.isPassing ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                          {m.isPassing ? "PASS" : "FAIL"}
-                        </span>
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Exam</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Subject</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Marks</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Grade</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y">
+                    {publishedMarks.map((m: any) => (
+                      <tr key={m.id} className="hover:bg-gray-50">
+                        <td className="px-3 py-2 text-gray-500 text-xs">{m.examSchedule?.examGroup?.name}</td>
+                        <td className="px-3 py-2 font-medium">{m.subject?.name}</td>
+                        <td className="px-3 py-2">
+                          {Number(m.marksObtained)} / {m.examSchedule?.fullMarks}
+                          {m.examSchedule?.fullMarks > 0 && (
+                            <span className="text-gray-400 text-xs ml-1">
+                              ({Math.round((Number(m.marksObtained) / m.examSchedule.fullMarks) * 100)}%)
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2 font-bold text-blue-700">{m.grade ?? "—"}</td>
+                        <td className="px-3 py-2">
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${m.isPassing ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                            {m.isPassing ? "PASS" : "FAIL"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -406,30 +408,32 @@ export default async function StudentProfilePage({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Session</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Class / Section</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Roll No</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {student.sessions.map((ss: any) => (
-                    <tr key={ss.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-2 text-gray-600">{ss.session.session}</td>
-                      <td className="px-3 py-2">{ss.classSection.class.name} – {ss.classSection.section.name}</td>
-                      <td className="px-3 py-2 text-gray-500">{ss.rollNo ?? "—"}</td>
-                      <td className="px-3 py-2">
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${ss.isAlumni ? "bg-gray-100 text-gray-600" : ss.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                          {ss.isAlumni ? "Alumni" : ss.isActive ? "Active" : "Inactive"}
-                        </span>
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Session</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Class / Section</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Roll No</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y">
+                    {student.sessions.map((ss: any) => (
+                      <tr key={ss.id} className="hover:bg-gray-50">
+                        <td className="px-3 py-2 text-gray-600">{ss.session.session}</td>
+                        <td className="px-3 py-2">{ss.classSection.class.name} – {ss.classSection.section.name}</td>
+                        <td className="px-3 py-2 text-gray-500">{ss.rollNo ?? "—"}</td>
+                        <td className="px-3 py-2">
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${ss.isAlumni ? "bg-gray-100 text-gray-600" : ss.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                            {ss.isAlumni ? "Alumni" : ss.isActive ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         )}

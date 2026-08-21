@@ -239,32 +239,34 @@ export default async function StaffProfilePage({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Period</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Basic</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Net</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {staff.payslips.map((p: any) => (
-                    <tr key={p.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-2 text-gray-600">{p.month}/{p.year}</td>
-                      <td className="px-3 py-2">₵{Number(p.basicSalary).toLocaleString()}</td>
-                      <td className="px-3 py-2 font-medium">₵{Number(p.netSalary).toLocaleString()}</td>
-                      <td className="px-3 py-2">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                          p.status === "PAID"     ? "bg-green-100 text-green-700"
-                          : p.status === "APPROVED" ? "bg-blue-100 text-blue-700"
-                          : "bg-gray-100 text-gray-600"
-                        }`}>{p.status}</span>
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Period</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Basic</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Net</th>
+                      <th className="text-left px-3 py-2 font-medium text-gray-600">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y">
+                    {staff.payslips.map((p: any) => (
+                      <tr key={p.id} className="hover:bg-gray-50">
+                        <td className="px-3 py-2 text-gray-600">{p.month}/{p.year}</td>
+                        <td className="px-3 py-2">₵{Number(p.basicSalary).toLocaleString()}</td>
+                        <td className="px-3 py-2 font-medium">₵{Number(p.netSalary).toLocaleString()}</td>
+                        <td className="px-3 py-2">
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                            p.status === "PAID"     ? "bg-green-100 text-green-700"
+                            : p.status === "APPROVED" ? "bg-blue-100 text-blue-700"
+                            : "bg-gray-100 text-gray-600"
+                          }`}>{p.status}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         )}

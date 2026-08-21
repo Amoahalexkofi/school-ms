@@ -117,45 +117,47 @@ export function GradingClient({ scaleName, ranges: initRanges, divisions: initDi
             <h2 className="text-sm font-semibold text-gray-800">Grading Scale — {scaleName}</h2>
           </div>
           <p className="text-xs text-gray-500">Grades are assigned from a student&apos;s percentage in each subject when marks are saved.</p>
-          <table className="w-full text-sm">
-            <thead className="text-gray-400 border-b">
-              <tr><th className="text-left py-2">Grade</th><th className="text-left py-2">Grade Point</th><th className="text-left py-2">From %</th><th className="text-left py-2">To %</th><th /></tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {ranges.map((r) => editGrade?.id === r.id ? (
-                <tr key={r.id} className="bg-indigo-50/40">
-                  <td className="py-2 pr-2"><Input className={IN} value={editGrade.grade} onChange={(e) => setEditGrade((f) => f && ({ ...f, grade: e.target.value }))} /></td>
-                  <td className="py-2 pr-2"><Input className={IN} type="number" step="0.1" value={editGrade.gradePoint} onChange={(e) => setEditGrade((f) => f && ({ ...f, gradePoint: e.target.value }))} /></td>
-                  <td className="py-2 pr-2"><Input className={IN} type="number" value={editGrade.markFrom} onChange={(e) => setEditGrade((f) => f && ({ ...f, markFrom: e.target.value }))} /></td>
-                  <td className="py-2 pr-2"><Input className={IN} type="number" value={editGrade.markTo} onChange={(e) => setEditGrade((f) => f && ({ ...f, markTo: e.target.value }))} /></td>
-                  <td className="py-2 text-right whitespace-nowrap">
-                    <button onClick={saveGrade} disabled={busy} className="text-green-600 hover:text-green-700 mr-2" title="Save"><Check className="h-4 w-4" /></button>
-                    <button onClick={() => setEditGrade(null)} className="text-gray-400 hover:text-gray-600" title="Cancel"><X className="h-4 w-4" /></button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-gray-400 border-b">
+                <tr><th className="text-left py-2">Grade</th><th className="text-left py-2">Grade Point</th><th className="text-left py-2">From %</th><th className="text-left py-2">To %</th><th /></tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {ranges.map((r) => editGrade?.id === r.id ? (
+                  <tr key={r.id} className="bg-indigo-50/40">
+                    <td className="py-2 pr-2"><Input className={IN} value={editGrade.grade} onChange={(e) => setEditGrade((f) => f && ({ ...f, grade: e.target.value }))} /></td>
+                    <td className="py-2 pr-2"><Input className={IN} type="number" step="0.1" value={editGrade.gradePoint} onChange={(e) => setEditGrade((f) => f && ({ ...f, gradePoint: e.target.value }))} /></td>
+                    <td className="py-2 pr-2"><Input className={IN} type="number" value={editGrade.markFrom} onChange={(e) => setEditGrade((f) => f && ({ ...f, markFrom: e.target.value }))} /></td>
+                    <td className="py-2 pr-2"><Input className={IN} type="number" value={editGrade.markTo} onChange={(e) => setEditGrade((f) => f && ({ ...f, markTo: e.target.value }))} /></td>
+                    <td className="py-2 text-right whitespace-nowrap">
+                      <button onClick={saveGrade} disabled={busy} className="text-green-600 hover:text-green-700 mr-2" title="Save"><Check className="h-4 w-4" /></button>
+                      <button onClick={() => setEditGrade(null)} className="text-gray-400 hover:text-gray-600" title="Cancel"><X className="h-4 w-4" /></button>
+                    </td>
+                  </tr>
+                ) : (
+                  <tr key={r.id}>
+                    <td className="py-2 font-medium">{r.grade}</td>
+                    <td className="py-2 text-gray-600">{r.gradePoint}</td>
+                    <td className="py-2 text-gray-600">{r.markFrom}</td>
+                    <td className="py-2 text-gray-600">{r.markTo}</td>
+                    <td className="py-2 text-right whitespace-nowrap">
+                      <button onClick={() => setEditGrade({ id: r.id, grade: r.grade, gradePoint: String(r.gradePoint), markFrom: String(r.markFrom), markTo: String(r.markTo) })}
+                        className="text-gray-400 hover:text-indigo-600 mr-2" title="Edit"><Pencil className="h-3.5 w-3.5" /></button>
+                      <button onClick={() => delGrade(r.id)} className="text-red-500 hover:text-red-700" title="Delete"><Trash2 className="h-3.5 w-3.5" /></button>
+                    </td>
+                  </tr>
+                ))}
+                {ranges.length === 0 && <tr><td colSpan={5} className="py-4 text-center text-gray-400 text-xs">No grades yet.</td></tr>}
+                <tr className="bg-slate-50/50">
+                  <td className="py-2 pr-2"><Input className={IN} placeholder="A1" value={gForm.grade} onChange={(e) => setGForm((f) => ({ ...f, grade: e.target.value }))} /></td>
+                  <td className="py-2 pr-2"><Input className={IN} type="number" step="0.1" placeholder="1.0" value={gForm.gradePoint} onChange={(e) => setGForm((f) => ({ ...f, gradePoint: e.target.value }))} /></td>
+                  <td className="py-2 pr-2"><Input className={IN} type="number" placeholder="80" value={gForm.markFrom} onChange={(e) => setGForm((f) => ({ ...f, markFrom: e.target.value }))} /></td>
+                  <td className="py-2 pr-2"><Input className={IN} type="number" placeholder="100" value={gForm.markTo} onChange={(e) => setGForm((f) => ({ ...f, markTo: e.target.value }))} /></td>
+                  <td className="py-2 text-right"><Button size="sm" disabled={busy} onClick={addGrade}><Plus className="h-3.5 w-3.5" /></Button></td>
                 </tr>
-              ) : (
-                <tr key={r.id}>
-                  <td className="py-2 font-medium">{r.grade}</td>
-                  <td className="py-2 text-gray-600">{r.gradePoint}</td>
-                  <td className="py-2 text-gray-600">{r.markFrom}</td>
-                  <td className="py-2 text-gray-600">{r.markTo}</td>
-                  <td className="py-2 text-right whitespace-nowrap">
-                    <button onClick={() => setEditGrade({ id: r.id, grade: r.grade, gradePoint: String(r.gradePoint), markFrom: String(r.markFrom), markTo: String(r.markTo) })}
-                      className="text-gray-400 hover:text-indigo-600 mr-2" title="Edit"><Pencil className="h-3.5 w-3.5" /></button>
-                    <button onClick={() => delGrade(r.id)} className="text-red-500 hover:text-red-700" title="Delete"><Trash2 className="h-3.5 w-3.5" /></button>
-                  </td>
-                </tr>
-              ))}
-              {ranges.length === 0 && <tr><td colSpan={5} className="py-4 text-center text-gray-400 text-xs">No grades yet.</td></tr>}
-              <tr className="bg-slate-50/50">
-                <td className="py-2 pr-2"><Input className={IN} placeholder="A1" value={gForm.grade} onChange={(e) => setGForm((f) => ({ ...f, grade: e.target.value }))} /></td>
-                <td className="py-2 pr-2"><Input className={IN} type="number" step="0.1" placeholder="1.0" value={gForm.gradePoint} onChange={(e) => setGForm((f) => ({ ...f, gradePoint: e.target.value }))} /></td>
-                <td className="py-2 pr-2"><Input className={IN} type="number" placeholder="80" value={gForm.markFrom} onChange={(e) => setGForm((f) => ({ ...f, markFrom: e.target.value }))} /></td>
-                <td className="py-2 pr-2"><Input className={IN} type="number" placeholder="100" value={gForm.markTo} onChange={(e) => setGForm((f) => ({ ...f, markTo: e.target.value }))} /></td>
-                <td className="py-2 text-right"><Button size="sm" disabled={busy} onClick={addGrade}><Plus className="h-3.5 w-3.5" /></Button></td>
-              </tr>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
 
@@ -167,42 +169,44 @@ export function GradingClient({ scaleName, ranges: initRanges, divisions: initDi
             <h2 className="text-sm font-semibold text-gray-800">Mark Divisions</h2>
           </div>
           <p className="text-xs text-gray-500">Overall divisions shown on results and marksheets, based on a student&apos;s total percentage.</p>
-          <table className="w-full text-sm">
-            <thead className="text-gray-400 border-b">
-              <tr><th className="text-left py-2">Division</th><th className="text-left py-2">From %</th><th className="text-left py-2">To %</th><th /></tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {divs.map((d) => editDiv?.id === d.id ? (
-                <tr key={d.id} className="bg-indigo-50/40">
-                  <td className="py-2 pr-2"><Input className={IN} value={editDiv.name} onChange={(e) => setEditDiv((f) => f && ({ ...f, name: e.target.value }))} /></td>
-                  <td className="py-2 pr-2"><Input className={IN} type="number" value={editDiv.percentageFrom} onChange={(e) => setEditDiv((f) => f && ({ ...f, percentageFrom: e.target.value }))} /></td>
-                  <td className="py-2 pr-2"><Input className={IN} type="number" value={editDiv.percentageTo} onChange={(e) => setEditDiv((f) => f && ({ ...f, percentageTo: e.target.value }))} /></td>
-                  <td className="py-2 text-right whitespace-nowrap">
-                    <button onClick={saveDiv} disabled={busy} className="text-green-600 hover:text-green-700 mr-2" title="Save"><Check className="h-4 w-4" /></button>
-                    <button onClick={() => setEditDiv(null)} className="text-gray-400 hover:text-gray-600" title="Cancel"><X className="h-4 w-4" /></button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-gray-400 border-b">
+                <tr><th className="text-left py-2">Division</th><th className="text-left py-2">From %</th><th className="text-left py-2">To %</th><th /></tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {divs.map((d) => editDiv?.id === d.id ? (
+                  <tr key={d.id} className="bg-indigo-50/40">
+                    <td className="py-2 pr-2"><Input className={IN} value={editDiv.name} onChange={(e) => setEditDiv((f) => f && ({ ...f, name: e.target.value }))} /></td>
+                    <td className="py-2 pr-2"><Input className={IN} type="number" value={editDiv.percentageFrom} onChange={(e) => setEditDiv((f) => f && ({ ...f, percentageFrom: e.target.value }))} /></td>
+                    <td className="py-2 pr-2"><Input className={IN} type="number" value={editDiv.percentageTo} onChange={(e) => setEditDiv((f) => f && ({ ...f, percentageTo: e.target.value }))} /></td>
+                    <td className="py-2 text-right whitespace-nowrap">
+                      <button onClick={saveDiv} disabled={busy} className="text-green-600 hover:text-green-700 mr-2" title="Save"><Check className="h-4 w-4" /></button>
+                      <button onClick={() => setEditDiv(null)} className="text-gray-400 hover:text-gray-600" title="Cancel"><X className="h-4 w-4" /></button>
+                    </td>
+                  </tr>
+                ) : (
+                  <tr key={d.id}>
+                    <td className="py-2 font-medium">{d.name}</td>
+                    <td className="py-2 text-gray-600">{d.percentageFrom}</td>
+                    <td className="py-2 text-gray-600">{d.percentageTo}</td>
+                    <td className="py-2 text-right whitespace-nowrap">
+                      <button onClick={() => setEditDiv({ id: d.id, name: d.name, percentageFrom: String(d.percentageFrom), percentageTo: String(d.percentageTo) })}
+                        className="text-gray-400 hover:text-indigo-600 mr-2" title="Edit"><Pencil className="h-3.5 w-3.5" /></button>
+                      <button onClick={() => delDiv(d.id)} className="text-red-500 hover:text-red-700" title="Delete"><Trash2 className="h-3.5 w-3.5" /></button>
+                    </td>
+                  </tr>
+                ))}
+                {divs.length === 0 && <tr><td colSpan={4} className="py-4 text-center text-gray-400 text-xs">No divisions yet.</td></tr>}
+                <tr className="bg-slate-50/50">
+                  <td className="py-2 pr-2"><Input className={IN} placeholder="First Class" value={dForm.name} onChange={(e) => setDForm((f) => ({ ...f, name: e.target.value }))} /></td>
+                  <td className="py-2 pr-2"><Input className={IN} type="number" placeholder="60" value={dForm.percentageFrom} onChange={(e) => setDForm((f) => ({ ...f, percentageFrom: e.target.value }))} /></td>
+                  <td className="py-2 pr-2"><Input className={IN} type="number" placeholder="79.99" value={dForm.percentageTo} onChange={(e) => setDForm((f) => ({ ...f, percentageTo: e.target.value }))} /></td>
+                  <td className="py-2 text-right"><Button size="sm" disabled={busy} onClick={addDiv}><Plus className="h-3.5 w-3.5" /></Button></td>
                 </tr>
-              ) : (
-                <tr key={d.id}>
-                  <td className="py-2 font-medium">{d.name}</td>
-                  <td className="py-2 text-gray-600">{d.percentageFrom}</td>
-                  <td className="py-2 text-gray-600">{d.percentageTo}</td>
-                  <td className="py-2 text-right whitespace-nowrap">
-                    <button onClick={() => setEditDiv({ id: d.id, name: d.name, percentageFrom: String(d.percentageFrom), percentageTo: String(d.percentageTo) })}
-                      className="text-gray-400 hover:text-indigo-600 mr-2" title="Edit"><Pencil className="h-3.5 w-3.5" /></button>
-                    <button onClick={() => delDiv(d.id)} className="text-red-500 hover:text-red-700" title="Delete"><Trash2 className="h-3.5 w-3.5" /></button>
-                  </td>
-                </tr>
-              ))}
-              {divs.length === 0 && <tr><td colSpan={4} className="py-4 text-center text-gray-400 text-xs">No divisions yet.</td></tr>}
-              <tr className="bg-slate-50/50">
-                <td className="py-2 pr-2"><Input className={IN} placeholder="First Class" value={dForm.name} onChange={(e) => setDForm((f) => ({ ...f, name: e.target.value }))} /></td>
-                <td className="py-2 pr-2"><Input className={IN} type="number" placeholder="60" value={dForm.percentageFrom} onChange={(e) => setDForm((f) => ({ ...f, percentageFrom: e.target.value }))} /></td>
-                <td className="py-2 pr-2"><Input className={IN} type="number" placeholder="79.99" value={dForm.percentageTo} onChange={(e) => setDForm((f) => ({ ...f, percentageTo: e.target.value }))} /></td>
-                <td className="py-2 text-right"><Button size="sm" disabled={busy} onClick={addDiv}><Plus className="h-3.5 w-3.5" /></Button></td>
-              </tr>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
     </main>

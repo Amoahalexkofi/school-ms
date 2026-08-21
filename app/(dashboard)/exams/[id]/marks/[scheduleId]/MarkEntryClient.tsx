@@ -313,155 +313,157 @@ export function MarkEntryClient({ schedule, examGroupId, enrollments, marksMap, 
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <table className="w-full text-sm tabular-nums">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 w-8">#</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Adm No.</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">Attendance</th>
-                {sbaMode ? (
-                  <>
-                    {sbaComponents.map(c => (
-                      <th key={c.id} className="text-center px-2 py-3 font-medium text-gray-600">
-                        <span className="block leading-tight">{c.name}</span>
-                        <span className="text-[10px] font-normal text-gray-400">/ {c.weight}</span>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm tabular-nums">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600 w-8">#</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Adm No.</th>
+                  <th className="text-center px-4 py-3 font-medium text-gray-600">Attendance</th>
+                  {sbaMode ? (
+                    <>
+                      {sbaComponents.map(c => (
+                        <th key={c.id} className="text-center px-2 py-3 font-medium text-gray-600">
+                          <span className="block leading-tight">{c.name}</span>
+                          <span className="text-[10px] font-normal text-gray-400">/ {c.weight}</span>
+                        </th>
+                      ))}
+                      <th className="text-center px-2 py-3 font-medium text-gray-600 bg-indigo-50/60">
+                        <span className="block leading-tight">SBA</span>
+                        <span className="text-[10px] font-normal text-gray-400">/ {sbaMax}</span>
                       </th>
-                    ))}
-                    <th className="text-center px-2 py-3 font-medium text-gray-600 bg-indigo-50/60">
-                      <span className="block leading-tight">SBA</span>
-                      <span className="text-[10px] font-normal text-gray-400">/ {sbaMax}</span>
-                    </th>
-                    {examComponent && (
-                      <th className="text-center px-2 py-3 font-medium text-gray-600">
-                        <span className="block leading-tight">{examComponent.name}</span>
-                        <span className="text-[10px] font-normal text-gray-400">/ {examComponent.weight}</span>
+                      {examComponent && (
+                        <th className="text-center px-2 py-3 font-medium text-gray-600">
+                          <span className="block leading-tight">{examComponent.name}</span>
+                          <span className="text-[10px] font-normal text-gray-400">/ {examComponent.weight}</span>
+                        </th>
+                      )}
+                      <th className="text-center px-2 py-3 font-medium text-gray-600 bg-indigo-50/60">
+                        <span className="block leading-tight">Final</span>
+                        <span className="text-[10px] font-normal text-gray-400">/ {totalMax}</span>
                       </th>
-                    )}
-                    <th className="text-center px-2 py-3 font-medium text-gray-600 bg-indigo-50/60">
-                      <span className="block leading-tight">Final</span>
-                      <span className="text-[10px] font-normal text-gray-400">/ {totalMax}</span>
-                    </th>
-                  </>
-                ) : (
-                  <th className="text-center px-4 py-3 font-medium text-gray-600">Marks / {schedule.fullMarks}</th>
-                )}
-                <th className="text-center px-4 py-3 font-medium text-gray-600">Grade</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Note</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {enrollments.map((enr, idx) => {
-                const s        = enr.student;
-                const row      = rows[s.id];
-                const absent   = row?.attendance === "A";
-                const sbaTotal  = sbaMode && !absent ? componentTotal(row, sbaComponents.map(c => c.id)) : null;
-                const marks    = absent
-                  ? null
-                  : sbaMode
-                    ? componentTotal(row, allComponentIds)
-                    : (row?.marksObtained !== "" ? parseFloat(row?.marksObtained) : null);
-                const grade    = computeGrade(marks, sbaMode ? totalMax : schedule.fullMarks, ranges);
-                const isPassing = marks !== null && marks >= schedule.passingMarks;
-
-                return (
-                  <tr key={s.id} className={`hover:bg-gray-50/50 ${absent ? "bg-red-50/30" : ""}`}>
-                    <td className="px-4 py-2.5 text-gray-400 text-xs">{idx + 1}</td>
-                    <td className="px-4 py-2.5">
-                      <span className="font-medium text-gray-900">{s.firstName} {s.middleName ? s.middleName + " " : ""}{s.lastName}</span>
-                    </td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{s.admissionNo}</td>
-                    <td className="px-4 py-2.5 text-center">
-                      <div className="flex justify-center gap-1.5">
-                        {(["P", "A"] as const).map(att => (
-                          <button key={att} onClick={() => setRow(s.id, "attendance", att)}
-                            className={`w-8 h-8 rounded-lg text-xs font-bold border transition-all ${
-                              row?.attendance === att
-                                ? att === "P"
-                                  ? "bg-green-100 text-green-700 border-green-300 ring-2 ring-green-300 ring-offset-1"
-                                  : "bg-red-100 text-red-700 border-red-300 ring-2 ring-red-300 ring-offset-1"
-                                : "bg-white text-gray-300 border-gray-200 hover:border-gray-400"
-                            }`}>{att}</button>
-                        ))}
-                      </div>
-                    </td>
-                    {sbaMode ? (
-                      <>
-                        {sbaComponents.map(c => (
-                          <td key={c.id} className="px-2 py-2.5 text-center">
-                            {absent ? (
-                              <span className="text-xs text-gray-400 italic">—</span>
-                            ) : (
-                              <Input
-                                type="number" min="0" max={c.weight} step="0.5"
-                                aria-label={`${c.name} score for ${s.firstName} ${s.lastName}, out of ${c.weight}`}
-                                className="w-16 mx-auto text-center h-8"
-                                value={row?.components[c.id] ?? ""}
-                                onChange={e => setComponent(s.id, c.id, e.target.value)}
-                              />
-                            )}
+                    </>
+                  ) : (
+                    <th className="text-center px-4 py-3 font-medium text-gray-600">Marks / {schedule.fullMarks}</th>
+                  )}
+                  <th className="text-center px-4 py-3 font-medium text-gray-600">Grade</th>
+                  <th className="text-center px-4 py-3 font-medium text-gray-600">Status</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Note</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {enrollments.map((enr, idx) => {
+                  const s        = enr.student;
+                  const row      = rows[s.id];
+                  const absent   = row?.attendance === "A";
+                  const sbaTotal  = sbaMode && !absent ? componentTotal(row, sbaComponents.map(c => c.id)) : null;
+                  const marks    = absent
+                    ? null
+                    : sbaMode
+                      ? componentTotal(row, allComponentIds)
+                      : (row?.marksObtained !== "" ? parseFloat(row?.marksObtained) : null);
+                  const grade    = computeGrade(marks, sbaMode ? totalMax : schedule.fullMarks, ranges);
+                  const isPassing = marks !== null && marks >= schedule.passingMarks;
+  
+                  return (
+                    <tr key={s.id} className={`hover:bg-gray-50/50 ${absent ? "bg-red-50/30" : ""}`}>
+                      <td className="px-4 py-2.5 text-gray-400 text-xs">{idx + 1}</td>
+                      <td className="px-4 py-2.5">
+                        <span className="font-medium text-gray-900">{s.firstName} {s.middleName ? s.middleName + " " : ""}{s.lastName}</span>
+                      </td>
+                      <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{s.admissionNo}</td>
+                      <td className="px-4 py-2.5 text-center">
+                        <div className="flex justify-center gap-1.5">
+                          {(["P", "A"] as const).map(att => (
+                            <button key={att} onClick={() => setRow(s.id, "attendance", att)}
+                              className={`w-8 h-8 rounded-lg text-xs font-bold border transition-all ${
+                                row?.attendance === att
+                                  ? att === "P"
+                                    ? "bg-green-100 text-green-700 border-green-300 ring-2 ring-green-300 ring-offset-1"
+                                    : "bg-red-100 text-red-700 border-red-300 ring-2 ring-red-300 ring-offset-1"
+                                  : "bg-white text-gray-300 border-gray-200 hover:border-gray-400"
+                              }`}>{att}</button>
+                          ))}
+                        </div>
+                      </td>
+                      {sbaMode ? (
+                        <>
+                          {sbaComponents.map(c => (
+                            <td key={c.id} className="px-2 py-2.5 text-center">
+                              {absent ? (
+                                <span className="text-xs text-gray-400 italic">—</span>
+                              ) : (
+                                <Input
+                                  type="number" min="0" max={c.weight} step="0.5"
+                                  aria-label={`${c.name} score for ${s.firstName} ${s.lastName}, out of ${c.weight}`}
+                                  className="w-16 mx-auto text-center h-8"
+                                  value={row?.components[c.id] ?? ""}
+                                  onChange={e => setComponent(s.id, c.id, e.target.value)}
+                                />
+                              )}
+                            </td>
+                          ))}
+                          <td className="px-2 py-2.5 text-center font-semibold text-gray-900 bg-indigo-50/40">
+                            {sbaTotal !== null ? sbaTotal : "—"}
                           </td>
-                        ))}
-                        <td className="px-2 py-2.5 text-center font-semibold text-gray-900 bg-indigo-50/40">
-                          {sbaTotal !== null ? sbaTotal : "—"}
-                        </td>
-                        {examComponent && (
-                          <td className="px-2 py-2.5 text-center">
-                            {absent ? (
-                              <span className="text-xs text-gray-400 italic">—</span>
-                            ) : (
-                              <Input
-                                type="number" min="0" max={examComponent.weight} step="0.5"
-                                aria-label={`${examComponent.name} score for ${s.firstName} ${s.lastName}, out of ${examComponent.weight}`}
-                                className="w-16 mx-auto text-center h-8"
-                                value={row?.components[examComponent.id] ?? ""}
-                                onChange={e => setComponent(s.id, examComponent.id, e.target.value)}
-                              />
-                            )}
+                          {examComponent && (
+                            <td className="px-2 py-2.5 text-center">
+                              {absent ? (
+                                <span className="text-xs text-gray-400 italic">—</span>
+                              ) : (
+                                <Input
+                                  type="number" min="0" max={examComponent.weight} step="0.5"
+                                  aria-label={`${examComponent.name} score for ${s.firstName} ${s.lastName}, out of ${examComponent.weight}`}
+                                  className="w-16 mx-auto text-center h-8"
+                                  value={row?.components[examComponent.id] ?? ""}
+                                  onChange={e => setComponent(s.id, examComponent.id, e.target.value)}
+                                />
+                              )}
+                            </td>
+                          )}
+                          <td className="px-2 py-2.5 text-center font-bold text-gray-900 bg-indigo-50/40">
+                            {absent ? "—" : marks !== null ? marks : "—"}
                           </td>
-                        )}
-                        <td className="px-2 py-2.5 text-center font-bold text-gray-900 bg-indigo-50/40">
-                          {absent ? "—" : marks !== null ? marks : "—"}
+                        </>
+                      ) : (
+                        <td className="px-4 py-2.5 text-center">
+                          {absent ? (
+                            <span className="text-xs text-gray-400 italic">Absent</span>
+                          ) : (
+                            <Input
+                              type="number" min="0" max={schedule.fullMarks} step="0.5"
+                              className="w-20 mx-auto text-center h-8"
+                              value={row?.marksObtained ?? ""}
+                              onChange={e => setRow(s.id, "marksObtained", e.target.value)}
+                            />
+                          )}
                         </td>
-                      </>
-                    ) : (
+                      )}
+                      <td className="px-4 py-2.5 text-center font-bold text-indigo-700">
+                        {absent ? "—" : (grade ?? (marks !== null ? "—" : ""))}
+                      </td>
                       <td className="px-4 py-2.5 text-center">
                         {absent ? (
-                          <span className="text-xs text-gray-400 italic">Absent</span>
-                        ) : (
-                          <Input
-                            type="number" min="0" max={schedule.fullMarks} step="0.5"
-                            className="w-20 mx-auto text-center h-8"
-                            value={row?.marksObtained ?? ""}
-                            onChange={e => setRow(s.id, "marksObtained", e.target.value)}
-                          />
-                        )}
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Absent</span>
+                        ) : marks !== null ? (
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isPassing ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                            {isPassing ? "Pass" : "Fail"}
+                          </span>
+                        ) : null}
                       </td>
-                    )}
-                    <td className="px-4 py-2.5 text-center font-bold text-indigo-700">
-                      {absent ? "—" : (grade ?? (marks !== null ? "—" : ""))}
-                    </td>
-                    <td className="px-4 py-2.5 text-center">
-                      {absent ? (
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Absent</span>
-                      ) : marks !== null ? (
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isPassing ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                          {isPassing ? "Pass" : "Fail"}
-                        </span>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <input type="text" placeholder="optional"
-                        value={row?.note ?? ""}
-                        onChange={e => setRow(s.id, "note", e.target.value)}
-                        className="w-28 h-7 rounded border border-gray-200 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400" />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      <td className="px-4 py-2.5">
+                        <input type="text" placeholder="optional"
+                          value={row?.note ?? ""}
+                          onChange={e => setRow(s.id, "note", e.target.value)}
+                          className="w-28 h-7 rounded border border-gray-200 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400" />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
           <div className="border-t bg-gray-50 px-4 py-3 flex justify-between items-center">
             <span className="text-xs text-gray-400">{enrollments.length} students</span>

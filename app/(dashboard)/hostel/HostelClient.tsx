@@ -171,33 +171,35 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
                     </div>
                   </div>
                   {h.rooms.length > 0 && (
-                    <table className="w-full text-sm">
-                      <thead className="bg-gray-50"><tr>{["Room No.","Type","Capacity","Occupied",""].map(c => <th key={c} className="text-left px-3 py-2 text-xs font-medium text-gray-500">{c}</th>)}</tr></thead>
-                      <tbody className="divide-y">
-                        {h.rooms.map((r: any) => (
-                          <tr key={r.id}>
-                            <td className="px-3 py-2 font-mono font-medium">{r.roomNo}</td>
-                            <td className="px-3 py-2 text-gray-600">{r.roomType?.name ?? "—"}</td>
-                            <td className="px-3 py-2 text-gray-500">{r.capacity}</td>
-                            <td className="px-3 py-2">
-                              <span className={`text-xs px-2 py-0.5 rounded-full ${r._count.allocations >= r.capacity ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
-                                {r._count.allocations}/{r.capacity}
-                              </span>
-                            </td>
-                            <td className="px-3 py-2 text-right">
-                              <div className="inline-flex items-center gap-2">
-                                <button onClick={() => openEditRoom(r)} className="text-gray-400 hover:text-gray-600" title="Edit room">
-                                  <Pencil className="h-3.5 w-3.5" />
-                                </button>
-                                <button onClick={() => deleteRoom(r.id)} className="text-gray-400 hover:text-red-600" title="Delete room">
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-gray-50"><tr>{["Room No.","Type","Capacity","Occupied",""].map(c => <th key={c} className="text-left px-3 py-2 text-xs font-medium text-gray-500">{c}</th>)}</tr></thead>
+                        <tbody className="divide-y">
+                          {h.rooms.map((r: any) => (
+                            <tr key={r.id}>
+                              <td className="px-3 py-2 font-mono font-medium">{r.roomNo}</td>
+                              <td className="px-3 py-2 text-gray-600">{r.roomType?.name ?? "—"}</td>
+                              <td className="px-3 py-2 text-gray-500">{r.capacity}</td>
+                              <td className="px-3 py-2">
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${r._count.allocations >= r.capacity ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
+                                  {r._count.allocations}/{r.capacity}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2 text-right">
+                                <div className="inline-flex items-center gap-2">
+                                  <button onClick={() => openEditRoom(r)} className="text-gray-400 hover:text-gray-600" title="Edit room">
+                                    <Pencil className="h-3.5 w-3.5" />
+                                  </button>
+                                  <button onClick={() => deleteRoom(r.id)} className="text-gray-400 hover:text-red-600" title="Delete room">
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -248,20 +250,22 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
           )}
 
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b"><tr>{["Student","Adm No.","Hostel","Room"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr></thead>
-              <tbody className="divide-y">
-                {students.filter((s: any) => s.hostelAllocation).map((s: any) => (
-                  <tr key={s.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium">{s.firstName} {s.lastName}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.admissionNo}</td>
-                    <td className="px-4 py-3 text-gray-600">{s.hostelAllocation?.room?.hostel?.name ?? "—"}</td>
-                    <td className="px-4 py-3 font-mono text-gray-700">{s.hostelAllocation?.room?.roomNo ?? "—"}</td>
-                  </tr>
-                ))}
-                {!students.some((s: any) => s.hostelAllocation) && <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-gray-400">No allocations yet.</td></tr>}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b"><tr>{["Student","Adm No.","Hostel","Room"].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-600">{h}</th>)}</tr></thead>
+                <tbody className="divide-y">
+                  {students.filter((s: any) => s.hostelAllocation).map((s: any) => (
+                    <tr key={s.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium">{s.firstName} {s.lastName}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.admissionNo}</td>
+                      <td className="px-4 py-3 text-gray-600">{s.hostelAllocation?.room?.hostel?.name ?? "—"}</td>
+                      <td className="px-4 py-3 font-mono text-gray-700">{s.hostelAllocation?.room?.roomNo ?? "—"}</td>
+                    </tr>
+                  ))}
+                  {!students.some((s: any) => s.hostelAllocation) && <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-gray-400">No allocations yet.</td></tr>}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

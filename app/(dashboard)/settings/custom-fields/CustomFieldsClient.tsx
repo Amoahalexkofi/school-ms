@@ -142,49 +142,51 @@ export function CustomFieldsClient({ fields: initial }: { fields: CustomField[] 
           </p>
         ) : (
           <div className="border rounded-lg overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="w-8 px-3 py-2.5" />
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Field Label</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Type</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-gray-600">Options</th>
-                  <th className="text-center px-4 py-2.5 font-medium text-gray-600">Required</th>
-                  <th className="text-right px-4 py-2.5 font-medium text-gray-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {items.map((field) => (
-                  <tr key={field.id} className="hover:bg-gray-50">
-                    <td className="px-3 py-2.5 text-gray-300">
-                      <GripVertical className="h-4 w-4" />
-                    </td>
-                    <td className="px-4 py-2.5 font-medium">{field.fieldLabel}</td>
-                    <td className="px-4 py-2.5">
-                      <Badge variant="outline" className="text-xs">{TYPE_LABELS[field.fieldType]}</Badge>
-                    </td>
-                    <td className="px-4 py-2.5 text-gray-500 text-xs max-w-[200px] truncate">
-                      {field.fieldType === "SELECT" ? (field.options ?? "—") : "—"}
-                    </td>
-                    <td className="px-4 py-2.5 text-center">
-                      {field.isRequired
-                        ? <span className="text-xs text-red-600 font-medium">Yes</span>
-                        : <span className="text-xs text-gray-400">No</span>}
-                    </td>
-                    <td className="px-4 py-2.5 text-right">
-                      <div className="flex gap-1 justify-end">
-                        <Button size="sm" variant="ghost" onClick={() => openEdit(field)}>
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => del(field.id)} className="text-red-400 hover:text-red-600">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="w-8 px-3 py-2.5" />
+                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Field Label</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Type</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Options</th>
+                    <th className="text-center px-4 py-2.5 font-medium text-gray-600">Required</th>
+                    <th className="text-right px-4 py-2.5 font-medium text-gray-600">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y">
+                  {items.map((field) => (
+                    <tr key={field.id} className="hover:bg-gray-50">
+                      <td className="px-3 py-2.5 text-gray-300">
+                        <GripVertical className="h-4 w-4" />
+                      </td>
+                      <td className="px-4 py-2.5 font-medium">{field.fieldLabel}</td>
+                      <td className="px-4 py-2.5">
+                        <Badge variant="outline" className="text-xs">{TYPE_LABELS[field.fieldType]}</Badge>
+                      </td>
+                      <td className="px-4 py-2.5 text-gray-500 text-xs max-w-[200px] truncate">
+                        {field.fieldType === "SELECT" ? (field.options ?? "—") : "—"}
+                      </td>
+                      <td className="px-4 py-2.5 text-center">
+                        {field.isRequired
+                          ? <span className="text-xs text-red-600 font-medium">Yes</span>
+                          : <span className="text-xs text-gray-400">No</span>}
+                      </td>
+                      <td className="px-4 py-2.5 text-right">
+                        <div className="flex gap-1 justify-end">
+                          <Button size="sm" variant="ghost" onClick={() => openEdit(field)}>
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => del(field.id)} className="text-red-400 hover:text-red-600">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

@@ -112,26 +112,28 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
           <Card>
             <CardHeader><CardTitle className="text-sm">Academic Sessions</CardTitle></CardHeader>
             <CardContent className="p-0">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Session</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Class</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Section</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-gray-600">Roll No</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {s.sessions.map((sess: any) => (
-                    <tr key={sess.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-2.5">{sess.session?.session}</td>
-                      <td className="px-4 py-2.5">{sess.classSection?.class?.name ?? "—"}</td>
-                      <td className="px-4 py-2.5">{sess.classSection?.section?.name ?? "—"}</td>
-                      <td className="px-4 py-2.5 text-gray-500">{sess.rollNo ?? "—"}</td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b">
+                    <tr>
+                      <th className="text-left px-4 py-2.5 font-medium text-gray-600">Session</th>
+                      <th className="text-left px-4 py-2.5 font-medium text-gray-600">Class</th>
+                      <th className="text-left px-4 py-2.5 font-medium text-gray-600">Section</th>
+                      <th className="text-left px-4 py-2.5 font-medium text-gray-600">Roll No</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y">
+                    {s.sessions.map((sess: any) => (
+                      <tr key={sess.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-2.5">{sess.session?.session}</td>
+                        <td className="px-4 py-2.5">{sess.classSection?.class?.name ?? "—"}</td>
+                        <td className="px-4 py-2.5">{sess.classSection?.section?.name ?? "—"}</td>
+                        <td className="px-4 py-2.5 text-gray-500">{sess.rollNo ?? "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         )}

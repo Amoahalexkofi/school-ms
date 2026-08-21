@@ -320,54 +320,56 @@ export function MarksheetClient({ examGroups, classes, school, divisions = [], g
 
               {/* Marks Table */}
               <div className="p-4">
-                <table className="w-full text-sm border-collapse tabular-nums">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border border-slate-200 bg-white px-3 py-2 text-left">Subject</th>
-                      <th className="border border-slate-200 bg-white px-3 py-2 text-center">Max Marks</th>
-                      <th className="border border-slate-200 bg-white px-3 py-2 text-center">Pass Marks</th>
-                      <th className="border border-slate-200 bg-white px-3 py-2 text-center">Marks Obtained</th>
-                      <th className="border border-slate-200 bg-white px-3 py-2 text-center">Grade</th>
-                      <th className="border border-slate-200 bg-white px-3 py-2 text-center">Result</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ms.rows.map((row, i) => (
-                      <tr key={i} className={row.isPassing ? "" : "bg-red-50"}>
-                        <td className="border border-slate-200 bg-white px-3 py-2">{row.subjectName}</td>
-                        <td className="border border-slate-200 bg-white px-3 py-2 text-center">{row.fullMarks}</td>
-                        <td className="border border-slate-200 bg-white px-3 py-2 text-center">{row.passingMarks}</td>
-                        <td className="border border-slate-200 bg-white px-3 py-2 text-center font-semibold">
-                          {row.obtained !== null ? row.obtained : "ABS"}
-                        </td>
-                        <td className="border border-slate-200 bg-white px-3 py-2 text-center font-bold text-blue-700">
-                          {row.grade ?? "—"}
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm border-collapse tabular-nums">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-slate-200 bg-white px-3 py-2 text-left">Subject</th>
+                        <th className="border border-slate-200 bg-white px-3 py-2 text-center">Max Marks</th>
+                        <th className="border border-slate-200 bg-white px-3 py-2 text-center">Pass Marks</th>
+                        <th className="border border-slate-200 bg-white px-3 py-2 text-center">Marks Obtained</th>
+                        <th className="border border-slate-200 bg-white px-3 py-2 text-center">Grade</th>
+                        <th className="border border-slate-200 bg-white px-3 py-2 text-center">Result</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ms.rows.map((row, i) => (
+                        <tr key={i} className={row.isPassing ? "" : "bg-red-50"}>
+                          <td className="border border-slate-200 bg-white px-3 py-2">{row.subjectName}</td>
+                          <td className="border border-slate-200 bg-white px-3 py-2 text-center">{row.fullMarks}</td>
+                          <td className="border border-slate-200 bg-white px-3 py-2 text-center">{row.passingMarks}</td>
+                          <td className="border border-slate-200 bg-white px-3 py-2 text-center font-semibold">
+                            {row.obtained !== null ? row.obtained : "ABS"}
+                          </td>
+                          <td className="border border-slate-200 bg-white px-3 py-2 text-center font-bold text-blue-700">
+                            {row.grade ?? "—"}
+                          </td>
+                          <td className="border border-slate-200 bg-white px-3 py-2 text-center">
+                            {row.isPassing
+                              ? <span className="inline-flex items-center gap-1 text-green-700 font-medium"><CheckCircle2 className="h-3.5 w-3.5" />PASS</span>
+                              : <span className="inline-flex items-center gap-1 text-red-600 font-medium"><XCircle className="h-3.5 w-3.5" />FAIL</span>
+                            }
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="bg-gray-50 font-semibold">
+                        <td className="border border-slate-200 bg-white px-3 py-2">TOTAL</td>
+                        <td className="border border-slate-200 bg-white px-3 py-2 text-center">{ms.totalFull}</td>
+                        <td className="border border-slate-200 bg-white px-3 py-2" />
+                        <td className="border border-slate-200 bg-white px-3 py-2 text-center">{ms.totalObtained}</td>
+                        <td className="border border-slate-200 bg-white px-3 py-2 text-center">{ms.pct}%</td>
                         <td className="border border-slate-200 bg-white px-3 py-2 text-center">
-                          {row.isPassing
-                            ? <span className="inline-flex items-center gap-1 text-green-700 font-medium"><CheckCircle2 className="h-3.5 w-3.5" />PASS</span>
-                            : <span className="inline-flex items-center gap-1 text-red-600 font-medium"><XCircle className="h-3.5 w-3.5" />FAIL</span>
+                          {ms.allPassed
+                            ? <span className="text-green-700 font-bold">PASS</span>
+                            : <span className="text-red-600 font-bold">FAIL</span>
                           }
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr className="bg-gray-50 font-semibold">
-                      <td className="border border-slate-200 bg-white px-3 py-2">TOTAL</td>
-                      <td className="border border-slate-200 bg-white px-3 py-2 text-center">{ms.totalFull}</td>
-                      <td className="border border-slate-200 bg-white px-3 py-2" />
-                      <td className="border border-slate-200 bg-white px-3 py-2 text-center">{ms.totalObtained}</td>
-                      <td className="border border-slate-200 bg-white px-3 py-2 text-center">{ms.pct}%</td>
-                      <td className="border border-slate-200 bg-white px-3 py-2 text-center">
-                        {ms.allPassed
-                          ? <span className="text-green-700 font-bold">PASS</span>
-                          : <span className="text-red-600 font-bold">FAIL</span>
-                        }
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
+                    </tfoot>
+                  </table>
+                </div>
               </div>
 
               {/* Grade key legend */}

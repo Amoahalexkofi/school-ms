@@ -133,32 +133,34 @@ function Preview({ form, school }: { form: any; school: School }) {
       </div>
 
       {/* Subject table */}
-      <table className="w-full mt-2 border border-slate-200 tabular-nums">
-        <thead>
-          <tr className="bg-slate-100 text-[8px]">
-            <th className="text-left px-1.5 py-1 font-bold">Subject</th>
-            <th className="px-1 py-1 font-bold">Class (50%)</th>
-            <th className="px-1 py-1 font-bold">Exam (50%)</th>
-            <th className="px-1 py-1 font-bold">Total</th>
-            <th className="px-1 py-1 font-bold">Grade</th>
-            <th className="px-1 py-1 font-bold">Pos.</th>
-            <th className="text-left px-1.5 py-1 font-bold">Remarks</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(r => (
-            <tr key={r.subject} className="border-t border-slate-100">
-              <td className="px-1.5 py-1">{r.subject}</td>
-              <td className="text-center">{r.cs}</td>
-              <td className="text-center">{r.es}</td>
-              <td className="text-center">{r.total}</td>
-              <td className="text-center">{r.grade}</td>
-              <td className="text-center">{r.pos}</td>
-              <td className="px-1.5">{r.remark}</td>
+      <div className="overflow-x-auto">
+        <table className="w-full mt-2 border border-slate-200 tabular-nums">
+          <thead>
+            <tr className="bg-slate-100 text-[8px]">
+              <th className="text-left px-1.5 py-1 font-bold">Subject</th>
+              <th className="px-1 py-1 font-bold">Class (50%)</th>
+              <th className="px-1 py-1 font-bold">Exam (50%)</th>
+              <th className="px-1 py-1 font-bold">Total</th>
+              <th className="px-1 py-1 font-bold">Grade</th>
+              <th className="px-1 py-1 font-bold">Pos.</th>
+              <th className="text-left px-1.5 py-1 font-bold">Remarks</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map(r => (
+              <tr key={r.subject} className="border-t border-slate-100">
+                <td className="px-1.5 py-1">{r.subject}</td>
+                <td className="text-center">{r.cs}</td>
+                <td className="text-center">{r.es}</td>
+                <td className="text-center">{r.total}</td>
+                <td className="text-center">{r.grade}</td>
+                <td className="text-center">{r.pos}</td>
+                <td className="px-1.5">{r.remark}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Wrapper */}
       <div className="border border-slate-200 mt-2 px-3 py-2 grid grid-cols-4 gap-1.5">

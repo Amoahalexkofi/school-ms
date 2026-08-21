@@ -91,41 +91,43 @@ export function SchoolHousesClient({ houses: initial }: { houses: House[] }) {
       ) : (
         <Card>
           <CardContent className="p-0">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">House Name</th>
-                  <th className="text-center px-4 py-3 font-medium text-gray-600">Students</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {houses.map((h, i) => (
-                  <tr key={h.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-gray-400">{i + 1}</td>
-                    <td className="px-4 py-3">
-                      {editRowId === h.id ? (
-                        <div className="flex items-center gap-2">
-                          <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="h-8 w-48" autoFocus />
-                          <button onClick={() => save(h.id)} className="text-green-600 hover:text-green-700"><Check className="h-4 w-4" /></button>
-                          <button onClick={() => setEditRowId(null)} className="text-gray-400"><X className="h-4 w-4" /></button>
-                        </div>
-                      ) : (
-                        <span className="font-medium">{h.name}</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-center text-gray-500">{h._count?.students ?? 0}</td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex gap-1 justify-end">
-                        {perm.canEdit && <Button size="sm" variant="ghost" onClick={() => { setEditRowId(h.id); setEditName(h.name); }}><Pencil className="h-3.5 w-3.5" /></Button>}
-                        {perm.canDelete && <Button size="sm" variant="ghost" onClick={() => del(h.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>}
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">House Name</th>
+                    <th className="text-center px-4 py-3 font-medium text-gray-600">Students</th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y">
+                  {houses.map((h, i) => (
+                    <tr key={h.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-gray-400">{i + 1}</td>
+                      <td className="px-4 py-3">
+                        {editRowId === h.id ? (
+                          <div className="flex items-center gap-2">
+                            <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="h-8 w-48" autoFocus />
+                            <button onClick={() => save(h.id)} className="text-green-600 hover:text-green-700"><Check className="h-4 w-4" /></button>
+                            <button onClick={() => setEditRowId(null)} className="text-gray-400"><X className="h-4 w-4" /></button>
+                          </div>
+                        ) : (
+                          <span className="font-medium">{h.name}</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-center text-gray-500">{h._count?.students ?? 0}</td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex gap-1 justify-end">
+                          {perm.canEdit && <Button size="sm" variant="ghost" onClick={() => { setEditRowId(h.id); setEditName(h.name); }}><Pencil className="h-3.5 w-3.5" /></Button>}
+                          {perm.canDelete && <Button size="sm" variant="ghost" onClick={() => del(h.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></Button>}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       )}
