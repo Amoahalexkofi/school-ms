@@ -20,7 +20,18 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { firstName, lastName, dateOfBirth, gender, classAppliedFor, parentName, parentPhone, parentEmail, address, notes } = await req.json();
+    const { firstName, lastName, dateOfBirth, gender, classAppliedFor, parentName, parentPhone, parentEmail, address, notes, website, renderedAt } = await req.json();
+
+    // Bot heuristics — a filled honeypot field (real visitors never see or
+    // fill it) or a submission faster than a human could plausibly complete
+    // a 9-field form. Return a fake success so scripted bots get no signal
+    // that they were caught, without ever touching the database.
+    const filledInUnder2s = typeof renderedAt === "number" && Date.now() - renderedAt < 2000;
+    if (website || filledInUnder2s) {
+      console.warn("[admissions/apply] blocked likely bot submission", { honeypot: !!website, filledInUnder2s });
+      return NextResponse.json({ ok: true, id: "ignored" }, { status: 201 });
+    }
+
     const app = await submitApplication({
       firstName, lastName,
       dateOfBirth: new Date(dateOfBirth),

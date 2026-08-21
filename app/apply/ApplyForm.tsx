@@ -17,6 +17,8 @@ const labelClass = "block text-[11px] font-bold text-slate-400 tracking-[0.1em] 
 
 export function ApplyForm({ accentColor, schoolName }: Props) {
   const [form, setForm]         = useState(EMPTY_FORM);
+  const [honeypot, setHoneypot] = useState("");
+  const [renderedAt]            = useState(() => Date.now());
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState("");
@@ -34,7 +36,7 @@ export function ApplyForm({ accentColor, schoolName }: Props) {
       const res = await fetch("/api/admissions/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, dateOfBirth: new Date(form.dateOfBirth) }),
+        body: JSON.stringify({ ...form, dateOfBirth: new Date(form.dateOfBirth), website: honeypot, renderedAt }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -71,6 +73,16 @@ export function ApplyForm({ accentColor, schoolName }: Props) {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="bg-white rounded-2xl border border-slate-200/80 px-6 sm:px-10 py-8 sm:py-10 space-y-7">
+
+      {/* Honeypot — invisible to real visitors, but form-filling bots tend to
+          fill every input they find. Off-screen rather than display:none,
+          since some bots skip visibility:hidden/display:none fields
+          specifically to evade this trick. */}
+      <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+        <label htmlFor="apply-website">Website</label>
+        <input id="apply-website" type="text" tabIndex={-1} autoComplete="off"
+          value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
+      </div>
 
       {error && (
         <div role="alert" className="text-red-700 bg-red-50 border border-red-200 text-[13px] rounded-lg px-4 py-3">
