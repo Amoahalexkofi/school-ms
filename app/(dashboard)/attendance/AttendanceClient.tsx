@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, CheckCheck, AlertCircle, Save, ClipboardList } from "lucide-react";
+import { Users, CheckCheck, AlertCircle, Save, ClipboardList, ScanLine } from "lucide-react";
 import Link from "next/link";
 import { usePermission } from "@/components/PermissionsProvider";
 
 type AttendanceType = { id: string; type: string; keyValue: string; nameStyle: string };
 type Enrollment     = { id: string; rollNo: string | null; student: { id: string; firstName: string; middleName: string | null; lastName: string | null; admissionNo: string; gender: string | null } };
-type Props = { sessions: any[]; classSections: any[]; attendanceTypes: AttendanceType[] };
+type Props = { sessions: any[]; classSections: any[]; attendanceTypes: AttendanceType[]; qrAttendanceEnabled?: boolean };
 
 // keyValue → Tailwind classes
 const KV_STYLE: Record<string, string> = {
@@ -20,7 +20,7 @@ const KV_STYLE: Record<string, string> = {
   F:  "bg-orange-100 text-orange-700 border-orange-300",
 };
 
-export function AttendanceClient({ sessions, classSections, attendanceTypes }: Props) {
+export function AttendanceClient({ sessions, classSections, attendanceTypes, qrAttendanceEnabled = false }: Props) {
   const perm = usePermission("student_attendance");
   const today = new Date().toISOString().slice(0, 10);
 
@@ -144,6 +144,11 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
           <Link href="/attendance/staff">
             <Button variant="outline">Staff Attendance</Button>
           </Link>
+          {qrAttendanceEnabled && (
+            <Link href="/attendance/scan">
+              <Button variant="outline"><ScanLine className="h-4 w-4 mr-1.5" />Scan Attendance</Button>
+            </Link>
+          )}
         </div>
       </div>
 

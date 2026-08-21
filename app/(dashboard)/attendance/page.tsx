@@ -1,5 +1,6 @@
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
+import { isAddonEnabled } from "@/lib/addons";
 import { AttendanceClient } from "./AttendanceClient";
 
 async function getData() {
@@ -15,11 +16,11 @@ async function getData() {
 }
 
 export default async function AttendancePage() {
-  const data = await getData();
+  const [data, qrAttendanceEnabled] = await Promise.all([getData(), isAddonEnabled("qr_attendance")]);
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Student Attendance" />
-      <AttendanceClient {...data} />
+      <AttendanceClient {...data} qrAttendanceEnabled={qrAttendanceEnabled} />
     </div>
   );
 }
