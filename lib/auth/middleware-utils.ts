@@ -71,6 +71,12 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT"],
   },
   {
+    // Longer prefix wins over the /attendance rule below — every staff role
+    // can open the scanner to check themselves in, not just admins/teachers.
+    prefix: "/attendance/scan",
+    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"],
+  },
+  {
     prefix: "/attendance",
     roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
   },
@@ -335,6 +341,8 @@ const ROUTE_PERMISSIONS: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/api/front-office", roles: ["SUPER_ADMIN", "ADMIN", "RECEPTIONIST", "TEACHER", "ACCOUNTANT", "LIBRARIAN"] },
   // Attendance types (read-only, used by attendance forms)
   { prefix: "/api/attendance-types", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
+  // QR/geofence scan — same broad staff set as the /attendance/scan page
+  { prefix: "/api/attendance/scan", roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"] },
   // Notices API
   { prefix: "/api/notices",   roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"] },
   // Messaging API — see /messaging above

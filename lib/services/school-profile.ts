@@ -6,7 +6,7 @@ export async function getSchoolProfile() {
 }
 
 export async function upsertSchoolProfile(input: Record<string, unknown>) {
-  const { name, code, address, phone, email, website, motto, logo, coverImage, currency, dateFormat, country, state, city, feeDueDays, onboardingCompleted } = input as any;
+  const { name, code, address, phone, email, website, motto, logo, coverImage, currency, dateFormat, country, state, city, feeDueDays, onboardingCompleted, latitude, longitude, geofenceRadius } = input as any;
   const prisma = await getDb();
   const existing = await (prisma as any).schoolProfile.findFirst();
 
@@ -32,6 +32,11 @@ export async function upsertSchoolProfile(input: Record<string, unknown>) {
   if (currency   !== undefined && currency)   data.currency   = currency;   // NOT NULL — never null out
   if (dateFormat !== undefined && dateFormat) data.dateFormat = dateFormat; // NOT NULL — never null out
   if (feeDueDays !== undefined) data.feeDueDays = feeDueDays ? parseInt(feeDueDays) : null;
+  // Geofence coords: use ?? not || — a school genuinely at 0° lat/long (rare
+  // but not impossible) must not get silently nulled out.
+  if (latitude       !== undefined) data.latitude       = latitude === "" || latitude === null ? null : parseFloat(latitude);
+  if (longitude      !== undefined) data.longitude      = longitude === "" || longitude === null ? null : parseFloat(longitude);
+  if (geofenceRadius !== undefined) data.geofenceRadius = geofenceRadius ? parseInt(geofenceRadius) : 150;
   if (onboardingCompleted !== undefined) data.onboardingCompleted = Boolean(onboardingCompleted);
   if (existing) {
     return (prisma as any).schoolProfile.update({ where: { id: existing.id }, data });

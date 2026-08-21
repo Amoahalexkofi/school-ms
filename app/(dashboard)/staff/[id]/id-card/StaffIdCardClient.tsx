@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Printer, Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { AttendanceQrCode, staffQrValue } from "@/components/AttendanceQrCode";
 
 type Props = { staff: any; template: any };
 
@@ -106,6 +107,13 @@ export function StaffIdCardClient({ staff, template }: Props) {
             ))}
           </div>
         </div>
+
+        {/* QR code — scanned at /attendance/scan to mark attendance */}
+        {staff.employeeId && (
+          <div className="px-5 pb-3 flex justify-center bg-gray-50">
+            <AttendanceQrCode value={staffQrValue(staff.employeeId)} size={72} />
+          </div>
+        )}
 
         {/* Footer */}
         <div className="border-t px-5 py-2 bg-gray-50 flex items-center justify-between">

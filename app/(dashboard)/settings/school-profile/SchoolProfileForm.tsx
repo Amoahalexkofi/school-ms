@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, School, Save, MessageCircle } from "lucide-react";
+import { ArrowLeft, School, Save, MessageCircle, MapPin, Crosshair } from "lucide-react";
 import { ImageUploader } from "@/components/ImageUploader";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
@@ -43,13 +43,40 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
     staffidStartFrom: String(profile?.staffidStartFrom ?? "1"),
     staffidNoDigit: String(profile?.staffidNoDigit ?? "4"),
     staffidAutoInsert: profile?.staffidAutoInsert ?? true,
+    // QR attendance geofence
+    latitude: profile?.latitude != null ? String(profile.latitude) : "",
+    longitude: profile?.longitude != null ? String(profile.longitude) : "",
+    geofenceRadius: String(profile?.geofenceRadius ?? "150"),
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [locateError, setLocateError] = useState("");
 
   function set(k: string, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
     setSaved(false);
+  }
+
+  function useCurrentLocation() {
+    if (!("geolocation" in navigator)) {
+      setLocateError("Your browser doesn't support location");
+      return;
+    }
+    setLocating(true);
+    setLocateError("");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setForm((f) => ({ ...f, latitude: String(pos.coords.latitude), longitude: String(pos.coords.longitude) }));
+        setSaved(false);
+        setLocating(false);
+      },
+      () => {
+        setLocateError("Couldn't get your location — allow location access and try again");
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
   }
 
   async function save() {
@@ -67,6 +94,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
         admNoDigit: parseInt(form.admNoDigit) || 4,
         staffidStartFrom: parseInt(form.staffidStartFrom) || 1,
         staffidNoDigit: parseInt(form.staffidNoDigit) || 4,
+        geofenceRadius: parseInt(form.geofenceRadius) || 150,
       }),
       });
       if (!res.ok) {
@@ -162,6 +190,43 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
           <div>
             <Label>City / Town</Label>
             <Input value={form.city} onChange={(e) => set("city", e.target.value)} placeholder="Accra" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* QR Attendance Geofence */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-[15px] font-bold text-slate-900 flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-indigo-600" /> Attendance Geofence
+          </CardTitle>
+          <p className="text-xs text-gray-400 mt-1">
+            Staff and students scanning their ID card QR code must be within this radius of the school to be marked present.
+          </p>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <Label>Latitude</Label>
+            <Input value={form.latitude} onChange={(e) => set("latitude", e.target.value)} placeholder="e.g. 5.6037" />
+          </div>
+          <div>
+            <Label>Longitude</Label>
+            <Input value={form.longitude} onChange={(e) => set("longitude", e.target.value)} placeholder="e.g. -0.1870" />
+          </div>
+          <div>
+            <Label>Radius (meters)</Label>
+            <Input type="number" value={form.geofenceRadius} onChange={(e) => set("geofenceRadius", e.target.value)} min={20} max={2000} />
+          </div>
+          <div className="md:col-span-3">
+            <Button type="button" variant="outline" size="sm" onClick={useCurrentLocation} disabled={locating} className="gap-2">
+              <Crosshair className="h-3.5 w-3.5" />
+              {locating ? "Locating…" : "Use my current location"}
+            </Button>
+            <p className="text-xs text-gray-400 mt-1.5">Stand on the school grounds, then click this to fill in the coordinates automatically.</p>
+            {locateError && <p className="text-xs text-red-500 mt-1">{locateError}</p>}
+            {!form.latitude && (
+              <p className="text-xs text-amber-600 mt-1.5">Not set yet — QR attendance scanning will be blocked until this is configured.</p>
+            )}
           </div>
         </CardContent>
       </Card>

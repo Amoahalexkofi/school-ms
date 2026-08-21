@@ -2191,6 +2191,13 @@ model SchoolProfile {
   classTeacher     Boolean @default(true)
   studentTimeline  Boolean @default(true)
   onboardingCompleted Boolean @default(false)
+  // QR attendance geofence — the point admins set (via "Use my current
+  // location" while standing on campus) and the allowed radius around it.
+  // Null latitude/longitude means geofencing isn't configured yet, and the
+  // scan endpoint must refuse to mark attendance rather than skip the check.
+  latitude         Float?
+  longitude        Float?
+  geofenceRadius   Int?    @default(150)
 }
 
 // ─── Custom Fields ────────────────────────────────────────────────────────────

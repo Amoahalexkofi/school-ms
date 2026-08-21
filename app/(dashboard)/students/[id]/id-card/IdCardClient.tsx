@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowLeft, Printer, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AttendanceQrCode, studentQrValue } from "@/components/AttendanceQrCode";
 
 type Props = { student: any; school: any; template: any };
 
@@ -94,12 +95,12 @@ export function IdCardClient({ student, school, template }: Props) {
           </div>
         </div>
 
-        {/* Barcode (Smart School enable_student_barcode: admission no as code) */}
-        {template?.enableStudentBarcode && (
-          <div className="px-5 pb-2 text-center bg-slate-50">
-            <p className="font-mono text-[10px] tracking-[0.35em] text-gray-700 border border-gray-300 rounded inline-block px-3 py-1">
-              *{student.admissionNo}*
-            </p>
+        {/* QR code — scanned at /attendance/scan to mark attendance
+            (Smart School's enable_student_barcode flag; a real scannable
+            code now, not the old fake monospace text). */}
+        {template?.enableStudentBarcode && student.admissionNo && (
+          <div className="px-5 pb-3 flex justify-center bg-slate-50">
+            <AttendanceQrCode value={studentQrValue(student.admissionNo)} size={72} />
           </div>
         )}
 

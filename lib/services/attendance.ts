@@ -46,6 +46,20 @@ export async function markAttendance(input: {
   }, { timeout: 30000 });
 }
 
+export async function markStaffAttendance(input: {
+  staffId: string;
+  date: Date;
+  staffAttendanceTypeId: string;
+  inTime?: string;
+}): Promise<void> {
+  const prisma = await getDb();
+  await (prisma as any).staffAttendance.upsert({
+    where: { staffId_date: { staffId: input.staffId, date: input.date } },
+    create: { staffId: input.staffId, date: input.date, staffAttendanceTypeId: input.staffAttendanceTypeId, inTime: input.inTime },
+    update: { staffAttendanceTypeId: input.staffAttendanceTypeId, inTime: input.inTime },
+  });
+}
+
 export async function getStudentAttendanceSummary(studentId: string, sessionId: string) {
   const prisma = await getDb();
   const rows = await (prisma as any).studentAttendance.findMany({
