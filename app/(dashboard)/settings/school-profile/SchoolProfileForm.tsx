@@ -71,11 +71,17 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
         setSaved(false);
         setLocating(false);
       },
-      () => {
-        setLocateError("Couldn't get your location — allow location access and try again");
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocateError("Location access is blocked for this site — allow it in your browser's site settings (and in your OS's Location Services), then try again.");
+        } else if (err.code === err.TIMEOUT) {
+          setLocateError("Location request timed out — try again, or move somewhere with a clearer signal.");
+        } else {
+          setLocateError("Couldn't determine your location — make sure Location Services is turned on for your browser, then try again.");
+        }
         setLocating(false);
       },
-      { enableHighAccuracy: true, timeout: 15000 }
+      { enableHighAccuracy: true, timeout: 20000 }
     );
   }
 

@@ -12,6 +12,7 @@ export function ScanClient() {
   const coordsRef = useRef<{ lat: number; lng: number } | null>(null);
 
   const [locStatus, setLocStatus] = useState<"asking" | "ready" | "denied">("asking");
+  const [locError, setLocError] = useState("Location access is required to mark attendance. Allow it in your browser settings and reload.");
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
 
@@ -25,8 +26,17 @@ export function ScanClient() {
         coordsRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         setLocStatus("ready");
       },
-      () => setLocStatus("denied"),
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocError("Location access is blocked for this site — allow it in your browser's site settings (and OS Location Services), then reload.");
+        } else if (err.code === err.TIMEOUT) {
+          setLocError("Location request timed out — check your signal and reload.");
+        } else {
+          setLocError("Couldn't determine your location — make sure Location Services is on for your browser, then reload.");
+        }
+        setLocStatus("denied");
+      },
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
     );
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
@@ -87,7 +97,7 @@ export function ScanClient() {
             <MapPin className="h-4 w-4 shrink-0" />
             {locStatus === "asking" && "Getting your location…"}
             {locStatus === "ready" && "Location confirmed — point the camera at a card's QR code"}
-            {locStatus === "denied" && "Location access is required to mark attendance. Allow it in your browser settings and reload."}
+            {locStatus === "denied" && locError}
           </div>
         </div>
 
