@@ -19,22 +19,39 @@ export default async function Image() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          padding: "80px 90px",
-          background: "#1c1e54",
+          padding: "84px 96px",
+          background: "#f6f9fc",
           backgroundImage:
-            "radial-gradient(120% 100% at 15% 0%, rgba(83,58,253,0.35) 0%, transparent 60%)",
+            "radial-gradient(60% 75% at 92% 8%, rgba(83,58,253,0.16) 0%, transparent 62%), radial-gradient(45% 60% at 4% 100%, rgba(83,58,253,0.10) 0%, transparent 65%)",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={logoSrc} height={64} style={{ objectFit: "contain", marginBottom: 44 }} />
+        <img src={logoSrc} height={54} style={{ objectFit: "contain", marginBottom: 40 }} />
+
         <div
           style={{
-            fontSize: 56,
-            fontWeight: 300,
-            color: "#ffffff",
-            letterSpacing: "-1px",
-            lineHeight: 1.15,
-            maxWidth: 900,
+            display: "flex",
+            alignItems: "center",
+            background: "rgba(83,58,253,0.10)",
+            color: "#533afd",
+            fontSize: 18,
+            fontWeight: 700,
+            padding: "8px 18px",
+            borderRadius: 999,
+            marginBottom: 28,
+          }}
+        >
+          Built for African schools
+        </div>
+
+        <div
+          style={{
+            fontSize: 62,
+            fontWeight: 700,
+            color: "#0d253d",
+            letterSpacing: "-2px",
+            lineHeight: 1.08,
+            maxWidth: 940,
             display: "flex",
           }}
         >
@@ -42,20 +59,21 @@ export default async function Image() {
         </div>
         <div
           style={{
-            fontSize: 24,
-            color: "#c9d4f2",
-            marginTop: 22,
+            fontSize: 25,
+            color: "#64748d",
+            marginTop: 24,
             display: "flex",
           }}
         >
           Admissions · Fees · Attendance · Exams · Payroll · Parent communication
         </div>
+
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 12,
-            marginTop: 48,
+            gap: 14,
+            marginTop: 52,
           }}
         >
           <div
@@ -64,9 +82,9 @@ export default async function Image() {
               alignItems: "center",
               background: "#533afd",
               color: "#fff",
-              fontSize: 18,
-              fontWeight: 600,
-              padding: "10px 22px",
+              fontSize: 19,
+              fontWeight: 700,
+              padding: "12px 26px",
               borderRadius: 999,
             }}
           >
@@ -76,8 +94,9 @@ export default async function Image() {
             style={{
               display: "flex",
               alignItems: "center",
-              color: "#a5b4fc",
+              color: "#94a3b8",
               fontSize: 18,
+              fontWeight: 500,
             }}
           >
             15 modules · one subscription
