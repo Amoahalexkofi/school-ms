@@ -47,7 +47,7 @@ export function SchoolSiteHero({
       : [
           { id: "d1", title: `Welcome to\n${schoolName}`, subtitle: motto ?? pickBySeed(FALLBACK_SUBTITLES, schoolName), ctaText: "Explore Portal", ctaLink: "/sign-in" },
           { id: "d2", title: "Excellence in\nEducation", subtitle: "Where every student is empowered to reach their fullest potential.", ctaText: "About Us", ctaLink: "#about" },
-          { id: "d3", title: "Admissions\nNow Open", subtitle: "Join a thriving school community. Applications welcome.", ctaText: "Contact Us", ctaLink: "#contact" },
+          { id: "d3", title: "Admissions\nNow Open", subtitle: "Join a thriving school community. Applications welcome.", ctaText: "Apply Now", ctaLink: "/apply" },
         ];
 
   const [idx, setIdx]     = useState(0);

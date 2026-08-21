@@ -381,13 +381,21 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
                 Students, parents and staff — sign in to your personal dashboard.
               </p>
             </div>
-            <Link
-              href="/sign-in"
-              className="group shrink-0 inline-flex items-center gap-2 bg-white font-medium px-7 py-3.5 rounded-xl text-[14.5px] transition-all hover:brightness-95 whitespace-nowrap"
-              style={{ color: "#0d253d" }}
-            >
-              Sign In Now <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
+            <div className="shrink-0 flex flex-col sm:flex-row items-center gap-3">
+              <Link
+                href="/apply"
+                className="group inline-flex items-center gap-2 bg-white font-medium px-7 py-3.5 rounded-xl text-[14.5px] transition-all hover:brightness-95 whitespace-nowrap"
+                style={{ color: "#0d253d" }}
+              >
+                Apply for Admission <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                href="/sign-in"
+                className="inline-flex items-center gap-2 text-white/85 hover:text-white font-medium px-7 py-3.5 rounded-xl text-[14.5px] transition-all border border-white/25 hover:bg-white/10 whitespace-nowrap"
+              >
+                Sign In
+              </Link>
+            </div>
           </div>
         </RevealOnScroll>
       </section>
@@ -423,8 +431,9 @@ export function SchoolSite({ profile, schoolName, slides, notices, settings, sta
               {[["#about", "About"], ["#notices", "Notices"], ["#contact", "Contact"]].map(([href, label]) => (
                 <a key={href} href={href} className="hover:text-[#0d253d] transition-colors font-medium">{label}</a>
               ))}
-              <Link href="/sign-in" className="text-white font-medium px-4 py-2 rounded-lg transition-all hover:brightness-105 text-[12.5px]" style={{ background: safeOnAccent(color) }}>
-                Sign In
+              <Link href="/sign-in" className="hover:text-[#0d253d] transition-colors font-medium">Sign In</Link>
+              <Link href="/apply" className="text-white font-medium px-4 py-2 rounded-lg transition-all hover:brightness-105 text-[12.5px]" style={{ background: safeOnAccent(color) }}>
+                Apply Now
               </Link>
             </div>
           </div>
