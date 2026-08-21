@@ -180,14 +180,14 @@ export function SchoolSiteHero({
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-xs sm:max-w-none mx-auto">
             <Link
               href={slide.ctaLink}
-              className="inline-flex items-center justify-center gap-2 text-white font-medium px-7 py-3.5 rounded-xl text-[14.5px] transition-all hover:brightness-110 whitespace-nowrap"
+              className="inline-flex items-center justify-center gap-2 text-white font-medium px-9 py-2.5 rounded-xl text-[14.5px] transition-all hover:brightness-110 whitespace-nowrap"
               style={{ background: primaryColor, boxShadow: `0 4px 24px ${primaryColor}55` }}
             >
               {slide.ctaText}
             </Link>
             <Link
               href="/sign-in"
-              className="inline-flex items-center justify-center gap-2 bg-transparent border border-white/35 text-white font-medium px-7 py-3.5 rounded-xl text-[14.5px] transition-all hover:bg-white/10 hover:border-white/50 whitespace-nowrap"
+              className="inline-flex items-center justify-center gap-2 bg-transparent border border-white/35 text-white font-medium px-9 py-2.5 rounded-xl text-[14.5px] transition-all hover:bg-white/10 hover:border-white/50 whitespace-nowrap"
             >
               Staff / Parent Login
             </Link>

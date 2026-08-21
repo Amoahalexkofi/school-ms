@@ -142,7 +142,7 @@ export function SchoolSiteNav({ name, logo, initials, color, hasNotices }: NavPr
             <Link
               href="/apply"
               onClick={() => setMobileOpen(false)}
-              className="group inline-flex items-center gap-2 text-white font-medium px-6 py-3.5 rounded-xl text-[14.5px] transition-all hover:brightness-110"
+              className="group inline-flex items-center gap-2 text-white font-medium px-8 py-2.5 rounded-xl text-[14.5px] transition-all hover:brightness-110"
               style={{ background: color }}
             >
               Apply for Admission <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -150,7 +150,7 @@ export function SchoolSiteNav({ name, logo, initials, color, hasNotices }: NavPr
             <Link
               href="/sign-in"
               onClick={() => setMobileOpen(false)}
-              className="inline-flex items-center gap-2 text-white/85 hover:text-white font-medium px-6 py-3 rounded-xl text-[14.5px] transition-all border border-white/25 hover:bg-white/10"
+              className="inline-flex items-center gap-2 text-white/85 hover:text-white font-medium px-8 py-2 rounded-xl text-[14.5px] transition-all border border-white/25 hover:bg-white/10"
             >
               Sign In to Portal
             </Link>
