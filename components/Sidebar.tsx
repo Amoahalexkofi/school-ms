@@ -139,10 +139,10 @@ type Role = "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "ACCOUNTANT" | "LIBRARIAN" | "
 function getGroups(role: Role): NavGroup[]  { return role === "STUDENT" ? studentGroups : role === "PARENT" ? parentGroups : adminGroups; }
 function getPortalLabel(role: Role)         { return role === "STUDENT" ? "Student" : role === "PARENT" ? "Parent" : null; }
 
-function NavContent({ role, onNavigate, addons = [] }: { role: Role; onNavigate?: () => void; addons?: string[] }) {
+function NavContent({ role, onNavigate, addons = [], defaultUserOpen = false }: { role: Role; onNavigate?: () => void; addons?: string[]; defaultUserOpen?: boolean }) {
   const pathname  = usePathname();
   const { data: session } = useSession();
-  const [showUser, setShowUser] = useState(false);
+  const [showUser, setShowUser] = useState(defaultUserOpen);
 
   const perms       = usePermissions();
   const rawGroups   = getGroups(role);
@@ -277,6 +277,10 @@ function NavContent({ role, onNavigate, addons = [] }: { role: Role; onNavigate?
 
 export function Sidebar({ role = "ADMIN", addons = [] }: { role?: Role; addons?: string[] }) {
   const [open, setOpen] = useState(false);
+  // Tapping the avatar should land straight on the profile menu (My Account
+  // / Settings / Sign Out), not just the generic nav drawer — that menu
+  // already exists at the bottom of the drawer, this just opens on it.
+  const [openOnProfile, setOpenOnProfile] = useState(false);
   const [unread, setUnread] = useState(0);
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -306,7 +310,7 @@ export function Sidebar({ role = "ADMIN", addons = [] }: { role?: Role; addons?:
       <div className="lg:hidden sticky top-0 z-30 flex items-center justify-between px-4 h-14 bg-slate-900 border-b border-white/[0.06]">
         {/* Hamburger */}
         <button
-          onClick={() => setOpen(!open)}
+          onClick={() => { setOpenOnProfile(false); setOpen(!open); }}
           className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
           aria-label="Open menu"
         >
@@ -340,9 +344,9 @@ export function Sidebar({ role = "ADMIN", addons = [] }: { role?: Role; addons?:
             )}
           </Link>
           <button
-            onClick={() => setOpen(true)}
+            onClick={() => { setOpenOnProfile(true); setOpen(true); }}
             className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-            aria-label="Open menu"
+            aria-label="Open profile menu"
           >
             {initials}
           </button>
@@ -359,7 +363,7 @@ export function Sidebar({ role = "ADMIN", addons = [] }: { role?: Role; addons?:
             className="w-64 h-full bg-slate-900 shadow-2xl flex flex-col"
             onClick={e => e.stopPropagation()}
           >
-            <NavContent role={role} addons={addons} onNavigate={() => setOpen(false)} />
+            <NavContent role={role} addons={addons} onNavigate={() => setOpen(false)} defaultUserOpen={openOnProfile} />
           </div>
         </div>
       )}
