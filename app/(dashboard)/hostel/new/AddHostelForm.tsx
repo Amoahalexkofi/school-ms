@@ -107,17 +107,19 @@ export function AddHostelForm({ roomTypes, hostels }: Props) {
       </Link>
 
       {/* Tab switcher */}
-      <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit mb-6">
+      <div className="overflow-x-auto mb-6">
+      <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
         {tabs.map(t => (
           <button
             key={t.key}
             type="button"
             onClick={() => setActiveTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === t.key ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === t.key ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}
           >
             {t.label}
           </button>
         ))}
+      </div>
       </div>
 
       {/* Hostel Tab */}

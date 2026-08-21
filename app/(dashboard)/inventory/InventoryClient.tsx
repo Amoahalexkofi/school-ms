@@ -163,6 +163,7 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
         </div>
       )}
 
+      <div className="overflow-x-auto">
       <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
         {[
           { key: "items"      as Tab, label: `Items (${items.length})` },
@@ -172,10 +173,11 @@ export function InventoryClient({ categories, suppliers, stores, items, issues: 
           { key: "issues"     as Tab, label: `Issues (${issues.filter((i: any) => !i.isReturned).length} active)` },
         ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${tab === t.key ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
             {t.label}
           </button>
         ))}
+      </div>
       </div>
 
       {tab === "items" && (

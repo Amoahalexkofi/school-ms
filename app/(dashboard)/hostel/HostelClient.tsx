@@ -113,13 +113,15 @@ export function HostelClient({ roomTypes, hostels, students }: Props) {
 
   return (
     <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50">
+      <div className="overflow-x-auto">
       <div className="flex gap-1 bg-white rounded-xl border border-gray-200 shadow-sm p-1 w-fit">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${tab === t.key ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>
             {t.label}
           </button>
         ))}
+      </div>
       </div>
 
       {/* Room Types */}

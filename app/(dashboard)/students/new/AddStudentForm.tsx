@@ -311,7 +311,9 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, customFi
           </div>
         )}
 
-        {/* Tab nav — pill style */}
+        {/* Tab nav — pill style; scrolls horizontally on narrow screens
+            instead of overflowing the page (w-fit + nowrap won't shrink). */}
+        <div className="overflow-x-auto">
         <div className="flex items-center gap-1 bg-slate-100/80 p-1 rounded-2xl w-fit">
           {TABS.map((t, i) => (
             <button
@@ -330,6 +332,7 @@ export function AddStudentForm({ sessions, classSections, schoolHouses, customFi
               {t}
             </button>
           ))}
+        </div>
         </div>
 
         {/* Error */}

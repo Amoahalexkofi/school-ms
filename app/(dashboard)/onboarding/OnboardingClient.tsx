@@ -231,7 +231,7 @@ export function OnboardingClient({ profile }: Props) {
                     }`}>
                       {done ? <CheckCircle2 className="h-5 w-5" /> : <Icon className="h-4 w-4" />}
                     </div>
-                    <span className={`text-xs mt-1 font-medium whitespace-nowrap ${current ? "text-blue-600" : done ? "text-gray-600" : "text-gray-400"}`}>
+                    <span className={`text-xs mt-1 font-medium text-center leading-tight ${current ? "text-blue-600" : done ? "text-gray-600" : "text-gray-400"}`}>
                       {s.label}
                     </span>
                   </div>
