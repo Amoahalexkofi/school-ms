@@ -126,13 +126,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     // The ID card / staff-directory photo is an official record, not a
-    // casual profile picture — restricted to admins and teachers (school's
-    // explicit call), unlike the self-service My Account avatar which any
-    // user can set for themselves at any time.
+    // casual profile picture. Anyone may set their OWN — same as the
+    // self-service My Account avatar — but changing someone ELSE's is
+    // restricted to admins and teachers (school's explicit call).
     if ("image" in body) {
       const callerRole = (session.user as any).role;
-      if (!ID_PHOTO_ROLES.includes(callerRole)) {
-        return NextResponse.json({ error: "Only admins and teachers can set the ID card photo" }, { status: 403 });
+      const isOwnRecord = targetUserId === session.user!.id;
+      if (!isOwnRecord && !ID_PHOTO_ROLES.includes(callerRole)) {
+        return NextResponse.json({ error: "Only admins and teachers can set another staff member's ID card photo" }, { status: 403 });
       }
       staffData.image = image || null;
     }
