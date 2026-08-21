@@ -104,7 +104,7 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
   const selectedCS = classSections.find((cs: any) => cs.id === classSectionId);
 
   return (
-    <main className="flex-1 p-4 md:p-6 space-y-5 bg-gray-50 min-h-0">
+    <main className="flex-1 p-4 md:p-6 pb-24 lg:pb-6 space-y-5 bg-gray-50 min-h-0">
 
       {/* ── Filter bar ── */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
@@ -243,7 +243,7 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
                               {attendanceTypes.map(t => (
                                 <button key={t.id} onClick={() => setMarks(m => ({ ...m, [enr.id]: t.id }))}
                                   title={t.type}
-                                  className={`w-8 h-8 rounded-lg border text-xs font-bold transition-all ${
+                                  className={`w-11 h-11 rounded-lg border text-xs font-bold transition-all ${
                                     marks[enr.id] === t.id
                                       ? (KV_STYLE[t.keyValue] ?? "bg-gray-200") + " ring-2 ring-offset-1 ring-current shadow-sm"
                                       : "bg-white text-gray-300 border-gray-200 hover:border-gray-400 hover:text-gray-600"
@@ -269,8 +269,10 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
                 </table>
               </div>
 
-              {/* Sticky footer save */}
-              <div className="border-t bg-gray-50 px-4 py-3 flex items-center justify-between gap-3">
+              {/* Footer save — desktop only; mobile gets a real fixed bar
+                  below instead (this one isn't actually sticky, and a
+                  40+ student roster means scrolling back down to reach it). */}
+              <div className="hidden lg:flex border-t bg-gray-50 px-4 py-3 items-center justify-between gap-3">
                 <span className="text-xs text-gray-400">{enrollments.length} students</span>
                 {perm.canEdit && (
                   <div className="flex items-center gap-3">
@@ -285,6 +287,22 @@ export function AttendanceClient({ sessions, classSections, attendanceTypes }: P
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Mobile fixed save bar — genuinely stays on screen while
+              scrolling a long roster, instead of requiring a trip back
+              down to the bottom of the table every time. */}
+          {enrollments.length > 0 && perm.canEdit && (
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-gray-200 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] flex items-center justify-between gap-3">
+              <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
+                <input type="checkbox" checked={notify} onChange={e => setNotify(e.target.checked)} />
+                Notify guardians
+              </label>
+              <Button onClick={handleSave} disabled={saveState === "saving"}>
+                <Save className="h-4 w-4 mr-1.5" />
+                {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Attendance"}
+              </Button>
             </div>
           )}
         </>
