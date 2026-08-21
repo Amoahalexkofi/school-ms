@@ -4,6 +4,7 @@ import { getDb } from "@/lib/db";
 import { isWithinGeofence } from "@/lib/geofence";
 import { markAttendance, markStaffAttendance } from "@/lib/services/attendance";
 import { isRateLimited } from "@/lib/rate-limit";
+import { isAddonEnabled } from "@/lib/addons";
 
 function todayStart() {
   const d = new Date();
@@ -14,6 +15,7 @@ function todayStart() {
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await isAddonEnabled("qr_attendance"))) return NextResponse.json({ error: "Not available for this school" }, { status: 404 });
 
   // Whoever is operating the scanner (kiosk or their own phone) — a rate
   // limit here is just abuse protection, not the actual security control

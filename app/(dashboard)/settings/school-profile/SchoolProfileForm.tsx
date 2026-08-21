@@ -14,7 +14,7 @@ const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[
 const CURRENCIES = ["GHS", "USD", "EUR", "GBP", "NGN", "KES", "ZAR", "INR", "CAD", "AUD"];
 const DATE_FORMATS = ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "DD-MM-YYYY"];
 
-export function SchoolProfileForm({ profile }: { profile: any }) {
+export function SchoolProfileForm({ profile, qrAttendanceEnabled = false }: { profile: any; qrAttendanceEnabled?: boolean }) {
   const [form, setForm] = useState({
     name: profile?.name ?? "",
     logo: profile?.logo ?? "",
@@ -200,7 +200,8 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
         </CardContent>
       </Card>
 
-      {/* QR Attendance Geofence */}
+      {/* QR Attendance Geofence — only for tenants with the add-on enabled */}
+      {qrAttendanceEnabled && (
       <Card>
         <CardHeader>
           <CardTitle className="text-[15px] font-bold text-slate-900 flex items-center gap-2">
@@ -236,6 +237,7 @@ export function SchoolProfileForm({ profile }: { profile: any }) {
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* System Settings */}
       <Card>

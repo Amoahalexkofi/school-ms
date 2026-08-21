@@ -7,6 +7,11 @@ export const ADDONS = {
     label: "Multi Branch",
     description: "Manage multiple campuses/branches under one school account.",
   },
+  qr_attendance: {
+    key: "qr_attendance",
+    label: "QR Attendance Scanning",
+    description: "Staff and students mark attendance by scanning their ID card's QR code, geofenced to school grounds.",
+  },
 } as const;
 
 export type AddonKey = keyof typeof ADDONS;
