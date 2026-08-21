@@ -139,8 +139,8 @@ function KpiCard({
           <Icon className="h-3.5 w-3.5 text-slate-500" />
         </div>
       </div>
-      <div className="flex items-end gap-3 mt-4">
-        <p className="text-[30px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight whitespace-nowrap">{value}</p>
+      <div className="flex items-end gap-3 mt-4 min-w-0">
+        <p className="text-[22px] sm:text-[26px] xl:text-[30px] font-semibold text-slate-900 leading-tight tabular-nums tracking-tight min-w-0 break-words">{value}</p>
         {spark && <div className="flex-1 min-w-0 flex justify-end"><Sparkline data={spark} /></div>}
       </div>
       {sub && <p className="text-[12px] text-slate-500 mt-2">{sub}</p>}
