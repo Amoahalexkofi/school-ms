@@ -252,15 +252,6 @@ export default async function SignInRoute() {
                   profile?.email
                 )}
               />
-
-              {/* Back link */}
-              <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-                <a href={websiteUrl}
-                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-400 hover:text-slate-700 transition-colors">
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  Back to {name} website
-                </a>
-              </div>
             </div>
           </div>
 
