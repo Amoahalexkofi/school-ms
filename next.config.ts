@@ -33,7 +33,10 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          // camera + geolocation are needed by the QR attendance scanner
+          // (/attendance/scan) and its geofence check — scoped to self, no
+          // third-party frame can request them. Nothing uses the mic.
+          { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(self)" },
           { key: "Content-Security-Policy", value: CSP },
         ],
       },
