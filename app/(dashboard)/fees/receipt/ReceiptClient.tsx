@@ -35,9 +35,12 @@ export function ReceiptClient({ deposit, entry, subInvoiceId, parentPhone, schoo
   }, []);
 
   return (
-    <main className="min-h-screen bg-gray-100 flex items-start justify-center px-4 py-8 print:bg-white print:p-0">
-      {/* Controls — hidden when printing */}
-      <div className="print:hidden fixed top-4 right-4 flex gap-2 z-50">
+    <main className="min-h-screen bg-gray-100 flex flex-col items-center px-4 py-8 print:bg-white print:p-0">
+      {/* Controls — hidden when printing. In normal flow above the card
+          rather than fixed/floating — at the card's own max width, a
+          floating top-right position landed directly on top of the
+          receipt header once the card could span the full mobile width. */}
+      <div className="print:hidden w-full max-w-[420px] flex justify-end gap-2 mb-3">
         {whatsAppHref && (
           <a href={whatsAppHref} target="_blank" rel="noopener noreferrer">
             <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white gap-1.5">
