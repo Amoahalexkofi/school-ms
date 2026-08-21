@@ -141,6 +141,7 @@ export function DesignationsClient({ designations }: { designations: Desig[] }) 
               <p className="text-sm">No designations yet.</p>
             </div>
           ) : (
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>
@@ -202,6 +203,7 @@ export function DesignationsClient({ designations }: { designations: Desig[] }) 
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </CardContent>
       </Card>
