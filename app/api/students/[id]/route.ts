@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { audit } from "@/lib/services/audit";
+import { auth } from "@/lib/auth";
 import { deleteStudentCascade } from "@/lib/services/students";
 
+// "image" is deliberately excluded — it's the ID card / student-directory
+// photo, an official record. Students/parents only ever manage their own
+// casual profile picture (User.image, self-service via My Account) and
+// never touch this field — handled separately below with its own role gate.
 const ALLOWED_FIELDS = [
   "firstName","middleName","lastName","admissionDate","dateOfBirth","gender",
   "bloodGroup","religion","caste","category","nationality","rte",
-  "mobileNo","image",
+  "mobileNo",
   "currentAddress","permanentAddress","city","state","country","pincode",
   "guardianIs","fatherName","fatherPhone","fatherEmail","fatherOccupation","fatherPic",
   "motherName","motherPhone","motherEmail","motherOccupation","motherPic",
@@ -53,12 +58,25 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const body = await req.json();
 
     // Whitelist only allowed student fields
     const data: any = {};
     for (const f of ALLOWED_FIELDS) {
       if (f in body) data[f] = body[f];
+    }
+
+    // ID card / student-directory photo — Super Admin, Admin, Teacher only.
+    // Not even Accountant, who otherwise reaches this route for fee lookups.
+    if ("image" in body) {
+      const callerRole = (session.user as any).role;
+      if (!["SUPER_ADMIN", "ADMIN", "TEACHER"].includes(callerRole)) {
+        return NextResponse.json({ error: "Only admins and teachers can set the student's ID card photo" }, { status: 403 });
+      }
+      data.image = body.image || null;
     }
 
     // Date fields: blank clears the value; anything else must parse.
