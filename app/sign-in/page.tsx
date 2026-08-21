@@ -204,12 +204,13 @@ export default async function SignInRoute() {
           {/* Mobile color bar */}
           <div className="lg:hidden h-1 shrink-0" style={{ background: color }} />
 
-          {/* Mobile back link */}
-          <div className="lg:hidden flex items-center justify-between px-6 pt-5 pb-0 shrink-0">
+          {/* Mobile back link — just "Back"; the card below already shows the
+              school's logo/name/location, so repeating the name here was
+              redundant. */}
+          <div className="lg:hidden flex items-center px-6 pt-5 pb-0 shrink-0">
             <a href={websiteUrl} className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 hover:text-slate-700 transition-colors">
               <ArrowLeft className="h-3 w-3" /> Back
             </a>
-            <span className="text-[13px] font-bold text-slate-700">{name}</span>
           </div>
 
           {/* Form center */}
