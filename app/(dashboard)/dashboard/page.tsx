@@ -323,6 +323,43 @@ export default async function DashboardPage() {
           </div>
         )}
 
+        {/* ── Teacher: my classes today — fetched independently of the
+            stats call, so a stats-fetch failure below never hides this
+            data just because something else broke. ── */}
+        {role === "TEACHER" && (
+          <div className="dash-rise bg-white rounded-2xl border border-slate-200 px-6 py-5" style={{ animationDelay: "100ms" }}>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-[15px] font-semibold text-slate-900">My classes</h2>
+                <p className="text-[12px] text-slate-500 mt-0.5">Attendance status · today</p>
+              </div>
+              <Link href="/attendance"
+                className="inline-flex items-center gap-1.5 text-[12px] font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+                <ClipboardList className="h-3.5 w-3.5" /> Mark attendance
+              </Link>
+            </div>
+            {mySections.length === 0 ? (
+              <p className="text-[13px] text-slate-500 py-2">
+                No classes are assigned to you yet — ask your admin to set you as a class teacher.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {mySections.map((sec) => (
+                  <Link key={sec.id} href="/attendance"
+                    className="flex items-center justify-between gap-3 border border-slate-200 rounded-lg px-4 py-3 hover:border-slate-300 transition-colors">
+                    <span className="text-[13.5px] font-medium text-slate-800">{sec.name}</span>
+                    {sec.marked ? (
+                      <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">Marked ✓</span>
+                    ) : (
+                      <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">Not marked</span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {statsError ? (
           /* A failed fetch is not an empty school — never send someone to
              "fix" a healthy config over a network blip. */
@@ -382,41 +419,6 @@ export default async function DashboardPage() {
                 }
               })}
             </div>
-
-            {/* ── Teacher: my classes today ── */}
-            {role === "TEACHER" && (
-              <div className="dash-rise bg-white rounded-2xl border border-slate-200 px-6 py-5" style={{ animationDelay: "100ms" }}>
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h2 className="text-[15px] font-semibold text-slate-900">My classes</h2>
-                    <p className="text-[12px] text-slate-500 mt-0.5">Attendance status · today</p>
-                  </div>
-                  <Link href="/attendance"
-                    className="inline-flex items-center gap-1.5 text-[12px] font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
-                    <ClipboardList className="h-3.5 w-3.5" /> Mark attendance
-                  </Link>
-                </div>
-                {mySections.length === 0 ? (
-                  <p className="text-[13px] text-slate-500 py-2">
-                    No classes are assigned to you yet — ask your admin to set you as a class teacher.
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {mySections.map((sec) => (
-                      <Link key={sec.id} href="/attendance"
-                        className="flex items-center justify-between gap-3 border border-slate-200 rounded-lg px-4 py-3 hover:border-slate-300 transition-colors">
-                        <span className="text-[13.5px] font-medium text-slate-800">{sec.name}</span>
-                        {sec.marked ? (
-                          <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">Marked ✓</span>
-                        ) : (
-                          <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">Not marked</span>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* ── Attendance + Fees ── */}
             <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "140ms" }}>
@@ -661,7 +663,7 @@ export default async function DashboardPage() {
                       { href: "/reports",      label: "Reports",          show: [],                                   icon: BarChart2 },
                     ].filter(a => a.show.length === 0 || a.show.includes(role)).map(({ href, label, icon: Icon }) => (
                       <Link key={href} href={href}
-                        className="flex items-center gap-2.5 py-2 px-2 -mx-2 rounded-lg hover:bg-slate-50 transition-colors group">
+                        className="flex items-center gap-2.5 py-3 px-2 -mx-2 rounded-lg hover:bg-slate-50 transition-colors group">
                         <Icon className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 shrink-0 transition-colors" />
                         <span className="text-[13px] text-slate-700 flex-1">{label}</span>
                         <ArrowRight className="h-3.5 w-3.5 text-slate-300 group-hover:text-slate-400 transition-colors" />
