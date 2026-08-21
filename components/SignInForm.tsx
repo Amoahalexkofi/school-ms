@@ -62,9 +62,18 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1", supportContact }
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="signin-password" className="block text-[11px] font-bold text-slate-400 tracking-[0.1em] uppercase">
-          Password
-        </label>
+        <div className="flex items-center justify-between">
+          <label htmlFor="signin-password" className="block text-[11px] font-bold text-slate-400 tracking-[0.1em] uppercase">
+            Password
+          </label>
+          <Link
+            href="/forgot-password"
+            className="text-[13px] font-medium hover:underline"
+            style={{ color: accentColor }}
+          >
+            Forgot password?
+          </Link>
+        </div>
         <div className="relative">
           <input
             id="signin-password"
@@ -84,15 +93,6 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1", supportContact }
           >
             {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
-        </div>
-        <div className="text-right">
-          <Link
-            href="/forgot-password"
-            className="text-[13px] font-medium hover:underline"
-            style={{ color: accentColor }}
-          >
-            Forgot password?
-          </Link>
         </div>
       </div>
 
