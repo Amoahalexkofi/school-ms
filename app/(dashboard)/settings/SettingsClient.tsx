@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink, Home, Bell, Mail, MessageSquare, Clock, Landmark, Building2, CreditCard, Pencil, Trash2 } from "lucide-react";
+import { CalendarDays, GraduationCap, BookOpen, Layers, School, Users, Plus, X, Settings2, ShieldCheck, FormInput, ExternalLink, Home, Bell, Mail, MessageSquare, Clock, Landmark, Building2, CreditCard, Pencil, Trash2, Copy } from "lucide-react";
 import Link from "next/link";
 import { TermsCard } from "./TermsCard";
 
@@ -33,7 +33,10 @@ async function postData(url: string, body: object) {
 
 export function SettingsClient({ sessions, classes, sections, subjects, profile, staff }: Props) {
   const router = useRouter();
-  const [addingType,     setAddingType]     = useState<"session" | "class" | "section" | "subject" | null>(null);
+  const [addingType,     setAddingType]     = useState<"session" | "class" | "section" | "subject" | "copy-subjects" | null>(null);
+  const [copySourceId,   setCopySourceId]   = useState("");
+  const [copyTargetIds,  setCopyTargetIds]  = useState<Set<string>>(new Set());
+  const [copyResult,     setCopyResult]     = useState<{ created: number; skipped: number } | null>(null);
   const [linkingClassId, setLinkingClassId] = useState<string | null>(null);
   const [linkSectionId,  setLinkSectionId]  = useState("");
   const [linkTeacherId,  setLinkTeacherId]  = useState("");
@@ -45,7 +48,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
   const sectionForm = useForm({ name: "" });
   const subjectForm = useForm({ name: "", code: "", classId: classes[0]?.id ?? "" });
 
-  function openPanel(type: "session" | "class" | "section" | "subject") {
+  function openPanel(type: "session" | "class" | "section" | "subject" | "copy-subjects") {
     setError("");
     setAddingType(type);
     // classId was captured when the page mounted — a class created since then
@@ -67,6 +70,28 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
     classForm.reset();
     sectionForm.reset();
     subjectForm.reset();
+    setCopySourceId("");
+    setCopyTargetIds(new Set());
+    setCopyResult(null);
+  }
+
+  function toggleCopyTarget(id: string) {
+    setCopyTargetIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  }
+
+  async function copySubjects() {
+    if (!copySourceId) { setError("Select a source class"); return; }
+    if (copyTargetIds.size === 0) { setError("Select at least one target class"); return; }
+    setLoading(true); setError(""); setCopyResult(null);
+    try {
+      const data = await postData("/api/subjects/copy", {
+        sourceClassId: copySourceId,
+        targetClassIds: [...copyTargetIds],
+      });
+      setCopyResult(data);
+      router.refresh();
+    } catch (e: any) { setError(e.message); }
+    finally { setLoading(false); }
   }
 
   async function linkSection(classId: string) {
@@ -386,11 +411,72 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
             <CardTitle className="text-base flex items-center gap-2">
               <BookOpen className="h-4 w-4 text-green-600" /> Subjects
             </CardTitle>
-            <Button size="sm" onClick={() => openPanel("subject")}>
-              <Plus className="h-4 w-4 mr-1" /> Subject
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={() => openPanel("copy-subjects")}>
+                <Copy className="h-4 w-4 mr-1" /> Copy From Class
+              </Button>
+              <Button size="sm" onClick={() => openPanel("subject")}>
+                <Plus className="h-4 w-4 mr-1" /> Subject
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
+            {/* Copy Subjects Panel */}
+            {addingType === "copy-subjects" && (
+              <div className="mb-4 border border-indigo-200 rounded-lg bg-indigo-50 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium text-sm text-indigo-800">Copy Subjects From Another Class</h3>
+                  <button type="button" onClick={closePanel} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
+                </div>
+
+                {copyResult ? (
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-700">
+                      Copied <strong>{copyResult.created}</strong> subject{copyResult.created !== 1 ? "s" : ""}
+                      {copyResult.skipped > 0 && <> — <strong>{copyResult.skipped}</strong> already existed and {copyResult.skipped !== 1 ? "were" : "was"} skipped</>}.
+                    </p>
+                    <div className="flex justify-end">
+                      <Button size="sm" onClick={closePanel}>Done</Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Copy subjects from</Label>
+                      <select className={SEL} value={copySourceId} onChange={e => setCopySourceId(e.target.value)}>
+                        <option value="" disabled>Select source class</option>
+                        {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">
+                        Copy into <span className="text-gray-400 font-normal">({copyTargetIds.size} selected)</span>
+                      </Label>
+                      <div className="border border-slate-200 bg-white rounded-lg p-3 max-h-40 overflow-y-auto grid grid-cols-2 gap-1.5">
+                        {classes.filter((c: any) => c.id !== copySourceId).map((c: any) => (
+                          <label key={c.id} className={`flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded ${copyTargetIds.has(c.id) ? "bg-indigo-50" : "hover:bg-gray-50"}`}>
+                            <input type="checkbox" checked={copyTargetIds.has(c.id)} onChange={() => toggleCopyTarget(c.id)} className="rounded border-slate-200 text-indigo-600" />
+                            <span className="text-gray-800 truncate">{c.name}</span>
+                          </label>
+                        ))}
+                        {classes.length <= 1 && <p className="text-xs text-gray-400 col-span-2">No other classes to copy into.</p>}
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Each copy becomes its own independent subject — renaming or deleting one afterwards only affects that class.
+                    </p>
+                    {error && <p className="text-sm text-red-600">{error}</p>}
+                    <div className="flex gap-2 justify-end">
+                      <Button variant="outline" size="sm" onClick={closePanel}>Cancel</Button>
+                      <Button size="sm" disabled={loading} onClick={copySubjects}>
+                        {loading ? "Copying…" : "Copy Subjects"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Inline Add Subject Panel */}
             {addingType === "subject" && (
               <div className="mb-4 border border-green-200 rounded-lg bg-green-50 p-4">

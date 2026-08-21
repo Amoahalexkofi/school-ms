@@ -99,6 +99,49 @@ export async function deleteSubject(id: string) {
   return (prisma as any).subject.update({ where: { id }, data: { isActive: false } });
 }
 
+// Copies every active subject on sourceClassId into each of targetClassIds —
+// e.g. set Basic 1's subject list up once, then reuse it for Basic 2 and 3
+// instead of re-creating each subject per class. Each copy is an independent
+// row (same as any other Subject), so renaming/deleting a copy in one class
+// never touches the source or any other class's copy. Skips a (name, class)
+// pair that already exists so re-running the copy is safe.
+export async function copySubjectsToClasses(input: { sourceClassId: string; targetClassIds: string[]; sessionId?: string }) {
+  if (!input.sourceClassId) throw Object.assign(new Error("Source class is required"), { code: "VALIDATION" });
+  if (!input.targetClassIds?.length) throw Object.assign(new Error("Select at least one target class"), { code: "VALIDATION" });
+
+  const prisma = await getDb();
+  let sessionId = input.sessionId;
+  if (!sessionId) {
+    const session = await (prisma as any).academicSession.findFirst({ where: { isActive: true }, orderBy: { startDate: "desc" } });
+    if (!session) throw Object.assign(new Error("No active academic session. Create one first."), { code: "VALIDATION" });
+    sessionId = session.id;
+  }
+
+  const sourceSubjects = await (prisma as any).subject.findMany({
+    where: { classId: input.sourceClassId, isActive: true },
+  });
+  if (!sourceSubjects.length) throw Object.assign(new Error("The source class has no subjects to copy"), { code: "VALIDATION" });
+
+  const targetClassIds = input.targetClassIds.filter((id: string) => id !== input.sourceClassId);
+  let created = 0;
+  let skipped = 0;
+  for (const classId of targetClassIds) {
+    const existing = await (prisma as any).subject.findMany({
+      where: { classId, isActive: true },
+      select: { name: true },
+    });
+    const existingNames = new Set(existing.map((s: any) => s.name.toLowerCase()));
+    for (const s of sourceSubjects) {
+      if (existingNames.has(s.name.toLowerCase())) { skipped++; continue; }
+      await (prisma as any).subject.create({
+        data: { name: s.name, code: s.code, type: s.type, classId, sessionId },
+      });
+      created++;
+    }
+  }
+  return { created, skipped };
+}
+
 export async function updateClass(id: string, input: { name: string }) {
   if (!input.name.trim()) throw Object.assign(new Error("Class name is required"), { code: "VALIDATION" });
   const prisma = await getDb();
