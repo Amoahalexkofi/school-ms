@@ -99,13 +99,15 @@ export async function deleteSubject(id: string) {
   return (prisma as any).subject.update({ where: { id }, data: { isActive: false } });
 }
 
-// Copies every active subject on sourceClassId into each of targetClassIds —
-// e.g. set Basic 1's subject list up once, then reuse it for Basic 2 and 3
-// instead of re-creating each subject per class. Each copy is an independent
-// row (same as any other Subject), so renaming/deleting a copy in one class
-// never touches the source or any other class's copy. Skips a (name, class)
-// pair that already exists so re-running the copy is safe.
-export async function copySubjectsToClasses(input: { sourceClassId: string; targetClassIds: string[]; sessionId?: string }) {
+// Copies subjects from sourceClassId into each of targetClassIds — e.g. set
+// Basic 1's subject list up once, then reuse it for Basic 2 and 3 instead of
+// re-creating each subject per class. subjectIds optionally restricts which
+// of the source class's subjects get copied (omit/empty = copy all). Each
+// copy is an independent row (same as any other Subject), so renaming or
+// deleting a copy in one class never touches the source or any other
+// class's copy. Skips a (name, class) pair that already exists so
+// re-running the copy is safe.
+export async function copySubjectsToClasses(input: { sourceClassId: string; targetClassIds: string[]; subjectIds?: string[]; sessionId?: string }) {
   if (!input.sourceClassId) throw Object.assign(new Error("Source class is required"), { code: "VALIDATION" });
   if (!input.targetClassIds?.length) throw Object.assign(new Error("Select at least one target class"), { code: "VALIDATION" });
 
@@ -118,9 +120,13 @@ export async function copySubjectsToClasses(input: { sourceClassId: string; targ
   }
 
   const sourceSubjects = await (prisma as any).subject.findMany({
-    where: { classId: input.sourceClassId, isActive: true },
+    where: {
+      classId: input.sourceClassId,
+      isActive: true,
+      ...(input.subjectIds?.length ? { id: { in: input.subjectIds } } : {}),
+    },
   });
-  if (!sourceSubjects.length) throw Object.assign(new Error("The source class has no subjects to copy"), { code: "VALIDATION" });
+  if (!sourceSubjects.length) throw Object.assign(new Error("No subjects selected to copy"), { code: "VALIDATION" });
 
   const targetClassIds = input.targetClassIds.filter((id: string) => id !== input.sourceClassId);
   let created = 0;

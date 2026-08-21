@@ -34,9 +34,10 @@ async function postData(url: string, body: object) {
 export function SettingsClient({ sessions, classes, sections, subjects, profile, staff }: Props) {
   const router = useRouter();
   const [addingType,     setAddingType]     = useState<"session" | "class" | "section" | "subject" | "copy-subjects" | null>(null);
-  const [copySourceId,   setCopySourceId]   = useState("");
-  const [copyTargetIds,  setCopyTargetIds]  = useState<Set<string>>(new Set());
-  const [copyResult,     setCopyResult]     = useState<{ created: number; skipped: number } | null>(null);
+  const [copySourceId,    setCopySourceId]    = useState("");
+  const [copyTargetIds,   setCopyTargetIds]   = useState<Set<string>>(new Set());
+  const [copySubjectIds,  setCopySubjectIds]  = useState<Set<string>>(new Set());
+  const [copyResult,      setCopyResult]      = useState<{ created: number; skipped: number } | null>(null);
   const [linkingClassId, setLinkingClassId] = useState<string | null>(null);
   const [linkSectionId,  setLinkSectionId]  = useState("");
   const [linkTeacherId,  setLinkTeacherId]  = useState("");
@@ -72,6 +73,7 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
     subjectForm.reset();
     setCopySourceId("");
     setCopyTargetIds(new Set());
+    setCopySubjectIds(new Set());
     setCopyResult(null);
   }
 
@@ -79,14 +81,27 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
     setCopyTargetIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
   }
 
+  function toggleCopySubject(id: string) {
+    setCopySubjectIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  }
+
+  function selectCopySource(classId: string) {
+    setCopySourceId(classId);
+    // Default to "copy everything" — the common case is one click; the
+    // checkboxes below let them deselect what doesn't apply to the target.
+    setCopySubjectIds(new Set(subjects.filter((s: any) => s.classId === classId).map((s: any) => s.id)));
+  }
+
   async function copySubjects() {
     if (!copySourceId) { setError("Select a source class"); return; }
     if (copyTargetIds.size === 0) { setError("Select at least one target class"); return; }
+    if (copySubjectIds.size === 0) { setError("Select at least one subject to copy"); return; }
     setLoading(true); setError(""); setCopyResult(null);
     try {
       const data = await postData("/api/subjects/copy", {
         sourceClassId: copySourceId,
         targetClassIds: [...copyTargetIds],
+        subjectIds: [...copySubjectIds],
       });
       setCopyResult(data);
       router.refresh();
@@ -443,11 +458,34 @@ export function SettingsClient({ sessions, classes, sections, subjects, profile,
                   <div className="space-y-3">
                     <div>
                       <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">Copy subjects from</Label>
-                      <select className={SEL} value={copySourceId} onChange={e => setCopySourceId(e.target.value)}>
+                      <select className={SEL} value={copySourceId} onChange={e => selectCopySource(e.target.value)}>
                         <option value="" disabled>Select source class</option>
                         {classes.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
                       </select>
                     </div>
+
+                    {copySourceId && (() => {
+                      const sourceSubjects = subjects
+                        .filter((s: any) => s.classId === copySourceId)
+                        .sort((a: any, b: any) => a.name.localeCompare(b.name));
+                      return (
+                        <div>
+                          <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">
+                            Subjects to copy <span className="text-gray-400 font-normal">({copySubjectIds.size} of {sourceSubjects.length} selected)</span>
+                          </Label>
+                          <div className="border border-slate-200 bg-white rounded-lg p-3 max-h-40 overflow-y-auto grid grid-cols-2 gap-1.5">
+                            {sourceSubjects.map((s: any) => (
+                              <label key={s.id} className={`flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded ${copySubjectIds.has(s.id) ? "bg-indigo-50" : "hover:bg-gray-50"}`}>
+                                <input type="checkbox" checked={copySubjectIds.has(s.id)} onChange={() => toggleCopySubject(s.id)} className="rounded border-slate-200 text-indigo-600" />
+                                <span className="text-gray-800 truncate">{s.name}</span>
+                              </label>
+                            ))}
+                            {sourceSubjects.length === 0 && <p className="text-xs text-gray-400 col-span-2">This class has no subjects yet.</p>}
+                          </div>
+                        </div>
+                      );
+                    })()}
+
                     <div>
                       <Label className="text-[13px] font-semibold text-slate-700 mb-1.5 block">
                         Copy into <span className="text-gray-400 font-normal">({copyTargetIds.size} selected)</span>
