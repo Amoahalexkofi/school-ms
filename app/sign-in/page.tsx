@@ -88,8 +88,13 @@ export default async function SignInRoute() {
 
             {/* Back to website */}
             <div className="shrink-0">
-              <a href={websiteUrl} className="inline-flex items-center gap-2 text-white/60 hover:text-white text-[13px] font-semibold transition-colors">
-                <ArrowLeft className="h-3.5 w-3.5" /> Back to website
+              <a href={websiteUrl}
+                className="inline-flex items-center gap-2 pl-3 pr-1 py-1 rounded-full text-white/75 hover:text-white text-[12px] font-semibold transition-colors"
+                style={{ background: "rgba(255,255,255,0.12)" }}>
+                Back to website
+                <span className="flex items-center justify-center w-5 h-5 rounded-full" style={{ background: "rgba(255,255,255,0.18)" }}>
+                  <ArrowLeft className="h-3 w-3" />
+                </span>
               </a>
             </div>
 
@@ -195,8 +200,12 @@ export default async function SignInRoute() {
               school's logo/name/location, so repeating the name here was
               redundant. */}
           <div className="lg:hidden flex items-center px-6 pt-5 pb-0 shrink-0">
-            <a href={websiteUrl} className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 hover:text-slate-700 transition-colors">
-              <ArrowLeft className="h-3 w-3" /> Back
+            <a href={websiteUrl}
+              className="inline-flex items-center gap-1.5 pl-3 pr-1 py-1 rounded-full bg-slate-100 text-slate-500 hover:text-slate-700 text-[12px] font-semibold transition-colors">
+              Back
+              <span className="flex items-center justify-center w-4 h-4 rounded-full bg-slate-200/80">
+                <ArrowLeft className="h-2.5 w-2.5" />
+              </span>
             </a>
           </div>
 
