@@ -201,8 +201,8 @@ export default async function SignInRoute() {
           </div>
 
           {/* Form center */}
-          <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12">
-            <div className="w-full max-w-[460px] bg-white rounded-2xl px-9 py-10 border border-slate-200/80">
+          <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-10 lg:px-14 py-12">
+            <div className="w-full max-w-[460px] bg-white rounded-2xl px-6 sm:px-9 py-10 border border-slate-200/80">
 
               {/* School identity echo on the right */}
               <div className="flex flex-col items-center text-center gap-3 mb-8">
