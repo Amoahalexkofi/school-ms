@@ -119,7 +119,12 @@ export default async function SignInRoute() {
             {initials[0] ?? "S"}
           </div>
 
-          <div className="relative flex flex-col h-full px-6 sm:px-10 xl:px-12 py-6 lg:py-10 min-h-[280px] lg:min-h-0">
+          {/* my-auto centers this as a compact block instead of h-full
+              stretching it — on a tall/large monitor, justify-center inside
+              a full-height wrapper leaves huge dead space above and below;
+              capping height and centering the block itself keeps the gaps
+              modest regardless of viewport height. */}
+          <div className="relative flex flex-col my-auto max-h-[760px] px-6 sm:px-10 xl:px-12 py-10">
 
             {/* Back to website */}
             <div className="shrink-0">
