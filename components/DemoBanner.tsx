@@ -11,7 +11,7 @@ export function DemoBanner() {
       <div className="flex items-center gap-2">
         <FlaskConical className="h-3.5 w-3.5 text-slate-400 shrink-0" />
         <span>
-          You're in the Skula demo — data resets daily.{" "}
+          You're in the Skula demo.{" "}
           <a href="/contact" className="underline underline-offset-2 text-white hover:text-slate-300 font-semibold">
             Get your own school →
           </a>
