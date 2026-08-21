@@ -89,7 +89,7 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1", supportContact }
             type="button"
             onClick={() => setShowPw(s => !s)}
             aria-label={showPw ? "Hide password" : "Show password"}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2.5 text-slate-300 hover:text-slate-500 transition-colors"
           >
             {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>

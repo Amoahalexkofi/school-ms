@@ -47,6 +47,41 @@ function darken(hex: string, amount: number): string {
   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
+function relativeLuminance(hex: string): number {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const toLinear = (c: number) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  const r = toLinear((n >> 16) & 0xff);
+  const g = toLinear((n >> 8) & 0xff);
+  const b = toLinear(n & 0xff);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrastRatio(hex1: string, hex2: string): number {
+  const l1 = relativeLuminance(hex1);
+  const l2 = relativeLuminance(hex2);
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+// primaryColor is school-admin-configurable and used both as white text's
+// background (Sign in button, left panel) and as text color on white
+// (Forgot password link) — WCAG contrast ratio is symmetric so one check
+// covers both. A school could otherwise pick something too light (pale
+// yellow, mint) and make either pairing unreadable with nothing to catch it.
+function ensureAccessibleAccent(hex: string): string {
+  let candidate = hex;
+  let amount = 0;
+  while (contrastRatio(candidate, "#ffffff") < 4.5 && amount < 0.9) {
+    amount += 0.05;
+    candidate = darken(hex, amount);
+  }
+  return candidate;
+}
+
 export default async function SignInRoute() {
   const h = await headers();
   const tenantSchema = h.get("x-tenant-schema");
@@ -57,7 +92,7 @@ export default async function SignInRoute() {
     const { profile, tenant: tenantRow, primaryColor } = await fetchSchoolData(tenantSchema);
     const rawName   = profile?.name ?? tenantRow?.name ?? tenantSchema;
     const name      = formatName(rawName);
-    const color     = primaryColor;
+    const color     = ensureAccessibleAccent(primaryColor);
     const dark      = darken(color, 0.38);
     const initials  = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w: string) => w[0].toUpperCase()).join("");
     const subdomain = tenantRow?.subdomain;
