@@ -69,9 +69,9 @@ export default async function SignInRoute() {
     return (
       <div className="min-h-screen flex flex-col lg:flex-row">
 
-        {/* ── Left panel ─────────────────────────────────────────────────── */}
+        {/* ── Left panel — desktop only; mobile shows just the form ────────── */}
         <div
-          className="lg:w-[44%] xl:w-[40%] flex flex-col relative overflow-hidden"
+          className="hidden lg:flex lg:w-[44%] xl:w-[40%] flex-col relative overflow-hidden"
           style={{ background: `linear-gradient(160deg, ${dark} 0%, ${color} 100%)` }}
         >
           {/* Subtle inner glow at bottom */}
