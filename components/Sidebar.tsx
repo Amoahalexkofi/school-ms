@@ -9,6 +9,7 @@ import {
   ConciergeBell, Monitor, UserPlus, ShieldCheck, Settings, ScrollText,
   Megaphone, Send, MessageCircle, Layers, Home, CreditCard, CheckSquare,
   Bell, ChevronDown, Globe, HelpCircle, Share2, CalendarDays,
+  User as UserIcon,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
@@ -256,12 +257,21 @@ function NavContent({ role, onNavigate, addons = [], defaultUserOpen = false }: 
               <p className="text-[11px] text-slate-500 truncate">{userEmail}</p>
             </div>
             <Link
-              href="/settings/school-profile"
+              href="/account"
               onClick={() => setShowUser(false)}
               className="flex items-center gap-2 px-3 py-2.5 text-[12px] text-slate-300 hover:bg-white/[0.07] hover:text-white transition-colors"
             >
-              <Settings className="h-3.5 w-3.5 text-slate-500" /> Settings
+              <UserIcon className="h-3.5 w-3.5 text-slate-500" /> My Account
             </Link>
+            {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+              <Link
+                href="/settings/school-profile"
+                onClick={() => setShowUser(false)}
+                className="flex items-center gap-2 px-3 py-2.5 text-[12px] text-slate-300 hover:bg-white/[0.07] hover:text-white transition-colors"
+              >
+                <Settings className="h-3.5 w-3.5 text-slate-500" /> Settings
+              </Link>
+            )}
             <button
               onClick={() => signOut({ callbackUrl: `${window.location.origin}/sign-in` })}
               className="w-full flex items-center gap-2 px-3 py-2.5 text-[12px] text-rose-400 hover:bg-rose-500/10 transition-colors"

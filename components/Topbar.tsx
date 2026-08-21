@@ -193,13 +193,15 @@ export function Topbar({ title }: { title: string }) {
                 >
                   <UserIcon className="h-3.5 w-3.5 text-slate-400" /> My Account
                 </Link>
-                <Link
-                  href="/settings"
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] text-slate-700 hover:bg-slate-50 transition-colors"
-                >
-                  <Settings className="h-3.5 w-3.5 text-slate-400" /> Settings
-                </Link>
+                {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+                  <Link
+                    href="/settings"
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] text-slate-700 hover:bg-slate-50 transition-colors"
+                  >
+                    <Settings className="h-3.5 w-3.5 text-slate-400" /> Settings
+                  </Link>
+                )}
                 <button
                   onClick={() => signOut({ callbackUrl: `${window.location.origin}/sign-in` })}
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] text-rose-500 hover:bg-rose-50 w-full transition-colors"
