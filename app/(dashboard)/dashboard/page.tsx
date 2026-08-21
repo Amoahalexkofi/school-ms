@@ -116,32 +116,22 @@ function BarChart({ data, height = 200 }: { data: { name: string; avg: number }[
   );
 }
 
-// Category color for a KPI's icon chip — identifies what a metric is about
-// (money in vs. out, people vs. time), not a judgment on the number itself.
-// The neutral, non-editorializing delta text below each value is untouched.
-const TONE: Record<string, { chip: string; icon: string }> = {
-  indigo:  { chip: "bg-indigo-50",  icon: "text-indigo-600" },
-  violet:  { chip: "bg-violet-50",  icon: "text-violet-600" },
-  emerald: { chip: "bg-emerald-50", icon: "text-emerald-600" },
-  amber:   { chip: "bg-amber-50",   icon: "text-amber-600" },
-  sky:     { chip: "bg-sky-50",     icon: "text-sky-600" },
-  slate:   { chip: "bg-slate-100",  icon: "text-slate-500" },
-};
-
 // ─── KPI Card — calm, neutral ─────────────────────────────────────────────────
+// Icon chips are one neutral slate treatment across every card — this is a
+// categorical label ("what this metric is about"), not a status, so it
+// doesn't earn a spot in the app's one-accent color budget (DESIGN.md).
 function KpiCard({
-  label, value, sub, href, icon: Icon, spark, tone = "slate",
+  label, value, sub, href, icon: Icon, spark,
 }: {
-  label: string; value: string | number; sub?: string; href?: string; icon: React.ElementType; spark?: number[]; tone?: keyof typeof TONE;
+  label: string; value: string | number; sub?: string; href?: string; icon: React.ElementType; spark?: number[];
 }) {
-  const t = TONE[tone];
   const inner = (
-    <div className="group bg-white rounded-xl border border-slate-200 p-5 h-full flex flex-col
+    <div className="group bg-white rounded-2xl border border-slate-200 px-6 py-5 h-full flex flex-col
       hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-200">
       <div className="flex items-center justify-between">
         <span className="text-[12.5px] font-medium text-slate-500">{label}</span>
-        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${t.chip}`}>
-          <Icon className={`h-3.5 w-3.5 ${t.icon}`} />
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-slate-100">
+          <Icon className="h-3.5 w-3.5 text-slate-500" />
         </div>
       </div>
       <div className="flex items-end gap-3 mt-4">
@@ -287,7 +277,7 @@ export default async function DashboardPage() {
 
         {/* ── All-branches breakdown (head office view) ── */}
         {showBreakdown && (
-          <div className="dash-rise bg-white rounded-xl border border-slate-200 overflow-hidden" style={{ animationDelay: "40ms" }}>
+          <div className="dash-rise bg-white rounded-2xl border border-slate-200 overflow-hidden" style={{ animationDelay: "40ms" }}>
             <div className="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
               <Building className="h-4 w-4 text-slate-400" />
               <h2 className="text-[14px] font-semibold text-slate-900">All branches</h2>
@@ -336,7 +326,7 @@ export default async function DashboardPage() {
         {statsError ? (
           /* A failed fetch is not an empty school — never send someone to
              "fix" a healthy config over a network blip. */
-          <div className="bg-white rounded-xl border border-slate-200 border-dashed py-20 text-center">
+          <div className="bg-white rounded-2xl border border-slate-200 border-dashed py-20 text-center">
             <AlertCircle className="h-8 w-8 mx-auto mb-3 text-slate-300" />
             <p className="font-semibold text-slate-600">Couldn&apos;t load the dashboard</p>
             <p className="text-sm text-slate-500 mt-1">Check your connection — your data is safe.</p>
@@ -345,7 +335,7 @@ export default async function DashboardPage() {
             </Link>
           </div>
         ) : !stats ? (
-          <div className="bg-white rounded-xl border border-slate-200 border-dashed py-20 text-center">
+          <div className="bg-white rounded-2xl border border-slate-200 border-dashed py-20 text-center">
             <AlertCircle className="h-8 w-8 mx-auto mb-3 text-slate-300" />
             <p className="font-semibold text-slate-600">No data yet</p>
             <p className="text-sm text-slate-500 mt-1">Create an active academic session to populate the dashboard.</p>
@@ -366,28 +356,28 @@ export default async function DashboardPage() {
                   case "collected": return (
                     <KpiCard key={k} label="Collected this month" value={money(stats.monthCollection ?? 0)}
                       sub={monthDelta(stats.monthCollection ?? 0, stats.lastMonthCollection ?? 0) ?? monthLabel}
-                      href="/fees" icon={Banknote} spark={stats.sparklines?.fees} tone="emerald" />
+                      href="/fees" icon={Banknote} spark={stats.sparklines?.fees} />
                   );
                   case "expenses": return (
                     <KpiCard key={k} label="Expenses this month" value={money(stats.monthExpense ?? 0)}
                       sub={monthDelta(stats.monthExpense ?? 0, stats.lastMonthExpense ?? 0) ?? monthLabel}
-                      href="/finance" icon={TrendingDown} spark={stats.sparklines?.expenses} tone="amber" />
+                      href="/finance" icon={TrendingDown} spark={stats.sparklines?.expenses} />
                   );
                   case "teachers": return (
                     <KpiCard key={k} label="Teachers" value={teacherCount}
-                      sub={`of ${totalStaff} total staff`} href={isAdmin ? "/staff" : undefined} icon={UserCog} tone="violet" />
+                      sub={`of ${totalStaff} total staff`} href={isAdmin ? "/staff" : undefined} icon={UserCog} />
                   );
                   case "present": return (
                     <KpiCard key={k} label="Present today" value={attTotal > 0 ? `${presentPct}%` : "—"}
-                      sub={attTotal > 0 ? `${attTotal} students marked` : "not marked yet"} icon={ClipboardList} tone="sky" />
+                      sub={attTotal > 0 ? `${attTotal} students marked` : "not marked yet"} icon={ClipboardList} />
                   );
                   case "vacation": return (
                     <KpiCard key={k} label="School days left" value={stats.sessionProgress?.schoolDaysLeft ?? "—"}
-                      sub="to vacation" icon={BarChart2} tone="slate" />
+                      sub="to vacation" icon={BarChart2} />
                   );
                   default: return (
                     <KpiCard key={k} label="Students enrolled" value={stats.totalStudents}
-                      sub="Current session" href="/students" icon={Users} tone="indigo" />
+                      sub="Current session" href="/students" icon={Users} />
                   );
                 }
               })}
@@ -395,7 +385,7 @@ export default async function DashboardPage() {
 
             {/* ── Teacher: my classes today ── */}
             {role === "TEACHER" && (
-              <div className="dash-rise bg-white rounded-xl border border-slate-200 p-5" style={{ animationDelay: "100ms" }}>
+              <div className="dash-rise bg-white rounded-2xl border border-slate-200 px-6 py-5" style={{ animationDelay: "100ms" }}>
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">My classes</h2>
@@ -432,7 +422,7 @@ export default async function DashboardPage() {
             <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "140ms" }}>
 
               {/* Attendance */}
-              <div className={`col-span-12 ${canSeeMoney ? "lg:col-span-7" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+              <div className={`col-span-12 ${canSeeMoney ? "lg:col-span-7" : ""} bg-white rounded-2xl border border-slate-200 px-6 py-5`}>
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">Student attendance</h2>
@@ -517,7 +507,7 @@ export default async function DashboardPage() {
 
               {/* Fee Collection — money roles only */}
               {canSeeMoney && (
-              <div className="col-span-12 lg:col-span-5 bg-white rounded-xl border border-slate-200 p-5 flex flex-col">
+              <div className="col-span-12 lg:col-span-5 bg-white rounded-2xl border border-slate-200 px-6 py-5 flex flex-col">
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">Fee collection</h2>
@@ -531,7 +521,7 @@ export default async function DashboardPage() {
 
                 <div className="mb-5">
                   <div className="flex items-end justify-between mb-2.5">
-                    <span className="text-[40px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight">{feesPaidPct}%</span>
+                    <span className="text-[44px] font-semibold text-slate-900 leading-none tabular-nums tracking-tight">{feesPaidPct}%</span>
                     <span className="text-[12px] text-slate-500 mb-1">{stats.feesPaid + stats.feesUnpaid} invoices</span>
                   </div>
                   <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
@@ -568,7 +558,7 @@ export default async function DashboardPage() {
             {((canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0)) || stats.classAverages?.length > 0) && (
               <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "175ms" }}>
                 {canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0) && (
-                  <div className={`col-span-12 ${stats.classAverages?.length > 0 ? "lg:col-span-6" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+                  <div className={`col-span-12 ${stats.classAverages?.length > 0 ? "lg:col-span-6" : ""} bg-white rounded-2xl border border-slate-200 px-6 py-5`}>
                     <div className="mb-4">
                       <h2 className="text-[15px] font-semibold text-slate-900">Monthly revenue</h2>
                       <p className="text-[12px] text-slate-500 mt-0.5">Fee collection trend{currency ? ` (${currency})` : ""} · last 6 months</p>
@@ -577,7 +567,7 @@ export default async function DashboardPage() {
                   </div>
                 )}
                 {stats.classAverages?.length > 0 && (
-                  <div className={`col-span-12 ${canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0) ? "lg:col-span-6" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+                  <div className={`col-span-12 ${canSeeMoney && stats.monthlyCollections?.some((m: any) => m.amount > 0) ? "lg:col-span-6" : ""} bg-white rounded-2xl border border-slate-200 px-6 py-5`}>
                     <div className="mb-4">
                       <h2 className="text-[15px] font-semibold text-slate-900">Student performance</h2>
                       <p className="text-[12px] text-slate-500 mt-0.5">Average score by class · current session</p>
@@ -593,7 +583,7 @@ export default async function DashboardPage() {
 
               {/* Recent payments — money roles only */}
               {canSeeMoney && (
-              <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border border-slate-200 p-5">
+              <div className="col-span-12 lg:col-span-8 bg-white rounded-2xl border border-slate-200 px-6 py-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="text-[15px] font-semibold text-slate-900">Today's payments</h2>
@@ -659,7 +649,7 @@ export default async function DashboardPage() {
               <div className={`col-span-12 ${canSeeMoney ? "lg:col-span-4" : ""} flex flex-col gap-4`}>
 
                 {/* Quick actions */}
-                <div className="bg-white rounded-xl border border-slate-200 p-5">
+                <div className="bg-white rounded-2xl border border-slate-200 px-6 py-5">
                   <h2 className="text-[13px] font-semibold text-slate-900 mb-3">Quick actions</h2>
                   <div className="space-y-0.5">
                     {[
@@ -682,7 +672,7 @@ export default async function DashboardPage() {
 
                 {/* Outstanding by class — where the unpaid invoices live */}
                 {canSeeMoney && stats.outstandingByClass?.length > 0 && (
-                  <div className="bg-white rounded-xl border border-slate-200 p-5">
+                  <div className="bg-white rounded-2xl border border-slate-200 px-6 py-5">
                     <div className="flex items-center justify-between mb-3">
                       <h2 className="text-[13px] font-semibold text-slate-900">Outstanding by class</h2>
                       <Link href="/fees" className="text-[11px] text-indigo-600 font-medium hover:text-indigo-700 transition-colors">
@@ -711,7 +701,7 @@ export default async function DashboardPage() {
                 )}
 
                 {/* Staff + Library */}
-                <div className="bg-white rounded-xl border border-slate-200 p-5 flex-1">
+                <div className="bg-white rounded-2xl border border-slate-200 px-6 py-5 flex-1">
                   <div className="mb-5">
                     <h2 className="text-[13px] font-semibold text-slate-900 mb-2">Staff today</h2>
                     {[
