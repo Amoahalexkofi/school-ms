@@ -19,7 +19,7 @@ export default function DashboardLoading() {
         {/* KPI row */}
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
           {[0, 1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+            <div key={i} className="bg-white rounded-2xl border border-slate-200 px-6 py-5 space-y-4">
               <Block className="h-3.5 w-28" />
               <Block className="h-8 w-32" />
               <Block className="h-3 w-20" />
@@ -28,12 +28,12 @@ export default function DashboardLoading() {
         </div>
         {/* attendance + fees */}
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-12 lg:col-span-7 bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+          <div className="col-span-12 lg:col-span-7 bg-white rounded-2xl border border-slate-200 px-6 py-5 space-y-4">
             <Block className="h-4 w-40" />
             <Block className="h-24 w-full" />
             <Block className="h-12 w-full" />
           </div>
-          <div className="col-span-12 lg:col-span-5 bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+          <div className="col-span-12 lg:col-span-5 bg-white rounded-2xl border border-slate-200 px-6 py-5 space-y-4">
             <Block className="h-4 w-32" />
             <Block className="h-12 w-28" />
             <Block className="h-2 w-full" />
@@ -43,7 +43,7 @@ export default function DashboardLoading() {
         {/* charts */}
         <div className="grid grid-cols-12 gap-4">
           {[0, 1].map(i => (
-            <div key={i} className="col-span-12 lg:col-span-6 bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+            <div key={i} className="col-span-12 lg:col-span-6 bg-white rounded-2xl border border-slate-200 px-6 py-5 space-y-4">
               <Block className="h-4 w-36" />
               <Block className="h-44 w-full" />
             </div>

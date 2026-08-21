@@ -14,7 +14,9 @@ import {
 import Link from "next/link";
 
 // ─── Sparkline — a quiet 7-day line, no axes, no junk ─────────────────────────
-function Sparkline({ data, stroke = "#4f46e5" }: { data: number[]; stroke?: string }) {
+// Muted indigo-300, not the full-strength interactive indigo — dataviz reads
+// as "on brand" without competing with actual links/buttons for the eye.
+function Sparkline({ data, stroke = "#a5b4fc" }: { data: number[]; stroke?: string }) {
   if (!data?.length || data.every(v => v === 0)) return null;
   const w = 96, h = 28, pad = 2;
   const max = Math.max(...data), min = Math.min(...data);
@@ -64,8 +66,8 @@ function AreaChart({ data, height = 200 }: { data: { label: string; amount: numb
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" role="img" aria-label="Fee collection by month">
       <defs>
         <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.16" />
-          <stop offset="100%" stopColor="#4f46e5" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#a5b4fc" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#a5b4fc" stopOpacity="0.03" />
         </linearGradient>
       </defs>
       {ticks.map(t => (
@@ -75,7 +77,7 @@ function AreaChart({ data, height = 200 }: { data: { label: string; amount: numb
         </g>
       ))}
       <polygon points={area} fill="url(#areaFill)" />
-      <polyline points={pts} fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points={pts} fill="none" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       {data.map((d, i) => (
         <text key={d.label + i} x={x(i)} y={h - 8} textAnchor={i === 0 ? "start" : i === data.length - 1 ? "end" : "middle"}
           fontSize="10.5" fill="#64748b">{d.label}</text>
@@ -125,9 +127,12 @@ function KpiCard({
 }: {
   label: string; value: string | number; sub?: string; href?: string; icon: React.ElementType; spark?: number[];
 }) {
+  // Hover/lift only applies when the card actually links somewhere — a
+  // static card inviting a click that does nothing is a false affordance.
   const inner = (
-    <div className="group bg-white rounded-2xl border border-slate-200 px-6 py-5 h-full flex flex-col
-      hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-200">
+    <div className={`group bg-white rounded-2xl border border-slate-200 px-6 py-5 h-full flex flex-col transition-all duration-200 ${
+      href ? "hover:border-slate-300 hover:-translate-y-0.5" : ""
+    }`}>
       <div className="flex items-center justify-between">
         <span className="text-[12.5px] font-medium text-slate-500">{label}</span>
         <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-slate-100">
@@ -231,6 +236,35 @@ export default async function DashboardPage() {
   const branchTotals  = branchRows.reduce(
     (t: any, b: any) => ({ students: t.students + b.students, staff: t.staff + b.staff, collected: t.collected + b.collected }),
     { students: 0, staff: 0, collected: 0 }
+  );
+
+  // Built once, rendered twice (mobile-early copy + its original desktop
+  // spot in the side column) — this is the one action-oriented block on an
+  // otherwise read-only page, and on a phone, DOM order is visual order.
+  // Most staff and nearly all parents are on mobile (PRODUCT.md), so it
+  // can't sit behind ~8 data sections there the way it reasonably can on
+  // a desktop sidebar next to Payments.
+  const quickActionsCard = (
+    <div className="bg-white rounded-2xl border border-slate-200 px-6 py-5">
+      <h2 className="text-[13px] font-semibold text-slate-900 mb-3">Quick actions</h2>
+      <div className="space-y-0.5">
+        {[
+          { href: "/attendance",   label: "Mark attendance",  show: ["ADMIN","SUPER_ADMIN","TEACHER"],    icon: ClipboardList },
+          { href: "/fees", label: "Collect fees",     show: ["ADMIN","SUPER_ADMIN","ACCOUNTANT"], icon: DollarSign },
+          { href: "/students/new", label: "Add student",      show: ["ADMIN","SUPER_ADMIN"],              icon: UserPlus },
+          { href: "/exam-groups",  label: "Enter marks",      show: ["ADMIN","SUPER_ADMIN","TEACHER"],    icon: BookOpen },
+          { href: "/staff/new",    label: "Add staff",        show: ["ADMIN","SUPER_ADMIN"],              icon: UserCog },
+          { href: "/reports",      label: "Reports",          show: [],                                   icon: BarChart2 },
+        ].filter(a => a.show.length === 0 || a.show.includes(role)).map(({ href, label, icon: Icon }) => (
+          <Link key={href} href={href}
+            className="flex items-center gap-2.5 py-3 px-2 -mx-2 rounded-lg hover:bg-slate-50 transition-colors group">
+            <Icon className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 shrink-0 transition-colors" />
+            <span className="text-[13px] text-slate-700 flex-1">{label}</span>
+            <ArrowRight className="h-3.5 w-3.5 text-slate-300 group-hover:text-slate-400 transition-colors" />
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 
   return (
@@ -420,6 +454,12 @@ export default async function DashboardPage() {
               })}
             </div>
 
+            {/* ── Quick actions — mobile-only early copy; the desktop copy
+                stays in its usual side-column spot below. ── */}
+            <div className="dash-rise lg:hidden" style={{ animationDelay: "100ms" }}>
+              {quickActionsCard}
+            </div>
+
             {/* ── Attendance + Fees ── */}
             <div className="dash-rise grid grid-cols-12 gap-4" style={{ animationDelay: "140ms" }}>
 
@@ -496,8 +536,8 @@ export default async function DashboardPage() {
                         return (
                           <div key={d.date} className="flex-1 flex flex-col items-center justify-end h-full gap-1"
                             title={`${new Date(d.date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} — ${d.pct}% present`}>
-                            <span className={`text-[9.5px] tabular-nums leading-none ${isLast ? "text-indigo-600 font-semibold" : "text-slate-400"}`}>{d.pct}</span>
-                            <div className={`w-full rounded-sm ${isLast ? "bg-indigo-600" : "bg-slate-200"}`}
+                            <span className={`text-[9.5px] tabular-nums leading-none ${isLast ? "text-slate-900 font-semibold" : "text-slate-400"}`}>{d.pct}</span>
+                            <div className={`w-full rounded-sm ${isLast ? "bg-slate-900" : "bg-slate-200"}`}
                               style={{ height: `${Math.max(6, d.pct * 0.6)}%` }} />
                           </div>
                         );
@@ -605,8 +645,8 @@ export default async function DashboardPage() {
                       <DollarSign className="h-5 w-5 text-emerald-400" />
                     </div>
                     <p className="text-[14px] font-medium text-slate-500">No payments yet today</p>
-                    <Link href="/fees" className="mt-2 text-[13px] text-indigo-600 font-medium hover:underline">
-                      Collect a fee →
+                    <Link href="/fees" className="group mt-2 inline-flex items-center gap-1 text-[13px] text-indigo-600 font-medium hover:underline">
+                      Collect a fee <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                     </Link>
                   </div>
                 ) : (
@@ -650,35 +690,17 @@ export default async function DashboardPage() {
               {/* Side column */}
               <div className={`col-span-12 ${canSeeMoney ? "lg:col-span-4" : ""} flex flex-col gap-4`}>
 
-                {/* Quick actions */}
-                <div className="bg-white rounded-2xl border border-slate-200 px-6 py-5">
-                  <h2 className="text-[13px] font-semibold text-slate-900 mb-3">Quick actions</h2>
-                  <div className="space-y-0.5">
-                    {[
-                      { href: "/attendance",   label: "Mark attendance",  show: ["ADMIN","SUPER_ADMIN","TEACHER"],    icon: ClipboardList },
-                      { href: "/fees", label: "Collect fees",     show: ["ADMIN","SUPER_ADMIN","ACCOUNTANT"], icon: DollarSign },
-                      { href: "/students/new", label: "Add student",      show: ["ADMIN","SUPER_ADMIN"],              icon: UserPlus },
-                      { href: "/exam-groups",  label: "Enter marks",      show: ["ADMIN","SUPER_ADMIN","TEACHER"],    icon: BookOpen },
-                      { href: "/staff/new",    label: "Add staff",        show: ["ADMIN","SUPER_ADMIN"],              icon: UserCog },
-                      { href: "/reports",      label: "Reports",          show: [],                                   icon: BarChart2 },
-                    ].filter(a => a.show.length === 0 || a.show.includes(role)).map(({ href, label, icon: Icon }) => (
-                      <Link key={href} href={href}
-                        className="flex items-center gap-2.5 py-3 px-2 -mx-2 rounded-lg hover:bg-slate-50 transition-colors group">
-                        <Icon className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 shrink-0 transition-colors" />
-                        <span className="text-[13px] text-slate-700 flex-1">{label}</span>
-                        <ArrowRight className="h-3.5 w-3.5 text-slate-300 group-hover:text-slate-400 transition-colors" />
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+                {/* Quick actions — desktop only here; mobile gets its own
+                    earlier copy above the data sections (see quickActionsCard). */}
+                <div className="hidden lg:block">{quickActionsCard}</div>
 
                 {/* Outstanding by class — where the unpaid invoices live */}
                 {canSeeMoney && stats.outstandingByClass?.length > 0 && (
                   <div className="bg-white rounded-2xl border border-slate-200 px-6 py-5">
                     <div className="flex items-center justify-between mb-3">
                       <h2 className="text-[13px] font-semibold text-slate-900">Outstanding by class</h2>
-                      <Link href="/fees" className="text-[11px] text-indigo-600 font-medium hover:text-indigo-700 transition-colors">
-                        Chase up →
+                      <Link href="/fees" className="group inline-flex items-center gap-0.5 text-[11px] text-indigo-600 font-medium hover:text-indigo-700 transition-colors">
+                        Chase up <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
                       </Link>
                     </div>
                     <div className="space-y-2.5">
