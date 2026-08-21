@@ -77,15 +77,15 @@ export default async function MyFeesPage() {
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-slate-50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-semibold text-slate-900 tabular-nums">₵{totalInvoiced.toLocaleString()}</p>
+              <p className="text-lg sm:text-2xl font-semibold text-slate-900 tabular-nums">₵{totalInvoiced.toLocaleString()}</p>
               <p className="text-xs text-slate-500 mt-1">Total invoiced</p>
             </div>
             <div className="bg-slate-50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-semibold text-emerald-600 tabular-nums">₵{totalPaid.toLocaleString()}</p>
+              <p className="text-lg sm:text-2xl font-semibold text-emerald-600 tabular-nums">₵{totalPaid.toLocaleString()}</p>
               <p className="text-xs text-slate-500 mt-1">Total paid</p>
             </div>
             <div className="bg-slate-50 rounded-lg p-4 text-center">
-              <p className={`text-2xl font-semibold tabular-nums ${totalDue > 0 ? "text-rose-600" : "text-emerald-600"}`}>₵{totalDue.toLocaleString()}</p>
+              <p className={`text-lg sm:text-2xl font-semibold tabular-nums ${totalDue > 0 ? "text-rose-600" : "text-emerald-600"}`}>₵{totalDue.toLocaleString()}</p>
               <p className="text-xs text-slate-500 mt-1">Outstanding</p>
             </div>
           </div>

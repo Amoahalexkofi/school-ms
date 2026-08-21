@@ -48,7 +48,7 @@ export function HomeworkSubmit({ homeworkId }: { homeworkId: string }) {
         type="button"
         disabled={busy !== null}
         onClick={() => { setBusy("mark"); submit(); }}
-        className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+        className="inline-flex items-center gap-1 text-xs font-medium px-3 py-3.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50"
       >
         {busy === "mark" ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
         Mark done
@@ -57,7 +57,7 @@ export function HomeworkSubmit({ homeworkId }: { homeworkId: string }) {
         type="button"
         disabled={busy !== null}
         onClick={() => fileRef.current?.click()}
-        className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+        className="inline-flex items-center gap-1 text-xs font-medium px-3 py-3.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50"
       >
         {busy === "file" ? <Loader2 className="h-3 w-3 animate-spin" /> : <Paperclip className="h-3 w-3" />}
         Attach & submit

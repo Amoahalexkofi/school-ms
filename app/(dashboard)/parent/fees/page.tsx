@@ -73,15 +73,15 @@ export default async function ParentFeesPage() {
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-slate-50 rounded-lg p-3 text-center">
-                    <p className="text-xl font-semibold text-slate-900 tabular-nums">₵{totalInvNum.toLocaleString()}</p>
+                    <p className="text-base sm:text-xl font-semibold text-slate-900 tabular-nums">₵{totalInvNum.toLocaleString()}</p>
                     <p className="text-xs text-slate-500 mt-0.5">Invoiced</p>
                   </div>
                   <div className="bg-slate-50 rounded-lg p-3 text-center">
-                    <p className="text-xl font-semibold text-emerald-600 tabular-nums">₵{totalPaidNum.toLocaleString()}</p>
+                    <p className="text-base sm:text-xl font-semibold text-emerald-600 tabular-nums">₵{totalPaidNum.toLocaleString()}</p>
                     <p className="text-xs text-slate-500 mt-0.5">Paid</p>
                   </div>
                   <div className="bg-slate-50 rounded-lg p-3 text-center">
-                    <p className={`text-xl font-semibold tabular-nums ${totalDueNum > 0 ? "text-rose-600" : "text-emerald-600"}`}>₵{totalDueNum.toLocaleString()}</p>
+                    <p className={`text-base sm:text-xl font-semibold tabular-nums ${totalDueNum > 0 ? "text-rose-600" : "text-emerald-600"}`}>₵{totalDueNum.toLocaleString()}</p>
                     <p className="text-xs text-slate-500 mt-0.5">Outstanding</p>
                   </div>
                 </div>
