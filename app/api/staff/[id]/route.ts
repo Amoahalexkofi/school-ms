@@ -7,17 +7,23 @@ import { auth } from "@/lib/auth";
 // never be minted through a staff edit, by design.
 const ALLOWED_STAFF_ROLES = ["ADMIN", "TEACHER", "ACCOUNTANT", "LIBRARIAN", "RECEPTIONIST"];
 
+// "image" is deliberately excluded — it's the ID card / staff-directory
+// photo, an official record rather than a casual profile picture (that's
+// User.image, self-service via My Account). Handled separately below with
+// its own role gate instead of the general permission matrix.
 const ALLOWED_FIELDS = [
   "departmentId","designationId","firstName","lastName","fatherName","motherName",
   "dob","gender","maritalStatus","religion","qualification","workExperience",
   "dateOfJoining","dateOfLeaving","contractType","contactNo","emergencyContact",
-  "localAddress","permanentAddress","city","state","country","image",
+  "localAddress","permanentAddress","city","state","country",
   "basicSalary","bankAccountNo","bankName","bankBranch","ifscCode","epfNo",
   "accountTitle","payscale","shift","location",
   "facebook","twitter","linkedin","instagram",
   "resume","joiningLetter","resignationLetter","otherDocumentName","otherDocumentFile",
   "note","isActive","disabledAt",
 ];
+
+const ID_PHOTO_ROLES = ["SUPER_ADMIN", "ADMIN", "TEACHER"];
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -79,7 +85,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         return NextResponse.json({ error: "Invalid basic salary" }, { status: 422 });
     }
 
-    const { role, email } = body;
+    const { role, email, image } = body;
     if (role && !ALLOWED_STAFF_ROLES.includes(role)) {
       return NextResponse.json({ error: "Invalid role" }, { status: 422 });
     }
@@ -87,7 +93,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const db = await getDb();
     let targetUserId: string | null = null;
     let currentEmail: string | null = null;
-    if (role || email) {
+    if (role || email || "image" in body) {
       const s = await (db as any).staff.findUnique({ where: { id }, select: { userId: true, user: { select: { email: true } } } });
       targetUserId = s?.userId ?? null;
       currentEmail = s?.user?.email ?? null;
@@ -119,11 +125,31 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       }
     }
 
+    // The ID card / staff-directory photo is an official record, not a
+    // casual profile picture — restricted to admins and teachers (school's
+    // explicit call), unlike the self-service My Account avatar which any
+    // user can set for themselves at any time.
+    if ("image" in body) {
+      const callerRole = (session.user as any).role;
+      if (!ID_PHOTO_ROLES.includes(callerRole)) {
+        return NextResponse.json({ error: "Only admins and teachers can set the ID card photo" }, { status: 403 });
+      }
+      staffData.image = image || null;
+    }
+
     const staff = await (db as any).$transaction(async (tx: any) => {
-      if (targetUserId && (role || emailToSet)) {
+      if (targetUserId && (role || emailToSet || "image" in body)) {
         await tx.user.update({
           where: { id: targetUserId },
-          data: { ...(role && { role }), ...(emailToSet && { email: emailToSet }) },
+          data: {
+            ...(role && { role }),
+            ...(emailToSet && { email: emailToSet }),
+            // One-way sync only: an admin/teacher setting the official photo
+            // also becomes the staff member's casual account avatar by
+            // default — but a later self-service upload from My Account
+            // never overwrites the official record back.
+            ...("image" in body && { image: image || null }),
+          },
         });
       }
       return tx.staff.update({ where: { id }, data: staffData });
