@@ -16,10 +16,12 @@ export function isWithinGeofence(
   school: { latitude: number | null; longitude: number | null; geofenceRadius: number | null },
   point: { lat: number; lng: number }
 ): { ok: boolean; distance?: number; reason?: string } {
-  if (school.latitude == null || school.longitude == null) {
+  const lat = school.latitude;
+  const lng = school.longitude;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return { ok: false, reason: "School location isn't set up yet — ask an admin to configure it in Settings > School Profile." };
   }
-  const distance = distanceMeters(school.latitude, school.longitude, point.lat, point.lng);
+  const distance = distanceMeters(lat as number, lng as number, point.lat, point.lng);
   const radius = school.geofenceRadius ?? 150;
   if (distance > radius) {
     return { ok: false, distance, reason: `You're ${Math.round(distance)}m from the school — attendance can only be marked within ${radius}m of the school.` };

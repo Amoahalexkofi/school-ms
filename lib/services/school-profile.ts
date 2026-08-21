@@ -34,8 +34,19 @@ export async function upsertSchoolProfile(input: Record<string, unknown>) {
   if (feeDueDays !== undefined) data.feeDueDays = feeDueDays ? parseInt(feeDueDays) : null;
   // Geofence coords: use ?? not || — a school genuinely at 0° lat/long (rare
   // but not impossible) must not get silently nulled out.
-  if (latitude       !== undefined) data.latitude       = latitude === "" || latitude === null ? null : parseFloat(latitude);
-  if (longitude      !== undefined) data.longitude      = longitude === "" || longitude === null ? null : parseFloat(longitude);
+  // parseFloat("garbage") is NaN, and Postgres float8 happily stores NaN —
+  // it doesn't throw, it just silently corrupts the value (and the geofence
+  // check's own `== null` guard doesn't catch NaN, so a bad save here can
+  // disable the geofence entirely). Anything that doesn't parse to a real
+  // finite number is treated the same as "not set" — never written as NaN.
+  if (latitude !== undefined) {
+    const n = latitude === "" || latitude === null ? null : parseFloat(latitude);
+    data.latitude = n != null && Number.isFinite(n) ? n : null;
+  }
+  if (longitude !== undefined) {
+    const n = longitude === "" || longitude === null ? null : parseFloat(longitude);
+    data.longitude = n != null && Number.isFinite(n) ? n : null;
+  }
   if (geofenceRadius !== undefined) data.geofenceRadius = geofenceRadius ? parseInt(geofenceRadius) : 150;
   if (onboardingCompleted !== undefined) data.onboardingCompleted = Boolean(onboardingCompleted);
   if (existing) {
