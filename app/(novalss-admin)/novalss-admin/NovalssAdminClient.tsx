@@ -19,8 +19,11 @@ type School = {
   id: string; name: string; subdomain: string; customDomain?: string;
   schemaName: string; plan: string; status: string; adminEmail: string;
   adminName?: string; phone?: string; address?: string; country: string;
-  trialEndsAt?: string; notes?: string; addons?: string; createdAt: string;
-  billingCycle?: string; subscriptionStartsAt?: string; subscriptionEndsAt?: string;
+  // Date fields arrive as real Date objects straight from the server-rendered
+  // prop, but as ISO strings once round-tripped through a client-side patch —
+  // same field, two shapes. Always read these through toDateInputValue().
+  trialEndsAt?: string | Date; notes?: string; addons?: string; createdAt: string;
+  billingCycle?: string; subscriptionStartsAt?: string | Date; subscriptionEndsAt?: string | Date;
 };
 
 type BillingEvent = {
@@ -45,9 +48,20 @@ const PRICE_SUGGESTION: Record<string, number> = {
   monthly: 199, yearly: 1990, "5yr": 7990, "7yr": 9990, lifetime: 48000,
 };
 
-function daysUntil(iso?: string): number | null {
+function daysUntil(iso?: string | Date): number | null {
   if (!iso) return null;
   return Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
+}
+
+// Server-rendered props carry real Date objects; anything that's round-tripped
+// through a client-side fetch (patch()/confirmRenew()) comes back as an ISO
+// string instead — same field, two shapes depending on how it last got here.
+// `new Date(...)` accepts both, so route every date through this rather than
+// calling `.slice()` directly on a value that might not be a string.
+function toDateInputValue(v?: string | Date | null): string {
+  if (!v) return "";
+  const d = new Date(v);
+  return Number.isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
 }
 
 // Purchasable add-ons that can be released to a school.
@@ -251,11 +265,11 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
       name: s.name, adminEmail: s.adminEmail, adminName: s.adminName ?? "",
       phone: s.phone ?? "", address: s.address ?? "", country: s.country,
       customDomain: s.customDomain ?? "",
-      trialEndsAt: s.trialEndsAt ? s.trialEndsAt.slice(0, 10) : "",
+      trialEndsAt: toDateInputValue(s.trialEndsAt),
       notes: s.notes ?? "",
       billingCycle: s.billingCycle ?? "",
-      subscriptionStartsAt: s.subscriptionStartsAt ? s.subscriptionStartsAt.slice(0, 10) : "",
-      subscriptionEndsAt: s.subscriptionEndsAt ? s.subscriptionEndsAt.slice(0, 10) : "",
+      subscriptionStartsAt: toDateInputValue(s.subscriptionStartsAt),
+      subscriptionEndsAt: toDateInputValue(s.subscriptionEndsAt),
     });
     setEditErr("");
   }
