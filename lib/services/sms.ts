@@ -124,7 +124,13 @@ async function sendViaBms(
   message: string,
   config: { apiKey: string; senderId?: string }
 ): Promise<SmsResult> {
-  const recipients = Array.isArray(to) ? to : [to];
+  // The shared normalizer upstream E.164-ifies numbers ("+233…") for
+  // Twilio/Africa's Talking, but BMS's own API examples use plain Ghana
+  // local format ("0241234567") — no "+", no country code. Undo that here.
+  const recipients = (Array.isArray(to) ? to : [to]).map((n) => {
+    const digits = n.replace(/^\+/, "");
+    return digits.startsWith("233") ? "0" + digits.slice(3) : digits;
+  });
   const url = `https://api.mnotify.com/api/sms/quick?key=${encodeURIComponent(config.apiKey)}`;
 
   const res = await fetch(url, {
