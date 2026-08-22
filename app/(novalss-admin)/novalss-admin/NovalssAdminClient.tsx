@@ -10,6 +10,7 @@ import {
   XCircle, Clock, RefreshCw, ChevronDown, ChevronUp,
   BarChart3, Users, GraduationCap, Edit2, KeyRound,
   Globe, CalendarDays, StickyNote, AlertTriangle, Copy, Check,
+  CreditCard, History, Repeat,
 } from "lucide-react";
 
 const SEL = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors";
@@ -19,7 +20,21 @@ type School = {
   schemaName: string; plan: string; status: string; adminEmail: string;
   adminName?: string; phone?: string; address?: string; country: string;
   trialEndsAt?: string; notes?: string; addons?: string; createdAt: string;
+  billingCycle?: string; subscriptionStartsAt?: string; subscriptionEndsAt?: string;
 };
+
+type BillingEvent = {
+  id: string; type: string; billingCycle?: string | null;
+  amount?: string | number | null; currency?: string | null;
+  note?: string | null; createdAt: string;
+};
+
+const BILLING_CYCLES = ["monthly", "yearly"];
+
+function daysUntil(iso?: string): number | null {
+  if (!iso) return null;
+  return Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
+}
 
 // Purchasable add-ons that can be released to a school.
 const ADDON_CATALOG: { key: string; label: string }[] = [
@@ -88,13 +103,26 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
   const [resetErr, setResetErr]       = useState("");
   const [resetOk, setResetOk]         = useState(false);
   const [copied, setCopied]           = useState<string | null>(null);
+  const [showRenewalsOnly, setShowRenewalsOnly] = useState(false);
+  const [events, setEvents]           = useState<Record<string, BillingEvent[]>>({});
+  const [loadingEvents, setLoadingEvents] = useState<string | null>(null);
+  const [renewTarget, setRenewTarget] = useState<School | null>(null);
+  const [renewForm, setRenewForm]     = useState({ billingCycle: "monthly", amount: "", note: "" });
+  const [renewSaving, setRenewSaving] = useState(false);
+  const [renewErr, setRenewErr]       = useState("");
 
-  const filtered = schools.filter(s =>
-    !search ||
-    s.name.toLowerCase().includes(search.toLowerCase()) ||
-    s.subdomain.includes(search.toLowerCase()) ||
-    s.adminEmail.includes(search.toLowerCase())
-  );
+  const filtered = schools.filter(s => {
+    const matchesSearch = !search ||
+      s.name.toLowerCase().includes(search.toLowerCase()) ||
+      s.subdomain.includes(search.toLowerCase()) ||
+      s.adminEmail.includes(search.toLowerCase());
+    if (!matchesSearch) return false;
+    if (showRenewalsOnly) {
+      const d = daysUntil(s.subscriptionEndsAt);
+      if (d === null || d > 7) return false;
+    }
+    return true;
+  });
 
   // ── provision ──────────────────────────────────────────────────────────────
 
@@ -130,10 +158,52 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
     } finally { setLoadingStats(null); }
   }
 
+  async function loadEvents(id: string) {
+    if (events[id]) return;
+    setLoadingEvents(id);
+    try {
+      const res = await fetch(`/api/admin/schools/${id}/billing-events`);
+      const data = await res.json();
+      if (res.ok) setEvents(e => ({ ...e, [id]: data }));
+    } finally { setLoadingEvents(null); }
+  }
+
   function toggleExpand(id: string) {
     const next = expanded === id ? null : id;
     setExpanded(next);
-    if (next) loadStats(next);
+    if (next) { loadStats(next); loadEvents(next); }
+  }
+
+  // ── renew / record payment ─────────────────────────────────────────────────
+
+  function openRenew(s: School) {
+    setRenewTarget(s);
+    setRenewForm({ billingCycle: s.billingCycle || "monthly", amount: "", note: "" });
+    setRenewErr("");
+  }
+
+  async function confirmRenew() {
+    if (!renewTarget) return;
+    setRenewSaving(true); setRenewErr("");
+    try {
+      const res = await fetch(`/api/admin/schools/${renewTarget.id}/billing-events`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "renewed",
+          billingCycle: renewForm.billingCycle,
+          amount: renewForm.amount ? Number(renewForm.amount) : undefined,
+          note: renewForm.note || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to record payment");
+      if (data.tenant) {
+        setSchools(list => list.map(x => x.id === renewTarget.id ? { ...x, ...data.tenant } : x));
+      }
+      setEvents(e => ({ ...e, [renewTarget.id]: [data.event, ...(e[renewTarget.id] ?? [])] }));
+      setRenewTarget(null);
+    } catch (e: any) { setRenewErr(e.message); }
+    finally { setRenewSaving(false); }
   }
 
   // ── inline updates ─────────────────────────────────────────────────────────
@@ -159,6 +229,9 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
       customDomain: s.customDomain ?? "",
       trialEndsAt: s.trialEndsAt ? s.trialEndsAt.slice(0, 10) : "",
       notes: s.notes ?? "",
+      billingCycle: s.billingCycle ?? "",
+      subscriptionStartsAt: s.subscriptionStartsAt ? s.subscriptionStartsAt.slice(0, 10) : "",
+      subscriptionEndsAt: s.subscriptionEndsAt ? s.subscriptionEndsAt.slice(0, 10) : "",
     });
     setEditErr("");
   }
@@ -171,6 +244,9 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
       if (!payload.customDomain) payload.customDomain = null;
       if (payload.trialEndsAt) payload.trialEndsAt = new Date(payload.trialEndsAt).toISOString();
       else payload.trialEndsAt = null;
+      payload.subscriptionStartsAt = payload.subscriptionStartsAt ? new Date(payload.subscriptionStartsAt).toISOString() : null;
+      payload.subscriptionEndsAt   = payload.subscriptionEndsAt   ? new Date(payload.subscriptionEndsAt).toISOString()   : null;
+      payload.billingCycle = payload.billingCycle || null;
       await patch(editTarget.id, payload);
       setEditTarget(null);
     } catch (e: any) { setEditErr(e.message); }
@@ -226,6 +302,10 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
   const active    = schools.filter(s => s.status === "active").length;
   const trial     = schools.filter(s => s.status === "trial").length;
   const suspended = schools.filter(s => s.status === "suspended").length;
+  const renewalsDue = schools.filter(s => {
+    const d = daysUntil(s.subscriptionEndsAt);
+    return d !== null && d <= 7;
+  }).length;
 
   // ── render ─────────────────────────────────────────────────────────────────
 
@@ -249,12 +329,28 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <Card><CardContent className="pt-4"><p className="text-xs text-gray-500">Total Schools</p><p className="text-3xl font-bold">{schools.length}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-gray-500">Active</p><p className="text-3xl font-bold text-green-600">{active}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-gray-500">Trial</p><p className="text-3xl font-bold text-amber-600">{trial}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-gray-500">Suspended</p><p className="text-3xl font-bold text-red-500">{suspended}</p></CardContent></Card>
+        <Card
+          className={`cursor-pointer transition-colors ${showRenewalsOnly ? "border-orange-300 bg-orange-50/50" : "hover:border-orange-200"}`}
+          onClick={() => setShowRenewalsOnly(v => !v)}
+        >
+          <CardContent className="pt-4">
+            <p className="text-xs text-gray-500">Renewals Due <span className="text-gray-400">(7d)</span></p>
+            <p className="text-3xl font-bold text-orange-600">{renewalsDue}</p>
+          </CardContent>
+        </Card>
       </div>
+      {showRenewalsOnly && (
+        <div className="flex items-center gap-2 text-xs text-orange-700 bg-orange-50 border border-orange-200 rounded-lg px-3 py-2 -mt-2">
+          <Repeat className="h-3.5 w-3.5" />
+          Showing tenants whose subscription expired or renews within 7 days.
+          <button className="ml-auto underline" onClick={() => setShowRenewalsOnly(false)}>Clear filter</button>
+        </div>
+      )}
 
       {/* Provision Form */}
       {showProvision && (
@@ -324,6 +420,9 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
           const isExpanded = expanded === s.id;
           const schoolStats = stats[s.id];
           const trialExpired = s.trialEndsAt && new Date(s.trialEndsAt) < new Date();
+          const subDaysLeft = daysUntil(s.subscriptionEndsAt);
+          const subExpired = subDaysLeft !== null && subDaysLeft < 0;
+          const subDueSoon = subDaysLeft !== null && subDaysLeft >= 0 && subDaysLeft <= 7;
 
           return (
             <Card key={s.id} className={isExpanded ? "border-blue-200 shadow-sm" : ""}>
@@ -342,6 +441,8 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                       <Badge label={s.plan} cls={PLAN_BADGE[s.plan] ?? PLAN_BADGE.trial} />
                       <Badge label={s.status} cls={STATUS_BADGE[s.status] ?? STATUS_BADGE.active} />
                       {trialExpired && <Badge label="Trial expired" cls="bg-red-50 text-red-500 border border-red-200" />}
+                      {subExpired && <Badge label={`Renewal ${Math.abs(subDaysLeft!)}d overdue`} cls="bg-red-50 text-red-500 border border-red-200" />}
+                      {!subExpired && subDueSoon && <Badge label={`Renews in ${subDaysLeft}d`} cls="bg-orange-50 text-orange-600 border border-orange-200" />}
                     </div>
                     <p className="text-xs text-gray-400 mt-0.5">{s.adminEmail} · {s.subdomain}.getskula.com</p>
                   </div>
@@ -412,6 +513,60 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                         <BarChart3 className="h-3.5 w-3.5" /> Load usage stats
                       </button>
                     )}
+
+                    {/* Subscription */}
+                    <div className="border border-slate-200 rounded-lg px-4 py-3">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-xs font-semibold text-gray-600 flex items-center gap-1.5">
+                          <CreditCard className="h-3.5 w-3.5" /> Subscription
+                        </p>
+                        <Button size="sm" variant="outline" onClick={() => openRenew(s)}>
+                          <Repeat className="h-3.5 w-3.5 mr-1.5" /> {s.subscriptionEndsAt ? "Renew" : "Start Subscription"}
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                          <p className="text-xs text-gray-400 mb-0.5">Billing Cycle</p>
+                          <p className="text-sm text-gray-700 capitalize">{s.billingCycle ?? "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400 mb-0.5">Started</p>
+                          <p className="text-sm text-gray-700">
+                            {s.subscriptionStartsAt ? new Date(s.subscriptionStartsAt).toLocaleDateString() : "—"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400 mb-0.5">Renews / Expires</p>
+                          <p className={`text-sm ${subExpired ? "text-red-500 font-medium" : subDueSoon ? "text-orange-600 font-medium" : "text-gray-700"}`}>
+                            {s.subscriptionEndsAt ? new Date(s.subscriptionEndsAt).toLocaleDateString() : "—"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Billing history */}
+                      <div className="border-t border-slate-100 pt-3">
+                        <p className="text-xs font-semibold text-gray-500 flex items-center gap-1.5 mb-2">
+                          <History className="h-3.5 w-3.5" /> Billing History
+                        </p>
+                        {loadingEvents === s.id ? (
+                          <p className="text-xs text-gray-400 flex items-center gap-1.5"><RefreshCw className="h-3 w-3 animate-spin" /> Loading…</p>
+                        ) : (events[s.id]?.length ?? 0) === 0 ? (
+                          <p className="text-xs text-gray-400">No billing events recorded yet.</p>
+                        ) : (
+                          <div className="space-y-1.5">
+                            {events[s.id].map(ev => (
+                              <div key={ev.id} className="flex items-center gap-3 text-xs">
+                                <span className="text-gray-400 w-20 shrink-0">{new Date(ev.createdAt).toLocaleDateString()}</span>
+                                <span className="capitalize font-medium text-gray-700 w-16 shrink-0">{ev.type}</span>
+                                {ev.billingCycle && <span className="text-gray-500 capitalize">{ev.billingCycle}</span>}
+                                {ev.amount != null && <span className="text-gray-700 font-medium">{ev.currency ?? "GHS"} {Number(ev.amount).toLocaleString()}</span>}
+                                {ev.note && <span className="text-gray-400 truncate">— {ev.note}</span>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
                     {/* Notes */}
                     {s.notes && (
@@ -544,6 +699,21 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                 <Label className="flex items-center gap-1"><CalendarDays className="h-3.5 w-3.5" /> Trial Ends</Label>
                 <Input type="date" value={editForm.trialEndsAt} onChange={e => setEditForm((f: any) => ({ ...f, trialEndsAt: e.target.value }))} />
               </div>
+              <div>
+                <Label className="flex items-center gap-1"><CreditCard className="h-3.5 w-3.5" /> Billing Cycle</Label>
+                <select className={SEL} value={editForm.billingCycle} onChange={e => setEditForm((f: any) => ({ ...f, billingCycle: e.target.value }))}>
+                  <option value="">— None —</option>
+                  {BILLING_CYCLES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label className="flex items-center gap-1"><CalendarDays className="h-3.5 w-3.5" /> Subscription Start</Label>
+                <Input type="date" value={editForm.subscriptionStartsAt} onChange={e => setEditForm((f: any) => ({ ...f, subscriptionStartsAt: e.target.value }))} />
+              </div>
+              <div>
+                <Label className="flex items-center gap-1"><CalendarDays className="h-3.5 w-3.5" /> Subscription Ends</Label>
+                <Input type="date" value={editForm.subscriptionEndsAt} onChange={e => setEditForm((f: any) => ({ ...f, subscriptionEndsAt: e.target.value }))} />
+              </div>
               <div className="sm:col-span-2">
                 <Label className="flex items-center gap-1"><StickyNote className="h-3.5 w-3.5" /> Notes</Label>
                 <textarea
@@ -634,6 +804,57 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Renew / Record Payment Dialog ────────────────────────────────────── */}
+      {renewTarget && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                  <Repeat className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-gray-800">
+                    {renewTarget.subscriptionEndsAt ? "Renew Subscription" : "Start Subscription"}
+                  </h2>
+                  <p className="text-xs text-gray-400">{renewTarget.name}</p>
+                </div>
+              </div>
+              <button onClick={() => setRenewTarget(null)}><X className="h-5 w-5 text-gray-400" /></button>
+            </div>
+
+            <div>
+              <Label>Billing Cycle *</Label>
+              <select className={SEL} value={renewForm.billingCycle} onChange={e => setRenewForm(f => ({ ...f, billingCycle: e.target.value }))}>
+                {BILLING_CYCLES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+              </select>
+              <p className="text-[11px] text-gray-400 mt-1">
+                {renewTarget.subscriptionEndsAt && new Date(renewTarget.subscriptionEndsAt) > new Date()
+                  ? "Extends from the current renewal date."
+                  : "Starts counting from today."}
+              </p>
+            </div>
+            <div>
+              <Label>Amount Paid (optional)</Label>
+              <Input type="number" min="0" step="0.01" value={renewForm.amount}
+                onChange={e => setRenewForm(f => ({ ...f, amount: e.target.value }))} placeholder="e.g. 600" />
+            </div>
+            <div>
+              <Label>Note (optional)</Label>
+              <Input value={renewForm.note} onChange={e => setRenewForm(f => ({ ...f, note: e.target.value }))} placeholder="e.g. Paid via Mobile Money" />
+            </div>
+
+            {renewErr && <p className="text-sm text-red-600">{renewErr}</p>}
+            <div className="flex gap-2">
+              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={confirmRenew} disabled={renewSaving}>
+                {renewSaving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <><CheckCircle2 className="h-4 w-4 mr-1.5" />Confirm</>}
+              </Button>
+              <Button variant="outline" onClick={() => setRenewTarget(null)}>Cancel</Button>
+            </div>
           </div>
         </div>
       )}

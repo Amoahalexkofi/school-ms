@@ -2713,6 +2713,30 @@ model SchoolTenant {
   addons       String?   @default("") // CSV of enabled add-on keys, e.g. "multi_branch"
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+  // Subscription billing
+  billingCycle         String?   // "monthly" | "yearly" — null while on trial / not yet paid
+  subscriptionStartsAt DateTime?
+  subscriptionEndsAt   DateTime? // renewal/expiry date — auto-suggested from start+cycle, overridable
+
+  billingEvents TenantBillingEvent[]
+}
+
+// Append-only history of billing actions for a tenant — created on provision,
+// renewal, and plan changes so the super-admin has an audit trail of what a
+// school actually paid, not just the current subscription state.
+model TenantBillingEvent {
+  id           String       @id @default(cuid())
+  tenantId     String
+  tenant       SchoolTenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  type         String       // "created" | "renewed" | "upgraded" | "downgraded" | "note"
+  billingCycle String?      // "monthly" | "yearly" at the time of this event
+  amount       Decimal?     @db.Decimal(10, 2)
+  currency     String?      @default("GHS")
+  note         String?
+  createdAt    DateTime     @default(now())
+
+  @@index([tenantId])
 }
 
 // ─── School Public Website (per-tenant) ──────────────────────────────────────

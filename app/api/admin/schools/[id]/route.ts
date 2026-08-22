@@ -8,7 +8,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (denied) return denied;
   const { id } = await params;
   try {
-    const { name, plan, status, adminEmail, adminName, phone, address, country, trialEndsAt, notes, customDomain, addons } = await req.json();
+    const {
+      name, plan, status, adminEmail, adminName, phone, address, country, trialEndsAt, notes, customDomain, addons,
+      billingCycle, subscriptionStartsAt, subscriptionEndsAt,
+    } = await req.json();
     const data: any = {};
     if (addons       !== undefined) data.addons       = Array.isArray(addons) ? addons.join(",") : (addons || "");
     if (name         !== undefined) data.name         = name         || null;
@@ -22,6 +25,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (notes        !== undefined) data.notes        = notes        || null;
     if (customDomain !== undefined) data.customDomain = customDomain || null;
     if (trialEndsAt  !== undefined && trialEndsAt) data.trialEndsAt = new Date(trialEndsAt);
+    if (billingCycle         !== undefined) data.billingCycle         = billingCycle || null;
+    if (subscriptionStartsAt !== undefined) data.subscriptionStartsAt = subscriptionStartsAt ? new Date(subscriptionStartsAt) : null;
+    if (subscriptionEndsAt   !== undefined) data.subscriptionEndsAt   = subscriptionEndsAt   ? new Date(subscriptionEndsAt)   : null;
     const school = await (registry as any).schoolTenant.update({ where: { id }, data });
     return NextResponse.json(school);
   } catch (e: any) {
