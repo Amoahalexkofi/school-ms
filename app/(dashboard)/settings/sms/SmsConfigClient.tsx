@@ -56,10 +56,10 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
     setSaved(null);
   }
 
-  async function save(provider: string) {
+  async function save(provider: string, overrides?: any) {
     setSaving(provider);
     try {
-      const config = getConfig(provider);
+      const config = { ...getConfig(provider), ...overrides };
       const res = await fetch("/api/sms-config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -109,7 +109,7 @@ export function SmsConfigClient({ configs: initial }: { configs: any[] }) {
       }
     }
     update(provider, "isActive", true);
-    await save(provider);
+    await save(provider, { isActive: true });
     setExpanded((prev) => new Set(prev).add(provider));
   }
 
