@@ -16,8 +16,7 @@ Before continuing any work, read these files:
 - Before implementing any feature, read the corresponding PHP model in `~/Downloads/smart-school-school-7.1.0 (1)/smart_school_src/application/models/`
 - All Prisma calls use `(prisma as any).modelName` — do NOT use typed Prisma
 - After schema changes: `npx prisma db push`
-- After code changes: `git push && vercel --prod`
-- Vercel is NOT auto-deployed from GitHub — always run `vercel --prod` manually
+- After code changes: `git push` — as of 2026-08-22 the Vercel project is connected to `Amoahalexkofi/school-ms` with auto-deploy on, so pushing to `main` alone deploys to production (getskula.com). No manual `vercel --prod` needed. Other branches get their own preview deployments.
 
 ## Page Structure
 - `/app/(dashboard)/[module]/page.tsx` — server component (data fetch only)
