@@ -106,7 +106,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   return new Response(buffer as any, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="student-profile-${student.admissionNo}.pdf"`,
+      "Content-Disposition": `attachment; filename="${`student-profile-${student.admissionNo}.pdf`.replace(/[^a-z0-9.\-]/gi, "_")}"`,
     },
   });
 }
