@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, User, Briefcase, DollarSign, BookOpen, Share2, CreditCard, ShieldCheck } from "lucide-react";
+import { ArrowLeft, User, Briefcase, DollarSign, BookOpen, Share2, CreditCard, ShieldCheck, FileDown } from "lucide-react";
 import { StaffProfileActions, StaffAvatar } from "./StaffProfileActions";
 import { StaffSubjectsManager } from "./StaffSubjectsManager";
 
@@ -72,6 +72,11 @@ export default async function StaffProfilePage({
                     <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${staff.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                       {staff.isActive ? "Active" : "Inactive"}
                     </span>
+                    <a href={`/api/staff/${staff.id}/profile-pdf`}>
+                      <button className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 font-medium">
+                        <FileDown className="h-3.5 w-3.5" /> Profile PDF
+                      </button>
+                    </a>
                     <Link href={`/staff/${staff.id}/id-card`}>
                       <button className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 font-medium">
                         <CreditCard className="h-3.5 w-3.5" /> ID Card

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getDb } from "@/lib/db";
 import { Topbar } from "@/components/Topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ClipboardList, DollarSign, BookOpen, Calendar, User, GraduationCap } from "lucide-react";
+import { ArrowLeft, ClipboardList, DollarSign, BookOpen, Calendar, User, GraduationCap, FileDown } from "lucide-react";
 import { StudentProfileActions, StudentAvatar } from "./StudentProfileActions";
 import { ParentLinkCard } from "./ParentLinkCard";
 import { CustomFieldsCard } from "./CustomFieldsCard";
@@ -123,12 +123,20 @@ export default async function StudentProfilePage({
           <Link href="/students" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Students
           </Link>
-          <Link
-            href={`/students/${student.id}/id-card`}
-            className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium"
-          >
-            <GraduationCap className="h-3.5 w-3.5" /> Print ID Card
-          </Link>
+          <div className="flex items-center gap-4">
+            <a
+              href={`/api/students/${student.id}/profile-pdf`}
+              className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              <FileDown className="h-3.5 w-3.5" /> Profile PDF
+            </a>
+            <Link
+              href={`/students/${student.id}/id-card`}
+              className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              <GraduationCap className="h-3.5 w-3.5" /> Print ID Card
+            </Link>
+          </div>
         </div>
 
         {/* Header card */}
