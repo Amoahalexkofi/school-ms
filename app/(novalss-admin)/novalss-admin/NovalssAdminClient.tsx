@@ -29,7 +29,13 @@ type BillingEvent = {
   note?: string | null; createdAt: string;
 };
 
-const BILLING_CYCLES = ["monthly", "yearly"];
+const BILLING_CYCLES: { value: string; label: string }[] = [
+  { value: "monthly", label: "Monthly" },
+  { value: "yearly",  label: "1 Year" },
+  { value: "5yr",     label: "5 Years" },
+  { value: "7yr",     label: "7 Years" },
+];
+const BILLING_CYCLE_LABEL: Record<string, string> = Object.fromEntries(BILLING_CYCLES.map(c => [c.value, c.label]));
 
 function daysUntil(iso?: string): number | null {
   if (!iso) return null;
@@ -527,7 +533,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                         <div>
                           <p className="text-xs text-gray-400 mb-0.5">Billing Cycle</p>
-                          <p className="text-sm text-gray-700 capitalize">{s.billingCycle ?? "—"}</p>
+                          <p className="text-sm text-gray-700">{s.billingCycle ? (BILLING_CYCLE_LABEL[s.billingCycle] ?? s.billingCycle) : "—"}</p>
                         </div>
                         <div>
                           <p className="text-xs text-gray-400 mb-0.5">Started</p>
@@ -558,7 +564,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                               <div key={ev.id} className="flex items-center gap-3 text-xs">
                                 <span className="text-gray-400 w-20 shrink-0">{new Date(ev.createdAt).toLocaleDateString()}</span>
                                 <span className="capitalize font-medium text-gray-700 w-16 shrink-0">{ev.type}</span>
-                                {ev.billingCycle && <span className="text-gray-500 capitalize">{ev.billingCycle}</span>}
+                                {ev.billingCycle && <span className="text-gray-500">{BILLING_CYCLE_LABEL[ev.billingCycle] ?? ev.billingCycle}</span>}
                                 {ev.amount != null && <span className="text-gray-700 font-medium">{ev.currency ?? "GHS"} {Number(ev.amount).toLocaleString()}</span>}
                                 {ev.note && <span className="text-gray-400 truncate">— {ev.note}</span>}
                               </div>
@@ -703,7 +709,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                 <Label className="flex items-center gap-1"><CreditCard className="h-3.5 w-3.5" /> Billing Cycle</Label>
                 <select className={SEL} value={editForm.billingCycle} onChange={e => setEditForm((f: any) => ({ ...f, billingCycle: e.target.value }))}>
                   <option value="">— None —</option>
-                  {BILLING_CYCLES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+                  {BILLING_CYCLES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
               </div>
               <div>
@@ -830,7 +836,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
             <div>
               <Label>Billing Cycle *</Label>
               <select className={SEL} value={renewForm.billingCycle} onChange={e => setRenewForm(f => ({ ...f, billingCycle: e.target.value }))}>
-                {BILLING_CYCLES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+                {BILLING_CYCLES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
               <p className="text-[11px] text-gray-400 mt-1">
                 {renewTarget.subscriptionEndsAt && new Date(renewTarget.subscriptionEndsAt) > new Date()

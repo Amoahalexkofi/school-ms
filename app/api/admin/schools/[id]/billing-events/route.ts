@@ -13,9 +13,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   return NextResponse.json(events);
 }
 
+// "monthly" | "yearly" | "5yr" | "7yr"
 function addCycle(base: Date, cycle: string): Date {
   const d = new Date(base);
   if (cycle === "yearly") d.setFullYear(d.getFullYear() + 1);
+  else if (cycle === "5yr") d.setFullYear(d.getFullYear() + 5);
+  else if (cycle === "7yr") d.setFullYear(d.getFullYear() + 7);
   else d.setMonth(d.getMonth() + 1);
   return d;
 }
