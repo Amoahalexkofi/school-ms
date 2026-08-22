@@ -15,14 +15,17 @@ export function SignInPage({
   async function handleSignIn({
     email,
     password,
+    remember,
   }: {
     email: string;
     password: string;
+    remember: boolean;
   }) {
     const result = await signIn("credentials", {
       email,
       password,
       tenant,
+      remember: remember ? "true" : "false",
       redirect: false,
     });
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, AlertCircle, ArrowRight } from "lucide-react";
 
-interface SignInPayload { email: string; password: string; }
+interface SignInPayload { email: string; password: string; remember: boolean; }
 interface Props { onSubmit: (payload: SignInPayload) => Promise<void>; accentColor?: string; supportContact?: string; }
 
 function isValidEmail(email: string) {
@@ -14,6 +14,7 @@ function isValidEmail(email: string) {
 export function SignInForm({ onSubmit, accentColor = "#6366f1", supportContact }: Props) {
   const [email, setEmail]           = useState("");
   const [password, setPassword]     = useState("");
+  const [remember, setRemember]     = useState(false);
   const [showPw, setShowPw]         = useState(false);
   const [error, setError]           = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -26,7 +27,7 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1", supportContact }
     if (!password)            return setError("Password is required");
     setSubmitting(true);
     try {
-      await onSubmit({ email: email.trim(), password });
+      await onSubmit({ email: email.trim(), password, remember });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed");
     } finally {
@@ -95,6 +96,17 @@ export function SignInForm({ onSubmit, accentColor = "#6366f1", supportContact }
           </button>
         </div>
       </div>
+
+      <label className="flex items-center gap-2.5 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={remember}
+          onChange={(e) => setRemember(e.target.checked)}
+          className="h-4 w-4 rounded border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-0"
+          style={{ accentColor, "--tw-ring-color": `${accentColor}35` } as any}
+        />
+        <span className="text-[13px] font-medium text-slate-500">Remember me</span>
+      </label>
 
       <button
         type="submit"

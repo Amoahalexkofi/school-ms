@@ -10,7 +10,7 @@ describe("SignInForm", () => {
   it("renders email and password fields", () => {
     render(<SignInForm onSubmit={onSubmit} />);
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
   });
 
   it("renders a sign in button", () => {
@@ -24,13 +24,33 @@ describe("SignInForm", () => {
     render(<SignInForm onSubmit={onSubmit} />);
 
     await user.type(screen.getByLabelText(/email/i), "admin@school.edu");
-    await user.type(screen.getByLabelText(/password/i), "Secret123!");
+    await user.type(screen.getByLabelText(/^password$/i), "Secret123!");
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({
         email: "admin@school.edu",
         password: "Secret123!",
+        remember: false,
+      });
+    });
+  });
+
+  it("calls onSubmit with remember true when the checkbox is checked", async () => {
+    const user = userEvent.setup();
+    onSubmit.mockResolvedValue(undefined);
+    render(<SignInForm onSubmit={onSubmit} />);
+
+    await user.type(screen.getByLabelText(/email/i), "admin@school.edu");
+    await user.type(screen.getByLabelText(/^password$/i), "Secret123!");
+    await user.click(screen.getByLabelText(/remember me/i));
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith({
+        email: "admin@school.edu",
+        password: "Secret123!",
+        remember: true,
       });
     });
   });
@@ -39,7 +59,7 @@ describe("SignInForm", () => {
     const user = userEvent.setup();
     render(<SignInForm onSubmit={onSubmit} />);
 
-    await user.type(screen.getByLabelText(/password/i), "Secret123!");
+    await user.type(screen.getByLabelText(/^password$/i), "Secret123!");
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/email.*required/i);
@@ -62,7 +82,7 @@ describe("SignInForm", () => {
     render(<SignInForm onSubmit={onSubmit} />);
 
     await user.type(screen.getByLabelText(/email/i), "not-an-email");
-    await user.type(screen.getByLabelText(/password/i), "Secret123!");
+    await user.type(screen.getByLabelText(/^password$/i), "Secret123!");
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/valid email/i);
@@ -71,11 +91,11 @@ describe("SignInForm", () => {
 
   it("shows a loading state while signing in", async () => {
     const user = userEvent.setup();
-    const slowSubmit = jest.fn(() => new Promise((r) => setTimeout(r, 500)));
+    const slowSubmit = jest.fn(() => new Promise<void>((r) => setTimeout(r, 500)));
     render(<SignInForm onSubmit={slowSubmit} />);
 
     await user.type(screen.getByLabelText(/email/i), "admin@school.edu");
-    await user.type(screen.getByLabelText(/password/i), "Secret123!");
+    await user.type(screen.getByLabelText(/^password$/i), "Secret123!");
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     expect(screen.getByRole("button", { name: /signing in/i })).toBeDisabled();
@@ -87,7 +107,7 @@ describe("SignInForm", () => {
     render(<SignInForm onSubmit={onSubmit} />);
 
     await user.type(screen.getByLabelText(/email/i), "admin@school.edu");
-    await user.type(screen.getByLabelText(/password/i), "WrongPass!");
+    await user.type(screen.getByLabelText(/^password$/i), "WrongPass!");
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/invalid credentials/i);
@@ -99,11 +119,11 @@ describe("SignInForm", () => {
     render(<SignInForm onSubmit={onSubmit} />);
 
     await user.type(screen.getByLabelText(/email/i), "admin@school.edu");
-    await user.type(screen.getByLabelText(/password/i), "WrongPass!");
+    await user.type(screen.getByLabelText(/^password$/i), "WrongPass!");
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     await screen.findByRole("alert");
-    await user.type(screen.getByLabelText(/password/i), "x");
+    await user.type(screen.getByLabelText(/^password$/i), "x");
 
     await waitFor(() => {
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();

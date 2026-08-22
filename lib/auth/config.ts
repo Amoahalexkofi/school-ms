@@ -1,7 +1,11 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { encode as defaultEncode } from "next-auth/jwt";
 import { verifyPassword } from "@/lib/auth/password";
 import { neon } from "@neondatabase/serverless";
+
+const REMEMBERED_MAX_AGE = 60 * 60 * 24 * 30; // 30 days — "Remember me" checked
+const DEFAULT_MAX_AGE = 60 * 60 * 24;          // 1 day — unchecked
 
 const APP_DOMAINS = (process.env.NEXT_PUBLIC_APP_DOMAIN ?? "getskula.com")
   .split(",").map(d => d.trim()).filter(Boolean);
@@ -60,6 +64,7 @@ export const authConfig: NextAuthConfig = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
         tenant: { label: "Tenant", type: "text" },
+        remember: { label: "Remember me", type: "checkbox" },
       },
       async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) return null;
@@ -154,7 +159,8 @@ export const authConfig: NextAuthConfig = {
           // password), so baking a snapshot into the JWT would leave someone
           // locked out of their own account after doing exactly what was
           // asked. proxy.ts checks it fresh (short-TTL cached) instead.
-          return finish({ id: user.id as string, email: user.email as string, role: user.role as string, name, schema });
+          const remember = credentials.remember === "true" || credentials.remember === true;
+          return finish({ id: user.id as string, email: user.email as string, role: user.role as string, name, schema, remember });
         } catch (e) {
           console.error("[authorize] error:", e);
           return finish(null);
@@ -162,6 +168,17 @@ export const authConfig: NextAuthConfig = {
       },
     }),
   ],
+  jwt: {
+    // Auth.js's default encode() always sets exp = now + session.maxAge,
+    // ignoring anything already on the token — so "remember me" can only
+    // vary the session length by overriding encode() to pick the maxAge
+    // itself, keyed off the flag the jwt() callback below stashed on the
+    // token at sign-in.
+    async encode(params) {
+      const remember = (params.token as { remember?: boolean } | undefined)?.remember;
+      return defaultEncode({ ...params, maxAge: remember ? REMEMBERED_MAX_AGE : DEFAULT_MAX_AGE });
+    },
+  },
   callbacks: {
     jwt({ token, user }) {
       if (user) {
@@ -170,6 +187,7 @@ export const authConfig: NextAuthConfig = {
         // rejects the token outright if a later request's resolved schema
         // (from its own subdomain/custom domain) doesn't match this.
         token.schema = (user as any).schema;
+        token.remember = (user as any).remember === true;
       }
       return token;
     },
