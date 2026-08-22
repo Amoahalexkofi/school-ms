@@ -124,7 +124,7 @@ export default async function SignInRoute() {
               a full-height wrapper leaves huge dead space above and below;
               capping height and centering the block itself keeps the gaps
               modest regardless of viewport height. */}
-          <div className="relative flex flex-col my-auto max-h-[760px] px-6 sm:px-10 xl:px-12 py-10">
+          <div className="relative flex flex-col my-auto max-h-[640px] px-6 sm:px-10 xl:px-12 py-7">
 
             {/* Back to website */}
             <div className="shrink-0">
@@ -139,37 +139,37 @@ export default async function SignInRoute() {
             </div>
 
             {/* Main identity block */}
-            <div className="flex-1 flex flex-col justify-center py-4 lg:py-8">
+            <div className="flex-1 flex flex-col justify-center py-4 lg:py-5">
 
               {/* Logo */}
-              <div className="mb-4 lg:mb-7">
+              <div className="mb-4 lg:mb-5">
                 {profile?.logo ? (
                   <img src={profile.logo} alt={name}
-                    className="w-14 h-14 lg:w-24 lg:h-24 rounded-full object-cover"
+                    className="w-14 h-14 lg:w-20 lg:h-20 rounded-full object-cover"
                     style={{ boxShadow: "0 0 0 3px rgba(255,255,255,0.3), 0 8px 32px rgba(0,0,0,0.3)" }} />
                 ) : (
                   <div
-                    className="w-14 h-14 lg:w-24 lg:h-24 rounded-full flex items-center justify-center"
+                    className="w-14 h-14 lg:w-20 lg:h-20 rounded-full flex items-center justify-center"
                     style={{
                       background: "rgba(255,255,255,0.18)",
                       border: "2px solid rgba(255,255,255,0.35)",
                       boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
                     }}
                   >
-                    <span className="text-white font-black text-[20px] lg:text-[34px] tracking-tight">{initials}</span>
+                    <span className="text-white font-black text-[20px] lg:text-[30px] tracking-tight">{initials}</span>
                   </div>
                 )}
               </div>
 
               {/* Name */}
               <h1 className="font-montserrat text-white font-bold tracking-tight leading-[1.05] mb-1"
-                style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}>
+                style={{ fontSize: "clamp(26px, 2.8vw, 38px)" }}>
                 {name}
               </h1>
 
               {/* Year + location */}
               {(year || location) && (
-                <p className="text-white/55 text-[13px] font-medium mb-5">
+                <p className="text-white/55 text-[13px] font-medium mb-3.5">
                   {year ? `Est. ${year}` : ""}
                   {year && location ? "  ·  " : ""}
                   {location}
@@ -177,15 +177,15 @@ export default async function SignInRoute() {
               )}
 
               {/* Divider */}
-              <div className="w-12 h-[2px] rounded-full mb-5" style={{ background: "rgba(255,255,255,0.3)" }} />
+              <div className="w-12 h-[2px] rounded-full mb-3.5" style={{ background: "rgba(255,255,255,0.3)" }} />
 
               {/* Motto */}
               {profile?.motto ? (
-                <p className="text-white/65 text-[14px] italic leading-relaxed mb-7 max-w-[260px]">
+                <p className="text-white/65 text-[14px] italic leading-relaxed mb-5 max-w-[260px]">
                   &ldquo;{profile.motto}&rdquo;
                 </p>
               ) : (
-                <p className="text-white/50 text-[13px] leading-relaxed mb-7">
+                <p className="text-white/50 text-[13px] leading-relaxed mb-5">
                   Student &amp; Staff Portal
                 </p>
               )}
@@ -250,11 +250,11 @@ export default async function SignInRoute() {
           </div>
 
           {/* Form center */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-10 lg:px-14 py-12">
-            <div className="w-full max-w-[460px] bg-white rounded-2xl px-6 sm:px-9 py-10 border border-slate-200/80">
+          <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-10 lg:px-14 py-8">
+            <div className="w-full max-w-[460px] bg-white rounded-2xl px-6 sm:px-9 py-7 border border-slate-200/80">
 
               {/* School identity echo on the right */}
-              <div className="flex flex-col items-center text-center gap-3 mb-8">
+              <div className="flex flex-col items-center text-center gap-2.5 mb-6">
                 {profile?.logo ? (
                   <img src={profile.logo} alt={name} className="w-9 h-9 rounded-full object-cover shrink-0"
                     style={{ boxShadow: `0 0 0 2px ${color}40` }} />
@@ -271,8 +271,8 @@ export default async function SignInRoute() {
               </div>
 
               {/* Heading */}
-              <div className="mb-8">
-                <h2 className="font-montserrat text-[32px] font-bold text-slate-900 tracking-tight leading-none">
+              <div className="mb-6">
+                <h2 className="font-montserrat text-[28px] font-bold text-slate-900 tracking-tight leading-none">
                   Sign in
                 </h2>
                 <p className="text-slate-400 text-[14px] mt-2">
@@ -292,7 +292,7 @@ export default async function SignInRoute() {
           </div>
 
           {/* Footer */}
-          <div className="shrink-0 px-8 sm:px-12 lg:px-16 pb-7">
+          <div className="shrink-0 px-8 sm:px-12 lg:px-16 pb-5">
             <p className="text-[11px] text-slate-300">
               Powered by{" "}
               <a href="https://getskula.com" target="_blank" rel="noopener noreferrer"
