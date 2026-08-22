@@ -113,11 +113,28 @@ export default async function SignInRoute() {
           <div className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none"
             style={{ background: "linear-gradient(to top, rgba(0,0,0,0.25), transparent)" }} />
 
-          {/* Large decorative initial — bottom right, very faint */}
-          <div className="hidden lg:block absolute -bottom-6 -right-4 pointer-events-none select-none font-black text-white leading-none"
-            style={{ fontSize: 180, opacity: 0.06 }}>
-            {initials[0] ?? "S"}
-          </div>
+          {/* Institutional seal watermark — the school's own crest ghosted
+              huge in the corner reads as "this specific school" the way a
+              generic bold initial never could; falls back to the initial
+              only when a school hasn't uploaded a logo yet. */}
+          {profile?.logo ? (
+            // Most uploaded logos are a flat (non-transparent) square crop —
+            // clipping to a circle, matching every other logo badge on this
+            // page, keeps the watermark reading as a seal instead of a
+            // faint rectangular smudge once brightened/inverted.
+            <img
+              src={profile.logo}
+              alt=""
+              aria-hidden="true"
+              className="hidden lg:block absolute -bottom-16 -right-16 w-[340px] h-[340px] rounded-full object-cover pointer-events-none select-none"
+              style={{ opacity: 0.08, filter: "grayscale(1) brightness(0) invert(1)" }}
+            />
+          ) : (
+            <div className="hidden lg:block absolute -bottom-6 -right-4 pointer-events-none select-none font-black text-white leading-none"
+              style={{ fontSize: 180, opacity: 0.06 }}>
+              {initials[0] ?? "S"}
+            </div>
+          )}
 
           {/* my-auto centers this as a compact block instead of h-full
               stretching it — on a tall/large monitor, justify-center inside
@@ -161,8 +178,11 @@ export default async function SignInRoute() {
                 )}
               </div>
 
-              {/* Name */}
-              <h1 className="font-montserrat text-white font-bold tracking-tight leading-[1.05] mb-1"
+              {/* Name — Bitter serif, the same institutional voice the
+                  school's own public site uses (SchoolSite/Hero), scoped
+                  here to the name only so the rest of the form stays on
+                  the app's Montserrat/Plus Jakarta Sans system. */}
+              <h1 className="font-bitter text-white font-bold tracking-tight leading-[1.05] mb-1"
                 style={{ fontSize: "clamp(26px, 2.8vw, 38px)" }}>
                 {name}
               </h1>
@@ -265,10 +285,26 @@ export default async function SignInRoute() {
                   </div>
                 )}
                 <div>
-                  <p className="text-slate-800 font-bold text-[14px] leading-tight">{name}</p>
-                  {location && <p className="text-slate-400 text-[11px] mt-0.5">{location}</p>}
+                  <p className="font-bitter text-slate-800 font-bold text-[14px] leading-tight">{name}</p>
+                  {(year || location) && (
+                    <p className="text-slate-400 text-[11px] mt-0.5">
+                      {year ? `Est. ${year}` : ""}
+                      {year && location ? "  ·  " : ""}
+                      {location}
+                    </p>
+                  )}
                 </div>
               </div>
+
+              {/* Motto — desktop already carries this in the left panel;
+                  mobile drops that panel entirely (hidden lg:flex above),
+                  so without this line the identity echo above is the only
+                  school-specific thing a phone user sees before the form. */}
+              {profile?.motto && (
+                <p className="lg:hidden text-center text-slate-400 text-[12.5px] italic leading-relaxed -mt-3 mb-6">
+                  &ldquo;{profile.motto}&rdquo;
+                </p>
+              )}
 
               {/* Heading */}
               <div className="mb-6">
