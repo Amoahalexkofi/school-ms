@@ -127,7 +127,7 @@ export default async function SignInRoute() {
               alt=""
               aria-hidden="true"
               className="hidden lg:block absolute -bottom-16 -right-16 w-[340px] h-[340px] rounded-full object-cover pointer-events-none select-none"
-              style={{ opacity: 0.08, filter: "grayscale(1) brightness(0) invert(1)" }}
+              style={{ opacity: 0.24, filter: "grayscale(1) contrast(1.15)", mixBlendMode: "overlay" }}
             />
           ) : (
             <div className="hidden lg:block absolute -bottom-6 -right-4 pointer-events-none select-none font-black text-white leading-none"
