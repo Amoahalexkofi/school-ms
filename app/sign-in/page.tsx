@@ -118,9 +118,7 @@ export default async function SignInRoute() {
               edge, not a full-bleed background. Falls back to nothing when
               a school hasn't uploaded a cover photo. */}
           {profile?.coverImage && (
-            <img
-              src={profile.coverImage}
-              alt=""
+            <div
               aria-hidden="true"
               // A hard circle crop is a coin-flip on an arbitrary uploaded
               // photo — fine on a portrait shot, but a wide group photo
@@ -128,10 +126,19 @@ export default async function SignInRoute() {
               // middle, sometimes just background with the group sliced off
               // at the edges. A feathered radial fade instead of a hard
               // boundary means even an off-center crop reads as an
-              // intentional soft vignette rather than a bad cut.
-              className="hidden lg:block absolute -bottom-10 -right-10 w-[380px] h-[380px] object-cover pointer-events-none select-none"
+              // intentional soft vignette rather than a bad cut. `color`
+              // blend mode duotones the photo into the school's own brand
+              // hue while keeping its actual light/dark shape — a plain
+              // alpha tint left a saturated, primary-color photo (a
+              // playground, say) still fighting the panel, and was weakest
+              // exactly at this bottom-right corner where the gradient
+              // itself is lightest.
+              className="hidden lg:block absolute -bottom-10 -right-10 w-[380px] h-[380px] pointer-events-none select-none"
               style={{
-                objectPosition: "center 30%",
+                backgroundImage: `linear-gradient(160deg, ${dark} 0%, ${color} 100%), url(${profile.coverImage})`,
+                backgroundBlendMode: "color",
+                backgroundSize: "cover",
+                backgroundPosition: "center 30%",
                 maskImage: "radial-gradient(circle, black 45%, transparent 72%)",
                 WebkitMaskImage: "radial-gradient(circle, black 45%, transparent 72%)",
               }}
