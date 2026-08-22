@@ -50,12 +50,19 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const tenantUpdate: any = {};
     if (type === "renewed" && billingCycle) {
       const now = new Date();
-      const base = tenant.subscriptionEndsAt && new Date(tenant.subscriptionEndsAt) > now
-        ? new Date(tenant.subscriptionEndsAt)
-        : now;
-      tenantUpdate.subscriptionEndsAt = addCycle(base, billingCycle);
       tenantUpdate.billingCycle = billingCycle;
       if (!tenant.subscriptionStartsAt) tenantUpdate.subscriptionStartsAt = now;
+      // Lifetime is a one-time payment — there is no renewal date to compute,
+      // and any previously-set expiry (e.g. from an earlier term plan) no
+      // longer applies once the tenant has paid for lifetime access.
+      if (billingCycle === "lifetime") {
+        tenantUpdate.subscriptionEndsAt = null;
+      } else {
+        const base = tenant.subscriptionEndsAt && new Date(tenant.subscriptionEndsAt) > now
+          ? new Date(tenant.subscriptionEndsAt)
+          : now;
+        tenantUpdate.subscriptionEndsAt = addCycle(base, billingCycle);
+      }
     }
 
     const hasTenantUpdate = Object.keys(tenantUpdate).length > 0;

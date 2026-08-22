@@ -30,12 +30,20 @@ type BillingEvent = {
 };
 
 const BILLING_CYCLES: { value: string; label: string }[] = [
-  { value: "monthly", label: "Monthly" },
-  { value: "yearly",  label: "1 Year" },
-  { value: "5yr",     label: "5 Years" },
-  { value: "7yr",     label: "7 Years" },
+  { value: "monthly",  label: "Monthly" },
+  { value: "yearly",   label: "1 Year" },
+  { value: "5yr",      label: "5 Years" },
+  { value: "7yr",      label: "7 Years" },
+  { value: "lifetime", label: "Lifetime" },
 ];
 const BILLING_CYCLE_LABEL: Record<string, string> = Object.fromEntries(BILLING_CYCLES.map(c => [c.value, c.label]));
+
+// Matches app/HomepageClient.tsx's public pricing section (#pricing) — kept
+// in sync manually since the site copy and this suggestion aren't the same
+// render. Just a starting point in the amount field; the admin can override.
+const PRICE_SUGGESTION: Record<string, number> = {
+  monthly: 199, yearly: 1990, "5yr": 7990, "7yr": 9990, lifetime: 48000,
+};
 
 function daysUntil(iso?: string): number | null {
   if (!iso) return null;
@@ -184,8 +192,18 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
 
   function openRenew(s: School) {
     setRenewTarget(s);
-    setRenewForm({ billingCycle: s.billingCycle || "monthly", amount: "", note: "" });
+    const cycle = s.billingCycle || "monthly";
+    setRenewForm({ billingCycle: cycle, amount: String(PRICE_SUGGESTION[cycle] ?? ""), note: "" });
     setRenewErr("");
+  }
+
+  // Re-suggests the amount when the cycle changes, but only if the admin
+  // hasn't already typed a custom figure over the previous suggestion.
+  function setRenewCycle(cycle: string) {
+    setRenewForm(f => {
+      const wasSuggested = f.amount === "" || f.amount === String(PRICE_SUGGESTION[f.billingCycle] ?? "");
+      return { ...f, billingCycle: cycle, amount: wasSuggested ? String(PRICE_SUGGESTION[cycle] ?? "") : f.amount };
+    });
   }
 
   async function confirmRenew() {
@@ -527,7 +545,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                           <CreditCard className="h-3.5 w-3.5" /> Subscription
                         </p>
                         <Button size="sm" variant="outline" onClick={() => openRenew(s)}>
-                          <Repeat className="h-3.5 w-3.5 mr-1.5" /> {s.subscriptionEndsAt ? "Renew" : "Start Subscription"}
+                          <Repeat className="h-3.5 w-3.5 mr-1.5" /> {s.billingCycle ? "Renew" : "Start Subscription"}
                         </Button>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
@@ -544,7 +562,9 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                         <div>
                           <p className="text-xs text-gray-400 mb-0.5">Renews / Expires</p>
                           <p className={`text-sm ${subExpired ? "text-red-500 font-medium" : subDueSoon ? "text-orange-600 font-medium" : "text-gray-700"}`}>
-                            {s.subscriptionEndsAt ? new Date(s.subscriptionEndsAt).toLocaleDateString() : "—"}
+                            {s.billingCycle === "lifetime"
+                              ? "Never expires"
+                              : s.subscriptionEndsAt ? new Date(s.subscriptionEndsAt).toLocaleDateString() : "—"}
                           </p>
                         </div>
                       </div>
@@ -825,7 +845,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                 </div>
                 <div>
                   <h2 className="font-semibold text-gray-800">
-                    {renewTarget.subscriptionEndsAt ? "Renew Subscription" : "Start Subscription"}
+                    {renewTarget.billingCycle ? "Renew / Change Plan" : "Start Subscription"}
                   </h2>
                   <p className="text-xs text-gray-400">{renewTarget.name}</p>
                 </div>
@@ -835,13 +855,15 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
 
             <div>
               <Label>Billing Cycle *</Label>
-              <select className={SEL} value={renewForm.billingCycle} onChange={e => setRenewForm(f => ({ ...f, billingCycle: e.target.value }))}>
+              <select className={SEL} value={renewForm.billingCycle} onChange={e => setRenewCycle(e.target.value)}>
                 {BILLING_CYCLES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
               <p className="text-[11px] text-gray-400 mt-1">
-                {renewTarget.subscriptionEndsAt && new Date(renewTarget.subscriptionEndsAt) > new Date()
-                  ? "Extends from the current renewal date."
-                  : "Starts counting from today."}
+                {renewForm.billingCycle === "lifetime"
+                  ? "One-time payment — this tenant never needs to renew again."
+                  : renewTarget.subscriptionEndsAt && new Date(renewTarget.subscriptionEndsAt) > new Date()
+                    ? "Extends from the current renewal date."
+                    : "Starts counting from today."}
               </p>
             </div>
             <div>
