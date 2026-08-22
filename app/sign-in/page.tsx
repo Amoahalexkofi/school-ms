@@ -107,34 +107,22 @@ export default async function SignInRoute() {
         {/* ── Left panel — desktop only; mobile shows just the form ────────── */}
         <div
           className="hidden lg:flex lg:w-[44%] xl:w-[40%] flex-col relative overflow-hidden"
-          style={{ background: `linear-gradient(160deg, ${dark} 0%, ${color} 100%)` }}
+          style={
+            profile?.coverImage
+              // The school's own real photo, with the brand-color gradient
+              // laid over it as a tint (not a flat scrim) so it stays
+              // recognizably "this school" rather than a stock-photo login
+              // page — logo/name/motto carry identity, the photo carries
+              // place. Replaces an earlier giant repeated-logo watermark,
+              // which read as more of the same mark rather than a second
+              // signal.
+              ? { backgroundImage: `linear-gradient(160deg, ${dark}e6 0%, ${color}cc 100%), url(${profile.coverImage})`, backgroundSize: "cover", backgroundPosition: "center" }
+              : { background: `linear-gradient(160deg, ${dark} 0%, ${color} 100%)` }
+          }
         >
           {/* Subtle inner glow at bottom */}
           <div className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none"
             style={{ background: "linear-gradient(to top, rgba(0,0,0,0.25), transparent)" }} />
-
-          {/* Institutional seal watermark — the school's own crest ghosted
-              huge in the corner reads as "this specific school" the way a
-              generic bold initial never could; falls back to the initial
-              only when a school hasn't uploaded a logo yet. */}
-          {profile?.logo ? (
-            // Most uploaded logos are a flat (non-transparent) square crop —
-            // clipping to a circle, matching every other logo badge on this
-            // page, keeps the watermark reading as a seal instead of a
-            // faint rectangular smudge once brightened/inverted.
-            <img
-              src={profile.logo}
-              alt=""
-              aria-hidden="true"
-              className="hidden lg:block absolute -bottom-16 -right-16 w-[340px] h-[340px] rounded-full object-cover pointer-events-none select-none"
-              style={{ opacity: 0.24, filter: "grayscale(1) contrast(1.15)", mixBlendMode: "overlay" }}
-            />
-          ) : (
-            <div className="hidden lg:block absolute -bottom-6 -right-4 pointer-events-none select-none font-black text-white leading-none"
-              style={{ fontSize: 180, opacity: 0.06 }}>
-              {initials[0] ?? "S"}
-            </div>
-          )}
 
           {/* my-auto centers this as a compact block instead of h-full
               stretching it — on a tall/large monitor, justify-center inside
