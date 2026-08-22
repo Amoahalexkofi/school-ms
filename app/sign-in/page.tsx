@@ -122,8 +122,19 @@ export default async function SignInRoute() {
               src={profile.coverImage}
               alt=""
               aria-hidden="true"
-              className="hidden lg:block absolute -bottom-16 -right-16 w-[340px] h-[340px] rounded-full object-cover pointer-events-none select-none"
-              style={{ boxShadow: "0 0 0 3px rgba(255,255,255,0.3), 0 8px 32px rgba(0,0,0,0.3)" }}
+              // A hard circle crop is a coin-flip on an arbitrary uploaded
+              // photo — fine on a portrait shot, but a wide group photo
+              // (the common case) gets center-cropped to whatever's in the
+              // middle, sometimes just background with the group sliced off
+              // at the edges. A feathered radial fade instead of a hard
+              // boundary means even an off-center crop reads as an
+              // intentional soft vignette rather than a bad cut.
+              className="hidden lg:block absolute -bottom-10 -right-10 w-[380px] h-[380px] object-cover pointer-events-none select-none"
+              style={{
+                objectPosition: "center 30%",
+                maskImage: "radial-gradient(circle, black 45%, transparent 72%)",
+                WebkitMaskImage: "radial-gradient(circle, black 45%, transparent 72%)",
+              }}
             />
           )}
 
