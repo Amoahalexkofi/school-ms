@@ -107,22 +107,25 @@ export default async function SignInRoute() {
         {/* ── Left panel — desktop only; mobile shows just the form ────────── */}
         <div
           className="hidden lg:flex lg:w-[44%] xl:w-[40%] flex-col relative overflow-hidden"
-          style={
-            profile?.coverImage
-              // The school's own real photo, with the brand-color gradient
-              // laid over it as a tint (not a flat scrim) so it stays
-              // recognizably "this school" rather than a stock-photo login
-              // page — logo/name/motto carry identity, the photo carries
-              // place. Replaces an earlier giant repeated-logo watermark,
-              // which read as more of the same mark rather than a second
-              // signal.
-              ? { backgroundImage: `linear-gradient(160deg, ${dark}e6 0%, ${color}cc 100%), url(${profile.coverImage})`, backgroundSize: "cover", backgroundPosition: "center" }
-              : { background: `linear-gradient(160deg, ${dark} 0%, ${color} 100%)` }
-          }
+          style={{ background: `linear-gradient(160deg, ${dark} 0%, ${color} 100%)` }}
         >
           {/* Subtle inner glow at bottom */}
           <div className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none"
             style={{ background: "linear-gradient(to top, rgba(0,0,0,0.25), transparent)" }} />
+
+          {/* The school's own real photo, corner-anchored the same way the
+              logo watermark used to sit — a framed circle bleeding off the
+              edge, not a full-bleed background. Falls back to nothing when
+              a school hasn't uploaded a cover photo. */}
+          {profile?.coverImage && (
+            <img
+              src={profile.coverImage}
+              alt=""
+              aria-hidden="true"
+              className="hidden lg:block absolute -bottom-16 -right-16 w-[340px] h-[340px] rounded-full object-cover pointer-events-none select-none"
+              style={{ boxShadow: "0 0 0 3px rgba(255,255,255,0.3), 0 8px 32px rgba(0,0,0,0.3)" }}
+            />
+          )}
 
           {/* my-auto centers this as a compact block instead of h-full
               stretching it — on a tall/large monitor, justify-center inside
