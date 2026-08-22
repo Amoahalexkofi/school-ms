@@ -24,6 +24,7 @@ type School = {
   // same field, two shapes. Always read these through toDateInputValue().
   trialEndsAt?: string | Date; notes?: string; addons?: string; createdAt: string;
   billingCycle?: string; subscriptionStartsAt?: string | Date; subscriptionEndsAt?: string | Date;
+  logoUrl?: string | null;
 };
 
 type BillingEvent = {
@@ -99,7 +100,7 @@ function Field({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null;
   return (
     <div>
-      <p className="text-xs text-gray-400 mb-0.5">{label}</p>
+      <p className="text-xs text-slate-500 mb-0.5">{label}</p>
       <p className="text-sm text-gray-700">{value}</p>
     </div>
   );
@@ -353,12 +354,12 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
             <Building2 className="h-5 w-5 text-white" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">Novalss Admin</h1>
-            <p className="text-xs text-gray-400">Skula Platform Admin</p>
+            <p className="text-xs text-slate-500">Skula Platform Admin</p>
           </div>
         </div>
         <Button onClick={() => { setShowProv(true); setProvErr(""); setForm(emptyProvision); }}>
@@ -377,7 +378,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
           onClick={() => setShowRenewalsOnly(v => !v)}
         >
           <CardContent className="pt-4">
-            <p className="text-xs text-gray-500">Renewals Due <span className="text-gray-400">(7d)</span></p>
+            <p className="text-xs text-gray-500">Renewals Due <span className="text-slate-500">(7d)</span></p>
             <p className="text-3xl font-bold text-orange-600">{renewalsDue}</p>
           </CardContent>
         </Card>
@@ -396,7 +397,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm text-blue-800">Provision New School</CardTitle>
-              <button onClick={() => setShowProv(false)}><X className="h-4 w-4 text-gray-400" /></button>
+              <button onClick={() => setShowProv(false)}><X className="h-4 w-4 text-slate-500" /></button>
             </div>
           </CardHeader>
           <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -406,7 +407,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
             <div><Label>Subdomain *</Label>
               <div className="flex items-center gap-1">
                 <Input value={form.subdomain} onChange={e => setF("subdomain", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))} placeholder="sunshine" className="flex-1" />
-                <span className="text-xs text-gray-400 whitespace-nowrap">.getskula.com</span>
+                <span className="text-xs text-slate-500 whitespace-nowrap">.getskula.com</span>
               </div>
             </div>
             <div><Label>Admin Email *</Label>
@@ -444,13 +445,13 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
       {/* Search */}
       <div className="flex items-center gap-3">
         <Input placeholder="Search schools…" value={search} onChange={e => setSearch(e.target.value)} className="max-w-xs" />
-        <p className="text-sm text-gray-400">{filtered.length} school{filtered.length !== 1 ? "s" : ""}</p>
+        <p className="text-sm text-slate-500">{filtered.length} school{filtered.length !== 1 ? "s" : ""}</p>
       </div>
 
       {/* School List */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <Card><CardContent className="py-16 text-center text-gray-400">
+          <Card><CardContent className="py-16 text-center text-slate-500">
             <Building2 className="h-8 w-8 mx-auto mb-2 opacity-30" />
             <p>No schools yet. Provision your first school above.</p>
           </CardContent></Card>
@@ -470,8 +471,12 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                   className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-gray-50 rounded-xl"
                   onClick={() => toggleExpand(s.id)}
                 >
-                  <div className="w-9 h-9 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-center shrink-0">
-                    <Building2 className="h-4 w-4 text-blue-500" />
+                  <div className="w-9 h-9 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                    {s.logoUrl ? (
+                      <img src={s.logoUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <Building2 className="h-4 w-4 text-blue-500" />
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -482,7 +487,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                       {subExpired && <Badge label={`Renewal ${Math.abs(subDaysLeft!)}d overdue`} cls="bg-red-50 text-red-500 border border-red-200" />}
                       {!subExpired && subDueSoon && <Badge label={`Renews in ${subDaysLeft}d`} cls="bg-orange-50 text-orange-600 border border-orange-200" />}
                     </div>
-                    <p className="text-xs text-gray-400 mt-0.5">{s.adminEmail} · {s.subdomain}.getskula.com</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{s.adminEmail} · {s.subdomain}.getskula.com</p>
                   </div>
                   {schoolStats && (
                     <div className="hidden sm:flex items-center gap-4 text-xs text-gray-500">
@@ -490,8 +495,8 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                       <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" />{schoolStats.staff}</span>
                     </div>
                   )}
-                  {loadingStats === s.id && <RefreshCw className="h-3.5 w-3.5 animate-spin text-gray-400" />}
-                  {isExpanded ? <ChevronUp className="h-4 w-4 text-gray-400 shrink-0" /> : <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />}
+                  {loadingStats === s.id && <RefreshCw className="h-3.5 w-3.5 animate-spin text-slate-500" />}
+                  {isExpanded ? <ChevronUp className="h-4 w-4 text-slate-500 shrink-0" /> : <ChevronDown className="h-4 w-4 text-slate-500 shrink-0" />}
                 </div>
 
                 {/* Expanded Panel */}
@@ -505,7 +510,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                       <Field label="Country" value={s.country} />
                       <Field label="Address" value={s.address} />
                       <div>
-                        <p className="text-xs text-gray-400 mb-0.5">Subdomain</p>
+                        <p className="text-xs text-slate-500 mb-0.5">Subdomain</p>
                         <a href={`https://${s.subdomain}.getskula.com`} target="_blank" rel="noopener noreferrer"
                           className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                           {s.subdomain}.getskula.com <ExternalLink className="h-3 w-3" />
@@ -513,7 +518,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                       </div>
                       {s.customDomain && (
                         <div>
-                          <p className="text-xs text-gray-400 mb-0.5">Custom Domain</p>
+                          <p className="text-xs text-slate-500 mb-0.5">Custom Domain</p>
                           <a href={`https://${s.customDomain}`} target="_blank" rel="noopener noreferrer"
                             className="text-sm text-green-600 hover:underline flex items-center gap-1">
                             <Globe className="h-3 w-3" />{s.customDomain}
@@ -521,18 +526,18 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                         </div>
                       )}
                       <div>
-                        <p className="text-xs text-gray-400 mb-0.5">Trial Ends</p>
+                        <p className="text-xs text-slate-500 mb-0.5">Trial Ends</p>
                         <p className={`text-sm ${trialExpired ? "text-red-500 font-medium" : "text-gray-700"}`}>
                           {s.trialEndsAt ? new Date(s.trialEndsAt).toLocaleDateString() : "—"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-400 mb-0.5">Registered</p>
+                        <p className="text-xs text-slate-500 mb-0.5">Registered</p>
                         <p className="text-sm text-gray-700">{new Date(s.createdAt).toLocaleDateString()}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-400 mb-0.5">Schema</p>
-                        <p className="text-xs text-gray-400 font-mono">{s.schemaName}</p>
+                        <p className="text-xs text-slate-500 mb-0.5">Schema</p>
+                        <p className="text-xs text-slate-500 font-mono">{s.schemaName}</p>
                       </div>
                     </div>
 
@@ -564,17 +569,17 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                         <div>
-                          <p className="text-xs text-gray-400 mb-0.5">Billing Cycle</p>
+                          <p className="text-xs text-slate-500 mb-0.5">Billing Cycle</p>
                           <p className="text-sm text-gray-700">{s.billingCycle ? (BILLING_CYCLE_LABEL[s.billingCycle] ?? s.billingCycle) : "—"}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-400 mb-0.5">Started</p>
+                          <p className="text-xs text-slate-500 mb-0.5">Started</p>
                           <p className="text-sm text-gray-700">
                             {s.subscriptionStartsAt ? new Date(s.subscriptionStartsAt).toLocaleDateString() : "—"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-400 mb-0.5">Renews / Expires</p>
+                          <p className="text-xs text-slate-500 mb-0.5">Renews / Expires</p>
                           <p className={`text-sm ${subExpired ? "text-red-500 font-medium" : subDueSoon ? "text-orange-600 font-medium" : "text-gray-700"}`}>
                             {s.billingCycle === "lifetime"
                               ? "Never expires"
@@ -589,18 +594,18 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                           <History className="h-3.5 w-3.5" /> Billing History
                         </p>
                         {loadingEvents === s.id ? (
-                          <p className="text-xs text-gray-400 flex items-center gap-1.5"><RefreshCw className="h-3 w-3 animate-spin" /> Loading…</p>
+                          <p className="text-xs text-slate-500 flex items-center gap-1.5"><RefreshCw className="h-3 w-3 animate-spin" /> Loading…</p>
                         ) : (events[s.id]?.length ?? 0) === 0 ? (
-                          <p className="text-xs text-gray-400">No billing events recorded yet.</p>
+                          <p className="text-xs text-slate-500">No billing events recorded yet.</p>
                         ) : (
                           <div className="space-y-1.5">
                             {events[s.id].map(ev => (
                               <div key={ev.id} className="flex items-center gap-3 text-xs">
-                                <span className="text-gray-400 w-20 shrink-0">{new Date(ev.createdAt).toLocaleDateString()}</span>
+                                <span className="text-slate-500 w-20 shrink-0">{new Date(ev.createdAt).toLocaleDateString()}</span>
                                 <span className="capitalize font-medium text-gray-700 w-16 shrink-0">{ev.type}</span>
                                 {ev.billingCycle && <span className="text-gray-500">{BILLING_CYCLE_LABEL[ev.billingCycle] ?? ev.billingCycle}</span>}
                                 {ev.amount != null && <span className="text-gray-700 font-medium">{ev.currency ?? "GHS"} {Number(ev.amount).toLocaleString()}</span>}
-                                {ev.note && <span className="text-gray-400 truncate">— {ev.note}</span>}
+                                {ev.note && <span className="text-slate-500 truncate">— {ev.note}</span>}
                               </div>
                             ))}
                           </div>
@@ -709,8 +714,13 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h2 className="font-semibold text-gray-800">Edit — {editTarget.name}</h2>
-              <button onClick={() => setEditTarget(null)}><X className="h-5 w-5 text-gray-400" /></button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
+                  <Edit2 className="h-5 w-5 text-indigo-600" />
+                </div>
+                <h2 className="font-semibold text-gray-800">Edit — {editTarget.name}</h2>
+              </div>
+              <button onClick={() => setEditTarget(null)}><X className="h-5 w-5 text-slate-500" /></button>
             </div>
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2"><Label>School Name</Label>
@@ -780,14 +790,17 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
       {suspendTarget && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5 text-red-500" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
+                  <AlertTriangle className="h-5 w-5 text-red-500" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-gray-800">Suspend School</h2>
+                  <p className="text-xs text-slate-500">{suspendTarget.name}</p>
+                </div>
               </div>
-              <div>
-                <h2 className="font-semibold text-gray-800">Suspend School</h2>
-                <p className="text-xs text-gray-400">{suspendTarget.name}</p>
-              </div>
+              <button onClick={() => setSuspendTarget(null)}><X className="h-5 w-5 text-slate-500" /></button>
             </div>
             <div>
               <Label>Reason (optional)</Label>
@@ -800,7 +813,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
               />
             </div>
             <div className="flex gap-2">
-              <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={confirmSuspend} disabled={suspending}>
+              <Button variant="destructive" onClick={confirmSuspend} disabled={suspending}>
                 {suspending ? <RefreshCw className="h-4 w-4 animate-spin" /> : <><XCircle className="h-4 w-4 mr-1.5" />Suspend</>}
               </Button>
               <Button variant="outline" onClick={() => setSuspendTarget(null)}>Cancel</Button>
@@ -820,10 +833,10 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                 </div>
                 <div>
                   <h2 className="font-semibold text-gray-800">Reset Admin Password</h2>
-                  <p className="text-xs text-gray-400">{resetTarget.adminEmail}</p>
+                  <p className="text-xs text-slate-500">{resetTarget.adminEmail}</p>
                 </div>
               </div>
-              <button onClick={() => setResetTarget(null)}><X className="h-5 w-5 text-gray-400" /></button>
+              <button onClick={() => setResetTarget(null)}><X className="h-5 w-5 text-slate-500" /></button>
             </div>
             {resetOk ? (
               <div className="flex items-center gap-2 bg-green-50 border border-green-100 rounded-lg px-3 py-2 text-sm text-green-700">
@@ -861,10 +874,10 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
                   <h2 className="font-semibold text-gray-800">
                     {renewTarget.billingCycle ? "Renew / Change Plan" : "Start Subscription"}
                   </h2>
-                  <p className="text-xs text-gray-400">{renewTarget.name}</p>
+                  <p className="text-xs text-slate-500">{renewTarget.name}</p>
                 </div>
               </div>
-              <button onClick={() => setRenewTarget(null)}><X className="h-5 w-5 text-gray-400" /></button>
+              <button onClick={() => setRenewTarget(null)}><X className="h-5 w-5 text-slate-500" /></button>
             </div>
 
             <div>
@@ -872,7 +885,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
               <select className={SEL} value={renewForm.billingCycle} onChange={e => setRenewCycle(e.target.value)}>
                 {BILLING_CYCLES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
-              <p className="text-[11px] text-gray-400 mt-1">
+              <p className="text-[11px] text-slate-500 mt-1">
                 {renewForm.billingCycle === "lifetime"
                   ? "One-time payment — this tenant never needs to renew again."
                   : renewTarget.subscriptionEndsAt && new Date(renewTarget.subscriptionEndsAt) > new Date()
@@ -892,7 +905,7 @@ export function NovalssAdminClient({ schools: initial }: { schools: School[] }) 
 
             {renewErr && <p className="text-sm text-red-600">{renewErr}</p>}
             <div className="flex gap-2">
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={confirmRenew} disabled={renewSaving}>
+              <Button onClick={confirmRenew} disabled={renewSaving}>
                 {renewSaving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <><CheckCircle2 className="h-4 w-4 mr-1.5" />Confirm</>}
               </Button>
               <Button variant="outline" onClick={() => setRenewTarget(null)}>Cancel</Button>
